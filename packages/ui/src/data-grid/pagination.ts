@@ -93,7 +93,7 @@ export interface ServerFilter {
 }
 
 /**
- * What {@link SServerDataGrid}'s `fetchRows` receives — everything the server
+ * What {@link SmartServerDataGrid}'s `fetchRows` receives — everything the server
  * needs to return one block of rows, in a framework-agnostic form. Both the AG
  * Grid block coordinates (`startRow`/`endRow`) and the page-oriented equivalents
  * (`page`/`pageSize`) are provided so callers can use whichever their API speaks.
