@@ -14,6 +14,7 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -199,20 +200,22 @@ export function SmartGrid<TRow>({
                   Columns
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {toggleableColumns.map((column) => (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      checked={columnVisibility[column.id] ?? true}
-                      onCheckedChange={(checked) =>
-                        handleToggleColumn(column.id, checked)
-                      }
-                      onSelect={(event) => event.preventDefault()}
-                    >
-                      {column.label}
-                    </DropdownMenuCheckboxItem>
-                  ))}
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {toggleableColumns.map((column) => (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        checked={columnVisibility[column.id] ?? true}
+                        onCheckedChange={(checked) =>
+                          handleToggleColumn(column.id, checked)
+                        }
+                        onSelect={(event) => event.preventDefault()}
+                      >
+                        {column.label}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                  </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : null}

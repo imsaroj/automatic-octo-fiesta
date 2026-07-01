@@ -68,9 +68,9 @@ function collectSlots(children: React.ReactNode): SlotBuckets {
       b.body.push(child)
       return
     }
-    const slot = (child.type as Record<symbol, unknown>)[SMART_PAGE_SLOT] as
-      | PageSlot
-      | undefined
+    const slot = (child.type as unknown as Record<symbol, unknown>)[
+      SMART_PAGE_SLOT
+    ] as PageSlot | undefined
     switch (slot) {
       case "header":
         b.header.push(child)

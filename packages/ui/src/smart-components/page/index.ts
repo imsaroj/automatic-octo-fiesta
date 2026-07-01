@@ -88,3 +88,9 @@ export {
 } from "./smart-page-loading"
 
 export { SmartPageError, type SmartPageErrorProps } from "./smart-page-error"
+
+// ─── Container (compound wrapper) ─────────────────────────────────────────────
+export {
+  SmartPageContainer,
+  type SmartPageContainerProps,
+} from "./smart-page-container"
