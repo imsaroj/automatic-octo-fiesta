@@ -36,22 +36,26 @@ export interface SmartPageStatusBarProps extends React.HTMLAttributes<HTMLDivEle
  * </SmartPageStatusBar>
  * ```
  */
-export const SmartPageStatusBar = React.forwardRef<HTMLDivElement, SmartPageStatusBarProps>(
-  function SmartPageStatusBar({ border = true, className, children, ...props }, ref) {
-    return (
-      <div
-        ref={ref}
-        data-slot="page-status-bar"
-        className={cn(
-          "shrink-0 flex items-center gap-4 px-4 py-1.5",
-          border && "border-t",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    )
-  },
-)
+export const SmartPageStatusBar = React.forwardRef<
+  HTMLDivElement,
+  SmartPageStatusBarProps
+>(function SmartPageStatusBar(
+  { border = true, className, children, ...props },
+  ref
+) {
+  return (
+    <div
+      ref={ref}
+      data-slot="page-status-bar"
+      className={cn(
+        "flex shrink-0 items-center gap-4 px-4 py-1.5",
+        border && "border-t",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+})
 ;(SmartPageStatusBar as any)[SMART_PAGE_SLOT] = "status-bar"

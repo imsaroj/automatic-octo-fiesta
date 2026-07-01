@@ -1,15 +1,15 @@
-import { useMemo, useRef, useState, type ReactNode } from "react";
-import { AgGridReact } from "ag-grid-react";
+import { useMemo, useRef, useState, type ReactNode } from "react"
+import { AgGridReact } from "ag-grid-react"
 import {
   type ColDef,
   type GridApi,
   type GridReadyEvent,
   type RowSelectionOptions,
   type SelectionChangedEvent,
-} from "ag-grid-community";
-import { Columns3, Download } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/button";
+} from "ag-grid-community"
+import { Columns3, Download } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -17,10 +17,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/dropdown-menu";
+} from "@/components/dropdown-menu"
 import { SmartLoadingOverlay } from "@/smart-components/loading-overlay"
 import { SmartSearchInput } from "@/smart-components/search-input"
-import { dataGridTheme } from "@/data-grid/grid-theme";
+import { dataGridTheme } from "@/data-grid/grid-theme"
 import {
   ensureGridModules,
   NoRowsOverlay,
@@ -30,49 +30,52 @@ import {
   type DataGridColumn,
   type DataGridDensity,
   type NoRowsParams,
-} from "@/data-grid/grid-internals";
+} from "@/data-grid/grid-internals"
 
 // Re-exported so `@s-component/ui` continues to surface these public types.
-export type { DataGridColumn, DataGridDensity } from "@/data-grid/grid-internals";
+export type {
+  DataGridColumn,
+  DataGridDensity,
+} from "@/data-grid/grid-internals"
 
 export interface SmartGridProps<TRow> {
   /** Row data. */
-  rows: TRow[];
+  rows: TRow[]
   /** Column definitions. */
-  columns: DataGridColumn<TRow>[];
+  columns: DataGridColumn<TRow>[]
   /** Show the branded loading overlay. */
-  loading?: boolean;
+  loading?: boolean
   /** Optional grid title rendered in the toolbar. */
-  title?: ReactNode;
+  title?: ReactNode
   /** Extra toolbar content rendered on the right. */
-  toolbarActions?: ReactNode;
+  toolbarActions?: ReactNode
   /** Quick-search box (filters across all columns). Default `true`. */
-  quickSearch?: boolean;
+  quickSearch?: boolean
   /** Column visibility menu. Default `true`. */
-  columnSelector?: boolean;
+  columnSelector?: boolean
   /** Export-to-CSV button. Default `true`. */
-  exportCsv?: boolean;
+  exportCsv?: boolean
   /** CSV file name (without extension). Default `"export"`. */
-  exportFileName?: string;
+  exportFileName?: string
   /** SPagination. Default `true`. */
-  pagination?: boolean;
+  pagination?: boolean
   /** Rows per page. Default `10`. */
-  pageSize?: number;
+  pageSize?: number
   /** Page-size options shown in the selector. */
-  pageSizeOptions?: number[];
+  pageSizeOptions?: number[]
   /** Row selection mode. Default `"none"`. */
-  selection?: "single" | "multiple" | "none";
+  selection?: "single" | "multiple" | "none"
   /** Fired when the selection changes. */
-  onSelectionChange?: (rows: TRow[]) => void;
+  onSelectionChange?: (rows: TRow[]) => void
   /** Stable row id getter (recommended for selection + updates). */
-  getRowId?: (row: TRow) => string;
+  getRowId?: (row: TRow) => string
   /** Row density. Default `"normal"`. */
-  density?: DataGridDensity;
+  density?: DataGridDensity
   /** Grid height. Default `480`. */
-  height?: number | string;
+  height?: number | string
   /** Empty-state content shown when there are no rows. */
-  emptyState?: { title?: string; description?: string };
-  className?: string;
+  emptyState?: { title?: string; description?: string }
+  className?: string
 }
 
 /**
@@ -107,19 +110,21 @@ export function SmartGrid<TRow>({
   emptyState,
   className,
 }: SmartGridProps<TRow>) {
-  ensureGridModules();
+  ensureGridModules()
 
-  const gridRef = useRef<AgGridReact<TRow>>(null);
-  const [gridApi, setGridApi] = useState<GridApi<TRow> | null>(null);
-  const [quickFilter, setQuickFilter] = useState("");
+  const gridRef = useRef<AgGridReact<TRow>>(null)
+  const [gridApi, setGridApi] = useState<GridApi<TRow> | null>(null)
+  const [quickFilter, setQuickFilter] = useState("")
 
-  const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>(() => {
-    const initial: Record<string, boolean> = {};
+  const [columnVisibility, setColumnVisibility] = useState<
+    Record<string, boolean>
+  >(() => {
+    const initial: Record<string, boolean> = {}
     columns.forEach((column, index) => {
-      initial[resolveColumnId(column, index)] = column.hide !== true;
-    });
-    return initial;
-  });
+      initial[resolveColumnId(column, index)] = column.hide !== true
+    })
+    return initial
+  })
 
   const defaultColDef = useMemo<ColDef<TRow>>(
     () => ({
@@ -129,42 +134,43 @@ export function SmartGrid<TRow>({
       flex: 1,
       minWidth: 120,
     }),
-    [],
-  );
+    []
+  )
 
   const rowSelection = useMemo<RowSelectionOptions | undefined>(() => {
-    if (selection === "multiple") return { mode: "multiRow" };
-    if (selection === "single") return { mode: "singleRow" };
-    return undefined;
-  }, [selection]);
+    if (selection === "multiple") return { mode: "multiRow" }
+    if (selection === "single") return { mode: "singleRow" }
+    return undefined
+  }, [selection])
 
   const toggleableColumns = useMemo(
     () =>
       columns.map((column, index) => {
-        const id = resolveColumnId(column, index);
-        return { id, label: resolveColumnLabel(column, id) };
+        const id = resolveColumnId(column, index)
+        return { id, label: resolveColumnLabel(column, id) }
       }),
-    [columns],
-  );
+    [columns]
+  )
 
   const handleGridReady = (event: GridReadyEvent<TRow>): void => {
-    setGridApi(event.api);
-  };
+    setGridApi(event.api)
+  }
 
   const handleSelectionChanged = (event: SelectionChangedEvent<TRow>): void => {
-    onSelectionChange?.(event.api.getSelectedRows());
-  };
+    onSelectionChange?.(event.api.getSelectedRows())
+  }
 
   const handleToggleColumn = (id: string, visible: boolean): void => {
-    setColumnVisibility((prev) => ({ ...prev, [id]: visible }));
-    gridApi?.setColumnsVisible([id], visible);
-  };
+    setColumnVisibility((prev) => ({ ...prev, [id]: visible }))
+    gridApi?.setColumnsVisible([id], visible)
+  }
 
   const handleExport = (): void => {
-    gridApi?.exportDataAsCsv({ fileName: `${exportFileName}.csv` });
-  };
+    gridApi?.exportDataAsCsv({ fileName: `${exportFileName}.csv` })
+  }
 
-  const showToolbar = title || quickSearch || columnSelector || exportCsv || toolbarActions;
+  const showToolbar =
+    title || quickSearch || columnSelector || exportCsv || toolbarActions
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
@@ -189,7 +195,9 @@ export function SmartGrid<TRow>({
             {toolbarActions}
             {columnSelector ? (
               <DropdownMenu>
-                <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
+                <DropdownMenuTrigger
+                  render={<Button variant="outline" size="sm" />}
+                >
                   <Columns3 className="h-4 w-4" />
                   Columns
                 </DropdownMenuTrigger>

@@ -36,7 +36,10 @@ export function SmartSearchInput({
       />
       {value ? (
         <InputGroupAddon align="inline-end">
-          <InputGroupButton onClick={() => onValueChange("")} aria-label="Clear search">
+          <InputGroupButton
+            onClick={() => onValueChange("")}
+            aria-label="Clear search"
+          >
             <X />
           </InputGroupButton>
         </InputGroupAddon>

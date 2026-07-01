@@ -69,7 +69,7 @@ workspaces.
 Two public components backed by AG Grid Community:
 
 | Component         | Row model              | Use case                                               |
-|-------------------|------------------------|--------------------------------------------------------|
+| ----------------- | ---------------------- | ------------------------------------------------------ |
 | `SmartGrid`       | Client-side            | All rows in memory; built-in quick search + CSV export |
 | `SmartServerGrid` | Infinite (server-side) | Large datasets; `fetchRows` callback does the fetching |
 

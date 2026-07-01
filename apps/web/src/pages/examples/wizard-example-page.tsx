@@ -57,18 +57,29 @@ function StepIndicator({
               className={cn(
                 "flex size-5 items-center justify-center rounded-full text-[10px] font-semibold transition-colors",
                 done && "bg-primary text-primary-foreground",
-                active && "ring-2 ring-primary bg-background text-primary",
-                !done && !active && "bg-muted text-muted-foreground",
+                active && "bg-background text-primary ring-2 ring-primary",
+                !done && !active && "bg-muted text-muted-foreground"
               )}
               aria-current={active ? "step" : undefined}
             >
               {done ? <Check className="size-3" /> : idx + 1}
             </div>
-            <span className={cn("text-xs hidden sm:block", active && "font-medium", !active && "text-muted-foreground")}>
+            <span
+              className={cn(
+                "hidden text-xs sm:block",
+                active && "font-medium",
+                !active && "text-muted-foreground"
+              )}
+            >
               {step.label}
             </span>
             {idx < steps.length - 1 && (
-              <div className={cn("mx-1 h-px w-8 transition-colors", idx < current ? "bg-primary" : "bg-border")} />
+              <div
+                className={cn(
+                  "mx-1 h-px w-8 transition-colors",
+                  idx < current ? "bg-primary" : "bg-border"
+                )}
+              />
             )}
           </div>
         )
@@ -89,20 +100,30 @@ function WorkspaceStep() {
       >
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ws-name" className="text-xs">Workspace name</Label>
+            <Label htmlFor="ws-name" className="text-xs">
+              Workspace name
+            </Label>
             <Input id="ws-name" placeholder="Acme Corp" />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ws-slug" className="text-xs">URL slug</Label>
+            <Label htmlFor="ws-slug" className="text-xs">
+              URL slug
+            </Label>
             <div className="flex">
               <span className="inline-flex items-center rounded-l-md border border-r-0 bg-muted px-3 text-xs text-muted-foreground">
                 app.example.com/
               </span>
-              <Input id="ws-slug" placeholder="acme" className="rounded-l-none" />
+              <Input
+                id="ws-slug"
+                placeholder="acme"
+                className="rounded-l-none"
+              />
             </div>
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ws-industry" className="text-xs">Industry</Label>
+            <Label htmlFor="ws-industry" className="text-xs">
+              Industry
+            </Label>
             <Input id="ws-industry" placeholder="Software / SaaS" />
           </div>
         </div>
@@ -143,26 +164,54 @@ function PlanStep() {
   return (
     <SmartPageContent maxWidth="lg" centered padding="md">
       <SmartPageSection title="Choose a plan" divider>
-        <div className="flex items-center gap-2 mb-4">
+        <div className="mb-4 flex items-center gap-2">
           <span className="text-xs">Monthly</span>
           <Switch checked={annual} onCheckedChange={setAnnual} />
-          <span className="text-xs">Annual <Badge20 /></span>
+          <span className="text-xs">
+            Annual <Badge20 />
+          </span>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
           {[
-            { name: "Starter", price: annual ? 0 : 0, desc: "Perfect for small teams", features: ["5 members", "10GB storage", "Basic analytics"] },
-            { name: "Pro", price: annual ? 15 : 19, desc: "For growing teams", features: ["Unlimited members", "100GB storage", "Advanced analytics", "SSO"], popular: true },
-            { name: "Enterprise", price: null, desc: "Custom pricing for large orgs", features: ["Everything in Pro", "SLA", "Dedicated support", "Custom contracts"] },
+            {
+              name: "Starter",
+              price: annual ? 0 : 0,
+              desc: "Perfect for small teams",
+              features: ["5 members", "10GB storage", "Basic analytics"],
+            },
+            {
+              name: "Pro",
+              price: annual ? 15 : 19,
+              desc: "For growing teams",
+              features: [
+                "Unlimited members",
+                "100GB storage",
+                "Advanced analytics",
+                "SSO",
+              ],
+              popular: true,
+            },
+            {
+              name: "Enterprise",
+              price: null,
+              desc: "Custom pricing for large orgs",
+              features: [
+                "Everything in Pro",
+                "SLA",
+                "Dedicated support",
+                "Custom contracts",
+              ],
+            },
           ].map((plan) => (
             <div
               key={plan.name}
               className={cn(
                 "flex flex-col gap-3 rounded-lg border p-4",
-                plan.popular && "border-primary ring-2 ring-primary/20",
+                plan.popular && "border-primary ring-2 ring-primary/20"
               )}
             >
               {plan.popular && (
-                <span className="text-[10px] font-semibold text-primary uppercase tracking-wide">
+                <span className="text-[10px] font-semibold tracking-wide text-primary uppercase">
                   Most popular
                 </span>
               )}
@@ -171,11 +220,18 @@ function PlanStep() {
                 <p className="text-xs text-muted-foreground">{plan.desc}</p>
               </div>
               <div className="text-2xl font-bold">
-                {plan.price === null ? "Custom" : plan.price === 0 ? "Free" : `$${plan.price}/mo`}
+                {plan.price === null
+                  ? "Custom"
+                  : plan.price === 0
+                    ? "Free"
+                    : `$${plan.price}/mo`}
               </div>
               <ul className="flex flex-col gap-1">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <li
+                    key={f}
+                    className="flex items-center gap-1.5 text-xs text-muted-foreground"
+                  >
                     <Check className="size-3 text-green-600" />
                     {f}
                   </li>
@@ -207,7 +263,11 @@ function Badge20() {
 function ReviewStep() {
   return (
     <SmartPageContent maxWidth="md" centered padding="md">
-      <SmartPageSection title="Review & launch" description="Everything looks good. Click Launch to create your workspace." divider>
+      <SmartPageSection
+        title="Review & launch"
+        description="Everything looks good. Click Launch to create your workspace."
+        divider
+      >
         <div className="flex flex-col gap-3 rounded-lg bg-muted/40 p-4">
           {[
             { label: "Workspace", value: "Acme Corp" },

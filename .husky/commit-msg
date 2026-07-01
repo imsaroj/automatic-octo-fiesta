@@ -1,0 +1,2 @@
+# Enforce Conventional Commits on the commit message.
+pnpm exec commitlint --edit "$1"

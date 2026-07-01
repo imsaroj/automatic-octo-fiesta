@@ -40,27 +40,31 @@ export interface SmartPageFiltersProps extends React.HTMLAttributes<HTMLDivEleme
  * </SmartPageFilters>
  * ```
  */
-export const SmartPageFilters = React.forwardRef<HTMLDivElement, SmartPageFiltersProps>(
-  function SmartPageFilters({ label, border = true, className, children, ...props }, ref) {
-    return (
-      <div
-        ref={ref}
-        data-slot="page-filters"
-        className={cn(
-          "shrink-0 flex flex-wrap items-center gap-2 px-4 py-2",
-          border && "border-b",
-          className,
-        )}
-        {...props}
-      >
-        {label && (
-          <span className="text-xs font-medium text-muted-foreground shrink-0">
-            {label}
-          </span>
-        )}
-        {children}
-      </div>
-    )
-  },
-)
+export const SmartPageFilters = React.forwardRef<
+  HTMLDivElement,
+  SmartPageFiltersProps
+>(function SmartPageFilters(
+  { label, border = true, className, children, ...props },
+  ref
+) {
+  return (
+    <div
+      ref={ref}
+      data-slot="page-filters"
+      className={cn(
+        "flex shrink-0 flex-wrap items-center gap-2 px-4 py-2",
+        border && "border-b",
+        className
+      )}
+      {...props}
+    >
+      {label && (
+        <span className="shrink-0 text-xs font-medium text-muted-foreground">
+          {label}
+        </span>
+      )}
+      {children}
+    </div>
+  )
+})
 ;(SmartPageFilters as any)[SMART_PAGE_SLOT] = "filters"

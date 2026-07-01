@@ -85,7 +85,7 @@ export const SmartSidebar = React.forwardRef<HTMLElement, SmartSidebarProps>(
       children,
       ...props
     },
-    ref,
+    ref
   ) {
     const { scroll } = usePageContext()
     const isContained = scroll === "content" || scroll === "grid"
@@ -95,27 +95,27 @@ export const SmartSidebar = React.forwardRef<HTMLElement, SmartSidebarProps>(
         ref={ref}
         data-slot="sidebar"
         className={cn(
-          "shrink-0 flex flex-col",
+          "flex shrink-0 flex-col",
           WIDTH_CLASSES[width],
           isContained && "overflow-y-auto",
           position === "right" && border && "border-l",
           position === "left" && border && "border-r",
-          className,
+          className
         )}
         {...props}
       >
         {title && (
           <div className="shrink-0 border-b px-4 py-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
               {title}
             </h3>
           </div>
         )}
-        <div className={cn("flex flex-col flex-1", padding && "p-4")}>
+        <div className={cn("flex flex-1 flex-col", padding && "p-4")}>
           {children}
         </div>
       </aside>
     )
-  },
+  }
 )
 ;(SmartSidebar as any)[SMART_PAGE_SLOT] = "sidebar"

@@ -25,7 +25,8 @@ function useBreadcrumb() {
   const format = (s: string) =>
     s.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
 
-  if (segments.length === 1) return { parent: null, current: format(segments[0]) }
+  if (segments.length === 1)
+    return { parent: null, current: format(segments[0]) }
 
   return { parent: format(segments[0]), current: format(segments[1]) }
 }

@@ -49,26 +49,62 @@ interface SlotBuckets {
 
 function collectSlots(children: React.ReactNode): SlotBuckets {
   const b: SlotBuckets = {
-    header: [], hero: [], toolbar: [], search: [], filters: [],
-    tabs: [], content: [], sidebar: [], gridArea: [],
-    statusBar: [], footer: [], body: [],
+    header: [],
+    hero: [],
+    toolbar: [],
+    search: [],
+    filters: [],
+    tabs: [],
+    content: [],
+    sidebar: [],
+    gridArea: [],
+    statusBar: [],
+    footer: [],
+    body: [],
   }
   React.Children.forEach(children, (child) => {
-    if (!React.isValidElement(child)) { b.body.push(child); return }
+    if (!React.isValidElement(child)) {
+      b.body.push(child)
+      return
+    }
     const slot = (child.type as any)[SMART_PAGE_SLOT] as PageSlot | undefined
     switch (slot) {
-      case "header":     b.header.push(child);    break
-      case "hero":       b.hero.push(child);      break
-      case "toolbar":    b.toolbar.push(child);   break
-      case "search":     b.search.push(child);    break
-      case "filters":    b.filters.push(child);   break
-      case "tabs":       b.tabs.push(child);      break
-      case "content":    b.content.push(child);   break
-      case "sidebar":    b.sidebar.push(child);   break
-      case "grid-area":  b.gridArea.push(child);  break
-      case "status-bar": b.statusBar.push(child); break
-      case "footer":     b.footer.push(child);    break
-      default:           b.body.push(child);      break
+      case "header":
+        b.header.push(child)
+        break
+      case "hero":
+        b.hero.push(child)
+        break
+      case "toolbar":
+        b.toolbar.push(child)
+        break
+      case "search":
+        b.search.push(child)
+        break
+      case "filters":
+        b.filters.push(child)
+        break
+      case "tabs":
+        b.tabs.push(child)
+        break
+      case "content":
+        b.content.push(child)
+        break
+      case "sidebar":
+        b.sidebar.push(child)
+        break
+      case "grid-area":
+        b.gridArea.push(child)
+        break
+      case "status-bar":
+        b.statusBar.push(child)
+        break
+      case "footer":
+        b.footer.push(child)
+        break
+      default:
+        b.body.push(child)
+        break
     }
   })
   return b
@@ -83,50 +119,81 @@ function detectLayout(b: SlotBuckets): PageLayout {
 
 // ─── Layout Defaults ───────────────────────────────────────────────────────────
 
-type LayoutDefaults = Omit<PageContextValue, "layout" | "fullWidth" | "bordered">
+type LayoutDefaults = Omit<
+  PageContextValue,
+  "layout" | "fullWidth" | "bordered"
+>
 
 const LAYOUT_DEFAULTS: Record<PageLayout, LayoutDefaults> = {
   document: {
     scroll: "page",
     padding: "md",
-    stickyHeader: false, stickyToolbar: false, stickySearch: false,
-    stickyFilters: false, stickyStatusBar: false, stickyFooter: false,
+    stickyHeader: false,
+    stickyToolbar: false,
+    stickySearch: false,
+    stickyFilters: false,
+    stickyStatusBar: false,
+    stickyFooter: false,
   },
   grid: {
     scroll: "grid",
     padding: "none",
-    stickyHeader: true, stickyToolbar: true, stickySearch: true,
-    stickyFilters: true, stickyStatusBar: true, stickyFooter: true,
+    stickyHeader: true,
+    stickyToolbar: true,
+    stickySearch: true,
+    stickyFilters: true,
+    stickyStatusBar: true,
+    stickyFooter: true,
   },
   dashboard: {
     scroll: "page",
     padding: "md",
-    stickyHeader: false, stickyToolbar: false, stickySearch: false,
-    stickyFilters: false, stickyStatusBar: false, stickyFooter: false,
+    stickyHeader: false,
+    stickyToolbar: false,
+    stickySearch: false,
+    stickyFilters: false,
+    stickyStatusBar: false,
+    stickyFooter: false,
   },
   split: {
     scroll: "content",
     padding: "none",
-    stickyHeader: true, stickyToolbar: false, stickySearch: false,
-    stickyFilters: false, stickyStatusBar: false, stickyFooter: false,
+    stickyHeader: true,
+    stickyToolbar: false,
+    stickySearch: false,
+    stickyFilters: false,
+    stickyStatusBar: false,
+    stickyFooter: false,
   },
   fullscreen: {
     scroll: "none",
     padding: "none",
-    stickyHeader: false, stickyToolbar: false, stickySearch: false,
-    stickyFilters: false, stickyStatusBar: false, stickyFooter: false,
+    stickyHeader: false,
+    stickyToolbar: false,
+    stickySearch: false,
+    stickyFilters: false,
+    stickyStatusBar: false,
+    stickyFooter: false,
   },
   wizard: {
     scroll: "content",
     padding: "md",
-    stickyHeader: true, stickyToolbar: false, stickySearch: false,
-    stickyFilters: false, stickyStatusBar: false, stickyFooter: true,
+    stickyHeader: true,
+    stickyToolbar: false,
+    stickySearch: false,
+    stickyFilters: false,
+    stickyStatusBar: false,
+    stickyFooter: true,
   },
   detail: {
     scroll: "content",
     padding: "md",
-    stickyHeader: true, stickyToolbar: false, stickySearch: false,
-    stickyFilters: false, stickyStatusBar: false, stickyFooter: false,
+    stickyHeader: true,
+    stickyToolbar: false,
+    stickySearch: false,
+    stickyFilters: false,
+    stickyStatusBar: false,
+    stickyFooter: false,
   },
 }
 
@@ -280,27 +347,36 @@ export function SmartPage({
   const stickyFooter = stickyFooterProp ?? defaults.stickyFooter
 
   const padding: PaddingSize =
-    paddingProp === true ? "md"
-    : paddingProp === false ? "none"
-    : paddingProp ?? defaults.padding
+    paddingProp === true
+      ? "md"
+      : paddingProp === false
+        ? "none"
+        : (paddingProp ?? defaults.padding)
 
   const isContained = scroll === "content" || scroll === "grid"
   const fullHeight = fullHeightProp ?? isContained
 
   const ctx: PageContextValue = {
-    layout, scroll, padding,
-    stickyHeader, stickyToolbar, stickySearch,
-    stickyFilters, stickyStatusBar, stickyFooter,
-    fullWidth, bordered,
+    layout,
+    scroll,
+    padding,
+    stickyHeader,
+    stickyToolbar,
+    stickySearch,
+    stickyFilters,
+    stickyStatusBar,
+    stickyFooter,
+    fullWidth,
+    bordered,
   }
 
   const pageClasses = cn(
     "flex flex-col",
     isContained && "overflow-hidden",
-    fullHeight && "flex-1 min-h-0",
+    fullHeight && "min-h-0 flex-1",
     !isContained && "min-h-full",
-    bordered && "border rounded-lg",
-    className,
+    bordered && "rounded-lg border",
+    className
   )
 
   let content: React.ReactNode
@@ -330,7 +406,7 @@ export function SmartPage({
 function renderStandardLayout(
   b: SlotBuckets,
   scroll: ScrollMode,
-  ctx: PageContextValue,
+  ctx: PageContextValue
 ): React.ReactNode {
   const isPageScroll = scroll === "page"
 
@@ -342,7 +418,7 @@ function renderStandardLayout(
   const pushTop = (
     items: React.ReactNode[],
     flag: boolean,
-    sticky: boolean,
+    sticky: boolean
   ) => {
     if (!items.length) return
     if (isPageScroll && sticky) {
@@ -352,11 +428,11 @@ function renderStandardLayout(
     }
   }
 
-  pushTop(b.header,  ctx.stickyHeader,  ctx.stickyHeader)
+  pushTop(b.header, ctx.stickyHeader, ctx.stickyHeader)
   // hero is never sticky — always scrolls away
   if (b.hero.length) flowTopItems.push(...b.hero)
   pushTop(b.toolbar, ctx.stickyToolbar, ctx.stickyToolbar)
-  pushTop(b.search,  ctx.stickySearch,  ctx.stickySearch)
+  pushTop(b.search, ctx.stickySearch, ctx.stickySearch)
   pushTop(b.filters, ctx.stickyFilters, ctx.stickyFilters)
   if (b.tabs.length) flowTopItems.push(...b.tabs)
 
@@ -364,7 +440,8 @@ function renderStandardLayout(
   const flowBottomItems: React.ReactNode[] = []
 
   if (b.statusBar.length) {
-    if (isPageScroll && ctx.stickyStatusBar) stickyBottomItems.push(...b.statusBar)
+    if (isPageScroll && ctx.stickyStatusBar)
+      stickyBottomItems.push(...b.statusBar)
     else flowBottomItems.push(...b.statusBar)
   }
   if (b.footer.length) {
@@ -373,22 +450,22 @@ function renderStandardLayout(
   }
 
   const mainContent =
-    b.gridArea.length > 0 ? b.gridArea
-    : b.content.length > 0 ? b.content
-    : b.body
+    b.gridArea.length > 0
+      ? b.gridArea
+      : b.content.length > 0
+        ? b.content
+        : b.body
 
   const mainClasses = cn(
     "flex-1",
     scroll === "content" && "min-h-0 overflow-y-auto",
-    scroll === "grid" && "min-h-0 flex flex-col",
+    scroll === "grid" && "flex min-h-0 flex-col"
   )
 
   return (
     <>
       {stickyTopItems.length > 0 && (
-        <div className="sticky top-0 z-10 bg-background">
-          {stickyTopItems}
-        </div>
+        <div className="sticky top-0 z-10 bg-background">{stickyTopItems}</div>
       )}
       {flowTopItems}
       <div className={mainClasses}>{mainContent}</div>
@@ -405,22 +482,24 @@ function renderStandardLayout(
 function renderSplitLayout(
   b: SlotBuckets,
   scroll: ScrollMode,
-  ctx: PageContextValue,
+  ctx: PageContextValue
 ): React.ReactNode {
   const mainContent = b.content.length > 0 ? b.content : b.body
   const mainClasses = cn(
-    "flex-1 min-w-0",
-    scroll === "content" && "min-h-0 overflow-y-auto",
+    "min-w-0 flex-1",
+    scroll === "content" && "min-h-0 overflow-y-auto"
   )
 
   return (
     <>
       {b.header.length > 0 && (
-        <div className={cn(ctx.stickyHeader && scroll !== "page" && "shrink-0")}>
+        <div
+          className={cn(ctx.stickyHeader && scroll !== "page" && "shrink-0")}
+        >
           {b.header}
         </div>
       )}
-      <div className="flex flex-1 min-h-0 overflow-hidden">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         <div className={mainClasses}>
           {b.toolbar}
           {b.search}
@@ -429,9 +508,7 @@ function renderSplitLayout(
           {mainContent}
         </div>
         {b.sidebar.length > 0 && (
-          <div className="shrink-0 overflow-y-auto border-l">
-            {b.sidebar}
-          </div>
+          <div className="shrink-0 overflow-y-auto border-l">{b.sidebar}</div>
         )}
       </div>
       {b.statusBar}
@@ -462,12 +539,16 @@ function PageLoadingState({ label = "Loading…" }: { label?: string }) {
 
 function PageErrorState({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-1 items-center justify-center p-8">{children}</div>
+    <div className="flex flex-1 items-center justify-center p-8">
+      {children}
+    </div>
   )
 }
 
 function PageEmptyState({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-1 items-center justify-center p-8">{children}</div>
+    <div className="flex flex-1 items-center justify-center p-8">
+      {children}
+    </div>
   )
 }

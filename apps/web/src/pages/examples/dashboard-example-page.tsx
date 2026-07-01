@@ -10,7 +10,13 @@
  * Auto-detected as "dashboard" because SmartPageHero is a direct child.
  */
 
-import { ArrowUpRight, DollarSign, ShoppingCart, TrendingUp, Users } from "lucide-react"
+import {
+  ArrowUpRight,
+  DollarSign,
+  ShoppingCart,
+  TrendingUp,
+  Users,
+} from "lucide-react"
 import {
   SmartPage,
   SmartPageHeader,
@@ -21,7 +27,13 @@ import {
   SmartPageSection,
 } from "@workspace/ui/smart-components/page"
 import { Button } from "@workspace/ui/components/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card"
 
 // ─── Metric card ─────────────────────────────────────────────────────────────
 
@@ -33,7 +45,13 @@ interface MetricCardProps {
   icon: React.ReactNode
 }
 
-function MetricCard({ label, value, delta, positive = true, icon }: MetricCardProps) {
+function MetricCard({
+  label,
+  value,
+  delta,
+  positive = true,
+  icon,
+}: MetricCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -42,7 +60,9 @@ function MetricCard({ label, value, delta, positive = true, icon }: MetricCardPr
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
-        <p className={`text-xs mt-1 ${positive ? "text-green-600" : "text-red-600"}`}>
+        <p
+          className={`mt-1 text-xs ${positive ? "text-green-600" : "text-red-600"}`}
+        >
           {delta} from last month
         </p>
       </CardContent>
@@ -73,18 +93,26 @@ function SparklinePlaceholder({ label }: { label: string }) {
 
 // ─── Activity item ────────────────────────────────────────────────────────────
 
-function ActivityItem({ name, action, time }: { name: string; action: string; time: string }) {
+function ActivityItem({
+  name,
+  action,
+  time,
+}: {
+  name: string
+  action: string
+  time: string
+}) {
   return (
     <div className="flex items-center gap-3 py-2">
       <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold">
         {name[0]}
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium truncate">
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-xs font-medium">
           <span className="font-semibold">{name}</span> {action}
         </p>
       </div>
-      <time className="text-xs text-muted-foreground shrink-0">{time}</time>
+      <time className="shrink-0 text-xs text-muted-foreground">{time}</time>
     </div>
   )
 }
@@ -118,15 +146,38 @@ export default function DashboardExamplePage() {
         {/* ── Metrics row ──────────────────────────────────────────────────── */}
         <SmartPageSection padding={false}>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <MetricCard label="Total Revenue" value="$48,295" delta="+12.5%" icon={<DollarSign className="size-4" />} />
-            <MetricCard label="Active Users" value="3,842" delta="+8.2%" icon={<Users className="size-4" />} />
-            <MetricCard label="Orders" value="1,204" delta="+3.1%" icon={<ShoppingCart className="size-4" />} />
-            <MetricCard label="Growth Rate" value="18.4%" delta="+2.3 pp" icon={<TrendingUp className="size-4" />} />
+            <MetricCard
+              label="Total Revenue"
+              value="$48,295"
+              delta="+12.5%"
+              icon={<DollarSign className="size-4" />}
+            />
+            <MetricCard
+              label="Active Users"
+              value="3,842"
+              delta="+8.2%"
+              icon={<Users className="size-4" />}
+            />
+            <MetricCard
+              label="Orders"
+              value="1,204"
+              delta="+3.1%"
+              icon={<ShoppingCart className="size-4" />}
+            />
+            <MetricCard
+              label="Growth Rate"
+              value="18.4%"
+              delta="+2.3 pp"
+              icon={<TrendingUp className="size-4" />}
+            />
           </div>
         </SmartPageSection>
 
         {/* ── Charts ───────────────────────────────────────────────────────── */}
-        <SmartPageSection title="Trends" description="Revenue and user activity over the past 12 months.">
+        <SmartPageSection
+          title="Trends"
+          description="Revenue and user activity over the past 12 months."
+        >
           <div className="grid gap-4 md:grid-cols-2">
             <SparklinePlaceholder label="Revenue" />
             <SparklinePlaceholder label="Active users" />
@@ -137,10 +188,26 @@ export default function DashboardExamplePage() {
         <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
           <SmartPageSection title="Recent activity" bordered>
             {[
-              { name: "Alice", action: "invited 3 new members", time: "2m ago" },
-              { name: "Bob", action: "exported the Q3 report", time: "14m ago" },
-              { name: "Carol", action: "updated billing plan to Pro", time: "1h ago" },
-              { name: "Dave", action: "created workspace Alpha", time: "3h ago" },
+              {
+                name: "Alice",
+                action: "invited 3 new members",
+                time: "2m ago",
+              },
+              {
+                name: "Bob",
+                action: "exported the Q3 report",
+                time: "14m ago",
+              },
+              {
+                name: "Carol",
+                action: "updated billing plan to Pro",
+                time: "1h ago",
+              },
+              {
+                name: "Dave",
+                action: "created workspace Alpha",
+                time: "3h ago",
+              },
               { name: "Eve", action: "resolved 12 issues", time: "5h ago" },
             ].map((a) => (
               <ActivityItem key={a.name} {...a} />
@@ -159,9 +226,14 @@ export default function DashboardExamplePage() {
                 <span className="flex-1 text-xs">{label}</span>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-24 overflow-hidden rounded-full bg-muted">
-                    <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+                    <div
+                      className="h-full rounded-full bg-primary"
+                      style={{ width: `${pct}%` }}
+                    />
                   </div>
-                  <span className="w-8 text-right text-xs text-muted-foreground">{pct}%</span>
+                  <span className="w-8 text-right text-xs text-muted-foreground">
+                    {pct}%
+                  </span>
                 </div>
               </div>
             ))}

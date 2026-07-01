@@ -2,7 +2,12 @@
 
 import * as React from "react"
 import { cn } from "@workspace/ui/lib/utils"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@workspace/ui/components/tabs"
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@workspace/ui/components/tabs"
 import { SMART_PAGE_SLOT } from "./smart-page"
 
 // ─── SmartPageTabs ─────────────────────────────────────────────────────────────
@@ -91,7 +96,7 @@ export function SmartPageTabs({
       defaultValue={defaultValue}
       value={value}
       onValueChange={onValueChange}
-      className={cn("shrink-0 flex flex-col", className)}
+      className={cn("flex shrink-0 flex-col", className)}
     >
       <div className={cn("px-4", border && "border-b")}>
         <TabsList
@@ -124,13 +129,17 @@ export interface SmartPageTabProps {
  * <SmartPageTab value="overview">Overview</SmartPageTab>
  * ```
  */
-export function SmartPageTab({ value, className, children }: SmartPageTabProps) {
+export function SmartPageTab({
+  value,
+  className,
+  children,
+}: SmartPageTabProps) {
   return (
     <TabsTrigger
       value={value}
       className={cn(
         "h-9 rounded-none border-0 px-4 text-xs font-medium",
-        className,
+        className
       )}
     >
       {children}
@@ -159,7 +168,11 @@ export interface SmartPageTabPanelProps {
  * </SmartPageTabPanel>
  * ```
  */
-export function SmartPageTabPanel({ value, className, children }: SmartPageTabPanelProps) {
+export function SmartPageTabPanel({
+  value,
+  className,
+  children,
+}: SmartPageTabPanelProps) {
   return (
     <TabsContent value={value} className={cn("flex-1 outline-none", className)}>
       {children}

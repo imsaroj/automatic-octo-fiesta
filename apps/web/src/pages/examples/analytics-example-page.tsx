@@ -27,7 +27,12 @@ import {
 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Badge } from "@workspace/ui/components/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card"
 import {
   SmartPage,
   SmartPageHeader,
@@ -62,9 +67,16 @@ function KpiCard({ label, value, delta, icon }: KpiCardProps) {
       </CardHeader>
       <CardContent className="pt-0">
         <p className="text-2xl font-bold tracking-tight">{value}</p>
-        <div className={`flex items-center gap-1 mt-1 text-xs ${positive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-          {positive ? <ArrowUpRight className="size-3.5" /> : <ArrowDownRight className="size-3.5" />}
-          {positive ? "+" : ""}{delta}% vs last period
+        <div
+          className={`mt-1 flex items-center gap-1 text-xs ${positive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
+        >
+          {positive ? (
+            <ArrowUpRight className="size-3.5" />
+          ) : (
+            <ArrowDownRight className="size-3.5" />
+          )}
+          {positive ? "+" : ""}
+          {delta}% vs last period
         </div>
       </CardContent>
     </Card>
@@ -90,7 +102,7 @@ function BarChartPlaceholder({
         {data.map((v, i) => (
           <div
             key={i}
-            className="flex-1 rounded-t-sm bg-primary/20 hover:bg-primary/40 transition-colors"
+            className="flex-1 rounded-t-sm bg-primary/20 transition-colors hover:bg-primary/40"
             style={{ height: `${(v / max) * 100}%` }}
             title={String(v)}
           />
@@ -119,12 +131,15 @@ function FunnelStep({
         <span>{label}</span>
         <span className="font-semibold">{value}</span>
       </div>
-      <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
-        <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+      <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-primary"
+          style={{ width: `${pct}%` }}
+        />
       </div>
       {drop !== undefined && (
         <p className="text-[10px] text-red-500 dark:text-red-400">
-          <TrendingDown className="size-2.5 inline mr-0.5" />
+          <TrendingDown className="mr-0.5 inline size-2.5" />
           {drop}% drop-off
         </p>
       )}
@@ -134,16 +149,29 @@ function FunnelStep({
 
 // ─── Geo row ──────────────────────────────────────────────────────────────────
 
-function GeoRow({ country, sessions, pct }: { country: string; sessions: string; pct: number }) {
+function GeoRow({
+  country,
+  sessions,
+  pct,
+}: {
+  country: string
+  sessions: string
+  pct: number
+}) {
   return (
     <div className="flex items-center gap-3 py-1.5">
-      <Globe className="size-3.5 text-muted-foreground shrink-0" />
+      <Globe className="size-3.5 shrink-0 text-muted-foreground" />
       <span className="flex-1 text-xs">{country}</span>
       <div className="flex items-center gap-2">
-        <div className="h-1 w-20 rounded-full bg-muted overflow-hidden">
-          <div className="h-full rounded-full bg-primary/60" style={{ width: `${pct}%` }} />
+        <div className="h-1 w-20 overflow-hidden rounded-full bg-muted">
+          <div
+            className="h-full rounded-full bg-primary/60"
+            style={{ width: `${pct}%` }}
+          />
         </div>
-        <span className="w-12 text-right text-xs text-muted-foreground">{sessions}</span>
+        <span className="w-12 text-right text-xs text-muted-foreground">
+          {sessions}
+        </span>
       </div>
     </div>
   )
@@ -157,8 +185,18 @@ function OverviewTab() {
       {/* KPIs */}
       <SmartPageSection padding={false}>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <KpiCard label="Sessions" value="248,392" delta={12.4} icon={<BarChart3 className="size-4" />} />
-          <KpiCard label="Unique visitors" value="184,271" delta={8.7} icon={<TrendingUp className="size-4" />} />
+          <KpiCard
+            label="Sessions"
+            value="248,392"
+            delta={12.4}
+            icon={<BarChart3 className="size-4" />}
+          />
+          <KpiCard
+            label="Unique visitors"
+            value="184,271"
+            delta={8.7}
+            icon={<TrendingUp className="size-4" />}
+          />
           <KpiCard label="Bounce rate" value="38.2%" delta={-3.1} />
           <KpiCard label="Avg. session" value="4m 12s" delta={5.8} />
         </div>
@@ -168,11 +206,17 @@ function OverviewTab() {
       <SmartPageSection title="Sessions over time" bordered>
         <BarChartPlaceholder
           height={160}
-          data={[12, 19, 15, 28, 22, 34, 29, 38, 33, 41, 36, 48, 42, 55, 50, 62, 57, 65, 58, 72, 66, 78, 70, 84, 76, 88, 80, 94, 87, 96]}
+          data={[
+            12, 19, 15, 28, 22, 34, 29, 38, 33, 41, 36, 48, 42, 55, 50, 62, 57,
+            65, 58, 72, 66, 78, 70, 84, 76, 88, 80, 94, 87, 96,
+          ]}
         />
-        <div className="flex items-center justify-between text-[10px] text-muted-foreground px-0.5">
-          <span>Jun 1</span><span>Jun 8</span><span>Jun 15</span>
-          <span>Jun 22</span><span>Jul 1</span>
+        <div className="flex items-center justify-between px-0.5 text-[10px] text-muted-foreground">
+          <span>Jun 1</span>
+          <span>Jun 8</span>
+          <span>Jun 15</span>
+          <span>Jun 22</span>
+          <span>Jul 1</span>
         </div>
       </SmartPageSection>
 
@@ -186,7 +230,12 @@ function OverviewTab() {
             { label: "Social", pct: 9, value: "22,355" },
             { label: "Email", pct: 5, value: "12,420" },
           ].map((r) => (
-            <GeoRow key={r.label} country={r.label} sessions={r.value} pct={r.pct} />
+            <GeoRow
+              key={r.label}
+              country={r.label}
+              sessions={r.value}
+              pct={r.pct}
+            />
           ))}
         </SmartPageSection>
 
@@ -200,10 +249,15 @@ function OverviewTab() {
               <Icon className="size-3.5 text-muted-foreground" />
               <span className="flex-1 text-xs">{label}</span>
               <div className="flex items-center gap-2">
-                <div className="h-1 w-20 rounded-full bg-muted overflow-hidden">
-                  <div className="h-full rounded-full bg-primary/60" style={{ width: `${pct}%` }} />
+                <div className="h-1 w-20 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-primary/60"
+                    style={{ width: `${pct}%` }}
+                  />
                 </div>
-                <span className="w-12 text-right text-xs text-muted-foreground">{value}</span>
+                <span className="w-12 text-right text-xs text-muted-foreground">
+                  {value}
+                </span>
               </div>
             </div>
           ))}
@@ -224,13 +278,33 @@ function FunnelTab() {
         bordered
       >
         <FunnelStep label="Visitors" value="248,392" pct={100} />
-        <FunnelStep label="Product page views" value="148,321" pct={59.7} drop={40.3} />
+        <FunnelStep
+          label="Product page views"
+          value="148,321"
+          pct={59.7}
+          drop={40.3}
+        />
         <FunnelStep label="Add to cart" value="72,840" pct={29.3} drop={30.9} />
-        <FunnelStep label="Checkout started" value="41,280" pct={16.6} drop={43.4} />
-        <FunnelStep label="Purchase completed" value="22,355" pct={9} drop={45.8} />
-        <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3 text-xs mt-2">
+        <FunnelStep
+          label="Checkout started"
+          value="41,280"
+          pct={16.6}
+          drop={43.4}
+        />
+        <FunnelStep
+          label="Purchase completed"
+          value="22,355"
+          pct={9}
+          drop={45.8}
+        />
+        <div className="mt-2 flex items-center justify-between rounded-lg bg-muted/50 p-3 text-xs">
           <span className="font-medium">Overall conversion rate</span>
-          <Badge variant="secondary" className="text-green-700 dark:text-green-400">9.0%</Badge>
+          <Badge
+            variant="secondary"
+            className="text-green-700 dark:text-green-400"
+          >
+            9.0%
+          </Badge>
         </div>
       </SmartPageSection>
     </SmartPageContent>
@@ -255,7 +329,12 @@ function GeoTab() {
           { country: "Brazil", sessions: "7,230", pct: 2.9 },
           { country: "Other", sessions: "5,778", pct: 2.3 },
         ].map((r) => (
-          <GeoRow key={r.country} country={r.country} sessions={r.sessions} pct={r.pct} />
+          <GeoRow
+            key={r.country}
+            country={r.country}
+            sessions={r.sessions}
+            pct={r.pct}
+          />
         ))}
       </SmartPageSection>
     </SmartPageContent>
@@ -287,7 +366,7 @@ export default function AnalyticsExamplePage() {
 
       {/* ── Period selector toolbar ─────────────────────────────────────────── */}
       <SmartToolbar>
-        <div className="flex items-center rounded-md border p-0.5 gap-0.5">
+        <div className="flex items-center gap-0.5 rounded-md border p-0.5">
           {["7d", "30d", "90d", "12m"].map((p) => (
             <Button
               key={p}
@@ -312,9 +391,15 @@ export default function AnalyticsExamplePage() {
         <SmartPageTab value="funnel">Funnel</SmartPageTab>
         <SmartPageTab value="geo">Geography</SmartPageTab>
 
-        <SmartPageTabPanel value="overview"><OverviewTab /></SmartPageTabPanel>
-        <SmartPageTabPanel value="funnel"><FunnelTab /></SmartPageTabPanel>
-        <SmartPageTabPanel value="geo"><GeoTab /></SmartPageTabPanel>
+        <SmartPageTabPanel value="overview">
+          <OverviewTab />
+        </SmartPageTabPanel>
+        <SmartPageTabPanel value="funnel">
+          <FunnelTab />
+        </SmartPageTabPanel>
+        <SmartPageTabPanel value="geo">
+          <GeoTab />
+        </SmartPageTabPanel>
       </SmartPageTabs>
     </SmartPage>
   )

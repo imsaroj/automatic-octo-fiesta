@@ -49,15 +49,15 @@ export const SmartToolbar = React.forwardRef<HTMLDivElement, SmartToolbarProps>(
         ref={ref}
         data-slot="toolbar"
         className={cn(
-          "shrink-0 flex items-center gap-2 px-4 py-2",
+          "flex shrink-0 items-center gap-2 px-4 py-2",
           border && "border-b",
-          className,
+          className
         )}
         {...props}
       >
         {children}
       </div>
     )
-  },
+  }
 )
 ;(SmartToolbar as any)[SMART_PAGE_SLOT] = "toolbar"

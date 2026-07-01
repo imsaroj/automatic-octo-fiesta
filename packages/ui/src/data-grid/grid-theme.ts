@@ -1,4 +1,4 @@
-import { themeQuartz, type Theme } from "ag-grid-community";
+import { themeQuartz, type Theme } from "ag-grid-community"
 
 /**
  * AG Grid theme derived from the design tokens. Colors reference the same CSS
@@ -20,4 +20,4 @@ export const dataGridTheme: Theme = themeQuartz.withParams({
   headerFontWeight: 600,
   borderRadius: "var(--radius)",
   wrapperBorderRadius: "var(--radius)",
-});
+})

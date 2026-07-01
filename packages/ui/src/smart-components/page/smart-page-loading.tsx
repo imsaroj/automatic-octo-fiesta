@@ -34,7 +34,10 @@ export interface SmartPageLoadingProps {
  * </SmartPageContent>
  * ```
  */
-export function SmartPageLoading({ label = "Loading…", className }: SmartPageLoadingProps) {
+export function SmartPageLoading({
+  label = "Loading…",
+  className,
+}: SmartPageLoadingProps) {
   return (
     <div
       role="status"
@@ -42,7 +45,7 @@ export function SmartPageLoading({ label = "Loading…", className }: SmartPageL
       aria-label={label}
       className={cn(
         "flex h-full min-h-[240px] flex-col items-center justify-center gap-3",
-        className,
+        className
       )}
     >
       <SmartSpinner size={28} className="text-primary" label={label} />

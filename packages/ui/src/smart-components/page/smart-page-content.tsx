@@ -79,41 +79,47 @@ export interface SmartPageContentProps extends React.HTMLAttributes<HTMLDivEleme
  * </SmartPage>
  * ```
  */
-export const SmartPageContent = React.forwardRef<HTMLDivElement, SmartPageContentProps>(
-  function SmartPageContent(
-    { padding: localPadding, maxWidth, centered = false, className, children, ...props },
-    ref,
-  ) {
-    const { scroll, padding: ctxPadding, fullWidth } = usePageContext()
-
-    const resolvedPadding: PaddingSize =
-      localPadding === true ? "md"
-      : localPadding === false ? "none"
-      : localPadding ?? ctxPadding
-
-    const isScrollContainer = scroll === "content"
-
-    const outerClasses = cn(
-      "flex-1",
-      isScrollContainer && "min-h-0 overflow-y-auto",
-      className,
-    )
-
-    const innerClasses = cn(
-      PADDING_CLASSES[resolvedPadding],
-      !fullWidth && maxWidth && MAX_WIDTH_CLASSES[maxWidth],
-      (centered || (!fullWidth && maxWidth)) && "mx-auto",
-    )
-
-    return (
-      <div ref={ref} data-slot="page-content" className={outerClasses} {...props}>
-        {innerClasses ? (
-          <div className={innerClasses}>{children}</div>
-        ) : (
-          children
-        )}
-      </div>
-    )
+export const SmartPageContent = React.forwardRef<
+  HTMLDivElement,
+  SmartPageContentProps
+>(function SmartPageContent(
+  {
+    padding: localPadding,
+    maxWidth,
+    centered = false,
+    className,
+    children,
+    ...props
   },
-)
+  ref
+) {
+  const { scroll, padding: ctxPadding, fullWidth } = usePageContext()
+
+  const resolvedPadding: PaddingSize =
+    localPadding === true
+      ? "md"
+      : localPadding === false
+        ? "none"
+        : (localPadding ?? ctxPadding)
+
+  const isScrollContainer = scroll === "content"
+
+  const outerClasses = cn(
+    "flex-1",
+    isScrollContainer && "min-h-0 overflow-y-auto",
+    className
+  )
+
+  const innerClasses = cn(
+    PADDING_CLASSES[resolvedPadding],
+    !fullWidth && maxWidth && MAX_WIDTH_CLASSES[maxWidth],
+    (centered || (!fullWidth && maxWidth)) && "mx-auto"
+  )
+
+  return (
+    <div ref={ref} data-slot="page-content" className={outerClasses} {...props}>
+      {innerClasses ? <div className={innerClasses}>{children}</div> : children}
+    </div>
+  )
+})
 ;(SmartPageContent as any)[SMART_PAGE_SLOT] = "content"

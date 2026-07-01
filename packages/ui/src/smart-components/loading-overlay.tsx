@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { cn } from "@workspace/ui/lib/utils";
+import type { ReactNode } from "react"
+import { cn } from "@workspace/ui/lib/utils"
 import { SmartSpinner } from "@workspace/ui/smart-components/spinner"
 
 export interface SmartLoadingOverlayProps {
@@ -51,4 +51,4 @@ function SmartLoadingOverlay({
   )
 }
 
-export { SmartLoadingOverlay };
+export { SmartLoadingOverlay }

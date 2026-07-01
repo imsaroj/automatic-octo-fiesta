@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 
 /* -------------------------------------------------------------------------- */
 /*                          Spring Data `Page<T>` shape                        */
@@ -42,7 +42,7 @@ export function pageSchema<TItem extends z.ZodTypeAny>(item: TItem) {
     numberOfElements: z.number().optional(),
     /** Whether the page is empty. */
     empty: z.boolean().optional(),
-  });
+  })
 }
 
 /**
@@ -53,15 +53,15 @@ export function pageSchema<TItem extends z.ZodTypeAny>(item: TItem) {
  * `SPage` page-layout component.)
  */
 export interface SPageResponse<TItem> {
-  content: TItem[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
-  size: number;
-  first?: boolean;
-  last?: boolean;
-  numberOfElements?: number;
-  empty?: boolean;
+  content: TItem[]
+  totalElements: number
+  totalPages: number
+  number: number
+  size: number
+  first?: boolean
+  last?: boolean
+  numberOfElements?: number
+  empty?: boolean
 }
 
 /* -------------------------------------------------------------------------- */
@@ -70,8 +70,8 @@ export interface SPageResponse<TItem> {
 
 /** A single sort instruction. */
 export interface ServerSort {
-  field: string;
-  dir: "asc" | "desc";
+  field: string
+  dir: "asc" | "desc"
 }
 
 /**
@@ -81,15 +81,15 @@ export interface ServerSort {
  */
 export interface ServerFilter {
   /** Column field the filter applies to. */
-  field: string;
+  field: string
   /** AG Grid filter family: `"text" | "number" | "date" | "set"`. */
-  filterType: string;
+  filterType: string
   /** Operator, e.g. `"contains" | "equals" | "greaterThan" | "inRange" | "set"`. */
-  type: string;
+  type: string
   /** Primary value (or the array of selected values for a set filter). */
-  value: unknown;
+  value: unknown
   /** Upper bound for range operators (`inRange`). */
-  valueTo?: unknown;
+  valueTo?: unknown
 }
 
 /**
@@ -100,24 +100,24 @@ export interface ServerFilter {
  */
 export interface ServerFetchParams {
   /** Zero-based index of the first requested row (inclusive). */
-  startRow: number;
+  startRow: number
   /** Index of the row after the last requested row (exclusive). */
-  endRow: number;
+  endRow: number
   /** Zero-based page index — `floor(startRow / pageSize)`. */
-  page: number;
+  page: number
   /** Rows per page/block — `endRow - startRow`. */
-  pageSize: number;
+  pageSize: number
   /** Active sort instructions, in priority order. */
-  sort: ServerSort[];
+  sort: ServerSort[]
   /** Active filters. */
-  filters: ServerFilter[];
+  filters: ServerFilter[]
 }
 
 /** What `fetchRows` resolves to: the block of rows plus the total row count. */
 export interface ServerFetchResult<TRow> {
-  rows: TRow[];
+  rows: TRow[]
   /** Total rows on the server for the current filters (e.g. `Page.totalElements`). */
-  total: number;
+  total: number
 }
 
 /* -------------------------------------------------------------------------- */
@@ -126,42 +126,45 @@ export interface ServerFetchResult<TRow> {
 
 /** The subset of an AG Grid filter-model entry we read. Structurally matches AG Grid's model. */
 interface AgFilterModelItem {
-  filterType?: string;
-  type?: string;
-  filter?: unknown;
-  filterTo?: unknown;
-  dateFrom?: unknown;
-  dateTo?: unknown;
+  filterType?: string
+  type?: string
+  filter?: unknown
+  filterTo?: unknown
+  dateFrom?: unknown
+  dateTo?: unknown
   /** Set-filter selected values. */
-  values?: unknown[];
+  values?: unknown[]
   /** Combined (AND/OR) conditions. */
-  operator?: "AND" | "OR";
-  condition1?: AgFilterModelItem;
-  condition2?: AgFilterModelItem;
+  operator?: "AND" | "OR"
+  condition1?: AgFilterModelItem
+  condition2?: AgFilterModelItem
 }
 
-function normalizeFilterItem(field: string, raw: AgFilterModelItem): ServerFilter {
+function normalizeFilterItem(
+  field: string,
+  raw: AgFilterModelItem
+): ServerFilter {
   // For combined conditions we take the first condition (a pragmatic v1 choice —
   // most server contracts accept a single predicate per field).
-  const item = raw.condition1 ?? raw;
-  const isSet = Array.isArray(item.values);
+  const item = raw.condition1 ?? raw
+  const isSet = Array.isArray(item.values)
   return {
     field,
     filterType: item.filterType ?? (isSet ? "set" : "text"),
     type: item.type ?? (isSet ? "set" : "contains"),
     value: isSet ? item.values : (item.filter ?? item.dateFrom),
     valueTo: item.filterTo ?? item.dateTo,
-  };
+  }
 }
 
 /** Convert an AG Grid filter model into a flat list of {@link ServerFilter}. */
 export function normalizeFilterModel(
-  filterModel: Record<string, unknown> | null | undefined,
+  filterModel: Record<string, unknown> | null | undefined
 ): ServerFilter[] {
-  if (!filterModel) return [];
+  if (!filterModel) return []
   return Object.entries(filterModel).map(([field, raw]) =>
-    normalizeFilterItem(field, (raw ?? {}) as AgFilterModelItem),
-  );
+    normalizeFilterItem(field, (raw ?? {}) as AgFilterModelItem)
+  )
 }
 
 /**
@@ -171,12 +174,12 @@ export function normalizeFilterModel(
  * structural shape, so this module never imports AG Grid).
  */
 export function buildServerFetchParams(input: {
-  startRow: number;
-  endRow: number;
-  sortModel: ReadonlyArray<{ colId: string; sort: "asc" | "desc" }>;
-  filterModel?: Record<string, unknown> | null;
+  startRow: number
+  endRow: number
+  sortModel: ReadonlyArray<{ colId: string; sort: "asc" | "desc" }>
+  filterModel?: Record<string, unknown> | null
 }): ServerFetchParams {
-  const pageSize = Math.max(input.endRow - input.startRow, 1);
+  const pageSize = Math.max(input.endRow - input.startRow, 1)
   return {
     startRow: input.startRow,
     endRow: input.endRow,
@@ -184,7 +187,7 @@ export function buildServerFetchParams(input: {
     page: Math.floor(input.startRow / pageSize),
     sort: input.sortModel.map((s) => ({ field: s.colId, dir: s.sort })),
     filters: normalizeFilterModel(input.filterModel),
-  };
+  }
 }
 
 /**
@@ -196,5 +199,5 @@ export function buildServerFetchParams(input: {
  * @example `toSpringSort([{ field: "mrr", dir: "desc" }])` → `["mrr,desc"]`
  */
 export function toSpringSort(sort: ReadonlyArray<ServerSort>): string[] {
-  return sort.map((s) => `${s.field},${s.dir}`);
+  return sort.map((s) => `${s.field},${s.dir}`)
 }

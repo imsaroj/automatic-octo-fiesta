@@ -57,47 +57,48 @@ export interface SmartPageSectionProps extends React.HTMLAttributes<HTMLElement>
  * </SmartPageSection>
  * ```
  */
-export const SmartPageSection = React.forwardRef<HTMLElement, SmartPageSectionProps>(
-  function SmartPageSection(
-    {
-      title,
-      description,
-      divider = false,
-      bordered = false,
-      padding = true,
-      className,
-      children,
-      ...props
-    },
-    ref,
-  ) {
-    const hasHeading = Boolean(title || description)
-
-    return (
-      <section
-        ref={ref}
-        data-slot="page-section"
-        className={cn(
-          "flex flex-col gap-4",
-          padding && "py-6",
-          bordered && "rounded-lg border p-6",
-          className,
-        )}
-        {...props}
-      >
-        {hasHeading && (
-          <div className="flex flex-col gap-1">
-            {title && (
-              <h2 className="text-sm font-semibold leading-tight">{title}</h2>
-            )}
-            {description && (
-              <p className="text-xs text-muted-foreground">{description}</p>
-            )}
-            {divider && <Separator className="mt-2" />}
-          </div>
-        )}
-        <div className="flex flex-col gap-3">{children}</div>
-      </section>
-    )
+export const SmartPageSection = React.forwardRef<
+  HTMLElement,
+  SmartPageSectionProps
+>(function SmartPageSection(
+  {
+    title,
+    description,
+    divider = false,
+    bordered = false,
+    padding = true,
+    className,
+    children,
+    ...props
   },
-)
+  ref
+) {
+  const hasHeading = Boolean(title || description)
+
+  return (
+    <section
+      ref={ref}
+      data-slot="page-section"
+      className={cn(
+        "flex flex-col gap-4",
+        padding && "py-6",
+        bordered && "rounded-lg border p-6",
+        className
+      )}
+      {...props}
+    >
+      {hasHeading && (
+        <div className="flex flex-col gap-1">
+          {title && (
+            <h2 className="text-sm leading-tight font-semibold">{title}</h2>
+          )}
+          {description && (
+            <p className="text-xs text-muted-foreground">{description}</p>
+          )}
+          {divider && <Separator className="mt-2" />}
+        </div>
+      )}
+      <div className="flex flex-col gap-3">{children}</div>
+    </section>
+  )
+})

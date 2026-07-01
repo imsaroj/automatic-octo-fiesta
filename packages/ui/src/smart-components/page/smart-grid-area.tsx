@@ -77,36 +77,35 @@ export interface SmartGridAreaProps extends React.HTMLAttributes<HTMLDivElement>
  * </SmartGridArea>
  * ```
  */
-export const SmartGridArea = React.forwardRef<HTMLDivElement, SmartGridAreaProps>(
-  function SmartGridArea(
-    { toolbar, border = false, rounded = false, className, children, ...props },
-    ref,
-  ) {
-    return (
-      <div
-        ref={ref}
-        data-slot="grid-area"
-        className={cn(
-          "flex flex-col flex-1 min-h-0",
-          border && "border-t",
-          rounded && "rounded-lg overflow-hidden",
-          className,
-        )}
-        {...props}
-      >
-        {toolbar && (
-          <div className="shrink-0 flex items-center gap-2 border-b bg-muted/30 px-4 py-2">
-            {toolbar}
-          </div>
-        )}
-        {/* This wrapper is the grid's direct parent and must have a defined height.
+export const SmartGridArea = React.forwardRef<
+  HTMLDivElement,
+  SmartGridAreaProps
+>(function SmartGridArea(
+  { toolbar, border = false, rounded = false, className, children, ...props },
+  ref
+) {
+  return (
+    <div
+      ref={ref}
+      data-slot="grid-area"
+      className={cn(
+        "flex min-h-0 flex-1 flex-col",
+        border && "border-t",
+        rounded && "overflow-hidden rounded-lg",
+        className
+      )}
+      {...props}
+    >
+      {toolbar && (
+        <div className="flex shrink-0 items-center gap-2 border-b bg-muted/30 px-4 py-2">
+          {toolbar}
+        </div>
+      )}
+      {/* This wrapper is the grid's direct parent and must have a defined height.
             flex-1 + min-h-0 achieves this through the flex chain established
             by SmartPage → SmartGridArea → here. */}
-        <div className="flex flex-col flex-1 min-h-0">
-          {children}
-        </div>
-      </div>
-    )
-  },
-)
+      <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+    </div>
+  )
+})
 ;(SmartGridArea as any)[SMART_PAGE_SLOT] = "grid-area"

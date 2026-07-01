@@ -64,8 +64,10 @@ const USERS: User[] = Array.from({ length: 40 }, (_, i) => ({
 }))
 
 const STATUS_COLORS = {
-  Active: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  Invited: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+  Active:
+    "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+  Invited:
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
   Suspended: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
 } as const
 
@@ -95,7 +97,7 @@ export default function CrudExamplePage() {
     setSelected(
       selected.size === filtered.length
         ? new Set()
-        : new Set(filtered.map((u) => u.id)),
+        : new Set(filtered.map((u) => u.id))
     )
   }
 
@@ -162,7 +164,11 @@ export default function CrudExamplePage() {
       {/* ── Active filters ──────────────────────────────────────────────────── */}
       {activeFilter && (
         <SmartPageFilters label="Active filters:">
-          <Badge variant="secondary" className="gap-1 cursor-pointer" onClick={() => setActiveFilter(null)}>
+          <Badge
+            variant="secondary"
+            className="cursor-pointer gap-1"
+            onClick={() => setActiveFilter(null)}
+          >
             Status: {activeFilter} ×
           </Badge>
         </SmartPageFilters>
@@ -180,7 +186,14 @@ export default function CrudExamplePage() {
                 : "No users match the current filters."
             }
             action={
-              <Button variant="outline" size="sm" onClick={() => { setQuery(""); setActiveFilter(null) }}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setQuery("")
+                  setActiveFilter(null)
+                }}
+              >
                 Clear filters
               </Button>
             }
@@ -192,16 +205,28 @@ export default function CrudExamplePage() {
                 <tr className="border-b">
                   <th className="w-10 px-4 py-2.5 text-left">
                     <Checkbox
-                      checked={selected.size === filtered.length && filtered.length > 0}
+                      checked={
+                        selected.size === filtered.length && filtered.length > 0
+                      }
                       onCheckedChange={toggleAll}
                       aria-label="Select all"
                     />
                   </th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Name</th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Email</th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Role</th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Status</th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Joined</th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                    Name
+                  </th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                    Email
+                  </th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                    Role
+                  </th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                    Status
+                  </th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                    Joined
+                  </th>
                   <th className="w-16 px-4 py-2.5" />
                 </tr>
               </thead>
@@ -219,16 +244,28 @@ export default function CrudExamplePage() {
                       />
                     </td>
                     <td className="px-4 py-2.5 font-medium">{user.name}</td>
-                    <td className="px-4 py-2.5 text-muted-foreground">{user.email}</td>
-                    <td className="px-4 py-2.5 text-muted-foreground">{user.role}</td>
+                    <td className="px-4 py-2.5 text-muted-foreground">
+                      {user.email}
+                    </td>
+                    <td className="px-4 py-2.5 text-muted-foreground">
+                      {user.role}
+                    </td>
                     <td className="px-4 py-2.5">
-                      <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_COLORS[user.status]}`}>
+                      <span
+                        className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_COLORS[user.status]}`}
+                      >
                         {user.status}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 text-muted-foreground">{user.joined}</td>
+                    <td className="px-4 py-2.5 text-muted-foreground">
+                      {user.joined}
+                    </td>
                     <td className="px-4 py-2.5">
-                      <Button variant="ghost" size="icon-sm" aria-label="Delete">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label="Delete"
+                      >
                         <Trash2 className="text-muted-foreground" />
                       </Button>
                     </td>
@@ -243,7 +280,8 @@ export default function CrudExamplePage() {
       {/* ── Status bar ─────────────────────────────────────────────────────── */}
       <SmartPageStatusBar>
         <span className="text-xs text-muted-foreground">
-          {filtered.length.toLocaleString()} of {USERS.length.toLocaleString()} users
+          {filtered.length.toLocaleString()} of {USERS.length.toLocaleString()}{" "}
+          users
         </span>
         {selected.size > 0 && (
           <>

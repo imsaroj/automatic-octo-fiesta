@@ -63,25 +63,29 @@ export interface SmartPageHeaderProps extends React.HTMLAttributes<HTMLElement> 
  * </SmartPageHeader>
  * ```
  */
-export const SmartPageHeader = React.forwardRef<HTMLElement, SmartPageHeaderProps>(
-  function SmartPageHeader({ border = true, compact = false, className, children, ...props }, ref) {
-    return (
-      <header
-        ref={ref}
-        data-slot="page-header"
-        className={cn(
-          "shrink-0 flex flex-col",
-          compact ? "px-4 py-2" : "px-6 py-4",
-          border && "border-b",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </header>
-    )
-  },
-)
+export const SmartPageHeader = React.forwardRef<
+  HTMLElement,
+  SmartPageHeaderProps
+>(function SmartPageHeader(
+  { border = true, compact = false, className, children, ...props },
+  ref
+) {
+  return (
+    <header
+      ref={ref}
+      data-slot="page-header"
+      className={cn(
+        "flex shrink-0 flex-col",
+        compact ? "px-4 py-2" : "px-6 py-4",
+        border && "border-b",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </header>
+  )
+})
 ;(SmartPageHeader as any)[SMART_PAGE_SLOT] = "header"
 
 // ─── SmartPageTitle ────────────────────────────────────────────────────────────
@@ -109,7 +113,10 @@ export const SmartPageTitle = React.forwardRef<
     <Tag
       ref={ref}
       data-slot="page-title"
-      className={cn("text-lg font-semibold leading-tight tracking-tight", className)}
+      className={cn(
+        "text-lg leading-tight font-semibold tracking-tight",
+        className
+      )}
       {...props}
     />
   )
@@ -163,7 +170,7 @@ export const SmartPageActions = React.forwardRef<
     <div
       ref={ref}
       data-slot="page-actions"
-      className={cn("flex items-center gap-2 shrink-0", className)}
+      className={cn("flex shrink-0 items-center gap-2", className)}
       {...props}
     />
   )
@@ -200,7 +207,10 @@ export interface SmartPageBreadcrumbProps {
  * />
  * ```
  */
-export function SmartPageBreadcrumb({ items, className }: SmartPageBreadcrumbProps) {
+export function SmartPageBreadcrumb({
+  items,
+  className,
+}: SmartPageBreadcrumbProps) {
   if (!items.length) return null
   return (
     <Breadcrumb className={cn("mb-1", className)}>
@@ -213,7 +223,9 @@ export function SmartPageBreadcrumb({ items, className }: SmartPageBreadcrumbPro
                 {isLast ? (
                   <BreadcrumbCurrent>{item.label}</BreadcrumbCurrent>
                 ) : (
-                  <BreadcrumbLink href={item.href ?? "#"}>{item.label}</BreadcrumbLink>
+                  <BreadcrumbLink href={item.href ?? "#"}>
+                    {item.label}
+                  </BreadcrumbLink>
                 )}
               </BreadcrumbItem>
               {!isLast && <BreadcrumbSeparator />}

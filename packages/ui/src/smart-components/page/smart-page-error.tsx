@@ -64,7 +64,7 @@ export function SmartPageError({
       role="alert"
       className={cn(
         "flex h-full min-h-60 flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-destructive/30 bg-destructive/5 p-10 text-center",
-        className,
+        className
       )}
     >
       <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
@@ -72,7 +72,9 @@ export function SmartPageError({
       </div>
       <div className="flex flex-col gap-1">
         <h3 className="text-sm font-semibold">{title}</h3>
-        <p className="mx-auto max-w-sm text-xs text-muted-foreground">{description}</p>
+        <p className="mx-auto max-w-sm text-xs text-muted-foreground">
+          {description}
+        </p>
       </div>
       {onRetry && (
         <Button variant="outline" size="sm" onClick={onRetry}>

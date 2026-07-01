@@ -1,0 +1,3 @@
+# Gate pushes on a clean type-check (all workspaces) and the test suite.
+pnpm typecheck
+pnpm test

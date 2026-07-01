@@ -30,22 +30,13 @@ export {
 } from "./smart-page-header"
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
-export {
-  SmartPageHero,
-  type SmartPageHeroProps,
-} from "./smart-page-hero"
+export { SmartPageHero, type SmartPageHeroProps } from "./smart-page-hero"
 
 // ─── Toolbar ──────────────────────────────────────────────────────────────────
-export {
-  SmartToolbar,
-  type SmartToolbarProps,
-} from "./smart-toolbar"
+export { SmartToolbar, type SmartToolbarProps } from "./smart-toolbar"
 
 // ─── Search + Filters ─────────────────────────────────────────────────────────
-export {
-  SmartPageSearch,
-  type SmartPageSearchProps,
-} from "./smart-page-search"
+export { SmartPageSearch, type SmartPageSearchProps } from "./smart-page-search"
 
 export {
   SmartPageFilters,
@@ -74,16 +65,10 @@ export {
 } from "./smart-page-section"
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
-export {
-  SmartSidebar,
-  type SmartSidebarProps,
-} from "./smart-sidebar"
+export { SmartSidebar, type SmartSidebarProps } from "./smart-sidebar"
 
 // ─── Grid area ────────────────────────────────────────────────────────────────
-export {
-  SmartGridArea,
-  type SmartGridAreaProps,
-} from "./smart-grid-area"
+export { SmartGridArea, type SmartGridAreaProps } from "./smart-grid-area"
 
 // ─── Status bar ───────────────────────────────────────────────────────────────
 export {
@@ -92,23 +77,14 @@ export {
 } from "./smart-page-status-bar"
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
-export {
-  SmartPageFooter,
-  type SmartPageFooterProps,
-} from "./smart-page-footer"
+export { SmartPageFooter, type SmartPageFooterProps } from "./smart-page-footer"
 
 // ─── States ───────────────────────────────────────────────────────────────────
-export {
-  SmartPageEmpty,
-  type SmartPageEmptyProps,
-} from "./smart-page-empty"
+export { SmartPageEmpty, type SmartPageEmptyProps } from "./smart-page-empty"
 
 export {
   SmartPageLoading,
   type SmartPageLoadingProps,
 } from "./smart-page-loading"
 
-export {
-  SmartPageError,
-  type SmartPageErrorProps,
-} from "./smart-page-error"
+export { SmartPageError, type SmartPageErrorProps } from "./smart-page-error"

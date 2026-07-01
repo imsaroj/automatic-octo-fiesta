@@ -79,7 +79,7 @@ export default function DetailExamplePage() {
         />
         <div className="flex items-center justify-between">
           <SmartPageTitle as="h1">
-            <span className="text-muted-foreground font-normal">#42 — </span>
+            <span className="font-normal text-muted-foreground">#42 — </span>
             Grid layout collapses on narrow viewports
           </SmartPageTitle>
           <SmartPageActions>
@@ -89,9 +89,13 @@ export default function DetailExamplePage() {
               onClick={() => setResolved((v) => !v)}
             >
               {resolved ? (
-                <><CheckCircle2 className="text-green-600" /> Resolved</>
+                <>
+                  <CheckCircle2 className="text-green-600" /> Resolved
+                </>
               ) : (
-                <><Circle /> Mark resolved</>
+                <>
+                  <Circle /> Mark resolved
+                </>
               )}
             </Button>
           </SmartPageActions>
@@ -103,34 +107,41 @@ export default function DetailExamplePage() {
         {/* Issue body */}
         <SmartPageSection padding={false}>
           <div className="flex gap-3">
-            <Avatar className="size-8 mt-0.5 shrink-0">
+            <Avatar className="mt-0.5 size-8 shrink-0">
               <AvatarFallback>S</AvatarFallback>
             </Avatar>
             <div className="flex-1 rounded-lg border p-4">
               <div className="mb-3 flex items-center gap-2">
                 <span className="text-xs font-semibold">Saroj Kumar</span>
-                <span className="text-xs text-muted-foreground">opened this issue 2 days ago</span>
+                <span className="text-xs text-muted-foreground">
+                  opened this issue 2 days ago
+                </span>
               </div>
-              <div className="text-xs leading-relaxed text-foreground space-y-2">
+              <div className="space-y-2 text-xs leading-relaxed text-foreground">
                 <p>
-                  When the viewport width drops below 480px, the responsive card grid collapses
-                  instead of stacking. This breaks the layout on mobile and on iPad mini in portrait.
+                  When the viewport width drops below 480px, the responsive card
+                  grid collapses instead of stacking. This breaks the layout on
+                  mobile and on iPad mini in portrait.
                 </p>
                 <p>
-                  <strong>Steps to reproduce:</strong> Open the dashboard page on a device narrower
-                  than 480px. The metric cards overflow the container horizontally.
+                  <strong>Steps to reproduce:</strong> Open the dashboard page
+                  on a device narrower than 480px. The metric cards overflow the
+                  container horizontally.
                 </p>
                 <p>
-                  <strong>Expected:</strong> Cards stack vertically in a single column.
+                  <strong>Expected:</strong> Cards stack vertically in a single
+                  column.
                 </p>
                 <p>
-                  <strong>Actual:</strong> Cards overflow the viewport and a horizontal scrollbar
-                  appears.
+                  <strong>Actual:</strong> Cards overflow the viewport and a
+                  horizontal scrollbar appears.
                 </p>
               </div>
               <div className="mt-3 flex gap-2">
                 {["👍 12", "👀 4"].map((r) => (
-                  <Button key={r} variant="secondary" size="xs">{r}</Button>
+                  <Button key={r} variant="secondary" size="xs">
+                    {r}
+                  </Button>
                 ))}
               </div>
             </div>
@@ -144,13 +155,15 @@ export default function DetailExamplePage() {
           <div className="flex flex-col gap-4">
             {COMMENTS.map((c) => (
               <div key={c.id} className="flex gap-3">
-                <Avatar className="size-8 mt-0.5 shrink-0">
+                <Avatar className="mt-0.5 size-8 shrink-0">
                   <AvatarFallback>{c.initials}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 rounded-lg border p-4">
                   <div className="mb-2 flex items-center gap-2">
                     <span className="text-xs font-semibold">{c.author}</span>
-                    <span className="text-xs text-muted-foreground">{c.time}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {c.time}
+                    </span>
                   </div>
                   <p className="text-xs leading-relaxed">{c.body}</p>
                   <div className="mt-2 flex gap-2">
@@ -172,10 +185,10 @@ export default function DetailExamplePage() {
         {/* New comment */}
         <SmartPageSection padding={false}>
           <div className="flex gap-3">
-            <Avatar className="size-8 mt-0.5 shrink-0">
+            <Avatar className="mt-0.5 size-8 shrink-0">
               <AvatarFallback>S</AvatarFallback>
             </Avatar>
-            <div className="flex-1 flex flex-col gap-2">
+            <div className="flex flex-1 flex-col gap-2">
               <Textarea
                 placeholder="Leave a comment…"
                 value={comment}
@@ -201,22 +214,25 @@ export default function DetailExamplePage() {
       <SmartSidebar width="sm" title="Details">
         <div className="flex flex-col gap-4 text-xs">
           <div className="flex flex-col gap-1">
-            <span className="font-medium text-muted-foreground uppercase tracking-wide text-[10px]">
+            <span className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
               Status
             </span>
             <div className="flex items-center gap-1.5">
-              {resolved
-                ? <CheckCircle2 className="size-3.5 text-green-600" />
-                : <Circle className="size-3.5 text-muted-foreground" />
-              }
-              <span className={resolved ? "text-green-700 dark:text-green-400" : ""}>
+              {resolved ? (
+                <CheckCircle2 className="size-3.5 text-green-600" />
+              ) : (
+                <Circle className="size-3.5 text-muted-foreground" />
+              )}
+              <span
+                className={resolved ? "text-green-700 dark:text-green-400" : ""}
+              >
                 {resolved ? "Resolved" : "Open"}
               </span>
             </div>
           </div>
 
           <div className="flex flex-col gap-1">
-            <span className="font-medium text-muted-foreground uppercase tracking-wide text-[10px]">
+            <span className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
               Assignee
             </span>
             <div className="flex items-center gap-1.5">
@@ -228,14 +244,16 @@ export default function DetailExamplePage() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <span className="font-medium text-muted-foreground uppercase tracking-wide text-[10px]">
+            <span className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
               Priority
             </span>
-            <Badge variant="secondary" className="w-fit">High</Badge>
+            <Badge variant="secondary" className="w-fit">
+              High
+            </Badge>
           </div>
 
           <div className="flex flex-col gap-1">
-            <span className="font-medium text-muted-foreground uppercase tracking-wide text-[10px]">
+            <span className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
               Labels
             </span>
             <div className="flex flex-wrap gap-1">
@@ -246,7 +264,7 @@ export default function DetailExamplePage() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <span className="font-medium text-muted-foreground uppercase tracking-wide text-[10px]">
+            <span className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
               Milestone
             </span>
             <div className="flex items-center gap-1.5">
@@ -256,7 +274,7 @@ export default function DetailExamplePage() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <span className="font-medium text-muted-foreground uppercase tracking-wide text-[10px]">
+            <span className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
               Due date
             </span>
             <div className="flex items-center gap-1.5">
@@ -266,7 +284,7 @@ export default function DetailExamplePage() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <span className="font-medium text-muted-foreground uppercase tracking-wide text-[10px]">
+            <span className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
               Reporter
             </span>
             <div className="flex items-center gap-1.5">
@@ -279,7 +297,7 @@ export default function DetailExamplePage() {
 
           {/* Participants */}
           <div className="flex flex-col gap-2">
-            <span className="font-medium text-muted-foreground uppercase tracking-wide text-[10px]">
+            <span className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
               Participants
             </span>
             <div className="flex -space-x-1">

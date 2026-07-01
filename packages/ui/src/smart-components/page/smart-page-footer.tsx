@@ -61,26 +61,27 @@ const JUSTIFY_CLASSES: Record<
  * </SmartPageFooter>
  * ```
  */
-export const SmartPageFooter = React.forwardRef<HTMLElement, SmartPageFooterProps>(
-  function SmartPageFooter(
-    { border = true, justify = "end", className, children, ...props },
-    ref,
-  ) {
-    return (
-      <footer
-        ref={ref}
-        data-slot="page-footer"
-        className={cn(
-          "shrink-0 flex items-center gap-2 px-6 py-3",
-          JUSTIFY_CLASSES[justify],
-          border && "border-t",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </footer>
-    )
-  },
-)
+export const SmartPageFooter = React.forwardRef<
+  HTMLElement,
+  SmartPageFooterProps
+>(function SmartPageFooter(
+  { border = true, justify = "end", className, children, ...props },
+  ref
+) {
+  return (
+    <footer
+      ref={ref}
+      data-slot="page-footer"
+      className={cn(
+        "flex shrink-0 items-center gap-2 px-6 py-3",
+        JUSTIFY_CLASSES[justify],
+        border && "border-t",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </footer>
+  )
+})
 ;(SmartPageFooter as any)[SMART_PAGE_SLOT] = "footer"

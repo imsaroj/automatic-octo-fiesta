@@ -59,8 +59,8 @@ export function SmartPageEmpty({
     <div
       role="status"
       className={cn(
-        "flex h-full min-h-[240px] flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-10 text-center",
-        className,
+        "flex h-full min-h-60 flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-10 text-center",
+        className
       )}
     >
       {icon && (

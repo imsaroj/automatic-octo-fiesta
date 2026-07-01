@@ -43,7 +43,10 @@ export function App() {
           {/* Playground */}
           <Route path="/playground/history" element={<HistoryPage />} />
           <Route path="/playground/starred" element={<StarredPage />} />
-          <Route path="/playground/settings" element={<PlaygroundSettingsPage />} />
+          <Route
+            path="/playground/settings"
+            element={<PlaygroundSettingsPage />}
+          />
 
           {/* Models */}
           <Route path="/models/genesis" element={<GenesisPage />} />
@@ -63,17 +66,29 @@ export function App() {
           <Route path="/settings/limits" element={<LimitsPage />} />
 
           {/* Projects */}
-          <Route path="/projects/design-engineering" element={<DesignEngineeringPage />} />
-          <Route path="/projects/sales-marketing" element={<SalesMarketingPage />} />
+          <Route
+            path="/projects/design-engineering"
+            element={<DesignEngineeringPage />}
+          />
+          <Route
+            path="/projects/sales-marketing"
+            element={<SalesMarketingPage />}
+          />
           <Route path="/projects/travel" element={<TravelPage />} />
 
           {/* Smart-components examples */}
           <Route path="/examples/crud" element={<CrudExamplePage />} />
-          <Route path="/examples/dashboard" element={<DashboardExamplePage />} />
+          <Route
+            path="/examples/dashboard"
+            element={<DashboardExamplePage />}
+          />
           <Route path="/examples/settings" element={<SettingsExamplePage />} />
           <Route path="/examples/detail" element={<DetailExamplePage />} />
           <Route path="/examples/wizard" element={<WizardExamplePage />} />
-          <Route path="/examples/analytics" element={<AnalyticsExamplePage />} />
+          <Route
+            path="/examples/analytics"
+            element={<AnalyticsExamplePage />}
+          />
         </Routes>
       </PlaygroundShell>
     </BrowserRouter>

@@ -1,6 +1,6 @@
-import type { ColumnState, GridApi } from "ag-grid-community";
-import type { ServerFilter } from "@/api/pagination";
-import type { XlsxCell } from "@/lib/xlsx";
+import type { ColumnState, GridApi } from "ag-grid-community"
+import type { ServerFilter } from "@/data-grid/pagination"
+import type { XlsxCell } from "@/lib/xlsx"
 
 /**
  * Pure, stateless helpers extracted from {@link SmartServerGrid} so the
@@ -15,8 +15,8 @@ import type { XlsxCell } from "@/lib/xlsx";
 
 /** The grid state persisted to `localStorage` under `persistStateKey`. */
 export interface PersistedGridState {
-  columnState?: ColumnState[];
-  filterModel?: Record<string, unknown>;
+  columnState?: ColumnState[]
+  filterModel?: Record<string, unknown>
 }
 
 /**
@@ -26,19 +26,22 @@ export interface PersistedGridState {
  */
 export function readPersistedGridState(key: string): PersistedGridState | null {
   try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    return JSON.parse(raw) as PersistedGridState;
+    const raw = localStorage.getItem(key)
+    if (!raw) return null
+    return JSON.parse(raw) as PersistedGridState
   } catch {
     /* storage unavailable (private mode / quota) or corrupt — ignore */
-    return null;
+    return null
   }
 }
 
 /** Persist column/filter state under `key`; silently no-ops if storage fails. */
-export function writePersistedGridState(key: string, state: PersistedGridState): void {
+export function writePersistedGridState(
+  key: string,
+  state: PersistedGridState
+): void {
   try {
-    localStorage.setItem(key, JSON.stringify(state));
+    localStorage.setItem(key, JSON.stringify(state))
   } catch {
     /* storage unavailable (private mode / quota) — non-fatal */
   }
@@ -49,13 +52,13 @@ export function writePersistedGridState(key: string, state: PersistedGridState):
 /** Tiny trailing debounce — keeps persistence off the hot path of resize/scroll. */
 export function debounce<A extends unknown[]>(
   fn: (...args: A) => void,
-  ms: number,
+  ms: number
 ): (...args: A) => void {
-  let timer: ReturnType<typeof setTimeout> | undefined;
+  let timer: ReturnType<typeof setTimeout> | undefined
   return (...args: A) => {
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), ms);
-  };
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => fn(...args), ms)
+  }
 }
 
 /* ------------------------------- error coercion ---------------------------- */
@@ -68,9 +71,9 @@ export function errorMessage(error: unknown): string {
     "message" in error &&
     typeof (error as { message: unknown }).message === "string"
   ) {
-    return (error as { message: string }).message;
+    return (error as { message: string }).message
   }
-  return "Failed to load data.";
+  return "Failed to load data."
 }
 
 /* ------------------------------- filter merge ------------------------------ */
@@ -81,18 +84,18 @@ export function errorMessage(error: unknown): string {
  */
 export function mergeServerFilters(
   base: ServerFilter[],
-  external: ServerFilter[] | undefined,
+  external: ServerFilter[] | undefined
 ): ServerFilter[] {
-  if (!external || external.length === 0) return base;
-  return [...base, ...external];
+  if (!external || external.length === 0) return base
+  return [...base, ...external]
 }
 
 /* ---------------------------------- export --------------------------------- */
 
 /** A grid's loaded rows shaped into a header row + body rows for `.xlsx` export. */
 export interface GridExportTable {
-  headers: string[];
-  rows: XlsxCell[][];
+  headers: string[]
+  rows: XlsxCell[][]
 }
 
 /**
@@ -102,24 +105,26 @@ export interface GridExportTable {
  * (the infinite row model never holds every page at once).
  */
 export function collectGridExport<TRow>(api: GridApi<TRow>): GridExportTable {
-  const displayed = api.getAllDisplayedColumns();
+  const displayed = api.getAllDisplayedColumns()
   const headers = displayed.map((column) => {
-    const headerName = column.getColDef().headerName;
-    return typeof headerName === "string" && headerName.length > 0 ? headerName : column.getColId();
-  });
-  const rows: XlsxCell[][] = [];
+    const headerName = column.getColDef().headerName
+    return typeof headerName === "string" && headerName.length > 0
+      ? headerName
+      : column.getColId()
+  })
+  const rows: XlsxCell[][] = []
   api.forEachNode((node) => {
-    if (!node.data) return;
+    if (!node.data) return
     rows.push(
       displayed.map((column) => {
         const value = api.getCellValue({
           rowNode: node,
           colKey: column,
           useFormatter: true,
-        }) as XlsxCell | null;
-        return value ?? "";
-      }),
-    );
-  });
-  return { headers, rows };
+        }) as XlsxCell | null
+        return value ?? ""
+      })
+    )
+  })
+  return { headers, rows }
 }

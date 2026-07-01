@@ -93,8 +93,16 @@ const data = {
     },
   ],
   projects: [
-    { name: "Design Engineering", url: "/projects/design-engineering", icon: <FrameIcon /> },
-    { name: "Sales & Marketing", url: "/projects/sales-marketing", icon: <PieChartIcon /> },
+    {
+      name: "Design Engineering",
+      url: "/projects/design-engineering",
+      icon: <FrameIcon />,
+    },
+    {
+      name: "Sales & Marketing",
+      url: "/projects/sales-marketing",
+      icon: <PieChartIcon />,
+    },
     { name: "Travel", url: "/projects/travel", icon: <MapIcon /> },
   ],
 }

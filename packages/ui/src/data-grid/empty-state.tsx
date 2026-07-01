@@ -1,13 +1,13 @@
-import type { HTMLAttributes, ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import type { HTMLAttributes, ReactNode } from "react"
+import { cn } from "@/lib/utils"
 
 export interface SmartEmptyStateProps extends HTMLAttributes<HTMLDivElement> {
   /** Optional illustrative icon. */
-  icon?: ReactNode;
-  title: string;
-  description?: ReactNode;
+  icon?: ReactNode
+  title: string
+  description?: ReactNode
   /** Optional call-to-action (e.g. a SmartButton). */
-  action?: ReactNode;
+  action?: ReactNode
 }
 
 /** Friendly placeholder for empty lists, tables and search results. */

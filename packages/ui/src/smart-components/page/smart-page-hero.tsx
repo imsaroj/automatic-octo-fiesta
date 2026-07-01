@@ -21,13 +21,19 @@ export interface SmartPageHeroProps extends React.HTMLAttributes<HTMLDivElement>
   height?: "sm" | "md" | "lg"
 }
 
-const bgClasses: Record<NonNullable<SmartPageHeroProps["background"]>, string> = {
+const bgClasses: Record<
+  NonNullable<SmartPageHeroProps["background"]>,
+  string
+> = {
   muted: "bg-muted",
   gradient: "bg-gradient-to-b from-foreground/5 to-transparent",
   none: "",
 }
 
-const heightClasses: Record<NonNullable<SmartPageHeroProps["height"]>, string> = {
+const heightClasses: Record<
+  NonNullable<SmartPageHeroProps["height"]>,
+  string
+> = {
   sm: "py-8 md:py-10",
   md: "py-12 md:py-16",
   lg: "py-20 md:py-28",
@@ -57,26 +63,27 @@ const heightClasses: Record<NonNullable<SmartPageHeroProps["height"]>, string> =
  * </SmartPage>
  * ```
  */
-export const SmartPageHero = React.forwardRef<HTMLDivElement, SmartPageHeroProps>(
-  function SmartPageHero(
-    { background = "muted", height = "md", className, children, ...props },
-    ref,
-  ) {
-    return (
-      <div
-        ref={ref}
-        data-slot="page-hero"
-        className={cn(
-          "shrink-0 w-full px-6",
-          bgClasses[background],
-          heightClasses[height],
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    )
-  },
-)
+export const SmartPageHero = React.forwardRef<
+  HTMLDivElement,
+  SmartPageHeroProps
+>(function SmartPageHero(
+  { background = "muted", height = "md", className, children, ...props },
+  ref
+) {
+  return (
+    <div
+      ref={ref}
+      data-slot="page-hero"
+      className={cn(
+        "w-full shrink-0 px-6",
+        bgClasses[background],
+        heightClasses[height],
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+})
 ;(SmartPageHero as any)[SMART_PAGE_SLOT] = "hero"
