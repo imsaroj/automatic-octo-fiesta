@@ -32,6 +32,8 @@ export interface SmartTextareaProps extends React.ComponentProps<"textarea"> {
  * />
  * ```
  */
+export { Textarea }
+
 export function SmartTextarea({
   label,
   description,

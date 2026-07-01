@@ -20,6 +20,8 @@ export interface SmartLabelProps extends React.ComponentProps<"label"> {
  * // → "Bio (optional)"
  * ```
  */
+export { Label }
+
 export function SmartLabel({
   required,
   optional,

@@ -40,6 +40,8 @@ export interface SmartInputProps extends React.ComponentProps<"input"> {
  * />
  * ```
  */
+export { Input }
+
 export function SmartInput({
   label,
   description,

@@ -23,10 +23,13 @@ import {
   ThumbsUp,
   User,
 } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
-import { Badge } from "@workspace/ui/components/badge"
-import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
-import { Textarea } from "@workspace/ui/components/textarea"
+import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
+import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
+import {
+  Avatar,
+  AvatarFallback,
+} from "@workspace/ui/smart-components/smart-avatar"
+import { Textarea } from "@workspace/ui/smart-components/smart-textarea"
 import {
   SmartPage,
   SmartPageHeader,
@@ -37,7 +40,7 @@ import {
   SmartPageSection,
   SmartSidebar,
 } from "@workspace/ui/smart-components/page"
-import { Separator } from "@workspace/ui/components/separator"
+import { Separator } from "@workspace/ui/smart-components/smart-separator"
 
 // ─── Fake data ─────────────────────────────────────────────────────────────────
 

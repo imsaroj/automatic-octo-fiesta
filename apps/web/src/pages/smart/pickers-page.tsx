@@ -11,7 +11,7 @@ import { SmartCalendar } from "@workspace/ui/smart-components/smart-calendar"
 import { SmartDatePicker } from "@workspace/ui/smart-components/smart-date-picker"
 import { SmartCombobox } from "@workspace/ui/smart-components/smart-combobox"
 import { SmartCard } from "@workspace/ui/smart-components/smart-card"
-import { Calendar } from "@workspace/ui/components/calendar"
+import { Calendar } from "@workspace/ui/smart-components/smart-calendar"
 
 const FRAMEWORKS = [
   { value: "next", label: "Next.js" },

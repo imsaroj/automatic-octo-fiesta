@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react"
 import { MousePointerClick, Package } from "lucide-react"
-import { Badge } from "@workspace/ui/components/badge"
+import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/card"
+} from "@workspace/ui/smart-components/smart-card"
 import {
   SmartPage,
   SmartPageHeader,

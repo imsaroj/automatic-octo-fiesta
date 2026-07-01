@@ -29,9 +29,8 @@ import { SmartTextarea } from "@workspace/ui/smart-components/smart-textarea"
 import { SmartSelect } from "@workspace/ui/smart-components/smart-select"
 import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
 import { SmartButton } from "@workspace/ui/smart-components/smart-button"
-import { Button } from "@workspace/ui/components/button"
-import { SheetClose } from "@workspace/ui/components/sheet"
-import { DrawerClose } from "@workspace/ui/components/drawer"
+import { SheetClose } from "@workspace/ui/smart-components/smart-sheet"
+import { DrawerClose } from "@workspace/ui/smart-components/smart-drawer"
 
 const ROLE_OPTIONS = [
   { value: "admin", label: "Admin" },
@@ -115,10 +114,10 @@ export default function OverlaysPage() {
             {/* Trigger-driven */}
             <SmartDialog
               trigger={
-                <Button variant="outline" size="sm">
+                <SmartButton variant="outline" size="sm">
                   <Edit className="size-3.5" />
                   Edit profile
-                </Button>
+                </SmartButton>
               }
               header={{
                 title: "Edit profile",
@@ -126,16 +125,16 @@ export default function OverlaysPage() {
               }}
               footer={
                 <>
-                  <Button
+                  <SmartButton
                     variant="outline"
                     size="sm"
                     onClick={() => setDialogOpen(false)}
                   >
                     Cancel
-                  </Button>
-                  <Button size="sm" onClick={() => setDialogOpen(false)}>
+                  </SmartButton>
+                  <SmartButton size="sm" onClick={() => setDialogOpen(false)}>
                     Save changes
-                  </Button>
+                  </SmartButton>
                 </>
               }
             >
@@ -154,10 +153,10 @@ export default function OverlaysPage() {
             </SmartDialog>
 
             {/* Controlled */}
-            <Button size="sm" onClick={() => setDialogOpen(true)}>
+            <SmartButton size="sm" onClick={() => setDialogOpen(true)}>
               <Layers className="size-3.5" />
               Open controlled
-            </Button>
+            </SmartButton>
             <SmartDialog
               open={dialogOpen}
               onOpenChange={setDialogOpen}
@@ -166,9 +165,9 @@ export default function OverlaysPage() {
                 subtitle: "This dialog is opened programmatically.",
               }}
               footer={
-                <Button size="sm" onClick={() => setDialogOpen(false)}>
+                <SmartButton size="sm" onClick={() => setDialogOpen(false)}>
                   Close
-                </Button>
+                </SmartButton>
               }
             >
               <p className="py-2 text-sm text-muted-foreground">
@@ -189,10 +188,10 @@ export default function OverlaysPage() {
           <div className="flex flex-wrap gap-3">
             <SmartSheet
               trigger={
-                <Button variant="outline" size="sm">
+                <SmartButton variant="outline" size="sm">
                   <PanelRight className="size-3.5" />
                   Open sheet
-                </Button>
+                </SmartButton>
               }
               header={{
                 title: "User settings",
@@ -202,12 +201,12 @@ export default function OverlaysPage() {
                 <>
                   <SheetClose
                     render={
-                      <Button variant="outline" size="sm">
+                      <SmartButton variant="outline" size="sm">
                         Cancel
-                      </Button>
+                      </SmartButton>
                     }
                   />
-                  <Button size="sm">Save</Button>
+                  <SmartButton size="sm">Save</SmartButton>
                 </>
               }
             >
@@ -239,9 +238,9 @@ export default function OverlaysPage() {
 
             <SmartSheet
               trigger={
-                <Button variant="outline" size="sm" className="gap-1.5">
+                <SmartButton variant="outline" size="sm" className="gap-1.5">
                   ← Left side
-                </Button>
+                </SmartButton>
               }
               side="left"
               header={{
@@ -280,9 +279,9 @@ export default function OverlaysPage() {
               }}
               footer={
                 <DrawerClose asChild>
-                  <Button variant="outline" className="w-full">
+                  <SmartButton variant="outline" className="w-full">
                     Cancel
-                  </Button>
+                  </SmartButton>
                 </DrawerClose>
               }
             >
@@ -324,10 +323,10 @@ export default function OverlaysPage() {
             {/* Trigger-driven */}
             <SmartConfirmDialog
               trigger={
-                <Button variant="destructive" size="sm">
+                <SmartButton variant="destructive" size="sm">
                   <Trash2 className="size-3.5" />
                   Delete item
-                </Button>
+                </SmartButton>
               }
               title="Delete this item?"
               description="This will permanently remove the item and all its data. This action cannot be undone."
@@ -337,14 +336,14 @@ export default function OverlaysPage() {
             />
 
             {/* Controlled — opened by a separate button */}
-            <Button
+            <SmartButton
               variant="outline"
               size="sm"
               onClick={() => setConfirmOpen(true)}
             >
               <MoreHorizontal className="size-3.5" />
               Controlled confirm
-            </Button>
+            </SmartButton>
             <SmartConfirmDialog
               open={confirmOpen}
               onOpenChange={setConfirmOpen}

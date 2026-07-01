@@ -38,6 +38,8 @@ export interface SmartCheckboxProps extends Omit<
  * />
  * ```
  */
+export { Checkbox }
+
 export function SmartCheckbox({
   label,
   description,

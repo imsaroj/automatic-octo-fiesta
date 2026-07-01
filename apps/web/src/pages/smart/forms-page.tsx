@@ -20,8 +20,8 @@ import { SmartField } from "@workspace/ui/smart-components/smart-field"
 import { SmartLabel } from "@workspace/ui/smart-components/smart-label"
 import { SmartButton } from "@workspace/ui/smart-components/smart-button"
 import { SmartCard } from "@workspace/ui/smart-components/smart-card"
-import { Separator } from "@workspace/ui/components/separator"
-import { Input } from "@workspace/ui/components/input"
+import { Separator } from "@workspace/ui/smart-components/smart-separator"
+import { Input } from "@workspace/ui/smart-components/smart-input"
 
 const COUNTRIES = [
   { value: "kr", label: "South Korea" },

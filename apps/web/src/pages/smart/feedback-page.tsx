@@ -26,8 +26,8 @@ import { SmartCard } from "@workspace/ui/smart-components/smart-card"
 import { SmartSpinner } from "@workspace/ui/smart-components/spinner"
 import { SmartLoadingOverlay } from "@workspace/ui/smart-components/loading-overlay"
 import { toast } from "@workspace/ui/smart-components/smart-toast"
-import { Button } from "@workspace/ui/components/button"
-import { Separator } from "@workspace/ui/components/separator"
+import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
+import { Separator } from "@workspace/ui/smart-components/smart-separator"
 
 const FAQ_ITEMS = [
   {

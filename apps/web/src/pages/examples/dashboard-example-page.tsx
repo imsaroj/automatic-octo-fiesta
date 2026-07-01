@@ -26,14 +26,14 @@ import {
   SmartPageContent,
   SmartPageSection,
 } from "@workspace/ui/smart-components/page"
-import { Button } from "@workspace/ui/components/button"
+import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/card"
+} from "@workspace/ui/smart-components/smart-card"
 
 // ─── Metric card ─────────────────────────────────────────────────────────────
 

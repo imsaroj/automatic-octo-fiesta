@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import { Plus } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
-import { Badge } from "@workspace/ui/components/badge"
+import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
+import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
 import {
   SmartPage,
   SmartPageHeader,

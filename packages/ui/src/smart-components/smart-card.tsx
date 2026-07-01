@@ -63,6 +63,16 @@ export interface SmartCardProps {
  * Fall back to the native Card primitives when the header contains a
  * multi-row or non-linear layout (search bar + filter dropdown, etc.).
  */
+export {
+  Card,
+  CardHeader,
+  CardContent,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+  CardAction,
+}
+
 export function SmartCard({
   header,
   footer,

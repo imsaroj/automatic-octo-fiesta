@@ -3,6 +3,7 @@
 import * as React from "react"
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -10,6 +11,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@workspace/ui/components/sheet"
+
+export { SheetClose }
 
 export interface SmartSheetHeader {
   title: React.ReactNode

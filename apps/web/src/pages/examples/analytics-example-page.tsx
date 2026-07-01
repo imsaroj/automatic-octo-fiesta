@@ -25,9 +25,13 @@ import {
   TrendingDown,
   TrendingUp,
 } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
-import { Badge } from "@workspace/ui/components/badge"
-import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
+import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
+import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from "@workspace/ui/smart-components/smart-card"
 import {
   SmartPage,
   SmartPageHeader,

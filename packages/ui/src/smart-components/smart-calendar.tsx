@@ -46,6 +46,8 @@ export interface SmartCalendarProps {
  * />
  * ```
  */
+export { Calendar }
+
 export function SmartCalendar({
   label,
   description,

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { Plus, Trash2 } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
+import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
 import {
   SmartPage,
   SmartPageHeader,

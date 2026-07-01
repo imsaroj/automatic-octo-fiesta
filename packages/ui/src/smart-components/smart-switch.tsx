@@ -38,6 +38,8 @@ export interface SmartSwitchProps extends Omit<
  * />
  * ```
  */
+export { Switch }
+
 export function SmartSwitch({
   label,
   description,

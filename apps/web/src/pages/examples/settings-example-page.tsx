@@ -11,11 +11,14 @@
 
 import { useState } from "react"
 import { Bell, CreditCard, Key, Palette, Shield, User } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
-import { Switch } from "@workspace/ui/components/switch"
-import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
+import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
+import { Input } from "@workspace/ui/smart-components/smart-input"
+import { Label } from "@workspace/ui/smart-components/smart-label"
+import { Switch } from "@workspace/ui/smart-components/smart-switch"
+import {
+  Avatar,
+  AvatarFallback,
+} from "@workspace/ui/smart-components/smart-avatar"
 import {
   SmartPage,
   SmartPageHeader,
