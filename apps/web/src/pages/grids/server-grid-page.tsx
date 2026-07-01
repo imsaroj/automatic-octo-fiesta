@@ -24,127 +24,25 @@ import {
   type ServerFilter,
 } from "@workspace/ui/data-grid"
 import { formatCurrency } from "@workspace/ui/lib/format"
-
-/* --------------------------------- types ---------------------------------- */
-
-type Status = "Active" | "Pending" | "Inactive"
-
-interface UserRow {
-  id: number
-  name: string
-  email: string
-  role: string
-  status: Status
-  mrr: number
-}
-
-/* --------------------------------- data ----------------------------------- */
-
-const FIRST = [
-  "Ada",
-  "Alan",
-  "Grace",
-  "Linus",
-  "Edsger",
-  "Barbara",
-  "Ken",
-  "Margaret",
-  "Donald",
-  "Katherine",
-]
-const LAST = [
-  "Lovelace",
-  "Turing",
-  "Hopper",
-  "Torvalds",
-  "Dijkstra",
-  "Liskov",
-  "Thompson",
-  "Hamilton",
-  "Knuth",
-  "Johnson",
-]
-const ROLES = [
-  "Admin",
-  "Manager",
-  "Developer",
-  "Designer",
-  "QA Engineer",
-  "Support",
-]
-const STATUSES: Status[] = ["Active", "Pending", "Inactive"]
-
-const ALL_ROWS: UserRow[] = Array.from({ length: 300 }, (_, i) => ({
-  id: i + 1,
-  name: `${FIRST[i % FIRST.length]} ${LAST[(i * 3) % LAST.length]}`,
-  email:
-    `${FIRST[i % FIRST.length]}.${LAST[(i * 3) % LAST.length]}`.toLowerCase() +
-    "@example.com",
-  role: ROLES[i % ROLES.length],
-  status: STATUSES[i % STATUSES.length],
-  mrr: 19 + ((i * 37) % 980),
-}))
-
-/* ----------------------------- mock fetch --------------------------------- */
-
-function applyFilters(rows: UserRow[], filters: ServerFilter[]): UserRow[] {
-  return rows.filter((row) =>
-    filters.every((f) => {
-      const val = String(row[f.field as keyof UserRow] ?? "").toLowerCase()
-      const term = String(f.value ?? "").toLowerCase()
-      if (f.type === "equals") return val === term
-      if (f.type === "contains") return val.includes(term)
-      return true
-    })
-  )
-}
-
-async function fetchUsersPage(
-  params: ServerFetchParams,
-  signal: AbortSignal,
-  opts: { simulateError?: boolean } = {}
-): Promise<ServerFetchResult<UserRow>> {
-  await new Promise((resolve, reject) => {
-    const t = window.setTimeout(resolve, 350)
-    signal.addEventListener("abort", () => {
-      window.clearTimeout(t)
-      reject(new DOMException("Aborted", "AbortError"))
-    })
-  })
-  if (opts.simulateError) throw new Error("Server error (simulated)")
-
-  let rows = applyFilters(ALL_ROWS, params.filters ?? [])
-
-  if (params.sort?.length) {
-    const { field, dir } = params.sort[0]
-    rows = [...rows].sort((a, b) => {
-      const av = a[field as keyof UserRow]
-      const bv = b[field as keyof UserRow]
-      if (av == null || bv == null) return 0
-      const cmp = av < bv ? -1 : av > bv ? 1 : 0
-      return dir === "asc" ? cmp : -cmp
-    })
-  }
-
-  const total = rows.length
-  const { startRow = 0, endRow = 20 } = params
-  return { rows: rows.slice(startRow, endRow), total }
-}
+import { fetchUsersPage, type UserRow } from "@/api/users"
 
 /* --------------------------------- columns -------------------------------- */
 
-const statusVariant: Record<Status, "default" | "secondary" | "destructive"> = {
+const statusVariant: Record<
+  UserRow["status"],
+  "default" | "secondary" | "destructive"
+> = {
   Active: "default",
   Pending: "secondary",
   Inactive: "destructive",
 }
 
-function StatusCell({ value }: { value?: Status }) {
+function StatusCell({ value }: { value?: UserRow["status"] }) {
   if (!value) return null
   return <SmartBadge variant={statusVariant[value]}>{value}</SmartBadge>
 }
 
-/* --------------------------------- search --------------------------------- */
+/* ------------------------------- search form ------------------------------ */
 
 interface UserSearch {
   name: string
@@ -153,6 +51,16 @@ interface UserSearch {
 }
 
 const EMPTY_SEARCH: UserSearch = { name: "", role: "", status: "" }
+
+const ROLES = [
+  "Admin",
+  "Manager",
+  "Developer",
+  "Designer",
+  "QA Engineer",
+  "Support",
+]
+const STATUSES: UserRow["status"][] = ["Active", "Pending", "Inactive"]
 
 function toFilters(values: UserSearch): ServerFilter[] {
   const filters: ServerFilter[] = []
@@ -189,6 +97,9 @@ export default function ServerGridPage() {
   const [search, setSearch] = useState<UserSearch>(EMPTY_SEARCH)
   const [appliedFilters, setAppliedFilters] = useState<ServerFilter[]>([])
   const [simulateError, setSimulateError] = useState(false)
+
+  // Mirror into a ref so the stable `fetchRows` closure always reads the latest
+  // value without being re-created.
   const simulateErrorRef = useRef(simulateError)
   // eslint-disable-next-line react-hooks/refs
   simulateErrorRef.current = simulateError
@@ -226,11 +137,16 @@ export default function ServerGridPage() {
     []
   )
 
-  const handleSearch = () => setAppliedFilters(toFilters(search))
-  const handleReset = () => {
+  // Search applies the form values; a fresh array identity tells the grid to
+  // reset to page 1 and refetch (see SmartServerGrid's `filters` prop).
+  const handleSearch = useCallback(() => {
+    setAppliedFilters(toFilters(search))
+  }, [search])
+
+  const handleReset = useCallback(() => {
     setSearch(EMPTY_SEARCH)
     setAppliedFilters([])
-  }
+  }, [])
 
   const toggleError = () => {
     const next = !simulateError
@@ -251,8 +167,9 @@ export default function ServerGridPage() {
           <div>
             <SmartPageTitle>Server Driven Grid</SmartPageTitle>
             <SmartPageDescription>
-              Server-side sort, pagination and cross-page selection — data is
-              fetched per page from the server.
+              AG Grid Community + MSW: a dedicated search form, server-side
+              sorting & pagination, infinite-scroll mode, Excel export, and
+              cross-page selection.
             </SmartPageDescription>
           </div>
         </div>
