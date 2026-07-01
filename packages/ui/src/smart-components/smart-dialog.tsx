@@ -11,6 +11,8 @@ import {
   DialogTrigger,
 } from "@workspace/ui/components/dialog"
 
+export { DialogContent, DialogTitle, DialogDescription }
+
 export interface SmartDialogHeader {
   title: React.ReactNode
   subtitle?: React.ReactNode

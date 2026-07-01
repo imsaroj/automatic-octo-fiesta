@@ -1,8 +1,6 @@
 import * as React from "react"
 import {
-  GalleryVerticalEndIcon,
-  AudioLinesIcon,
-  TerminalIcon,
+  ComponentIcon,
   FrameIcon,
   PieChartIcon,
   MapIcon,
@@ -16,11 +14,11 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarTrigger,
 } from "@workspace/ui/components/sidebar"
 import { NavMain } from "@/components/dashboard/nav-main"
 import { NavProjects } from "@/components/dashboard/nav-projects"
 import { NavUser } from "@/components/dashboard/nav-user"
-import { TeamSwitcher } from "@/components/dashboard/team-switcher"
 
 const data = {
   user: {
@@ -28,11 +26,6 @@ const data = {
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  teams: [
-    { name: "Acme Inc", logo: <GalleryVerticalEndIcon />, plan: "Enterprise" },
-    { name: "Acme Corp.", logo: <AudioLinesIcon />, plan: "Startup" },
-    { name: "Evil Corp.", logo: <TerminalIcon />, plan: "Free" },
-  ],
   navMain: [
     {
       title: "Grids",
@@ -90,7 +83,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <div className="flex items-center gap-2 px-2 py-1 group-data-[collapsible=icon]:justify-center">
+          <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground group-data-[collapsible=icon]:hidden">
+            <ComponentIcon className="size-5" />
+          </div>
+          <span className="truncate text-base font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
+            smart-component
+          </span>
+          <SidebarTrigger className="ml-auto group-data-[collapsible=icon]:ml-0" />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
