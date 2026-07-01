@@ -1,12 +1,12 @@
 import { Search, X } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@workspace/ui/lib/utils"
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
-} from "@/components/input-group"
+} from "@workspace/ui/components/input-group"
 
 export interface SmartSearchInputProps {
   value: string

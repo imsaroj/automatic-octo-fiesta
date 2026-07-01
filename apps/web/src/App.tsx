@@ -3,6 +3,13 @@ import { PlaygroundShell } from "@/components/dashboard/playground-shell"
 
 import DashboardPage from "@/pages/dashboard-page"
 
+import CrudExamplePage from "@/pages/examples/crud-example-page"
+import DashboardExamplePage from "@/pages/examples/dashboard-example-page"
+import SettingsExamplePage from "@/pages/examples/settings-example-page"
+import DetailExamplePage from "@/pages/examples/detail-example-page"
+import WizardExamplePage from "@/pages/examples/wizard-example-page"
+import AnalyticsExamplePage from "@/pages/examples/analytics-example-page"
+
 import HistoryPage from "@/pages/playground/history-page"
 import StarredPage from "@/pages/playground/starred-page"
 import PlaygroundSettingsPage from "@/pages/playground/settings-page"
@@ -59,6 +66,14 @@ export function App() {
           <Route path="/projects/design-engineering" element={<DesignEngineeringPage />} />
           <Route path="/projects/sales-marketing" element={<SalesMarketingPage />} />
           <Route path="/projects/travel" element={<TravelPage />} />
+
+          {/* Smart-components examples */}
+          <Route path="/examples/crud" element={<CrudExamplePage />} />
+          <Route path="/examples/dashboard" element={<DashboardExamplePage />} />
+          <Route path="/examples/settings" element={<SettingsExamplePage />} />
+          <Route path="/examples/detail" element={<DetailExamplePage />} />
+          <Route path="/examples/wizard" element={<WizardExamplePage />} />
+          <Route path="/examples/analytics" element={<AnalyticsExamplePage />} />
         </Routes>
       </PlaygroundShell>
     </BrowserRouter>

@@ -10,6 +10,7 @@ import {
   FrameIcon,
   PieChartIcon,
   MapIcon,
+  LayoutDashboardIcon,
 } from "lucide-react"
 import {
   Sidebar,
@@ -75,6 +76,19 @@ const data = {
         { title: "Team", url: "/settings/team" },
         { title: "Billing", url: "/settings/billing" },
         { title: "Limits", url: "/settings/limits" },
+      ],
+    },
+    {
+      title: "Examples",
+      url: "/examples/crud",
+      icon: <LayoutDashboardIcon />,
+      items: [
+        { title: "CRUD Grid", url: "/examples/crud" },
+        { title: "Dashboard", url: "/examples/dashboard" },
+        { title: "Settings", url: "/examples/settings" },
+        { title: "Detail", url: "/examples/detail" },
+        { title: "Wizard", url: "/examples/wizard" },
+        { title: "Analytics", url: "/examples/analytics" },
       ],
     },
   ],

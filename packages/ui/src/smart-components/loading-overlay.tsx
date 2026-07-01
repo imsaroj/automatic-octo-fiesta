@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
-import { SmartSpinner } from "@/smart-components/spinner"
+import { cn } from "@workspace/ui/lib/utils";
+import { SmartSpinner } from "@workspace/ui/smart-components/spinner"
 
 export interface SmartLoadingOverlayProps {
   /** When true, the overlay is shown. */

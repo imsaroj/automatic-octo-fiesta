@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@workspace/ui/lib/utils";
 import type { HTMLAttributes } from "react";
 
 export interface SSpinnerProps extends HTMLAttributes<HTMLSpanElement> {
