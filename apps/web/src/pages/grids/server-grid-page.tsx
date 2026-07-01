@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from "react"
 import { Bug, ListChecks, RotateCw, Search } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
-import { Badge } from "@workspace/ui/components/badge"
+import { SmartButton } from "@workspace/ui/smart-components/smart-button"
+import { SmartBadge } from "@workspace/ui/smart-components/smart-badge"
 import {
   SmartPage,
   SmartPageHeader,
@@ -141,7 +141,7 @@ const statusVariant: Record<Status, "default" | "secondary" | "destructive"> = {
 
 function StatusCell({ value }: { value?: Status }) {
   if (!value) return null
-  return <Badge variant={statusVariant[value]}>{value}</Badge>
+  return <SmartBadge variant={statusVariant[value]}>{value}</SmartBadge>
 }
 
 /* --------------------------------- search --------------------------------- */
@@ -259,27 +259,27 @@ export default function ServerGridPage() {
       </SmartPageHeader>
 
       <SmartToolbar>
-        <Button
+        <SmartButton
           variant={simulateError ? "destructive" : "outline"}
           size="sm"
           onClick={toggleError}
         >
           <Bug className="h-4 w-4" />
           {simulateError ? "Erroring (click to fix)" : "Simulate error"}
-        </Button>
-        <Button variant="outline" size="sm" onClick={logSelected}>
+        </SmartButton>
+        <SmartButton variant="outline" size="sm" onClick={logSelected}>
           <ListChecks className="h-4 w-4" />
           Log selected
-        </Button>
+        </SmartButton>
         <span className="ml-auto" />
-        <Button
+        <SmartButton
           variant="ghost"
           size="sm"
           onClick={() => gridRef.current?.reload()}
         >
           <RotateCw className="h-4 w-4" />
           Reload
-        </Button>
+        </SmartButton>
       </SmartToolbar>
 
       <SmartPageSearch className="flex-wrap items-end py-3">
@@ -331,12 +331,12 @@ export default function ServerGridPage() {
           </select>
         </div>
         <SmartPageActions>
-          <Button variant="ghost" size="sm" onClick={handleReset}>
+          <SmartButton variant="ghost" size="sm" onClick={handleReset}>
             Reset
-          </Button>
-          <Button size="sm" onClick={handleSearch}>
+          </SmartButton>
+          <SmartButton size="sm" onClick={handleSearch}>
             <Search className="h-4 w-4" /> Search
-          </Button>
+          </SmartButton>
         </SmartPageActions>
       </SmartPageSearch>
 

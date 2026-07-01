@@ -170,7 +170,7 @@ export const SmartPageActions = React.forwardRef<
     <div
       ref={ref}
       data-slot="page-actions"
-      className={cn("flex shrink-0 items-center gap-2", className)}
+      className={cn("ml-auto flex shrink-0 items-center gap-2", className)}
       {...props}
     />
   )
