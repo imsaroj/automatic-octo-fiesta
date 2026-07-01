@@ -1,27 +1,33 @@
 import { useState } from "react"
 import {
-  Trash2,
-  Edit,
-  PanelRight,
-  Layers,
-  MoreHorizontal,
   Copy,
-  Star,
-  Share2,
+  Edit,
   FolderOpen,
+  Layers,
   Link,
+  MoreHorizontal,
+  PanelRight,
+  Share2,
+  Star,
+  Trash2,
 } from "lucide-react"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
   SmartPageContent,
+  SmartPageDescription,
+  SmartPageHeader,
   SmartPageSection,
+  SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
 import { SmartDialog } from "@workspace/ui/smart-components/smart-dialog"
-import { SmartSheet } from "@workspace/ui/smart-components/smart-sheet"
-import { SmartDrawer } from "@workspace/ui/smart-components/smart-drawer"
+import {
+  SheetClose,
+  SmartSheet,
+} from "@workspace/ui/smart-components/smart-sheet"
+import {
+  DrawerClose,
+  SmartDrawer,
+} from "@workspace/ui/smart-components/smart-drawer"
 import { SmartConfirmDialog } from "@workspace/ui/smart-components/smart-confirm-dialog"
 import { SmartContextMenu } from "@workspace/ui/smart-components/smart-context-menu"
 import { SmartInput } from "@workspace/ui/smart-components/smart-input"
@@ -29,8 +35,6 @@ import { SmartTextarea } from "@workspace/ui/smart-components/smart-textarea"
 import { SmartSelect } from "@workspace/ui/smart-components/smart-select"
 import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
 import { SmartButton } from "@workspace/ui/smart-components/smart-button"
-import { SheetClose } from "@workspace/ui/smart-components/smart-sheet"
-import { DrawerClose } from "@workspace/ui/smart-components/smart-drawer"
 
 const ROLE_OPTIONS = [
   { value: "admin", label: "Admin" },
@@ -86,7 +90,6 @@ const FILE_CONTEXT_ITEMS = [
 
 export default function OverlaysPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [sheetOpen, setSheetOpen] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deleted, setDeleted] = useState(false)
@@ -103,7 +106,7 @@ export default function OverlaysPage() {
         </div>
       </SmartPageHeader>
 
-      <SmartPageContent maxWidth="3xl" padding="md">
+      <SmartPageContent maxWidth="2xl" padding="md">
         {/* ── SmartDialog ─────────────────────────────────────── */}
         <SmartPageSection
           title="SmartDialog"

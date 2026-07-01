@@ -58,7 +58,6 @@ export function SmartCombobox({
   optional,
   fieldClassName,
   className,
-  disabled,
   ...comboboxProps
 }: SmartComboboxProps) {
   const id = React.useId()

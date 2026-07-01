@@ -84,4 +84,5 @@ export const SmartPageFooter = React.forwardRef<
     </footer>
   )
 })
-;(SmartPageFooter as any)[SMART_PAGE_SLOT] = "footer"
+;(SmartPageFooter as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
+  "footer"

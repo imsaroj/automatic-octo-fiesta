@@ -67,4 +67,5 @@ export const SmartPageFilters = React.forwardRef<
     </div>
   )
 })
-;(SmartPageFilters as any)[SMART_PAGE_SLOT] = "filters"
+;(SmartPageFilters as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
+  "filters"

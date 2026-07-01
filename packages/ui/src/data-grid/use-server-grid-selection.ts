@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type RefObject } from "react"
+import { useCallback, useEffect, useRef, useState, type RefObject } from "react"
 import type { GridApi, RowSelectedEvent } from "ag-grid-community"
 
 /** What changed in a {@link SmartServerGridProps.onSelectionChange} event. */
@@ -44,7 +44,9 @@ export function useServerGridSelection<TRow>(
   const applyingSelectionRef = useRef(false)
   // Latest callback read without re-creating the memoized handlers.
   const onSelectionChangeRef = useRef(onSelectionChange)
-  onSelectionChangeRef.current = onSelectionChange
+  useEffect(() => {
+    onSelectionChangeRef.current = onSelectionChange
+  })
 
   const [selectedCount, setSelectedCount] = useState(0)
 

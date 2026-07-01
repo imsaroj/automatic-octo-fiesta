@@ -17,6 +17,7 @@ import {
  * SmartPage reads this to bucket children without relying on class identity,
  * which would break with HOCs or lazy imports.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const SMART_PAGE_SLOT = Symbol.for("@workspace/smart-page-slot")
 
 export type PageSlot =
@@ -67,7 +68,9 @@ function collectSlots(children: React.ReactNode): SlotBuckets {
       b.body.push(child)
       return
     }
-    const slot = (child.type as any)[SMART_PAGE_SLOT] as PageSlot | undefined
+    const slot = (child.type as Record<symbol, unknown>)[SMART_PAGE_SLOT] as
+      | PageSlot
+      | undefined
     switch (slot) {
       case "header":
         b.header.push(child)

@@ -86,7 +86,8 @@ export const SmartPageHeader = React.forwardRef<
     </header>
   )
 })
-;(SmartPageHeader as any)[SMART_PAGE_SLOT] = "header"
+;(SmartPageHeader as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
+  "header"
 
 // ─── SmartPageTitle ────────────────────────────────────────────────────────────
 

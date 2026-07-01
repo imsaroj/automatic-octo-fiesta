@@ -60,4 +60,5 @@ export const SmartToolbar = React.forwardRef<HTMLDivElement, SmartToolbarProps>(
     )
   }
 )
-;(SmartToolbar as any)[SMART_PAGE_SLOT] = "toolbar"
+;(SmartToolbar as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
+  "toolbar"

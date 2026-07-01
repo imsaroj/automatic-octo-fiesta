@@ -108,4 +108,5 @@ export const SmartGridArea = React.forwardRef<
     </div>
   )
 })
-;(SmartGridArea as any)[SMART_PAGE_SLOT] = "grid-area"
+;(SmartGridArea as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
+  "grid-area"

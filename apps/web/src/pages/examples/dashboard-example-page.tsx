@@ -136,7 +136,7 @@ export default function DashboardExamplePage() {
       </SmartPageHeader>
 
       {/* Hero scrolls away — intentional for dashboard pages */}
-      <SmartPageHero background="muted" height="sm">
+      <SmartPageHero background={"muted"} height="sm">
         <p className="text-sm text-muted-foreground">
           Good morning — here's how things look across your workspace today.
         </p>

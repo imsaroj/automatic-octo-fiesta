@@ -86,4 +86,4 @@ export const SmartPageHero = React.forwardRef<
     </div>
   )
 })
-;(SmartPageHero as any)[SMART_PAGE_SLOT] = "hero"
+;(SmartPageHero as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] = "hero"

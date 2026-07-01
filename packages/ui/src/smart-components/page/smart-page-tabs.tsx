@@ -85,7 +85,9 @@ export function SmartPageTabs({
 
   React.Children.forEach(children, (child) => {
     if (!React.isValidElement(child)) return
-    const role = (child.type as any)._smartTabRole as string | undefined
+    const role = (child.type as Record<string, unknown>)._smartTabRole as
+      | string
+      | undefined
     if (role === "tab") triggers.push(child)
     else if (role === "panel") panels.push(child)
     else triggers.push(child) // unknown children fall into trigger area
@@ -110,7 +112,7 @@ export function SmartPageTabs({
     </Tabs>
   )
 }
-;(SmartPageTabs as any)[SMART_PAGE_SLOT] = "tabs"
+;(SmartPageTabs as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] = "tabs"
 
 // ─── SmartPageTab ──────────────────────────────────────────────────────────────
 
@@ -146,7 +148,7 @@ export function SmartPageTab({
     </TabsTrigger>
   )
 }
-;(SmartPageTab as any)._smartTabRole = "tab"
+;(SmartPageTab as unknown as Record<string, unknown>)._smartTabRole = "tab"
 
 // ─── SmartPageTabPanel ─────────────────────────────────────────────────────────
 
@@ -179,4 +181,5 @@ export function SmartPageTabPanel({
     </TabsContent>
   )
 }
-;(SmartPageTabPanel as any)._smartTabRole = "panel"
+;(SmartPageTabPanel as unknown as Record<string, unknown>)._smartTabRole =
+  "panel"

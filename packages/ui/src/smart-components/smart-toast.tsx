@@ -24,6 +24,7 @@ type ToastOptions = Parameters<typeof sonnerToast.success>[1]
  * Mount `<SmartToaster />` once in your app's root to render toasts.
  * All toasts are dismissible via Escape or clicking outside.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const toast = {
   success: (message: string, options?: ToastOptions) =>
     sonnerToast.success(message, options),

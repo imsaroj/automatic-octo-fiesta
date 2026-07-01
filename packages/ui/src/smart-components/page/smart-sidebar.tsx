@@ -118,4 +118,5 @@ export const SmartSidebar = React.forwardRef<HTMLElement, SmartSidebarProps>(
     )
   }
 )
-;(SmartSidebar as any)[SMART_PAGE_SLOT] = "sidebar"
+;(SmartSidebar as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
+  "sidebar"

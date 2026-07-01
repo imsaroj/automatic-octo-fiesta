@@ -58,4 +58,5 @@ export const SmartPageStatusBar = React.forwardRef<
     </div>
   )
 })
-;(SmartPageStatusBar as any)[SMART_PAGE_SLOT] = "status-bar"
+;(SmartPageStatusBar as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
+  "status-bar"

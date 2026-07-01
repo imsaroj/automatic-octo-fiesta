@@ -63,4 +63,5 @@ export const SmartPageSearch = React.forwardRef<
     </div>
   )
 })
-;(SmartPageSearch as any)[SMART_PAGE_SLOT] = "search"
+;(SmartPageSearch as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
+  "search"

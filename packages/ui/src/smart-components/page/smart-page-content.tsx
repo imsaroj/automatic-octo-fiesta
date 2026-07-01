@@ -122,4 +122,5 @@ export const SmartPageContent = React.forwardRef<
     </div>
   )
 })
-;(SmartPageContent as any)[SMART_PAGE_SLOT] = "content"
+;(SmartPageContent as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
+  "content"

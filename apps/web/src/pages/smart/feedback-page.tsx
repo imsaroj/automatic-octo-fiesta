@@ -1,32 +1,32 @@
 import { useState } from "react"
 import {
-  CheckCircle2,
   AlertCircle,
-  Info,
   AlertTriangle,
-  Zap,
-  Rocket,
-  Shield,
-  Bell,
+  CheckCircle2,
+  Info,
   RefreshCw,
+  Rocket,
+  Zap,
 } from "lucide-react"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
   SmartPageContent,
+  SmartPageDescription,
+  SmartPageHeader,
   SmartPageSection,
+  SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
 import { SmartBadge } from "@workspace/ui/smart-components/smart-badge"
-import { SmartButton } from "@workspace/ui/smart-components/smart-button"
+import {
+  SmartButton,
+  SmartButton as Button,
+} from "@workspace/ui/smart-components/smart-button"
 import { SmartAlert } from "@workspace/ui/smart-components/smart-alert"
 import { SmartAccordion } from "@workspace/ui/smart-components/smart-accordion"
 import { SmartCard } from "@workspace/ui/smart-components/smart-card"
 import { SmartSpinner } from "@workspace/ui/smart-components/spinner"
 import { SmartLoadingOverlay } from "@workspace/ui/smart-components/loading-overlay"
 import { toast } from "@workspace/ui/smart-components/smart-toast"
-import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
 import { Separator } from "@workspace/ui/smart-components/smart-separator"
 
 const FAQ_ITEMS = [
@@ -93,7 +93,7 @@ export default function FeedbackPage() {
         </div>
       </SmartPageHeader>
 
-      <SmartPageContent maxWidth="3xl" padding="md">
+      <SmartPageContent maxWidth="2xl" padding="md">
         {/* ── SmartBadge ─────────────────────────────────────── */}
         <SmartPageSection
           title="SmartBadge"
