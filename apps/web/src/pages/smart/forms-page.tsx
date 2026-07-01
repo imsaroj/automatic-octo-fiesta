@@ -8,7 +8,7 @@ import {
   SmartPageSection,
   SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
-import { Input, SmartInput } from "@workspace/ui/smart-components/smart-input"
+import { SmartInput } from "@workspace/ui/smart-components/smart-input"
 import { SmartTextarea } from "@workspace/ui/smart-components/smart-textarea"
 import { SmartCheckbox } from "@workspace/ui/smart-components/smart-checkbox"
 import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
@@ -186,11 +186,11 @@ export default function FormsPage() {
               description="Your secret key — never share this."
               required
             >
-              <Input type="password" placeholder="sk-…" />
+              <SmartInput type="password" placeholder="sk-…" />
             </SmartField>
             <div className="flex flex-col gap-1.5">
               <SmartLabel required>Custom field</SmartLabel>
-              <Input placeholder="Any native input here" />
+              <SmartInput placeholder="Any native input here" />
             </div>
           </div>
         </SmartPageSection>
@@ -275,7 +275,7 @@ export default function FormsPage() {
               label="Subscribe to newsletter"
               description="Weekly tips and updates. Unsubscribe any time."
               checked={newsletter}
-              onCheckedChange={(v) => setNewsletter(v === true)}
+              onCheckedChange={(v) => setNewsletter(v)}
             />
             <SmartCheckbox
               label={
@@ -291,7 +291,7 @@ export default function FormsPage() {
                 </>
               }
               checked={terms}
-              onCheckedChange={(v) => setTerms(v === true)}
+              onCheckedChange={(v) => setTerms(v)}
               required
             />
           </div>

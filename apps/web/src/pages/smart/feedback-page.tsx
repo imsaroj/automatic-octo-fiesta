@@ -26,7 +26,7 @@ import { SmartAccordion } from "@workspace/ui/smart-components/smart-accordion"
 import { SmartCard } from "@workspace/ui/smart-components/smart-card"
 import { SmartSpinner } from "@workspace/ui/smart-components/spinner"
 import { SmartLoadingOverlay } from "@workspace/ui/smart-components/loading-overlay"
-import { toast } from "@workspace/ui/smart-components/smart-toast"
+import { toast } from "@workspace/ui/smart-components/smart-toaster"
 import { Separator } from "@workspace/ui/smart-components/smart-separator"
 
 const FAQ_ITEMS = [

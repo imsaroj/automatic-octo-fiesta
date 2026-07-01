@@ -4,13 +4,13 @@ import { createRoot } from "react-dom/client"
 import "@workspace/ui/globals.css"
 import { App } from "./App.tsx"
 import { ThemeProvider } from "@/components/theme-provider.tsx"
-import { SmartToaster } from "@workspace/ui/smart-components/smart-toast"
+import { SmartToaster } from "@workspace/ui/smart-components/smart-toaster"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
       <App />
-      <SmartToaster />
+      <SmartToaster position="top-right" richColors closeButton />
     </ThemeProvider>
   </StrictMode>
 )
