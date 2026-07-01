@@ -60,6 +60,7 @@
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
     "./smart-components/page": "./src/smart-components/page/index.ts",
-    "./smart-components/*": "./src/smart-components/*.tsx"
+    "./smart-components/*": "./src/smart-components/*.tsx",
+    "./data-grid": "./src/data-grid/index.ts"
   }
 }

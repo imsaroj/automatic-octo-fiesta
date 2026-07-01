@@ -3,6 +3,13 @@ import { PlaygroundShell } from "@/components/dashboard/playground-shell"
 
 import DashboardPage from "@/pages/dashboard-page"
 
+// Grids
+import SimpleGridPage from "@/pages/grids/simple-grid-page"
+import ServerGridPage from "@/pages/grids/server-grid-page"
+import InfiniteGridPage from "@/pages/grids/infinite-grid-page"
+import EditableGridPage from "@/pages/grids/editable-grid-page"
+import MasterDetailGridPage from "@/pages/grids/master-detail-grid-page"
+
 import CrudExamplePage from "@/pages/examples/crud-example-page"
 import DashboardExamplePage from "@/pages/examples/dashboard-example-page"
 import SettingsExamplePage from "@/pages/examples/settings-example-page"
@@ -39,6 +46,16 @@ export function App() {
         <Routes>
           {/* Overview */}
           <Route path="/" element={<DashboardPage />} />
+
+          {/* Grids */}
+          <Route path="/grids/simple" element={<SimpleGridPage />} />
+          <Route path="/grids/server" element={<ServerGridPage />} />
+          <Route path="/grids/infinite" element={<InfiniteGridPage />} />
+          <Route path="/grids/editable" element={<EditableGridPage />} />
+          <Route
+            path="/grids/master-detail"
+            element={<MasterDetailGridPage />}
+          />
 
           {/* Playground */}
           <Route path="/playground/history" element={<HistoryPage />} />

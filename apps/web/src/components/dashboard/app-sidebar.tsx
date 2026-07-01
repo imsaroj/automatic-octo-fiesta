@@ -11,6 +11,7 @@ import {
   PieChartIcon,
   MapIcon,
   LayoutDashboardIcon,
+  TableIcon,
 } from "lucide-react"
 import {
   Sidebar,
@@ -36,6 +37,18 @@ const data = {
     { name: "Evil Corp.", logo: <TerminalIcon />, plan: "Free" },
   ],
   navMain: [
+    {
+      title: "Grids",
+      url: "/grids/simple",
+      icon: <TableIcon />,
+      items: [
+        { title: "Simple Grid", url: "/grids/simple" },
+        { title: "Server Driven Grid", url: "/grids/server" },
+        { title: "Infinite Scroll Grid", url: "/grids/infinite" },
+        { title: "Editable Grid", url: "/grids/editable" },
+        { title: "Master Detail Grid", url: "/grids/master-detail" },
+      ],
+    },
     {
       title: "Playground",
       url: "/playground/history",

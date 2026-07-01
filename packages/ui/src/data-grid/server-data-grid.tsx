@@ -23,9 +23,9 @@ import {
   type RowSelectionOptions,
 } from "ag-grid-community"
 import { AlertCircle, Columns3, FileSpreadsheet, RefreshCw } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { downloadXlsx, timestampForFilename } from "@/lib/xlsx"
-import { Button } from "@/components/button"
+import { cn } from "@workspace/ui/lib/utils"
+import { downloadXlsx, timestampForFilename } from "@workspace/ui/lib/xlsx"
+import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -33,15 +33,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/dropdown-menu"
-import { SmartLoadingOverlay } from "@/smart-components/loading-overlay"
+} from "@workspace/ui/components/dropdown-menu"
+import { SmartLoadingOverlay } from "@workspace/ui/smart-components/loading-overlay"
 import {
   buildServerFetchParams,
   type ServerFetchParams,
   type ServerFetchResult,
   type ServerFilter,
-} from "@/data-grid/pagination"
-import { dataGridTheme } from "@/data-grid/grid-theme"
+} from "./pagination"
+import { dataGridTheme } from "./grid-theme"
 import {
   ensureGridModules,
   NoRowsOverlay,
@@ -51,7 +51,7 @@ import {
   type DataGridColumn,
   type DataGridDensity,
   type NoRowsParams,
-} from "@/data-grid/grid-internals"
+} from "./grid-internals"
 import {
   collectGridExport,
   debounce,
@@ -59,11 +59,11 @@ import {
   mergeServerFilters,
   readPersistedGridState,
   writePersistedGridState,
-} from "@/data-grid/server-grid-internals"
+} from "./server-grid-internals"
 import {
   useServerGridSelection,
   type ServerSelection,
-} from "@/data-grid/use-server-grid-selection"
+} from "./use-server-grid-selection"
 
 // Re-exported so `ServerSelection` stays importable from the package even
 // though its definition lives in the selection hook module.

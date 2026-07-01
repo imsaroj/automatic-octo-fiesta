@@ -3,7 +3,7 @@ import {
   ModuleRegistry,
   type ColDef,
 } from "ag-grid-community"
-import { SmartEmptyState } from "@/data-grid/empty-state"
+import { SmartEmptyState } from "./empty-state"
 
 /**
  * Internal helpers shared by {@link SmartGrid} (client-side) and

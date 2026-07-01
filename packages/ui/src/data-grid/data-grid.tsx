@@ -8,8 +8,8 @@ import {
   type SelectionChangedEvent,
 } from "ag-grid-community"
 import { Columns3, Download } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/button"
+import { cn } from "@workspace/ui/lib/utils"
+import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -17,10 +17,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/dropdown-menu"
-import { SmartLoadingOverlay } from "@/smart-components/loading-overlay"
-import { SmartSearchInput } from "@/smart-components/search-input"
-import { dataGridTheme } from "@/data-grid/grid-theme"
+} from "@workspace/ui/components/dropdown-menu"
+import { SmartLoadingOverlay } from "@workspace/ui/smart-components/loading-overlay"
+import { SmartSearchInput } from "@workspace/ui/smart-components/search-input"
+import { dataGridTheme } from "./grid-theme"
 import {
   ensureGridModules,
   NoRowsOverlay,
@@ -30,13 +30,10 @@ import {
   type DataGridColumn,
   type DataGridDensity,
   type NoRowsParams,
-} from "@/data-grid/grid-internals"
+} from "./grid-internals"
 
 // Re-exported so `@s-component/ui` continues to surface these public types.
-export type {
-  DataGridColumn,
-  DataGridDensity,
-} from "@/data-grid/grid-internals"
+export type { DataGridColumn, DataGridDensity } from "./grid-internals"
 
 export interface SmartGridProps<TRow> {
   /** Row data. */

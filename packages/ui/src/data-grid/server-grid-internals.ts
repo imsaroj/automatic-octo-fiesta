@@ -1,6 +1,6 @@
 import type { ColumnState, GridApi } from "ag-grid-community"
-import type { ServerFilter } from "@/data-grid/pagination"
-import type { XlsxCell } from "@/lib/xlsx"
+import type { ServerFilter } from "./pagination"
+import type { XlsxCell } from "@workspace/ui/lib/xlsx"
 
 /**
  * Pure, stateless helpers extracted from {@link SmartServerGrid} so the
