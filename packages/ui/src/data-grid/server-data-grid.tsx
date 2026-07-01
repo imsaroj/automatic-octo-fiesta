@@ -485,7 +485,12 @@ function SmartServerGridInner<TRow>(
       style={fill ? { height: "100%" } : undefined}
     >
       {showToolbar ? (
-        <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div
+          className={cn(
+            "flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between",
+            fill && "px-4 pt-4"
+          )}
+        >
           <div className="flex items-center gap-3">
             {title ? (
               <h3 className="text-base font-semibold">{title}</h3>

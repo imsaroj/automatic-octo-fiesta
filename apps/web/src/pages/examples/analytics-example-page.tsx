@@ -27,12 +27,7 @@ import {
 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Badge } from "@workspace/ui/components/badge"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
+import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 import {
   SmartPage,
   SmartPageHeader,
