@@ -1,0 +1,378 @@
+import { useState } from "react"
+import {
+  Trash2,
+  Edit,
+  PanelRight,
+  Layers,
+  MoreHorizontal,
+  Copy,
+  Star,
+  Share2,
+  FolderOpen,
+  Link,
+} from "lucide-react"
+import {
+  SmartPage,
+  SmartPageHeader,
+  SmartPageTitle,
+  SmartPageDescription,
+  SmartPageContent,
+  SmartPageSection,
+} from "@workspace/ui/smart-components/page"
+import { SmartDialog } from "@workspace/ui/smart-components/smart-dialog"
+import { SmartSheet } from "@workspace/ui/smart-components/smart-sheet"
+import { SmartDrawer } from "@workspace/ui/smart-components/smart-drawer"
+import { SmartConfirmDialog } from "@workspace/ui/smart-components/smart-confirm-dialog"
+import { SmartContextMenu } from "@workspace/ui/smart-components/smart-context-menu"
+import { SmartInput } from "@workspace/ui/smart-components/smart-input"
+import { SmartTextarea } from "@workspace/ui/smart-components/smart-textarea"
+import { SmartSelect } from "@workspace/ui/smart-components/smart-select"
+import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
+import { SmartButton } from "@workspace/ui/smart-components/smart-button"
+import { Button } from "@workspace/ui/components/button"
+import { SheetClose } from "@workspace/ui/components/sheet"
+import { DrawerClose } from "@workspace/ui/components/drawer"
+
+const ROLE_OPTIONS = [
+  { value: "admin", label: "Admin" },
+  { value: "member", label: "Member" },
+  { value: "viewer", label: "Viewer" },
+]
+
+const FILE_CONTEXT_ITEMS = [
+  {
+    type: "item" as const,
+    label: "Open",
+    icon: <FolderOpen className="size-3.5" />,
+    shortcut: "↵",
+    onClick: () => alert("Open"),
+  },
+  {
+    type: "item" as const,
+    label: "Copy link",
+    icon: <Link className="size-3.5" />,
+    shortcut: "⌘L",
+    onClick: () => alert("Copy link"),
+  },
+  { type: "separator" as const },
+  {
+    type: "sub" as const,
+    label: "Share",
+    icon: <Share2 className="size-3.5" />,
+    items: [
+      {
+        type: "item" as const,
+        label: "Copy link",
+        icon: <Copy className="size-3.5" />,
+        onClick: () => alert("Copy link"),
+      },
+      {
+        type: "item" as const,
+        label: "Star file",
+        icon: <Star className="size-3.5" />,
+        onClick: () => alert("Star"),
+      },
+    ],
+  },
+  { type: "separator" as const },
+  {
+    type: "item" as const,
+    label: "Delete",
+    icon: <Trash2 className="size-3.5" />,
+    variant: "destructive" as const,
+    shortcut: "⌫",
+    onClick: () => alert("Delete"),
+  },
+]
+
+export default function OverlaysPage() {
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleted, setDeleted] = useState(false)
+
+  return (
+    <SmartPage layout="detail">
+      <SmartPageHeader>
+        <div>
+          <SmartPageTitle>Overlays</SmartPageTitle>
+          <SmartPageDescription>
+            SmartDialog, SmartSheet, SmartDrawer, SmartConfirmDialog, and
+            SmartContextMenu — all overlay and popover patterns.
+          </SmartPageDescription>
+        </div>
+      </SmartPageHeader>
+
+      <SmartPageContent maxWidth="3xl" padding="md">
+        {/* ── SmartDialog ─────────────────────────────────────── */}
+        <SmartPageSection
+          title="SmartDialog"
+          description="Modal dialog for focused tasks. Trigger via prop or controlled open state."
+          divider
+        >
+          <div className="flex flex-wrap gap-3">
+            {/* Trigger-driven */}
+            <SmartDialog
+              trigger={
+                <Button variant="outline" size="sm">
+                  <Edit className="size-3.5" />
+                  Edit profile
+                </Button>
+              }
+              header={{
+                title: "Edit profile",
+                subtitle: "Update your name and role below.",
+              }}
+              footer={
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button size="sm" onClick={() => setDialogOpen(false)}>
+                    Save changes
+                  </Button>
+                </>
+              }
+            >
+              <div className="flex flex-col gap-4 py-2">
+                <SmartInput
+                  label="Display name"
+                  defaultValue="Saroj Kumar"
+                  required
+                />
+                <SmartSelect
+                  label="Role"
+                  options={ROLE_OPTIONS}
+                  defaultValue="admin"
+                />
+              </div>
+            </SmartDialog>
+
+            {/* Controlled */}
+            <Button size="sm" onClick={() => setDialogOpen(true)}>
+              <Layers className="size-3.5" />
+              Open controlled
+            </Button>
+            <SmartDialog
+              open={dialogOpen}
+              onOpenChange={setDialogOpen}
+              header={{
+                title: "Controlled dialog",
+                subtitle: "This dialog is opened programmatically.",
+              }}
+              footer={
+                <Button size="sm" onClick={() => setDialogOpen(false)}>
+                  Close
+                </Button>
+              }
+            >
+              <p className="py-2 text-sm text-muted-foreground">
+                No trigger prop — the parent controls <code>open</code>{" "}
+                directly. Useful for opening from a dropdown menu item or after
+                an async action.
+              </p>
+            </SmartDialog>
+          </div>
+        </SmartPageSection>
+
+        {/* ── SmartSheet ─────────────────────────────────────── */}
+        <SmartPageSection
+          title="SmartSheet"
+          description="Slide-in panel for secondary context that doesn't navigate away."
+          divider
+        >
+          <div className="flex flex-wrap gap-3">
+            <SmartSheet
+              trigger={
+                <Button variant="outline" size="sm">
+                  <PanelRight className="size-3.5" />
+                  Open sheet
+                </Button>
+              }
+              header={{
+                title: "User settings",
+                subtitle: "Adjust preferences for this user.",
+              }}
+              footer={
+                <>
+                  <SheetClose
+                    render={
+                      <Button variant="outline" size="sm">
+                        Cancel
+                      </Button>
+                    }
+                  />
+                  <Button size="sm">Save</Button>
+                </>
+              }
+            >
+              <div className="flex flex-col gap-5">
+                <SmartInput label="Full name" defaultValue="Saroj Kumar" />
+                <SmartInput
+                  label="Email"
+                  type="email"
+                  defaultValue="saroj@example.com"
+                />
+                <SmartSelect
+                  label="Role"
+                  options={ROLE_OPTIONS}
+                  defaultValue="member"
+                />
+                <SmartTextarea
+                  label="Notes"
+                  placeholder="Internal notes about this user…"
+                  optional
+                  rows={3}
+                />
+                <SmartSwitch
+                  label="Active account"
+                  description="Disable to suspend access without deleting the user."
+                  defaultChecked
+                />
+              </div>
+            </SmartSheet>
+
+            <SmartSheet
+              trigger={
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  ← Left side
+                </Button>
+              }
+              side="left"
+              header={{
+                title: "Left panel",
+                subtitle: "Slides in from the left edge.",
+              }}
+            >
+              <p className="text-sm text-muted-foreground">
+                Use <code>side="left"</code> for navigation drawers or tree
+                panels.
+              </p>
+            </SmartSheet>
+          </div>
+        </SmartPageSection>
+
+        {/* ── SmartDrawer ─────────────────────────────────────── */}
+        <SmartPageSection
+          title="SmartDrawer"
+          description="Bottom drawer — great for mobile-first action sheets."
+          divider
+        >
+          <div className="flex flex-wrap gap-3">
+            <SmartButton
+              variant="outline"
+              size="sm"
+              onClick={() => setDrawerOpen(true)}
+            >
+              Open drawer
+            </SmartButton>
+            <SmartDrawer
+              open={drawerOpen}
+              onOpenChange={setDrawerOpen}
+              header={{
+                title: "Quick actions",
+                subtitle: "Choose an action for this file.",
+              }}
+              footer={
+                <DrawerClose asChild>
+                  <Button variant="outline" className="w-full">
+                    Cancel
+                  </Button>
+                </DrawerClose>
+              }
+            >
+              <div className="flex flex-col gap-2 pb-2">
+                {[
+                  { icon: <Edit className="size-4" />, label: "Rename" },
+                  { icon: <Copy className="size-4" />, label: "Duplicate" },
+                  { icon: <Share2 className="size-4" />, label: "Share" },
+                  { icon: <Star className="size-4" />, label: "Star" },
+                ].map(({ icon, label }) => (
+                  <button
+                    key={label}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors hover:bg-muted"
+                    onClick={() => setDrawerOpen(false)}
+                  >
+                    {icon}
+                    {label}
+                  </button>
+                ))}
+                <button
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-destructive transition-colors hover:bg-destructive/10"
+                  onClick={() => setDrawerOpen(false)}
+                >
+                  <Trash2 className="size-4" />
+                  Delete
+                </button>
+              </div>
+            </SmartDrawer>
+          </div>
+        </SmartPageSection>
+
+        {/* ── SmartConfirmDialog ────────────────────────────── */}
+        <SmartPageSection
+          title="SmartConfirmDialog"
+          description="One-shot confirm before irreversible actions."
+          divider
+        >
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Trigger-driven */}
+            <SmartConfirmDialog
+              trigger={
+                <Button variant="destructive" size="sm">
+                  <Trash2 className="size-3.5" />
+                  Delete item
+                </Button>
+              }
+              title="Delete this item?"
+              description="This will permanently remove the item and all its data. This action cannot be undone."
+              confirmLabel="Delete"
+              variant="destructive"
+              onConfirm={() => setDeleted(true)}
+            />
+
+            {/* Controlled — opened by a separate button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setConfirmOpen(true)}
+            >
+              <MoreHorizontal className="size-3.5" />
+              Controlled confirm
+            </Button>
+            <SmartConfirmDialog
+              open={confirmOpen}
+              onOpenChange={setConfirmOpen}
+              title="Archive project?"
+              description="Archived projects are hidden from the dashboard but can be restored later."
+              confirmLabel="Archive"
+              cancelLabel="Keep active"
+              onConfirm={() => alert("Archived!")}
+            />
+
+            {deleted && (
+              <span className="text-xs text-destructive">Item deleted.</span>
+            )}
+          </div>
+        </SmartPageSection>
+
+        {/* ── SmartContextMenu ──────────────────────────────── */}
+        <SmartPageSection
+          title="SmartContextMenu"
+          description="Right-click (or long-press on touch) to open the context menu."
+        >
+          <SmartContextMenu items={FILE_CONTEXT_ITEMS}>
+            <div className="flex h-32 cursor-context-menu items-center justify-center rounded-xl border-2 border-dashed border-border text-sm text-muted-foreground transition-colors select-none hover:bg-muted/30">
+              Right-click anywhere in this area
+            </div>
+          </SmartContextMenu>
+        </SmartPageSection>
+      </SmartPageContent>
+    </SmartPage>
+  )
+}

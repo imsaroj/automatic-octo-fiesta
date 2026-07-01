@@ -3,15 +3,12 @@ import {
   GalleryVerticalEndIcon,
   AudioLinesIcon,
   TerminalIcon,
-  TerminalSquareIcon,
-  BotIcon,
-  BookOpenIcon,
-  Settings2Icon,
   FrameIcon,
   PieChartIcon,
   MapIcon,
   LayoutDashboardIcon,
   TableIcon,
+  SparklesIcon,
 } from "lucide-react"
 import {
   Sidebar,
@@ -50,48 +47,6 @@ const data = {
       ],
     },
     {
-      title: "Playground",
-      url: "/playground/history",
-      icon: <TerminalSquareIcon />,
-      items: [
-        { title: "History", url: "/playground/history" },
-        { title: "Starred", url: "/playground/starred" },
-        { title: "Settings", url: "/playground/settings" },
-      ],
-    },
-    {
-      title: "Models",
-      url: "/models/genesis",
-      icon: <BotIcon />,
-      items: [
-        { title: "Genesis", url: "/models/genesis" },
-        { title: "Explorer", url: "/models/explorer" },
-        { title: "Quantum", url: "/models/quantum" },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "/docs/introduction",
-      icon: <BookOpenIcon />,
-      items: [
-        { title: "Introduction", url: "/docs/introduction" },
-        { title: "Get Started", url: "/docs/get-started" },
-        { title: "Tutorials", url: "/docs/tutorials" },
-        { title: "Changelog", url: "/docs/changelog" },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "/settings/general",
-      icon: <Settings2Icon />,
-      items: [
-        { title: "General", url: "/settings/general" },
-        { title: "Team", url: "/settings/team" },
-        { title: "Billing", url: "/settings/billing" },
-        { title: "Limits", url: "/settings/limits" },
-      ],
-    },
-    {
       title: "Examples",
       url: "/examples/crud",
       icon: <LayoutDashboardIcon />,
@@ -102,6 +57,17 @@ const data = {
         { title: "Detail", url: "/examples/detail" },
         { title: "Wizard", url: "/examples/wizard" },
         { title: "Analytics", url: "/examples/analytics" },
+      ],
+    },
+    {
+      title: "Smart Components",
+      url: "/smart/forms",
+      icon: <SparklesIcon />,
+      items: [
+        { title: "Form Controls", url: "/smart/forms" },
+        { title: "Pickers", url: "/smart/pickers" },
+        { title: "Overlays", url: "/smart/overlays" },
+        { title: "Feedback & Display", url: "/smart/feedback" },
       ],
     },
   ],
