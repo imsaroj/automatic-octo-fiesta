@@ -1,5 +1,6 @@
 import * as React from "react"
 import { SmartInput } from "@workspace/ui/smart-components/smart-input"
+import { SmartInputGroup } from "@workspace/ui/smart-components/smart-input-group"
 import type { FieldBaseProps } from "./base"
 
 export interface SmartNumberFieldProps extends FieldBaseProps<number | null> {
@@ -7,6 +8,12 @@ export interface SmartNumberFieldProps extends FieldBaseProps<number | null> {
   min?: number
   max?: number
   step?: number
+  /** Constrain to whole numbers — truncates decimals on blur, defaults `step` to 1. */
+  integer?: boolean
+  /** Leading addon text, e.g. `"$"` for a currency field. */
+  prefix?: string
+  /** Trailing addon text, e.g. `"%"` for a percentage field. */
+  suffix?: string
 }
 
 export function SmartNumberField({
@@ -24,20 +31,31 @@ export function SmartNumberField({
   decimalScale,
   min,
   max,
-  step = 1,
+  step,
+  integer,
+  prefix,
+  suffix,
 }: SmartNumberFieldProps) {
+  const effectiveStep = step ?? 1
+
   const format = React.useCallback(
-    (n: number) =>
-      decimalScale !== undefined ? n.toFixed(decimalScale) : String(n),
-    [decimalScale]
+    (n: number) => {
+      if (integer) return String(Math.trunc(n))
+      return decimalScale !== undefined ? n.toFixed(decimalScale) : String(n)
+    },
+    [decimalScale, integer]
   )
 
-  const parse = (raw: string): number | null => {
-    const cleaned = raw.replace(/[^0-9.-]/g, "")
-    if (!cleaned || cleaned === "-" || cleaned === ".") return null
-    const n = Number(cleaned)
-    return Number.isNaN(n) ? null : n
-  }
+  const parse = React.useCallback(
+    (raw: string): number | null => {
+      const cleaned = raw.replace(integer ? /[^0-9-]/g : /[^0-9.-]/g, "")
+      if (!cleaned || cleaned === "-" || cleaned === ".") return null
+      const n = Number(cleaned)
+      if (Number.isNaN(n)) return null
+      return integer ? Math.trunc(n) : n
+    },
+    [integer]
+  )
 
   const [text, setText] = React.useState(() =>
     data === null ? "" : format(data)
@@ -55,6 +73,13 @@ export function SmartNumberField({
     setData(next)
   }
 
+  const clamp = (n: number): number => {
+    let clamped = n
+    if (min !== undefined) clamped = Math.max(min, clamped)
+    if (max !== undefined) clamped = Math.min(max, clamped)
+    return clamped
+  }
+
   const handleBlur = () => {
     const parsed = parse(text)
     if (parsed === null) {
@@ -62,44 +87,51 @@ export function SmartNumberField({
       emit(null)
       return
     }
-    let clamped = parsed
-    if (min !== undefined) clamped = Math.max(min, clamped)
-    if (max !== undefined) clamped = Math.min(max, clamped)
+    const clamped = clamp(parsed)
     emit(clamped)
     setText(format(clamped))
   }
 
-  return (
-    <SmartInput
-      id={id}
-      type="text"
-      inputMode="decimal"
-      value={text}
-      placeholder={placeholder}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      disabled={disabled}
-      readOnly={readOnly}
-      aria-invalid={error ? true : undefined}
-      fieldClassName={className}
-      onChange={(e) => {
-        setText(e.target.value)
-        emit(parse(e.target.value))
-      }}
-      onBlur={handleBlur}
-      onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-          e.preventDefault()
-          const dir = e.key === "ArrowUp" ? 1 : -1
-          let next = (parse(text) ?? 0) + dir * step
-          if (min !== undefined) next = Math.max(min, next)
-          if (max !== undefined) next = Math.min(max, next)
-          emit(next)
-          setText(format(next))
-        }
-      }}
-    />
-  )
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setText(e.target.value)
+    emit(parse(e.target.value))
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+      e.preventDefault()
+      const dir = e.key === "ArrowUp" ? 1 : -1
+      const next = clamp((parse(text) ?? 0) + dir * effectiveStep)
+      emit(next)
+      setText(format(next))
+    }
+  }
+
+  const shared = {
+    id,
+    inputMode: (integer ? "numeric" : "decimal") as "numeric" | "decimal",
+    value: text,
+    placeholder,
+    label,
+    description,
+    error,
+    required,
+    disabled,
+    readOnly,
+    "aria-invalid": error ? (true as const) : undefined,
+    fieldClassName: className,
+    onChange: handleChange,
+    onBlur: handleBlur,
+    onKeyDown: handleKeyDown,
+  }
+
+  // Currency / percentage-style fields render addons via an input group; plain
+  // numbers stay on the lighter SmartInput.
+  if (prefix != null || suffix != null) {
+    return (
+      <SmartInputGroup {...shared} leadingText={prefix} trailingText={suffix} />
+    )
+  }
+
+  return <SmartInput type="text" {...shared} />
 }

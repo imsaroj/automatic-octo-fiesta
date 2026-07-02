@@ -20,24 +20,56 @@ import { SmartRadioGroupField } from "./smart-radio-group-field"
 import { SmartDateField } from "./smart-date-field"
 import { SmartSegmentedField } from "./smart-segmented-field"
 import { SmartTextEditorField } from "./smart-text-editor-field"
+import { SmartTelField } from "./smart-tel-field"
+import { SmartSlugField } from "./smart-slug-field"
+import { SmartTimeField } from "./smart-time-field"
+import { SmartDateTimeField } from "./smart-datetime-field"
+import { SmartMonthField } from "./smart-month-field"
+import { SmartYearField } from "./smart-year-field"
+import {
+  SmartDateRangeField,
+  type DateRangeValue,
+} from "./smart-date-range-field"
+import { SmartTimeRangeField, type TimeRange } from "./smart-time-range-field"
+import { SmartCheckboxGroupField } from "./smart-checkbox-group-field"
+import { SmartYesNoField } from "./smart-yesno-field"
 import { useSelector } from "@tanstack/react-store"
 
 export type FieldType =
+  // Text
   | "text"
   | "email"
   | "url"
   | "password"
+  | "tel"
+  | "slug"
   | "textarea"
   | "text-editor"
+  // Numeric
   | "number"
+  | "decimal"
+  | "integer"
+  | "currency"
+  | "percentage"
+  // Date & time
+  | "date"
+  | "time"
+  | "datetime"
+  | "month"
+  | "year"
+  | "daterange"
+  | "timerange"
+  // Selection
   | "select"
   | "combobox"
+  | "autocomplete"
   | "multiselect"
-  | "checkbox"
-  | "switch"
   | "radio"
-  | "date"
+  | "checkbox"
+  | "checkbox-group"
+  | "switch"
   | "segmented"
+  | "yesno"
 
 export interface FieldDefinition<T extends Record<string, unknown>> {
   name: keyof T & string
@@ -58,11 +90,17 @@ export interface FieldDefinition<T extends Record<string, unknown>> {
     description?: string
     disabled?: boolean
   }[]
-  // Number extras
+  // Number extras (number / decimal / integer / currency / percentage)
   decimalScale?: number
   min?: number
   max?: number
   step?: number
+  /** Leading addon text, e.g. a currency symbol. Defaults to `"$"` for `currency`. */
+  prefix?: string
+  /** Trailing addon text, e.g. a unit. Defaults to `"%"` for `percentage`. */
+  suffix?: string
+  // Slug extras
+  slugPrefix?: string
   // Textarea extras
   rows?: number
   maxLength?: number
@@ -73,6 +111,25 @@ export interface FieldDefinition<T extends Record<string, unknown>> {
   maxHeight?: string
   // Input extras
   autoComplete?: string
+  // Choice-group layout (radio / checkbox-group / yesno)
+  orientation?: "horizontal" | "vertical"
+  // Combobox / autocomplete extras
+  searchPlaceholder?: string
+  emptyText?: string
+  // Multiselect extras
+  maxSelected?: number
+  // Date & time extras (time / datetime / timerange / month / year / daterange)
+  use12Hour?: boolean
+  withSeconds?: boolean
+  minuteStep?: number
+  fromYear?: number
+  toYear?: number
+  numberOfMonths?: number
+  startPlaceholder?: string
+  endPlaceholder?: string
+  // Yes/No labels
+  yesLabel?: string
+  noLabel?: string
 }
 
 const COLS = { 1: "grid-cols-1", 2: "grid-cols-2", 3: "grid-cols-3" } as const
@@ -103,10 +160,27 @@ export interface SmartFormProps<T extends Record<string, unknown>> {
 
 /** The empty value a field of `type` should start at when `data` omits it. */
 function defaultForType(type: FieldType): unknown {
-  if (type === "checkbox" || type === "switch") return false
-  if (type === "multiselect") return []
-  if (type === "number") return null
-  return ""
+  switch (type) {
+    case "checkbox":
+    case "switch":
+    case "yesno":
+      return false
+    case "multiselect":
+    case "checkbox-group":
+      return []
+    case "number":
+    case "decimal":
+    case "integer":
+    case "currency":
+    case "percentage":
+    case "year":
+      return null
+    case "daterange":
+    case "timerange":
+      return undefined
+    default:
+      return ""
+  }
 }
 
 /**
@@ -374,6 +448,25 @@ function FieldRenderer<T extends Record<string, unknown>>({
           autoComplete={field.autoComplete}
         />
       )
+    case "tel":
+      return (
+        <SmartTelField
+          {...common}
+          data={(value as string) ?? ""}
+          setData={onChange as (v: string) => void}
+          autoComplete={field.autoComplete}
+        />
+      )
+    case "slug":
+      return (
+        <SmartSlugField
+          {...common}
+          data={(value as string) ?? ""}
+          setData={onChange as (v: string) => void}
+          prefix={field.slugPrefix}
+          maxLength={field.maxLength}
+        />
+      )
     case "password":
       return (
         <SmartPasswordField
@@ -406,12 +499,28 @@ function FieldRenderer<T extends Record<string, unknown>>({
         />
       )
     case "number":
+    case "decimal":
+    case "integer":
+    case "currency":
+    case "percentage":
       return (
         <SmartNumberField
           {...common}
           data={value as number | null}
           setData={onChange as (v: number | null) => void}
-          decimalScale={field.decimalScale}
+          integer={field.type === "integer"}
+          decimalScale={
+            field.decimalScale ??
+            (field.type === "currency"
+              ? 2
+              : field.type === "integer"
+                ? 0
+                : undefined)
+          }
+          prefix={field.prefix ?? (field.type === "currency" ? "$" : undefined)}
+          suffix={
+            field.suffix ?? (field.type === "percentage" ? "%" : undefined)
+          }
           min={field.min}
           max={field.max}
           step={field.step}
@@ -427,12 +536,15 @@ function FieldRenderer<T extends Record<string, unknown>>({
         />
       )
     case "combobox":
+    case "autocomplete":
       return (
         <SmartComboboxField
           {...common}
           data={(value as string) ?? ""}
           setData={onChange as (v: string) => void}
           options={field.options ?? []}
+          searchPlaceholder={field.searchPlaceholder}
+          emptyText={field.emptyText}
         />
       )
     case "multiselect":
@@ -442,6 +554,8 @@ function FieldRenderer<T extends Record<string, unknown>>({
           data={(value as string[]) ?? []}
           setData={onChange as (v: string[]) => void}
           options={field.options}
+          maxSelected={field.maxSelected}
+          searchPlaceholder={field.searchPlaceholder}
         />
       )
     case "checkbox":
@@ -467,6 +581,28 @@ function FieldRenderer<T extends Record<string, unknown>>({
           data={(value as string) ?? ""}
           setData={onChange as (v: string) => void}
           options={field.options}
+          orientation={field.orientation}
+        />
+      )
+    case "checkbox-group":
+      return (
+        <SmartCheckboxGroupField
+          {...common}
+          data={(value as string[]) ?? []}
+          setData={onChange as (v: string[]) => void}
+          options={field.options}
+          orientation={field.orientation}
+        />
+      )
+    case "yesno":
+      return (
+        <SmartYesNoField
+          {...common}
+          data={(value as boolean) ?? false}
+          setData={onChange as (v: boolean) => void}
+          orientation={field.orientation}
+          yesLabel={field.yesLabel}
+          noLabel={field.noLabel}
         />
       )
     case "date":
@@ -475,6 +611,70 @@ function FieldRenderer<T extends Record<string, unknown>>({
           {...common}
           data={(value as string) ?? ""}
           setData={onChange as (v: string) => void}
+        />
+      )
+    case "time":
+      return (
+        <SmartTimeField
+          {...common}
+          data={(value as string) ?? ""}
+          setData={onChange as (v: string) => void}
+          use12Hour={field.use12Hour}
+          withSeconds={field.withSeconds}
+          minuteStep={field.minuteStep}
+        />
+      )
+    case "datetime":
+      return (
+        <SmartDateTimeField
+          {...common}
+          data={(value as string) ?? ""}
+          setData={onChange as (v: string) => void}
+          use12Hour={field.use12Hour}
+          withSeconds={field.withSeconds}
+          minuteStep={field.minuteStep}
+        />
+      )
+    case "month":
+      return (
+        <SmartMonthField
+          {...common}
+          data={(value as string) ?? ""}
+          setData={onChange as (v: string) => void}
+          fromYear={field.fromYear}
+          toYear={field.toYear}
+        />
+      )
+    case "year":
+      return (
+        <SmartYearField
+          {...common}
+          data={value as number | null}
+          setData={onChange as (v: number | null) => void}
+          fromYear={field.fromYear}
+          toYear={field.toYear}
+        />
+      )
+    case "daterange":
+      return (
+        <SmartDateRangeField
+          {...common}
+          data={value as DateRangeValue | undefined}
+          setData={onChange as (v: DateRangeValue | undefined) => void}
+          numberOfMonths={field.numberOfMonths}
+        />
+      )
+    case "timerange":
+      return (
+        <SmartTimeRangeField
+          {...common}
+          data={value as TimeRange | undefined}
+          setData={onChange as (v: TimeRange | undefined) => void}
+          use12Hour={field.use12Hour}
+          withSeconds={field.withSeconds}
+          minuteStep={field.minuteStep}
+          startPlaceholder={field.startPlaceholder}
+          endPlaceholder={field.endPlaceholder}
         />
       )
     case "segmented":

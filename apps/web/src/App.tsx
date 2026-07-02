@@ -33,6 +33,7 @@ import TextEditorPage from "@/pages/smart/text-editor-page"
 
 // Form engine demos
 import BasicFormPage from "@/pages/form-engine/basic-form-page"
+import AllFieldsPage from "@/pages/form-engine/all-fields-page"
 import DynamicFormPage from "@/pages/form-engine/dynamic-form-page"
 import MultiStepFormPage from "@/pages/form-engine/multi-step-form-page"
 
@@ -89,6 +90,7 @@ export function App() {
 
           {/* Form engine */}
           <Route path="/form-engine/basic" element={<BasicFormPage />} />
+          <Route path="/form-engine/all-fields" element={<AllFieldsPage />} />
           <Route path="/form-engine/dynamic" element={<DynamicFormPage />} />
           <Route path="/form-engine/wizard" element={<MultiStepFormPage />} />
         </Routes>
