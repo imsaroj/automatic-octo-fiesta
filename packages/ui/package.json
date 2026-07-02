@@ -61,6 +61,7 @@
     "./hooks/*": "./src/hooks/*.ts",
     "./smart-components/page": "./src/smart-components/page/index.ts",
     "./smart-components/*": "./src/smart-components/*.tsx",
+    "./form-engine": "./src/form-engine/index.ts",
     "./data-grid": "./src/data-grid/index.ts"
   }
 }

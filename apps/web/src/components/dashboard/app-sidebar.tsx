@@ -7,6 +7,7 @@ import {
   LayoutDashboardIcon,
   TableIcon,
   SparklesIcon,
+  NotepadTextIcon,
 } from "lucide-react"
 import {
   Sidebar,
@@ -61,6 +62,16 @@ const data = {
         { title: "Pickers", url: "/smart/pickers" },
         { title: "Overlays", url: "/smart/overlays" },
         { title: "Feedback & Display", url: "/smart/feedback" },
+      ],
+    },
+    {
+      title: "Form Engine",
+      url: "/form-engine/basic",
+      icon: <NotepadTextIcon />,
+      items: [
+        { title: "Basic Form", url: "/form-engine/basic" },
+        { title: "Dynamic Form", url: "/form-engine/dynamic" },
+        { title: "Multi-Step Wizard", url: "/form-engine/wizard" },
       ],
     },
   ],

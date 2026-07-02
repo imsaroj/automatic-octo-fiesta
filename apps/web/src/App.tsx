@@ -29,6 +29,11 @@ import PickersPage from "@/pages/smart/pickers-page"
 import OverlaysPage from "@/pages/smart/overlays-page"
 import FeedbackPage from "@/pages/smart/feedback-page"
 
+// Form engine demos
+import BasicFormPage from "@/pages/form-engine/basic-form-page"
+import DynamicFormPage from "@/pages/form-engine/dynamic-form-page"
+import MultiStepFormPage from "@/pages/form-engine/multi-step-form-page"
+
 export function App() {
   return (
     <BrowserRouter>
@@ -77,6 +82,11 @@ export function App() {
           <Route path="/smart/pickers" element={<PickersPage />} />
           <Route path="/smart/overlays" element={<OverlaysPage />} />
           <Route path="/smart/feedback" element={<FeedbackPage />} />
+
+          {/* Form engine */}
+          <Route path="/form-engine/basic" element={<BasicFormPage />} />
+          <Route path="/form-engine/dynamic" element={<DynamicFormPage />} />
+          <Route path="/form-engine/wizard" element={<MultiStepFormPage />} />
         </Routes>
       </PlaygroundShell>
     </BrowserRouter>
