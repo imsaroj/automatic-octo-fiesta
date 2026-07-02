@@ -62,6 +62,7 @@ const data = {
         { title: "Pickers", url: "/smart/pickers" },
         { title: "Overlays", url: "/smart/overlays" },
         { title: "Feedback & Display", url: "/smart/feedback" },
+        { title: "Text Editor", url: "/smart/text-editor" },
       ],
     },
     {

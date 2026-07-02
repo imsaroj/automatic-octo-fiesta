@@ -28,6 +28,7 @@ import FormsPage from "@/pages/smart/forms-page"
 import PickersPage from "@/pages/smart/pickers-page"
 import OverlaysPage from "@/pages/smart/overlays-page"
 import FeedbackPage from "@/pages/smart/feedback-page"
+import TextEditorPage from "@/pages/smart/text-editor-page"
 
 // Form engine demos
 import BasicFormPage from "@/pages/form-engine/basic-form-page"
@@ -82,6 +83,7 @@ export function App() {
           <Route path="/smart/pickers" element={<PickersPage />} />
           <Route path="/smart/overlays" element={<OverlaysPage />} />
           <Route path="/smart/feedback" element={<FeedbackPage />} />
+          <Route path="/smart/text-editor" element={<TextEditorPage />} />
 
           {/* Form engine */}
           <Route path="/form-engine/basic" element={<BasicFormPage />} />

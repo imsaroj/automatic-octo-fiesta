@@ -31,4 +31,5 @@ function SmartToaster(props: SToasterProps) {
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { SmartToaster, toast }

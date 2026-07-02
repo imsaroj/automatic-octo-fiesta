@@ -11,6 +11,17 @@
   "dependencies": {
     "@base-ui/react": "^1.6.0",
     "@fontsource-variable/inter": "^5.2.8",
+    "@lexical/code": "^0.46.0",
+    "@lexical/history": "^0.46.0",
+    "@lexical/html": "^0.46.0",
+    "@lexical/link": "^0.46.0",
+    "@lexical/list": "^0.46.0",
+    "@lexical/markdown": "^0.46.0",
+    "@lexical/react": "^0.46.0",
+    "@lexical/rich-text": "^0.46.0",
+    "@lexical/selection": "^0.46.0",
+    "@lexical/table": "^0.46.0",
+    "@lexical/utils": "^0.46.0",
     "@tanstack/react-table": "^8.21.3",
     "ag-grid-community": "^35.3.1",
     "ag-grid-react": "^35.3.1",
@@ -20,6 +31,7 @@
     "date-fns": "^4.4.0",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
+    "lexical": "^0.46.0",
     "lucide-react": "^1.22.0",
     "next-themes": "^0.4.6",
     "react": "^19.2.6",
@@ -62,6 +74,7 @@
     "./smart-components/page": "./src/smart-components/page/index.ts",
     "./smart-components/*": "./src/smart-components/*.tsx",
     "./form-engine": "./src/form-engine/index.ts",
-    "./data-grid": "./src/data-grid/index.ts"
+    "./data-grid": "./src/data-grid/index.ts",
+    "./lexical-text-editor": "./src/lexical-text-editor/index.ts"
   }
 }

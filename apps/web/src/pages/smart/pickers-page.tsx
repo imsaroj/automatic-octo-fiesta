@@ -87,7 +87,7 @@ export default function PickersPage() {
         </div>
       </SmartPageHeader>
 
-      <SmartPageContent maxWidth="4xl" padding="md">
+      <SmartPageContent maxWidth="2xl" padding="md">
         {/* ── Calendars ─────────────────────────────────────────── */}
         <SmartPageSection
           title="SmartCalendar"
