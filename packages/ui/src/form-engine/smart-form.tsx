@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { z } from "zod"
-import { useForm, useStore } from "@tanstack/react-form"
+import { useForm } from "@tanstack/react-form"
 import { cn } from "@workspace/ui/lib/utils"
 import { Button } from "@workspace/ui/components/button"
 
@@ -20,6 +20,7 @@ import { SmartRadioGroupField } from "./smart-radio-group-field"
 import { SmartDateField } from "./smart-date-field"
 import { SmartSegmentedField } from "./smart-segmented-field"
 import { SmartTextEditorField } from "./smart-text-editor-field"
+import { useSelector } from "@tanstack/react-store"
 
 export type FieldType =
   | "text"
@@ -190,9 +191,9 @@ export function SmartForm<T extends Record<string, unknown>>({
     onSubmit: ({ value }) => onSubmit?.(value as T),
   })
 
-  const values = useStore(form.store, (state) => state.values) as T
+  const values = useSelector(form.store, (state) => state.values) as T
   // A submit attempt should reveal every error, even for fields never blurred.
-  const submitAttempted = useStore(
+  const submitAttempted = useSelector(
     form.store,
     (state) => state.submissionAttempts > 0
   )

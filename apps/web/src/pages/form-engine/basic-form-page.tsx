@@ -13,7 +13,7 @@ import { toast } from "@workspace/ui/smart-components/smart-toaster"
 import { type FieldDefinition, SmartForm } from "@workspace/ui/form-engine"
 
 const contactSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "Name is required").trim(),
   email: z.email().optional().or(z.literal("")),
   subject: z.string().min(1, "Choose a subject"),
   message: z.string().min(10, "Minimum 10 characters").or(z.literal("")),
