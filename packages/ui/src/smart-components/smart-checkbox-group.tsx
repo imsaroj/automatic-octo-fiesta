@@ -124,9 +124,7 @@ export function SmartCheckboxGroup({
               <Checkbox
                 id={itemId}
                 checked={selected.includes(item.value)}
-                onCheckedChange={(checked) =>
-                  toggle(item.value, checked === true)
-                }
+                onCheckedChange={(checked) => toggle(item.value, checked)}
                 disabled={itemDisabled}
                 aria-describedby={descId}
                 className="mt-0.5"

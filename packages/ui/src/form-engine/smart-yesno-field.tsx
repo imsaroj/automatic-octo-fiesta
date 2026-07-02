@@ -27,7 +27,7 @@ export function SmartYesNoField({
   noLabel = "No",
   orientation = "horizontal",
 }: SmartYesNoFieldProps) {
-  const value = data === true ? "yes" : data === false ? "no" : ""
+  const value = data ? "yes" : !data ? "no" : ""
 
   return (
     <SmartRadioGroup

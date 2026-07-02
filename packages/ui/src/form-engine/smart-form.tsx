@@ -226,6 +226,13 @@ export function SmartForm<T extends Record<string, unknown>>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // The current form baseline. Kept in sync with `form.reset` in the reconcile
+  // effect so it matches the `defaultValues` TanStack re-applies on every render
+  // (`useForm` calls `form.update(opts)` each render): if they diverged, that
+  // update would revert an adopted external value straight back to the stale
+  // mount baseline.
+  const [baseline, setBaseline] = React.useState<T>(defaultValues)
+
   // Fields the schema treats as optional (and that aren't forced required in the
   // definition). For these, an empty string means "not provided", so it should
   // pass rather than fail — e.g. `z.email().optional()` shouldn't flag a blank.
@@ -254,7 +261,7 @@ export function SmartForm<T extends Record<string, unknown>>({
   )
 
   const form = useForm({
-    defaultValues,
+    defaultValues: baseline,
     // Zod v4 schemas are Standard Schemas; TanStack types the validator input as
     // `T` while Zod reports `unknown`. Runtime-identical, so the cast only bridges
     // that TS-only divergence — validation runs exactly as written.
@@ -272,6 +279,10 @@ export function SmartForm<T extends Record<string, unknown>>({
     (state) => state.submissionAttempts > 0
   )
   const lastSyncedRef = React.useRef<T>(defaultValues)
+  // Set right before we push our own edits into `setData`, so the resulting
+  // `data` change is recognized as *our* echo (not an external override) and
+  // doesn't trigger a form reset — see the two sync effects below.
+  const selfUpdateRef = React.useRef(false)
   const formRef = React.useRef<HTMLFormElement>(null)
 
   // On a failed submit, move focus to the first field (in definition order) that
@@ -299,6 +310,11 @@ export function SmartForm<T extends Record<string, unknown>>({
     if (!setData) return
     if (deepEqual(values, lastSyncedRef.current)) return
     lastSyncedRef.current = values
+    // Flag the `data` update this triggers as self-originated so the reconcile
+    // effect skips it. Without this, rapid edits race: `values` runs ahead of
+    // the mirrored `data`, the reconcile effect sees them differ and resets the
+    // form back to the stale `data`, which loops (max update depth).
+    selfUpdateRef.current = true
     setData(values)
   }, [values, setData])
 
@@ -308,11 +324,22 @@ export function SmartForm<T extends Record<string, unknown>>({
   // `submissionAttempts`), so the fresh values start pristine: no lingering
   // blurred/touched flags and no leftover submit attempt keeping errors visible.
   React.useEffect(() => {
-    if (data === undefined || deepEqual(data, values)) return
+    if (data === undefined) return
+    // Ignore the `data` change our own mirror effect just produced — adopting it
+    // back into the form would fight live edits (and can loop under rapid input).
+    if (selfUpdateRef.current) {
+      selfUpdateRef.current = false
+      return
+    }
+    if (deepEqual(data, lastSyncedRef.current)) return
     lastSyncedRef.current = data
     const base: Record<string, unknown> = {}
     for (const field of fields) base[field.name] = defaultForType(field.type)
-    form.reset({ ...base, ...(data as Record<string, unknown>) } as never)
+    const next = { ...base, ...(data as Record<string, unknown>) } as T
+    // Advance the baseline in lockstep so the per-render `form.update(opts)` sees
+    // no defaultValues change and leaves the freshly adopted values in place.
+    setBaseline(next)
+    form.reset(next as never)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 

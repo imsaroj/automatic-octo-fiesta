@@ -46,15 +46,36 @@ export function SmartNumberField({
     [decimalScale, integer]
   )
 
+  // Strip characters that can never belong to a number while preserving valid
+  // in-progress input ("-", "1.", "1.20"), so letters never render in the field.
+  const sanitize = React.useCallback(
+    (raw: string): string => {
+      let s = raw.replace(integer ? /[^0-9-]/g : /[^0-9.-]/g, "")
+      // Keep a minus sign only when it leads the value.
+      const negative = s.startsWith("-")
+      s = s.replace(/-/g, "")
+      if (negative) s = "-" + s
+      if (!integer) {
+        // Keep only the first decimal point.
+        const dot = s.indexOf(".")
+        if (dot !== -1) {
+          s = s.slice(0, dot + 1) + s.slice(dot + 1).replace(/\./g, "")
+        }
+      }
+      return s
+    },
+    [integer]
+  )
+
   const parse = React.useCallback(
     (raw: string): number | null => {
-      const cleaned = raw.replace(integer ? /[^0-9-]/g : /[^0-9.-]/g, "")
+      const cleaned = sanitize(raw)
       if (!cleaned || cleaned === "-" || cleaned === ".") return null
       const n = Number(cleaned)
       if (Number.isNaN(n)) return null
       return integer ? Math.trunc(n) : n
     },
-    [integer]
+    [integer, sanitize]
   )
 
   const [text, setText] = React.useState(() =>
@@ -93,8 +114,9 @@ export function SmartNumberField({
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.target.value)
-    emit(parse(e.target.value))
+    const next = sanitize(e.target.value)
+    setText(next)
+    emit(parse(next))
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
