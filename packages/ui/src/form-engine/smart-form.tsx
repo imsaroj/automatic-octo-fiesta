@@ -1,10 +1,12 @@
 "use client"
 
 import * as React from "react"
-import type { z } from "zod"
+import { z } from "zod"
+import { useForm, useStore } from "@tanstack/react-form"
 import { cn } from "@workspace/ui/lib/utils"
 import { Button } from "@workspace/ui/components/button"
 
+import { deepEqual, isFieldRequired } from "./smart-form-internals"
 import { SmartInputField } from "./smart-input-field"
 import { SmartTextareaField } from "./smart-textarea-field"
 import { SmartPasswordField } from "./smart-password-field"
@@ -76,29 +78,48 @@ const COLS = { 1: "grid-cols-1", 2: "grid-cols-2", 3: "grid-cols-3" } as const
 const SPAN = { 1: "col-span-1", 2: "col-span-2", 3: "col-span-3" } as const
 
 export interface SmartFormProps<T extends Record<string, unknown>> {
+  /** Zod schema — the single source of truth for validation *and* required-ness. */
   schema: z.ZodType<T>
-  data: T
-  setData: (data: T) => void
+  /** Controlled form data. Seeds the form on mount and stays mirrored to edits. */
+  data?: T
+  /** Kept in sync with every edit — no manual per-field wiring required. */
+  setData?: (data: T) => void
   fields: FieldDefinition<T>[]
   /** Number of grid columns. Default `1`. */
   columns?: 1 | 2 | 3
-  onSubmit?: (data: T) => void
+  /** Called with the parsed, validated values on a successful submit. */
+  onSubmit?: (data: T) => void | Promise<void>
+  /** `id` on the `<form>`, so a submit button placed outside can drive it via `form={id}`. */
+  id?: string
   /** Label for the submit button. Pass `null` to suppress and use `children` instead. */
   submitLabel?: React.ReactNode | null
-  /** Label for an optional reset button. */
+  /** Label for an optional reset button (resets to the initial `data`). */
   resetLabel?: string
   /** Rendered inside the form after the field grid (replaces default button row when provided). */
   children?: React.ReactNode
   className?: string
 }
 
+/** The empty value a field of `type` should start at when `data` omits it. */
+function defaultForType(type: FieldType): unknown {
+  if (type === "checkbox" || type === "switch") return false
+  if (type === "multiselect") return []
+  if (type === "number") return null
+  return ""
+}
+
 /**
- * Declarative form engine: supply a Zod schema, controlled data, and a field
- * definition array — the engine renders the right control for each field,
- * validates on submit, and surfaces Zod errors inline.
+ * Declarative form engine on **TanStack Form + Zod**: supply a Zod schema and a
+ * field definition array — the engine renders the right control for each field,
+ * validates against the schema (live, per-field), and surfaces errors inline.
+ *
+ * The schema is the single source of truth: validation *and* the required
+ * asterisk are both derived from it, so field definitions stay UI-only. Pass
+ * `data`/`setData` to mirror the live values into your own state (e.g. a preview
+ * panel or async load); both are optional — the form owns its state either way.
  *
  * ```tsx
- * const schema = z.object({ name: z.string().min(1), email: z.email() })
+ * const schema = z.object({ name: z.string().min(1), email: z.email().optional() })
  * type Form = z.infer<typeof schema>
  *
  * const fields: FieldDefinition<Form>[] = [
@@ -106,7 +127,7 @@ export interface SmartFormProps<T extends Record<string, unknown>> {
  *   { name: "email", type: "email", label: "Email" },
  * ]
  *
- * <SmartForm schema={schema} data={data} setData={setData} fields={fields} onSubmit={...} />
+ * <SmartForm schema={schema} fields={fields} onSubmit={(value) => save(value)} />
  * ```
  */
 export function SmartForm<T extends Record<string, unknown>>({
@@ -116,78 +137,161 @@ export function SmartForm<T extends Record<string, unknown>>({
   fields,
   columns = 1,
   onSubmit,
+  id,
   submitLabel = "Submit",
   resetLabel,
   children,
   className,
 }: SmartFormProps<T>) {
-  const [errors, setErrors] = React.useState<Record<string, string>>({})
-  const [attempted, setAttempted] = React.useState(false)
+  // Mount-time defaults: field-type blanks, overridden by any provided `data`.
+  const defaultValues = React.useMemo<T>(() => {
+    const base: Record<string, unknown> = {}
+    for (const field of fields) base[field.name] = defaultForType(field.type)
+    return { ...base, ...(data as Record<string, unknown>) } as T
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  const validate = React.useCallback(
-    (d: T): Record<string, string> => {
-      const result = schema.safeParse(d)
-      if (result.success) return {}
-      const flat = result.error.flatten()
-      const out: Record<string, string> = {}
-      for (const [key, msgs] of Object.entries(flat.fieldErrors)) {
-        const first = (msgs as string[] | undefined)?.[0]
-        if (first) out[key] = first
-      }
-      return out
-    },
-    [schema]
-  )
-
-  const handleChange = React.useCallback(
-    <K extends keyof T>(name: K, value: T[K]) => {
-      const next = { ...data, [name]: value } as T
-      setData(next)
-      if (attempted) setErrors(validate(next))
-    },
-    [data, setData, attempted, validate]
-  )
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setAttempted(true)
-    const errs = validate(data)
-    setErrors(errs)
-    if (Object.keys(errs).length === 0) {
-      const result = schema.safeParse(data)
-      if (result.success) onSubmit?.(result.data as T)
+  // Fields the schema treats as optional (and that aren't forced required in the
+  // definition). For these, an empty string means "not provided", so it should
+  // pass rather than fail — e.g. `z.email().optional()` shouldn't flag a blank.
+  const optionalKeys = React.useMemo(() => {
+    const set = new Set<string>()
+    for (const field of fields) {
+      if (field.required) continue
+      if (!isFieldRequired(schema, field.name)) set.add(field.name)
     }
-  }
+    return set
+  }, [schema, fields])
 
-  const handleReset = () => {
-    setErrors({})
-    setAttempted(false)
-  }
+  // Normalize empty optional strings to `undefined` before validation so an
+  // optional field only validates once the user actually types something.
+  // Required fields keep their empty string, so their own messages still fire.
+  const validationSchema = React.useMemo(
+    () =>
+      z.preprocess((raw) => {
+        if (raw == null || typeof raw !== "object") return raw
+        const out = { ...(raw as Record<string, unknown>) }
+        for (const key of optionalKeys)
+          if (out[key] === "") out[key] = undefined
+        return out
+      }, schema as z.ZodType),
+    [schema, optionalKeys]
+  )
+
+  const form = useForm({
+    defaultValues,
+    // Zod v4 schemas are Standard Schemas; TanStack types the validator input as
+    // `T` while Zod reports `unknown`. Runtime-identical, so the cast only bridges
+    // that TS-only divergence — validation runs exactly as written.
+    validators: {
+      onChange: validationSchema as never,
+      onSubmit: validationSchema as never,
+    },
+    onSubmit: ({ value }) => onSubmit?.(value as T),
+  })
+
+  const values = useStore(form.store, (state) => state.values) as T
+  // A submit attempt should reveal every error, even for fields never blurred.
+  const submitAttempted = useStore(
+    form.store,
+    (state) => state.submissionAttempts > 0
+  )
+  const lastSyncedRef = React.useRef<T>(defaultValues)
+  const formRef = React.useRef<HTMLFormElement>(null)
+
+  // On a failed submit, move focus to the first field (in definition order) that
+  // has an error, so the user lands right where they need to fix things.
+  const focusFirstError = React.useCallback(() => {
+    for (const field of fields) {
+      const meta = form.getFieldMeta(field.name as never)
+      if (!meta || (meta.errors?.length ?? 0) === 0) continue
+      const wrapper = formRef.current?.querySelector<HTMLElement>(
+        `[data-field="${CSS.escape(field.name)}"]`
+      )
+      // Focus the first focusable control inside the field — works across every
+      // control type (input, trigger button, etc.) without threading ids around.
+      wrapper
+        ?.querySelector<HTMLElement>(
+          'input, select, textarea, button, [tabindex]:not([tabindex="-1"]), [contenteditable="true"]'
+        )
+        ?.focus()
+      break
+    }
+  }, [fields, form])
+
+  // Mirror live form values back into the consumer's `setData`.
+  React.useEffect(() => {
+    if (!setData) return
+    if (deepEqual(values, lastSyncedRef.current)) return
+    lastSyncedRef.current = values
+    setData(values)
+  }, [values, setData])
+
+  // Reconcile external `data` changes (async load / programmatic reset) into the
+  // form — e.g. `setData(EMPTY)` after a successful submit. `form.reset(values)`
+  // adopts them as the new baseline and clears *all* state (field meta *and*
+  // `submissionAttempts`), so the fresh values start pristine: no lingering
+  // blurred/touched flags and no leftover submit attempt keeping errors visible.
+  React.useEffect(() => {
+    if (data === undefined || deepEqual(data, values)) return
+    lastSyncedRef.current = data
+    const base: Record<string, unknown> = {}
+    for (const field of fields) base[field.name] = defaultForType(field.type)
+    form.reset({ ...base, ...(data as Record<string, unknown>) } as never)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data])
 
   return (
     <form
-      onSubmit={handleSubmit}
-      onReset={handleReset}
+      ref={formRef}
+      id={id}
+      noValidate
+      onSubmit={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        void form.handleSubmit().then(focusFirstError)
+      }}
       className={cn("grid gap-4", COLS[columns], className)}
     >
       {fields.map((field) => {
-        if (field.hidden?.(data)) return null
+        if (field.hidden?.(values)) return null
 
         const spanClass = field.colSpan ? SPAN[field.colSpan] : undefined
-        const error = errors[field.name]
-        const value = data[field.name]
-        const onChange = (v: unknown) =>
-          handleChange(field.name as keyof T, v as T[keyof T])
+        const required = field.required ?? isFieldRequired(schema, field.name)
 
         return (
-          <div key={field.name} className={spanClass}>
-            <FieldRenderer
-              field={field}
-              value={value}
-              onChange={onChange}
-              error={error}
-            />
-          </div>
+          <form.Field key={field.name} name={field.name as never}>
+            {(fieldApi) => {
+              // Validation runs live (`onChange` schema), but errors only *display*
+              // after the field is blurred — so typing doesn't flash an error, yet
+              // once shown it clears in real time as the value becomes valid. A
+              // submit attempt reveals errors on every field, blurred or not.
+              const meta = fieldApi.state.meta
+              const error =
+                meta.isBlurred || submitAttempted
+                  ? getErrorMessage(meta.errors)
+                  : undefined
+
+              return (
+                // `onBlur` bubbles from whatever control is inside (React blur is
+                // focusout), so the field flips to blurred/touched when focus leaves
+                // without every field component needing to forward an onBlur prop.
+                <div
+                  className={spanClass}
+                  data-field={field.name}
+                  onBlur={() => fieldApi.handleBlur()}
+                >
+                  <FieldRenderer
+                    field={field}
+                    required={required}
+                    value={fieldApi.state.value}
+                    onChange={(v) => fieldApi.handleChange(v as never)}
+                    error={error}
+                  />
+                </div>
+              )
+            }}
+          </form.Field>
         )
       })}
 
@@ -201,24 +305,47 @@ export function SmartForm<T extends Record<string, unknown>>({
           )}
         >
           {resetLabel && (
-            <Button type="reset" variant="outline">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => form.reset()}
+            >
               {resetLabel}
             </Button>
           )}
-          <Button type="submit">{submitLabel}</Button>
+          <form.Subscribe selector={(state) => state.isSubmitting}>
+            {(isSubmitting) => (
+              <Button type="submit" disabled={isSubmitting}>
+                {submitLabel}
+              </Button>
+            )}
+          </form.Subscribe>
         </div>
       ) : null}
     </form>
   )
 }
 
+/** Normalize TanStack field errors (strings or Standard-Schema issues) to text. */
+function getErrorMessage(errors: ReadonlyArray<unknown>): string | undefined {
+  const first = errors?.[0]
+  if (first == null) return undefined
+  if (typeof first === "string") return first
+  if (typeof first === "object" && "message" in first) {
+    return String((first as { message: unknown }).message)
+  }
+  return String(first)
+}
+
 function FieldRenderer<T extends Record<string, unknown>>({
   field,
+  required,
   value,
   onChange,
   error,
 }: {
   field: FieldDefinition<T>
+  required: boolean
   value: unknown
   onChange: (v: unknown) => void
   error?: string
@@ -228,7 +355,7 @@ function FieldRenderer<T extends Record<string, unknown>>({
     placeholder: field.placeholder,
     description: field.description,
     error,
-    required: field.required,
+    required,
     disabled: field.disabled,
   }
 

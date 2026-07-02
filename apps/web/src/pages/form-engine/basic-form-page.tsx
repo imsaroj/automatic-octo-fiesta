@@ -14,12 +14,16 @@ import { type FieldDefinition, SmartForm } from "@workspace/ui/form-engine"
 
 const contactSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  email: z.string().email("Enter a valid email").optional(),
+  email: z.email().optional().or(z.literal("")),
   subject: z.string().min(1, "Choose a subject"),
-  message: z.string(),
+  message: z.string().min(10, "Minimum 10 characters").or(z.literal("")),
   details: z.string(),
 })
+
 type ContactForm = z.infer<typeof contactSchema>
+const EMPTY = Object.fromEntries(
+  Object.keys(contactSchema.shape).map((k) => [k, ""])
+) as ContactForm
 
 const SUBJECT_OPTIONS = [
   { value: "general", label: "General question" },
@@ -65,14 +69,6 @@ const fields: FieldDefinition<ContactForm>[] = [
     minHeight: "140px",
   },
 ]
-
-const EMPTY: ContactForm = {
-  name: "",
-  email: "",
-  subject: "",
-  message: "",
-  details: "",
-}
 
 export default function BasicFormPage() {
   const [data, setData] = useState<ContactForm>(EMPTY)
