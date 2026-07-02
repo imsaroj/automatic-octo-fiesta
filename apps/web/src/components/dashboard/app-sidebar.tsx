@@ -45,6 +45,7 @@ const data = {
       url: "/examples/crud",
       icon: <LayoutDashboardIcon />,
       items: [
+        { title: "Basic Text Fields", url: "/examples/fields" },
         { title: "CRUD Grid", url: "/examples/crud" },
         { title: "Dashboard", url: "/examples/dashboard" },
         { title: "Settings", url: "/examples/settings" },

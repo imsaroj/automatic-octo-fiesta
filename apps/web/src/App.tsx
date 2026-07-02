@@ -17,6 +17,7 @@ import SettingsExamplePage from "@/pages/examples/settings-example-page"
 import DetailExamplePage from "@/pages/examples/detail-example-page"
 import WizardExamplePage from "@/pages/examples/wizard-example-page"
 import AnalyticsExamplePage from "@/pages/examples/analytics-example-page"
+import BasicTextFieldsPage from "@/pages/examples/basic-text-fields-page"
 
 // Projects
 import DesignEngineeringPage from "@/pages/projects/design-engineering-page"
@@ -54,6 +55,7 @@ export function App() {
           />
 
           {/* Examples */}
+          <Route path="/examples/fields" element={<BasicTextFieldsPage />} />
           <Route path="/examples/crud" element={<CrudExamplePage />} />
           <Route
             path="/examples/dashboard"
