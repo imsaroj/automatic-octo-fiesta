@@ -30,10 +30,10 @@ export function SmartDateField({
       description={description}
       error={error}
       required={required}
-      date={dateValue}
+      selected={dateValue}
       placeholder={placeholder ?? "Select date"}
       disabled={disabled || readOnly}
-      onDateChange={(date) => setData(date ? toISO(date) : "")}
+      onSelect={(date) => setData(date ? toISO(date) : "")}
       fieldClassName={className}
     />
   )

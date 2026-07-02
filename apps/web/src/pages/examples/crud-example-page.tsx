@@ -102,7 +102,6 @@ export default function CrudExamplePage() {
     )
   }
 
-  // @ts-ignore
   return (
     // No layout prop needed — SmartGridArea's presence auto-detects "grid"
     <SmartPage>

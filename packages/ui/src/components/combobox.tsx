@@ -1,9 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown, X } from "lucide-react"
 
 import { cn } from "@workspace/ui/lib/utils"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
   Command,
@@ -24,26 +25,69 @@ export interface ComboboxOption {
   label: string
 }
 
-interface ComboboxProps {
+interface ComboboxBaseProps {
   options: ComboboxOption[]
-  value?: string
-  onValueChange?: (value: string) => void
   placeholder?: string
   searchPlaceholder?: string
   emptyText?: string
+  disabled?: boolean
   className?: string
 }
 
-export function Combobox({
-  options,
-  value,
-  onValueChange,
-  placeholder = "Select option...",
-  searchPlaceholder = "Search...",
-  emptyText = "No option found.",
-  className,
-}: ComboboxProps) {
+interface ComboboxSingleProps extends ComboboxBaseProps {
+  multiple?: false
+  value?: string
+  onValueChange?: (value: string) => void
+}
+
+interface ComboboxMultipleProps extends ComboboxBaseProps {
+  multiple: true
+  value?: string[]
+  onValueChange?: (value: string[]) => void
+  /** Cap the number of selectable options. */
+  maxSelected?: number
+}
+
+export type ComboboxProps = ComboboxSingleProps | ComboboxMultipleProps
+
+export function Combobox(props: ComboboxProps) {
+  const {
+    options,
+    placeholder = "Select option...",
+    searchPlaceholder = "Search...",
+    emptyText = "No option found.",
+    disabled,
+    className,
+  } = props
   const [open, setOpen] = React.useState(false)
+
+  const selectedValues = React.useMemo(
+    () =>
+      props.multiple
+        ? new Set(props.value ?? [])
+        : new Set(props.value ? [props.value] : []),
+    [props.multiple, props.value]
+  )
+
+  const toggle = (optionValue: string) => {
+    if (props.multiple) {
+      const next = new Set(props.value ?? [])
+      if (next.has(optionValue)) {
+        next.delete(optionValue)
+      } else {
+        if (props.maxSelected != null && next.size >= props.maxSelected) {
+          return
+        }
+        next.add(optionValue)
+      }
+      props.onValueChange?.([...next])
+    } else {
+      props.onValueChange?.(optionValue === props.value ? "" : optionValue)
+      setOpen(false)
+    }
+  }
+
+  const selectedOptions = options.filter((o) => selectedValues.has(o.value))
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -53,13 +97,46 @@ export function Combobox({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className={cn("w-[200px] justify-between", className)}
+            disabled={disabled}
+            className={cn(
+              "h-auto min-h-7 w-[200px] justify-between",
+              className
+            )}
           />
         }
       >
-        {value
-          ? options.find((option) => option.value === value)?.label
-          : placeholder}
+        {props.multiple ? (
+          selectedOptions.length > 0 ? (
+            <span className="flex flex-1 flex-wrap gap-1">
+              {selectedOptions.map((option) => (
+                <Badge key={option.value} variant="secondary" className="gap-1">
+                  {option.label}
+                  <span
+                    role="button"
+                    tabIndex={-1}
+                    aria-label={`Remove ${option.label}`}
+                    className="rounded-sm hover:bg-foreground/10"
+                    onPointerDown={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      toggle(option.value)
+                    }}
+                  >
+                    <X className="size-3" />
+                  </span>
+                </Badge>
+              ))}
+            </span>
+          ) : (
+            <span className="text-muted-foreground">{placeholder}</span>
+          )
+        ) : (
+          <span
+            className={cn(!selectedOptions.length && "text-muted-foreground")}
+          >
+            {selectedOptions[0]?.label ?? placeholder}
+          </span>
+        )}
         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
@@ -68,24 +145,24 @@ export function Combobox({
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
             <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.value}
-                  onSelect={(currentValue) => {
-                    onValueChange?.(currentValue === value ? "" : currentValue)
-                    setOpen(false)
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {option.label}
-                </CommandItem>
-              ))}
+              {options.map((option) => {
+                const isSelected = selectedValues.has(option.value)
+                return (
+                  <CommandItem
+                    key={option.value}
+                    value={option.label}
+                    onSelect={() => toggle(option.value)}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        isSelected ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {option.label}
+                  </CommandItem>
+                )
+              })}
             </CommandGroup>
           </CommandList>
         </Command>

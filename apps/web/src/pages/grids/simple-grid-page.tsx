@@ -102,7 +102,7 @@ export default function SimpleGridPage() {
         field: "mrr",
         headerName: "MRR",
         type: "rightAligned",
-        valueFormatter: (p: any) => formatCurrency(Number(p.value ?? 0)),
+        valueFormatter: (p) => formatCurrency(Number(p.value ?? 0)),
       },
     ],
     []

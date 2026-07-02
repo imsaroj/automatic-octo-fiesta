@@ -1,14 +1,13 @@
 "use client"
 
 import * as React from "react"
+import type { DateRange } from "react-day-picker"
 import { cn } from "@workspace/ui/lib/utils"
 import { Calendar } from "@workspace/ui/components/calendar"
 import { Label } from "@workspace/ui/components/label"
 
-export interface SmartCalendarProps {
-  /** Currently selected date (controlled, single-date mode). */
-  selected?: Date
-  onSelect?: (date: Date | undefined) => void
+/** Props shared by every selection mode. */
+interface SmartCalendarBaseProps {
   /** Override the default displayed month. */
   defaultMonth?: Date
   /**
@@ -29,24 +28,66 @@ export interface SmartCalendarProps {
   fieldClassName?: string
 }
 
+/** Single-date selection (default). */
+interface SmartCalendarSingleProps extends SmartCalendarBaseProps {
+  mode?: "single"
+  selected?: Date
+  onSelect?: (date: Date | undefined) => void
+}
+
+/** Multiple independent dates. */
+interface SmartCalendarMultipleProps extends SmartCalendarBaseProps {
+  mode: "multiple"
+  selected?: Date[]
+  onSelect?: (dates: Date[] | undefined) => void
+  /** Minimum number of dates that must be selected. */
+  min?: number
+  /** Maximum number of dates that can be selected. */
+  max?: number
+}
+
+/** Contiguous start–end date range. */
+interface SmartCalendarRangeProps extends SmartCalendarBaseProps {
+  mode: "range"
+  selected?: DateRange
+  onSelect?: (range: DateRange | undefined) => void
+  /** Minimum number of days the range must span. */
+  min?: number
+  /** Maximum number of days the range can span. */
+  max?: number
+}
+
+export type SmartCalendarProps =
+  | SmartCalendarSingleProps
+  | SmartCalendarMultipleProps
+  | SmartCalendarRangeProps
+
 /**
- * Inline single-date calendar with optional label, description, and error.
+ * Inline calendar with optional label, description, and error.
+ *
+ * Defaults to single-date selection; pass `mode="multiple"` or `mode="range"`
+ * to change the selection behaviour (each mode has its own `selected` /
+ * `onSelect` value shape).
  *
  * Use `DatePicker` (or `SmartDatePicker`) when you need a popover trigger.
  * Use `SmartCalendar` when the calendar should be permanently visible —
  * date-of-birth pickers, scheduling widgets, availability selectors.
  *
  * ```tsx
+ * // Single (default)
+ * <SmartCalendar selected={date} onSelect={setDate} />
+ *
+ * // Range
  * <SmartCalendar
- *   label="Select a delivery date"
- *   description="Pick any date within the next 30 days."
- *   selected={date}
- *   onSelect={setDate}
- *   fromDate={new Date()}
+ *   mode="range"
+ *   label="Trip dates"
+ *   selected={range}
+ *   onSelect={setRange}
  * />
  * ```
  */
 export { Calendar }
+export type { DateRange }
 
 export function SmartCalendar({
   label,
@@ -55,15 +96,19 @@ export function SmartCalendar({
   required,
   fieldClassName,
   className,
-  selected,
-  onSelect,
-  defaultMonth,
-  disabled,
-  showOutsideDays,
+  ...calendarProps
 }: SmartCalendarProps) {
   const id = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined
+
+  // Default to single-date selection. Cast once: the per-mode `selected` /
+  // `onSelect` shapes are validated on `SmartCalendarProps`, but DayPicker's
+  // discriminated union can't be reconstructed from a spread.
+  const dayPickerProps = {
+    ...calendarProps,
+    mode: calendarProps.mode ?? "single",
+  } as React.ComponentProps<typeof Calendar>
 
   return (
     <div
@@ -81,12 +126,7 @@ export function SmartCalendar({
         </Label>
       )}
       <Calendar
-        mode="single"
-        selected={selected}
-        onSelect={onSelect}
-        defaultMonth={defaultMonth}
-        disabled={disabled}
-        showOutsideDays={showOutsideDays}
+        {...dayPickerProps}
         className={cn("rounded-md border border-border", className)}
         aria-describedby={hintId}
       />

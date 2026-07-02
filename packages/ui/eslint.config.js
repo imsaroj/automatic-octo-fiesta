@@ -19,4 +19,13 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // Lexical node modules colocate the decorator React component with the node
+    // class, command, and helper exports by design. Fast Refresh's
+    // component-only rule doesn't apply to these definition files.
+    files: ["src/lexical-text-editor/nodes/**/*.{ts,tsx}"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
 ])

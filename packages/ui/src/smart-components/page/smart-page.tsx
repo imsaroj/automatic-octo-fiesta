@@ -418,11 +418,7 @@ function renderStandardLayout(
   const stickyTopItems: React.ReactNode[] = []
   const flowTopItems: React.ReactNode[] = []
 
-  const pushTop = (
-    items: React.ReactNode[],
-    flag: boolean,
-    sticky: boolean
-  ) => {
+  const pushTop = (items: React.ReactNode[], sticky: boolean) => {
     if (!items.length) return
     if (isPageScroll && sticky) {
       stickyTopItems.push(...items)
@@ -431,12 +427,12 @@ function renderStandardLayout(
     }
   }
 
-  pushTop(b.header, ctx.stickyHeader, ctx.stickyHeader)
+  pushTop(b.header, ctx.stickyHeader)
   // hero is never sticky — always scrolls away
   if (b.hero.length) flowTopItems.push(...b.hero)
-  pushTop(b.toolbar, ctx.stickyToolbar, ctx.stickyToolbar)
-  pushTop(b.search, ctx.stickySearch, ctx.stickySearch)
-  pushTop(b.filters, ctx.stickyFilters, ctx.stickyFilters)
+  pushTop(b.toolbar, ctx.stickyToolbar)
+  pushTop(b.search, ctx.stickySearch)
+  pushTop(b.filters, ctx.stickyFilters)
   if (b.tabs.length) flowTopItems.push(...b.tabs)
 
   const stickyBottomItems: React.ReactNode[] = []

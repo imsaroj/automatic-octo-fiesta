@@ -117,7 +117,7 @@ export default function MasterDetailGridPage() {
         field: "mrr",
         headerName: "MRR",
         type: "rightAligned",
-        valueFormatter: (p: any) => formatCurrency(Number(p.value ?? 0)),
+        valueFormatter: (p) => formatCurrency(Number(p.value ?? 0)),
       },
     ],
     []
@@ -132,7 +132,7 @@ export default function MasterDetailGridPage() {
         field: "total",
         headerName: "Total",
         type: "rightAligned",
-        valueFormatter: (p: any) => formatCurrency(Number(p.value ?? 0)),
+        valueFormatter: (p) => formatCurrency(Number(p.value ?? 0)),
       },
       {
         field: "status",

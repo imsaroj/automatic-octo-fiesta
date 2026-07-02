@@ -7,11 +7,17 @@ import {
   SmartPageContent,
   SmartPageSection,
 } from "@workspace/ui/smart-components/page"
-import { SmartCalendar } from "@workspace/ui/smart-components/smart-calendar"
+import {
+  SmartCalendar,
+  type DateRange,
+} from "@workspace/ui/smart-components/smart-calendar"
 import { SmartDatePicker } from "@workspace/ui/smart-components/smart-date-picker"
+import {
+  SmartTimePicker,
+  SmartDateTimePicker,
+} from "@workspace/ui/smart-components/smart-time-picker"
 import { SmartCombobox } from "@workspace/ui/smart-components/smart-combobox"
 import { SmartCard } from "@workspace/ui/smart-components/smart-card"
-import { Calendar } from "@workspace/ui/smart-components/smart-calendar"
 
 const FRAMEWORKS = [
   { value: "next", label: "Next.js" },
@@ -69,11 +75,17 @@ const GROUPED_TIMEZONES = [
 
 export default function PickersPage() {
   const [singleDate, setSingleDate] = useState<Date | undefined>()
+  const [multiDates, setMultiDates] = useState<Date[] | undefined>()
+  const [range, setRange] = useState<DateRange | undefined>()
   const [startDate, setStartDate] = useState<Date | undefined>()
   const [endDate, setEndDate] = useState<Date | undefined>()
   const [framework, setFramework] = useState("")
   const [language, setLanguage] = useState("")
   const [timezone, setTimezone] = useState("")
+  const [stack, setStack] = useState<string[]>([])
+  const [time, setTime] = useState("")
+  const [time12, setTime12] = useState("")
+  const [meetingAt, setMeetingAt] = useState<Date | undefined>()
 
   return (
     <SmartPage layout="detail">
@@ -118,13 +130,51 @@ export default function PickersPage() {
             <SmartCard
               header={{
                 title: "Multiple selection",
-                subtitle: "Pick several dates.",
+                subtitle: "Pick several independent dates.",
               }}
               size="sm"
             >
               <div className="p-1">
-                <Calendar mode="multiple" />
+                <SmartCalendar
+                  mode="multiple"
+                  selected={multiDates}
+                  onSelect={setMultiDates}
+                />
               </div>
+              {multiDates && multiDates.length > 0 && (
+                <p className="px-3 pb-3 text-xs text-muted-foreground">
+                  Selected:{" "}
+                  <span className="font-medium text-foreground">
+                    {multiDates.length} date
+                    {multiDates.length === 1 ? "" : "s"}
+                  </span>
+                </p>
+              )}
+            </SmartCard>
+
+            <SmartCard
+              header={{
+                title: "Range selection",
+                subtitle: "Pick a start and end date.",
+              }}
+              size="sm"
+            >
+              <div className="p-1">
+                <SmartCalendar
+                  mode="range"
+                  selected={range}
+                  onSelect={setRange}
+                />
+              </div>
+              {range?.from && (
+                <p className="px-3 pb-3 text-xs text-muted-foreground">
+                  Selected:{" "}
+                  <span className="font-medium text-foreground">
+                    {range.from.toLocaleDateString()}
+                    {range.to ? ` – ${range.to.toLocaleDateString()}` : ""}
+                  </span>
+                </p>
+              )}
             </SmartCard>
           </div>
         </SmartPageSection>
@@ -155,6 +205,64 @@ export default function PickersPage() {
               description="Cannot be in the past."
               disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
             />
+          </div>
+        </SmartPageSection>
+
+        {/* ── TimePicker ────────────────────────────────────────── */}
+        <SmartPageSection
+          title="SmartTimePicker"
+          description="Popover time picker with hour / minute columns. Value is a 24-hour “HH:mm” string."
+          divider
+        >
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <SmartTimePicker
+              label="Time (24-hour)"
+              value={time}
+              onValueChange={setTime}
+              required
+            />
+            <SmartTimePicker
+              label="Time (12-hour)"
+              description="AM/PM display — value stays 24-hour."
+              value={time12}
+              onValueChange={setTime12}
+              use12Hour
+            />
+            <SmartTimePicker
+              label="With seconds"
+              description="15-minute steps + seconds column."
+              value={time}
+              onValueChange={setTime}
+              withSeconds
+              minuteStep={15}
+              optional
+            />
+          </div>
+        </SmartPageSection>
+
+        {/* ── DateTimePicker ────────────────────────────────────── */}
+        <SmartPageSection
+          title="SmartDateTimePicker"
+          description="Calendar + time columns in one popover — produces a single Date."
+          divider
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <SmartDateTimePicker
+              label="Meeting starts at"
+              value={meetingAt}
+              onValueChange={setMeetingAt}
+              use12Hour
+              minuteStep={5}
+              required
+            />
+            {meetingAt && (
+              <div className="flex items-center rounded-lg border bg-muted/40 px-4 py-3 text-xs text-muted-foreground">
+                Selected:{" "}
+                <span className="ml-1 font-medium text-foreground">
+                  {meetingAt.toLocaleString()}
+                </span>
+              </div>
+            )}
           </div>
         </SmartPageSection>
 
@@ -192,6 +300,18 @@ export default function PickersPage() {
               value={timezone}
               onValueChange={setTimezone}
               optional
+            />
+            <SmartCombobox
+              multiple
+              label="Tech stack"
+              description="Pick several — selections show as removable chips."
+              placeholder="Select frameworks…"
+              searchPlaceholder="Search frameworks…"
+              emptyText="No framework found."
+              options={FRAMEWORKS}
+              value={stack}
+              onValueChange={setStack}
+              maxSelected={4}
             />
           </div>
           {(framework || language) && (

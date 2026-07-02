@@ -85,9 +85,8 @@ export function SmartPageTabs({
 
   React.Children.forEach(children, (child) => {
     if (!React.isValidElement(child)) return
-    const role = (child.type as Record<string, unknown>)._smartTabRole as
-      | string
-      | undefined
+    const role = (child.type as unknown as Record<string, unknown>)
+      ._smartTabRole as string | undefined
     if (role === "tab") triggers.push(child)
     else if (role === "panel") panels.push(child)
     else triggers.push(child) // unknown children fall into trigger area

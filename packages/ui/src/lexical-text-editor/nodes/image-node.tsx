@@ -8,7 +8,6 @@ import {
   createCommand,
   DecoratorNode,
   type DOMExportOutput,
-  type EditorConfig,
   type LexicalNode,
   mergeRegister,
   type NodeKey,
@@ -120,7 +119,7 @@ export class ImageNode extends DecoratorNode<React.JSX.Element> {
     }
   }
 
-  createDOM(_config: EditorConfig): HTMLElement {
+  createDOM(): HTMLElement {
     const span = document.createElement("span")
     span.style.display = "block"
     return span

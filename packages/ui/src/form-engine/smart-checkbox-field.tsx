@@ -1,4 +1,3 @@
-import * as React from "react"
 import { cn } from "@workspace/ui/lib/utils"
 import { SmartCheckbox } from "@workspace/ui/smart-components/smart-checkbox"
 import type { FieldBaseProps } from "./base"
@@ -37,7 +36,7 @@ export function SmartCheckboxField({
         disabled={disabled}
         label={labelNode}
         description={description}
-        onCheckedChange={(checked) => setData(checked === true)}
+        onCheckedChange={(checked) => setData(checked)}
         aria-invalid={error ? true : undefined}
       />
       {error && <p className="text-xs text-destructive">{error}</p>}

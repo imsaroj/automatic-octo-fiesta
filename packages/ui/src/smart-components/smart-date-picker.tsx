@@ -7,10 +7,14 @@ import { Label } from "@workspace/ui/components/label"
 
 export interface SmartDatePickerProps {
   /** Currently selected date (controlled). */
-  date?: Date
-  onDateChange?: (date: Date | undefined) => void
+  selected?: Date
+  onSelect?: (date: Date | undefined) => void
   placeholder?: string
-  disabled?: boolean
+  /**
+   * Disables the whole trigger when `true`, or forwards a react-day-picker
+   * matcher (e.g. `(d) => d < today`) to disable specific calendar days.
+   */
+  disabled?: React.ComponentProps<typeof DatePicker>["disabled"]
   /** Class applied to the picker trigger button. Defaults to full-width. */
   pickerClassName?: string
   // Field-level decoration
@@ -32,8 +36,8 @@ export interface SmartDatePickerProps {
  * ```tsx
  * <SmartDatePicker
  *   label="Date of birth"
- *   date={dob}
- *   onDateChange={setDob}
+ *   selected={dob}
+ *   onSelect={setDob}
  *   required
  *   error={dobError}
  * />
@@ -47,8 +51,8 @@ export function SmartDatePicker({
   optional,
   fieldClassName,
   pickerClassName,
-  date,
-  onDateChange,
+  selected,
+  onSelect,
   placeholder,
   disabled,
 }: SmartDatePickerProps) {
@@ -78,8 +82,8 @@ export function SmartDatePicker({
         </Label>
       )}
       <DatePicker
-        date={date}
-        onDateChange={onDateChange}
+        date={selected}
+        onDateChange={onSelect}
         placeholder={placeholder}
         disabled={disabled}
         className={cn("w-full", pickerClassName)}

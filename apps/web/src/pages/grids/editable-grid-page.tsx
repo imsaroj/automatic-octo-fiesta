@@ -87,7 +87,7 @@ export default function EditableGridPage() {
         editable: true,
         cellEditor: "agNumberCellEditor",
         type: "rightAligned",
-        valueFormatter: (p: any) => formatCurrency(Number(p.value ?? 0)),
+        valueFormatter: (p) => formatCurrency(Number(p.value ?? 0)),
         minWidth: 130,
       },
     ],

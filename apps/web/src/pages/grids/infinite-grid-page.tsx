@@ -166,7 +166,7 @@ export default function InfiniteGridPage() {
         field: "mrr",
         headerName: "MRR",
         type: "rightAligned",
-        valueFormatter: (p: any) => formatCurrency(Number(p.value ?? 0)),
+        valueFormatter: (p) => formatCurrency(Number(p.value ?? 0)),
       },
     ],
     []
@@ -202,7 +202,7 @@ export default function InfiniteGridPage() {
           title="Users (streaming)"
           columns={columns}
           fetchRows={fetchRows}
-          getRowId={(row: any) => String(row.id)}
+          getRowId={(row) => String(row.id)}
           pagination={false}
           pageSize={25}
           columnFilters={false}

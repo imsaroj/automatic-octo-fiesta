@@ -657,13 +657,17 @@ function InsertMenu({
   const [tableRows, setTableRows] = useState("3")
   const [tableCols, setTableCols] = useState("3")
 
-  useEffect(() => {
+  // Reset the form when the menu closes. Adjusting state during render off a
+  // previous-value snapshot avoids a setState-in-effect cascade.
+  const [wasOpen, setWasOpen] = useState(isOpen)
+  if (wasOpen !== isOpen) {
+    setWasOpen(isOpen)
     if (!isOpen) {
       setMode(null)
       setImageUrl("")
       setImageAlt("")
     }
-  }, [isOpen])
+  }
 
   function insertImage() {
     if (!imageUrl.trim()) return

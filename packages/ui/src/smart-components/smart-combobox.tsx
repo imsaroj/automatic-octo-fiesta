@@ -5,22 +5,14 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   Combobox,
   type ComboboxOption,
+  type ComboboxProps,
 } from "@workspace/ui/components/combobox"
 import { Label } from "@workspace/ui/components/label"
 
 export type { ComboboxOption }
 
-export interface SmartComboboxProps {
-  options: ComboboxOption[]
-  value?: string
-  onValueChange?: (value: string) => void
-  placeholder?: string
-  searchPlaceholder?: string
-  emptyText?: string
-  disabled?: boolean
-  /** Class applied to the trigger button. Defaults to full-width. */
-  className?: string
-  // Field-level decoration
+/** Field-level decoration shared by both single and multiple variants. */
+interface SmartComboboxFieldProps {
   /** Field label rendered above the combobox. */
   label?: React.ReactNode
   /** Hint rendered below. Hidden when `error` is set. */
@@ -31,6 +23,8 @@ export interface SmartComboboxProps {
   optional?: boolean
   fieldClassName?: string
 }
+
+export type SmartComboboxProps = ComboboxProps & SmartComboboxFieldProps
 
 /**
  * Combobox (searchable select) with optional field label, description,
@@ -85,7 +79,12 @@ export function SmartCombobox({
           )}
         </Label>
       )}
-      <Combobox {...comboboxProps} className={cn("w-full", className)} />
+      {/* Cast: destructuring the field props off the discriminated union
+          erases the `multiple`↔`value` correlation TS needs to keep it. */}
+      <Combobox
+        {...(comboboxProps as ComboboxProps)}
+        className={cn("w-full", className)}
+      />
       {hasHint && (
         <p
           id={hintId}
