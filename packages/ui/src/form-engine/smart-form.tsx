@@ -17,6 +17,7 @@ import { SmartSwitchField } from "./smart-switch-field"
 import { SmartRadioGroupField } from "./smart-radio-group-field"
 import { SmartDateField } from "./smart-date-field"
 import { SmartSegmentedField } from "./smart-segmented-field"
+import { SmartTextEditorField } from "./smart-text-editor-field"
 
 export type FieldType =
   | "text"
@@ -24,6 +25,7 @@ export type FieldType =
   | "url"
   | "password"
   | "textarea"
+  | "text-editor"
   | "number"
   | "select"
   | "combobox"
@@ -61,6 +63,11 @@ export interface FieldDefinition<T extends Record<string, unknown>> {
   // Textarea extras
   rows?: number
   maxLength?: number
+  // Text-editor extras
+  editorFormat?: "html" | "json"
+  toolbar?: boolean
+  minHeight?: string
+  maxHeight?: string
   // Input extras
   autoComplete?: string
 }
@@ -256,6 +263,18 @@ function FieldRenderer<T extends Record<string, unknown>>({
           setData={onChange as (v: string) => void}
           rows={field.rows}
           maxLength={field.maxLength}
+        />
+      )
+    case "text-editor":
+      return (
+        <SmartTextEditorField
+          {...common}
+          data={(value as string) ?? ""}
+          setData={onChange as (v: string) => void}
+          format={field.editorFormat}
+          toolbar={field.toolbar}
+          minHeight={field.minHeight}
+          maxHeight={field.maxHeight}
         />
       )
     case "number":

@@ -9,14 +9,15 @@ import {
   SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
 import { SmartCard } from "@workspace/ui/smart-components/smart-card"
-import { SmartForm, type FieldDefinition } from "@workspace/ui/form-engine"
 import { toast } from "@workspace/ui/smart-components/smart-toaster"
+import { type FieldDefinition, SmartForm } from "@workspace/ui/form-engine"
 
 const contactSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  email: z.string().email("Enter a valid email"),
+  email: z.string().email("Enter a valid email").optional(),
   subject: z.string().min(1, "Choose a subject"),
   message: z.string(),
+  details: z.string(),
 })
 type ContactForm = z.infer<typeof contactSchema>
 
@@ -33,6 +34,7 @@ const fields: FieldDefinition<ContactForm>[] = [
     type: "text",
     label: "Your name",
     placeholder: "Ada Lovelace",
+    colSpan: 1,
   },
   {
     name: "email",
@@ -54,9 +56,23 @@ const fields: FieldDefinition<ContactForm>[] = [
     description: "Minimum 10 characters.",
     rows: 4,
   },
+  {
+    name: "details",
+    type: "text-editor",
+    label: "Additional details",
+    placeholder: "Add formatted context, links, or lists…",
+    description: "Rich text — stored as HTML.",
+    minHeight: "140px",
+  },
 ]
 
-const EMPTY: ContactForm = { name: "", email: "", subject: "", message: "" }
+const EMPTY: ContactForm = {
+  name: "",
+  email: "",
+  subject: "",
+  message: "",
+  details: "",
+}
 
 export default function BasicFormPage() {
   const [data, setData] = useState<ContactForm>(EMPTY)
@@ -111,7 +127,7 @@ export default function BasicFormPage() {
           description="All supported field types rendered standalone — no schema needed."
           divider
         >
-          <FieldShowcase />
+          {/*<FieldShowcase />*/}
         </SmartPageSection>
       </SmartPageContent>
     </SmartPage>
@@ -119,10 +135,9 @@ export default function BasicFormPage() {
 }
 
 // ── Quick showcase of every field type ─────────────────────────────────────────
-
-import { SmartInputField } from "@workspace/ui/form-engine"
+/*
+import { SmartInputField } from "@workspace/ui/components/input"
 import { SmartPasswordField } from "@workspace/ui/form-engine"
-import { SmartTextareaField } from "@workspace/ui/form-engine"
 import { SmartNumberField } from "@workspace/ui/form-engine"
 import { SmartSelectField } from "@workspace/ui/form-engine"
 import { SmartComboboxField } from "@workspace/ui/form-engine"
@@ -132,11 +147,13 @@ import { SmartSwitchField } from "@workspace/ui/form-engine"
 import { SmartRadioGroupField } from "@workspace/ui/form-engine"
 import { SmartDateField } from "@workspace/ui/form-engine"
 import { SmartSegmentedField } from "@workspace/ui/form-engine"
+import { SmartTextEditor } from "@workspace/ui/lexical-text-editor"
 
 function FieldShowcase() {
   const [text, setText] = useState("")
   const [password, setPassword] = useState("")
   const [bio, setBio] = useState("")
+  const [richText] = useState("")
   const [amount, setAmount] = useState<number | null>(null)
   const [country, setCountry] = useState("")
   const [framework, setFramework] = useState("")
@@ -244,6 +261,13 @@ function FieldShowcase() {
         data={enabled}
         setData={setEnabled}
       />
+      <SmartTextEditor
+        label="Rich text"
+        value={richText}
+        placeholder="Bold, lists, links…"
+        className="sm:col-span-2 lg:col-span-3"
+      />
     </div>
   )
 }
+*/
