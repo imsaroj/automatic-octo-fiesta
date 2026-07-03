@@ -17,6 +17,16 @@ export interface SmartPageErrorProps {
   onRetry?: () => void
   /** Label for the retry button. @default "Try again" */
   retryLabel?: string
+  /**
+   * Visual treatment:
+   * - `"page"` (default) — a full-height dashed panel for a page's primary
+   *   error slot.
+   * - `"overlay"` — an absolutely-positioned, backdrop-blurred card that covers
+   *   its (relatively-positioned) parent. Use over content that failed to
+   *   refresh, e.g. inside a data grid.
+   * @default "page"
+   */
+  variant?: "page" | "overlay"
   /** Additional class names on the root element. */
   className?: string
 }
@@ -57,31 +67,43 @@ export function SmartPageError({
   description = "An unexpected error occurred while loading this page.",
   onRetry,
   retryLabel = "Try again",
+  variant = "page",
   className,
 }: SmartPageErrorProps) {
+  const overlay = variant === "overlay"
   return (
     <div
       role="alert"
       className={cn(
-        "flex h-full min-h-60 flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-destructive/30 bg-destructive/5 p-10 text-center",
+        overlay
+          ? "absolute inset-0 z-10 flex items-center justify-center bg-background/80 p-6 backdrop-blur-sm"
+          : "flex h-full min-h-60 flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-destructive/30 bg-destructive/5 p-10 text-center",
         className
       )}
     >
-      <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-        <AlertCircle className="size-6" />
+      <div
+        className={cn(
+          overlay
+            ? "flex max-w-sm flex-col items-center gap-3 rounded-md border border-border bg-card p-6 text-center shadow-sm"
+            : "contents"
+        )}
+      >
+        <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <AlertCircle className="size-6" />
+        </div>
+        <div className="flex flex-col gap-1">
+          <h3 className="text-sm font-semibold">{title}</h3>
+          <p className="mx-auto max-w-sm text-xs text-muted-foreground">
+            {description}
+          </p>
+        </div>
+        {onRetry && (
+          <Button variant="outline" size="sm" onClick={onRetry}>
+            <RefreshCw />
+            {retryLabel}
+          </Button>
+        )}
       </div>
-      <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-semibold">{title}</h3>
-        <p className="mx-auto max-w-sm text-xs text-muted-foreground">
-          {description}
-        </p>
-      </div>
-      {onRetry && (
-        <Button variant="outline" size="sm" onClick={onRetry}>
-          <RefreshCw />
-          {retryLabel}
-        </Button>
-      )}
     </div>
   )
 }

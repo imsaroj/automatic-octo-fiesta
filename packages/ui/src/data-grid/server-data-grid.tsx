@@ -22,12 +22,12 @@ import {
   type RowDoubleClickedEvent,
   type RowSelectionOptions,
 } from "ag-grid-community"
-import { AlertCircle, FileSpreadsheet, RefreshCw } from "lucide-react"
+import { FileSpreadsheet } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 import { downloadXlsx, timestampForFilename } from "@workspace/ui/lib/xlsx"
-import { Button } from "@workspace/ui/components/button"
 import { GridToolbar } from "./grid-toolbar"
 import { SmartLoadingOverlay } from "@workspace/ui/smart-components/loading-overlay"
+import { SmartPageError } from "@workspace/ui/smart-components/page/smart-page-error"
 import {
   buildServerFetchParams,
   type ServerFetchParams,
@@ -158,30 +158,6 @@ export interface SmartServerGridProps<TRow> {
   /** Empty-state content shown when the server returns no rows. */
   emptyState?: { title?: string; description?: string }
   className?: string
-}
-
-function ErrorPanel({
-  message,
-  onRetry,
-}: {
-  message: string
-  onRetry: () => void
-}) {
-  return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-      <div className="flex max-w-sm flex-col items-center gap-3 rounded-md border border-border bg-card p-6 text-center shadow-sm">
-        <AlertCircle className="h-8 w-8 text-destructive" />
-        <div className="space-y-1">
-          <p className="text-sm font-semibold">Couldn’t load data</p>
-          <p className="text-sm text-muted-foreground">{message}</p>
-        </div>
-        <Button variant="outline" size="sm" onClick={onRetry}>
-          <RefreshCw className="h-4 w-4" />
-          Retry
-        </Button>
-      </div>
-    </div>
-  )
 }
 
 /**
@@ -544,7 +520,15 @@ function SmartServerGridInner<TRow>(
         {initialLoading && !error ? (
           <SmartLoadingOverlay loading label="Loading data…" />
         ) : null}
-        {error ? <ErrorPanel message={error} onRetry={handleRetry} /> : null}
+        {error ? (
+          <SmartPageError
+            variant="overlay"
+            title="Couldn’t load data"
+            description={error}
+            onRetry={handleRetry}
+            retryLabel="Retry"
+          />
+        ) : null}
       </div>
     </div>
   )

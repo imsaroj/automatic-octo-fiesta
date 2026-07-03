@@ -1,11 +1,9 @@
-import type {
-  ServerFetchParams,
-  ServerFilter,
-  ServerSort,
-} from "@workspace/ui/data-grid"
+import type { ServerFilter, ServerSort } from "@workspace/ui/data-grid"
 
 /**
- * Query contract shared by the client and the MSW mock:
+ * Decoder half of the query contract shared by the MSW mock (the encoder lives
+ * in the library as `buildSpringQuery`). Parses the Spring dialect back into
+ * normalized paging/sort/filter parts:
  *
  * - paging  → `?page=0&size=20`
  * - sorting → `?sort=name,asc&sort=mrr,desc`  (repeatable, Spring style)
@@ -14,27 +12,6 @@ import type {
  */
 
 const RESERVED = new Set(["page", "size", "sort"])
-
-function encodeFilterValue(filter: ServerFilter): string {
-  if (filter.type === "inRange") {
-    return `inRange:${String(filter.value)}:${String(filter.valueTo)}`
-  }
-  if (Array.isArray(filter.value)) {
-    return `set:${filter.value.map(String).join(",")}`
-  }
-  return `${filter.type}:${String(filter.value)}`
-}
-
-/** Serialize normalized grid params into a query string (without the leading `?`). */
-export function buildUsersQuery(params: ServerFetchParams): string {
-  const sp = new URLSearchParams()
-  sp.set("page", String(params.page))
-  sp.set("size", String(params.pageSize))
-  for (const sort of params.sort) sp.append("sort", `${sort.field},${sort.dir}`)
-  for (const filter of params.filters)
-    sp.append(filter.field, encodeFilterValue(filter))
-  return sp.toString()
-}
 
 export interface ParsedUsersQuery {
   page: number

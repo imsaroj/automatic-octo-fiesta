@@ -68,7 +68,7 @@
 
 ---
 
-## Week 3 — API layer, validation, and shared utilities
+## Week 3 — API layer, validation, and shared utilities (Done)
 
 ### 3.1 Generalize the validated page-fetcher
 

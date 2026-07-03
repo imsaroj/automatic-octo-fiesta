@@ -95,7 +95,12 @@ Two public components backed by AG Grid Community:
   constants, `NoRowsOverlay`.
 - `pagination.ts` — `ServerFetchParams` / `ServerFetchResult` types, `buildServerFetchParams` (translates AG Grid's
   `IGetRowsParams` → normalized params), `pageSchema` (Zod schema for Spring Data `Page<T>` responses), `toSpringSort`
-  helper.
+  helper, and the Spring **query encoder** (`buildSpringQuery` / `encodeSpringFilter`) — the matching decoder stays
+  app/mock-side.
+- `create-page-fetcher.ts` — `createPageFetcher({ url, itemSchema, buildQuery?, mapError?, fetchImpl? }) → fetchRows`:
+  the reusable fetch → status-check → Zod-`pageSchema`-parse → `{rows,total}` pipeline for `SmartServerGrid`. Transport
+  is injectable (`fetchImpl`) for testability/SSR. Returned fetcher takes an optional 3rd `extraParams` arg for per-call
+  query params. `apps/web/src/api/users.ts` is built on it.
 - `server-grid-internals.ts` — pure helpers for state persistence (`readPersistedGridState`/`writePersistedGridState`),
   Excel export shaping (`collectGridExport`), filter merging, debounce.
 - `use-server-grid-selection.ts` — cross-page selection hook; the selected-id `Set` is the source of truth so selections
@@ -110,9 +115,9 @@ to restore the generic signature — this is intentional and not a bug.
 The largest layer: **`Smart*` wrappers** that flatten shadcn/ui compound components into a single config-driven
 component to cut JSX boilerplate (e.g. `SmartCard`, `SmartDialog`, `SmartSheet`, `SmartDrawer`, `SmartSelect`,
 `SmartCombobox`, `SmartMultiSelect`, `SmartDatePicker`, `SmartStepper`, `SmartToaster`, plus utility ones like
-`SmartSearchInput`, `SmartLoadingOverlay`, `SmartSpinner`). Each wrapper file also **re-exports the underlying native
-primitives**, so you can drop back to the compound form for layouts the flat API can't express (see the doc comment in
-`smart-card.tsx` for the pattern).
+`SmartSearchInput`, `SmartLoadingOverlay`, `SmartSpinner`, and the `SmartStatCard` KPI/metric primitive). Each wrapper
+file also **re-exports the underlying native primitives**, so you can drop back to the compound form for layouts the
+flat API can't express (see the doc comment in `smart-card.tsx` for the pattern).
 
 There is a `shadcn-smart-wrappers` skill that converts native shadcn compound usage (`SCard`, `SDialog`, …) into these
 wrappers — prefer `Smart*` wrappers when writing or editing TSX in this repo.
@@ -194,4 +199,15 @@ thin leaf components with no shared state.
 **MSW mock API:** `src/mocks/` holds an [MSW](https://mswjs.io) worker (`browser.ts`, `handlers.ts`, `users-dataset.ts`)
 started by `enableMocking()` in `main.tsx` **before first render** — dev-only (no-op in prod, `onUnhandledRequest:
 "bypass"`). It backs the server/infinite data-grid pages with a real endpoint (the Spring Data `Page<T>` shape that
-`pagination.ts` expects). `SmartToaster` is mounted once at the app root.
+`pagination.ts` expects). `users-dataset.ts` is a **mutable** in-memory table (seeded deterministically); the
+`GET`/`POST`/`PUT`/`DELETE` `/api/users` handlers read and edit it. `SmartToaster` is mounted once at the app root.
+
+**Data fetching (TanStack Query):** `@tanstack/react-query` lives in `apps/web` only (the library stays fetch-agnostic).
+`main.tsx` wraps the app in a `QueryClientProvider` (configured client in `lib/query-client.ts`). The **CRUD example page**
+(`pages/examples/crud-example-page.tsx`) is the reference recipe: `useQuery` for the paged/searchable list, `useMutation`
+for create/edit/delete against the MSW mutation handlers, an **optimistic** delete (`onMutate` → rollback `onError` →
+`invalidateQueries` `onSettled`), and `toast` feedback. The typed transport it calls is `api/users-crud.ts`.
+
+**Demo data:** `src/demo-data/` holds typed, seeded/deterministic generators (`series`, `mulberry32`) and shared
+datasets (`dashboardStats`, `analyticsKpis`, breakdown lists, etc.) so the dashboard/analytics example pages don't
+re-inline fake data. Those pages render KPIs with the reusable `SmartStatCard`.

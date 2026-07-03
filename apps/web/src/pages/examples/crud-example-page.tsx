@@ -1,31 +1,31 @@
 /**
  * CRUD Example Page
  *
- * Demonstrates the "grid" layout — the most common enterprise pattern:
- * - Header sticks at the top
- * - Toolbar (search + filter controls) sticks below header
- * - Grid fills ALL remaining viewport height without calc() or 100vh
- * - Status bar and footer stick at the bottom
- * - Only the grid scrolls
+ * The full enterprise data story on the "grid" layout: a paged, searchable list
+ * backed by **TanStack Query** against the MSW mock API, with create / edit /
+ * delete **mutations**, an **optimistic** delete, and **toast** feedback.
  *
- * SmartPage auto-detects this as a "grid" layout because SmartGridArea
- * is a direct child.
+ * This is the recipe real consumer apps copy:
+ * - reads   → `useQuery` (cache + retry + `keepPreviousData` while paging)
+ * - writes  → `useMutation` + `queryClient.invalidateQueries(["users"])`
+ * - delete  → optimistic `onMutate` / rollback `onError` / reconcile `onSettled`
+ *
+ * The library stays fetch-agnostic — all of this lives in the app.
  */
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
-  Download,
-  Filter,
-  LayoutGrid,
-  LayoutList,
-  RefreshCw,
-  Trash2,
-  UserPlus,
-  Users,
-} from "lucide-react"
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query"
+import { Filter, Pencil, Trash2, UserPlus, Users } from "lucide-react"
 import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
-import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
-import { Checkbox } from "@workspace/ui/smart-components/smart-checkbox"
+import { SmartConfirmDialog } from "@workspace/ui/smart-components/smart-confirm-dialog"
+import { SmartDialog } from "@workspace/ui/smart-components/smart-dialog"
+import { toast } from "@workspace/ui/smart-components/smart-toaster"
+import { SmartSearchInput } from "@workspace/ui/smart-components/search-input"
 import {
   SmartPage,
   SmartPageHeader,
@@ -35,75 +35,218 @@ import {
   SmartPageBreadcrumb,
   SmartToolbar,
   SmartPageSearch,
-  SmartPageFilters,
   SmartGridArea,
   SmartPageStatusBar,
   SmartPageFooter,
   SmartPageEmpty,
+  SmartPageError,
 } from "@workspace/ui/smart-components/page"
-import { SmartSearchInput } from "@workspace/ui/smart-components/search-input"
+import { SmartForm, type FieldDefinition } from "@workspace/ui/form-engine"
+import { z } from "zod"
+import {
+  createUser,
+  deleteUser,
+  fetchUserList,
+  updateUser,
+  type NewUser,
+} from "@/api/users-crud"
+import type { UserRow } from "@/api/users"
 
-// ─── Fake data ────────────────────────────────────────────────────────────────
+// ─── Form schema + fields (reused for create & edit) ──────────────────────────
 
-interface User {
-  id: string
-  name: string
-  email: string
-  role: "Admin" | "Member" | "Viewer"
-  status: "Active" | "Invited" | "Suspended"
-  joined: string
+const userFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.email("Enter a valid email"),
+  role: z.string().min(1, "Role is required"),
+  status: z.enum(["Active", "Inactive", "Pending"]),
+  mrr: z.number().min(0, "MRR can't be negative"),
+})
+type UserForm = z.infer<typeof userFormSchema>
+
+const ROLE_OPTIONS = [
+  "Admin",
+  "Manager",
+  "Developer",
+  "Designer",
+  "QA Engineer",
+  "Support",
+].map((r) => ({ label: r, value: r }))
+
+const STATUS_OPTIONS = (["Active", "Inactive", "Pending"] as const).map(
+  (s) => ({
+    label: s,
+    value: s,
+  })
+)
+
+const userFields: FieldDefinition<UserForm>[] = [
+  { name: "name", label: "Name", type: "text", placeholder: "Ada Lovelace" },
+  { name: "email", label: "Email", type: "email", colSpan: 2 },
+  { name: "role", label: "Role", type: "select", options: ROLE_OPTIONS },
+  { name: "status", label: "Status", type: "select", options: STATUS_OPTIONS },
+  { name: "mrr", label: "MRR", type: "currency", min: 0 },
+]
+
+const EMPTY_USER: UserForm = {
+  name: "",
+  email: "",
+  role: "Developer",
+  status: "Active",
+  mrr: 0,
 }
 
-const USERS: User[] = Array.from({ length: 40 }, (_, i) => ({
-  id: String(i + 1),
-  name: `User ${i + 1}`,
-  email: `user${i + 1}@example.com`,
-  role: (["Admin", "Member", "Viewer"] as const)[i % 3],
-  status: (["Active", "Invited", "Suspended"] as const)[i % 3],
-  joined: new Date(Date.now() - i * 86_400_000 * 7).toLocaleDateString(),
-}))
-
-const STATUS_COLORS = {
+const STATUS_COLORS: Record<UserRow["status"], string> = {
   Active:
     "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  Invited:
+  Pending:
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
-  Suspended: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-} as const
+  Inactive: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+}
+
+const PAGE_SIZE = 20
+
+// ─── User create/edit dialog ──────────────────────────────────────────────────
+
+function UserFormDialog({
+  open,
+  onOpenChange,
+  initial,
+  title,
+  submitLabel,
+  pending,
+  onSubmit,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  initial: UserForm
+  title: string
+  submitLabel: string
+  pending: boolean
+  onSubmit: (value: UserForm) => void
+}) {
+  return (
+    <SmartDialog open={open} onOpenChange={onOpenChange} header={{ title }}>
+      {open && (
+        <SmartForm
+          schema={userFormSchema}
+          fields={userFields}
+          data={initial}
+          columns={2}
+          submitLabel={pending ? "Saving…" : submitLabel}
+          onSubmit={onSubmit}
+        />
+      )}
+    </SmartDialog>
+  )
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function CrudExamplePage() {
-  const [query, setQuery] = useState("")
-  const [selected, setSelected] = useState<Set<string>>(new Set())
-  const [activeFilter, setActiveFilter] = useState<string | null>(null)
+  const queryClient = useQueryClient()
 
-  const filtered = USERS.filter((u) => {
-    if (activeFilter && u.status !== activeFilter) return false
-    if (!query) return true
-    const q = query.toLowerCase()
-    return u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+  const [search, setSearch] = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState("")
+  const [page, setPage] = useState(0)
+
+  // Debounce the search box so we don't fire a query per keystroke.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(search)
+      setPage(0)
+    }, 300)
+    return () => clearTimeout(t)
+  }, [search])
+
+  // Create/edit dialog state. `editing === null` → create mode.
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [editing, setEditing] = useState<UserRow | null>(null)
+  // Pending delete confirmation target.
+  const [deleteTarget, setDeleteTarget] = useState<UserRow | null>(null)
+
+  const usersQueryKey = ["users", { search: debouncedSearch, page }] as const
+
+  const { data, isPending, isError, error, refetch, isFetching } = useQuery({
+    queryKey: usersQueryKey,
+    queryFn: ({ signal }) =>
+      fetchUserList({ page, size: PAGE_SIZE, search: debouncedSearch }, signal),
+    placeholderData: keepPreviousData,
   })
 
-  const toggleSelect = (id: string) => {
-    setSelected((prev) => {
-      const next = new Set(prev)
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
+  const rows = data?.rows ?? []
+  const total = data?.total ?? 0
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+
+  const invalidateUsers = () =>
+    queryClient.invalidateQueries({ queryKey: ["users"] })
+
+  const createMutation = useMutation({
+    mutationFn: (input: NewUser) => createUser(input),
+    onSuccess: (user) => {
+      toast.success(`Created ${user.name}`)
+      setDialogOpen(false)
+      void invalidateUsers()
+    },
+    onError: (e: Error) => toast.error(e.message),
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: (input: { id: number; changes: Partial<NewUser> }) =>
+      updateUser(input.id, input.changes),
+    onSuccess: (user) => {
+      toast.success(`Updated ${user.name}`)
+      setDialogOpen(false)
+      void invalidateUsers()
+    },
+    onError: (e: Error) => toast.error(e.message),
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: (user: UserRow) => deleteUser(user.id),
+    // Optimistic: drop the row from the current page immediately, roll back on error.
+    onMutate: async (user) => {
+      await queryClient.cancelQueries({ queryKey: usersQueryKey })
+      const previous = queryClient.getQueryData<typeof data>(usersQueryKey)
+      queryClient.setQueryData<typeof data>(usersQueryKey, (curr) =>
+        curr
+          ? {
+              rows: curr.rows.filter((r) => r.id !== user.id),
+              total: Math.max(0, curr.total - 1),
+            }
+          : curr
+      )
+      return { previous }
+    },
+    onError: (e: Error, _user, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(usersQueryKey, ctx.previous)
+      toast.error(e.message)
+    },
+    onSuccess: (_res, user) => toast.success(`Deleted ${user.name}`),
+    onSettled: () => void invalidateUsers(),
+  })
+
+  const openCreate = () => {
+    setEditing(null)
+    setDialogOpen(true)
   }
 
-  const toggleAll = () => {
-    setSelected(
-      selected.size === filtered.length
-        ? new Set()
-        : new Set(filtered.map((u) => u.id))
-    )
+  const openEdit = (user: UserRow) => {
+    setEditing(user)
+    setDialogOpen(true)
   }
+
+  const handleSubmit = (value: UserForm) => {
+    if (editing) {
+      updateMutation.mutate({ id: editing.id, changes: value })
+    } else {
+      createMutation.mutate(value)
+    }
+  }
+
+  const savePending = createMutation.isPending || updateMutation.isPending
 
   return (
-    // No layout prop needed — SmartGridArea's presence auto-detects "grid"
+    // SmartGridArea's presence auto-detects the "grid" layout
     <SmartPage>
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <SmartPageHeader>
@@ -114,15 +257,11 @@ export default function CrudExamplePage() {
           <div>
             <SmartPageTitle>Users</SmartPageTitle>
             <SmartPageDescription>
-              Manage your organisation's members and access levels.
+              Manage your organisation's members — backed by TanStack Query.
             </SmartPageDescription>
           </div>
           <SmartPageActions>
-            <Button variant="outline" size="sm">
-              <Download />
-              Export
-            </Button>
-            <Button size="sm">
+            <Button size="sm" onClick={openCreate}>
               <UserPlus />
               Invite user
             </Button>
@@ -130,69 +269,60 @@ export default function CrudExamplePage() {
         </div>
       </SmartPageHeader>
 
-      {/* ── Toolbar: action buttons + view controls ─────────────────────────── */}
+      {/* ── Toolbar ─────────────────────────────────────────────────────────── */}
       <SmartToolbar>
-        <Button
-          variant={activeFilter ? "secondary" : "outline"}
-          size="sm"
-          onClick={() => setActiveFilter(activeFilter ? null : "Active")}
-        >
+        <Button variant="outline" size="sm" disabled>
           <Filter />
-          {activeFilter ? `Filter: ${activeFilter}` : "Filter"}
+          Filter
         </Button>
         <span className="ms-auto" />
-        <Button variant="ghost" size="icon-sm" aria-label="List view">
-          <LayoutList />
-        </Button>
-        <Button variant="ghost" size="icon-sm" aria-label="Grid view">
-          <LayoutGrid />
-        </Button>
-        <Button variant="ghost" size="icon-sm" aria-label="Refresh">
-          <RefreshCw />
-        </Button>
+        <span className="text-xs text-muted-foreground">
+          {isFetching ? "Refreshing…" : `${total.toLocaleString()} users`}
+        </span>
       </SmartToolbar>
 
       {/* ── Search bar ─────────────────────────────────────────────────────── */}
       <SmartPageSearch>
         <SmartSearchInput
-          value={query}
-          onValueChange={setQuery}
-          placeholder="Search users…"
+          value={search}
+          onValueChange={setSearch}
+          placeholder="Search by name…"
           className="w-72"
         />
       </SmartPageSearch>
 
-      {/* ── Active filters ──────────────────────────────────────────────────── */}
-      {activeFilter && (
-        <SmartPageFilters label="Active filters:">
-          <Badge variant="secondary" className="cursor-pointer gap-1">
-            Status: {activeFilter} ×
-          </Badge>
-        </SmartPageFilters>
-      )}
-
       {/* ── Grid fills remaining height ─────────────────────────────────────── */}
       <SmartGridArea>
-        {filtered.length === 0 ? (
+        {isError ? (
+          <SmartPageError
+            title="Failed to load users"
+            description={(error as Error).message}
+            onRetry={() => void refetch()}
+          />
+        ) : rows.length === 0 && !isPending ? (
           <SmartPageEmpty
             icon={<Users />}
             title="No users found"
             description={
-              query
-                ? `No users match "${query}". Try a different search.`
-                : "No users match the current filters."
+              debouncedSearch
+                ? `No users match "${debouncedSearch}".`
+                : "Invite your first user to get started."
             }
             action={
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setQuery("")
-                  setActiveFilter(null)
-                }}
-              >
-                Clear filters
-              </Button>
+              debouncedSearch ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearch("")}
+                >
+                  Clear search
+                </Button>
+              ) : (
+                <Button size="sm" onClick={openCreate}>
+                  <UserPlus />
+                  Invite user
+                </Button>
+              )
             }
           />
         ) : (
@@ -200,15 +330,6 @@ export default function CrudExamplePage() {
             <table className="w-full text-xs">
               <thead className="sticky top-0 bg-muted/80 backdrop-blur-sm">
                 <tr className="border-b">
-                  <th className="w-10 px-4 py-2.5 text-left">
-                    <Checkbox
-                      checked={
-                        selected.size === filtered.length && filtered.length > 0
-                      }
-                      onCheckedChange={toggleAll}
-                      aria-label="Select all"
-                    />
-                  </th>
                   <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
                     Name
                   </th>
@@ -221,53 +342,68 @@ export default function CrudExamplePage() {
                   <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
                     Status
                   </th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    Joined
+                  <th className="px-4 py-2.5 text-right font-medium text-muted-foreground">
+                    MRR
                   </th>
-                  <th className="w-16 px-4 py-2.5" />
+                  <th className="w-24 px-4 py-2.5" />
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((user) => (
-                  <tr
-                    key={user.id}
-                    className={`border-b transition-colors hover:bg-muted/40 ${selected.has(user.id) ? "bg-primary/5" : ""}`}
-                  >
-                    <td className="px-4 py-2.5">
-                      <Checkbox
-                        checked={selected.has(user.id)}
-                        onCheckedChange={() => toggleSelect(user.id)}
-                        aria-label={`Select ${user.name}`}
-                      />
-                    </td>
-                    <td className="px-4 py-2.5 font-medium">{user.name}</td>
-                    <td className="px-4 py-2.5 text-muted-foreground">
-                      {user.email}
-                    </td>
-                    <td className="px-4 py-2.5 text-muted-foreground">
-                      {user.role}
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <span
-                        className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_COLORS[user.status]}`}
-                      >
-                        {user.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2.5 text-muted-foreground">
-                      {user.joined}
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        aria-label="Delete"
-                      >
-                        <Trash2 className="text-muted-foreground" />
-                      </Button>
+                {isPending ? (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="px-4 py-10 text-center text-muted-foreground"
+                    >
+                      Loading users…
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  rows.map((user) => (
+                    <tr
+                      key={user.id}
+                      className="border-b transition-colors hover:bg-muted/40"
+                    >
+                      <td className="px-4 py-2.5 font-medium">{user.name}</td>
+                      <td className="px-4 py-2.5 text-muted-foreground">
+                        {user.email}
+                      </td>
+                      <td className="px-4 py-2.5 text-muted-foreground">
+                        {user.role}
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <span
+                          className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_COLORS[user.status]}`}
+                        >
+                          {user.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5 text-right text-muted-foreground tabular-nums">
+                        ${user.mrr.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <div className="flex justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={`Edit ${user.name}`}
+                            onClick={() => openEdit(user)}
+                          >
+                            <Pencil className="text-muted-foreground" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={`Delete ${user.name}`}
+                            onClick={() => setDeleteTarget(user)}
+                          >
+                            <Trash2 className="text-muted-foreground" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -277,32 +413,57 @@ export default function CrudExamplePage() {
       {/* ── Status bar ─────────────────────────────────────────────────────── */}
       <SmartPageStatusBar>
         <span className="text-xs text-muted-foreground">
-          {filtered.length.toLocaleString()} of {USERS.length.toLocaleString()}{" "}
-          users
+          {total.toLocaleString()} users
         </span>
-        {selected.size > 0 && (
-          <>
-            <span className="text-xs font-medium text-primary">
-              {selected.size} selected
-            </span>
-            <Button variant="ghost" size="xs">
-              <Trash2 />
-              Delete selected
-            </Button>
-          </>
-        )}
       </SmartPageStatusBar>
 
       {/* ── Footer: pagination ──────────────────────────────────────────────── */}
       <SmartPageFooter justify="between">
-        <Button variant="outline" size="sm" disabled>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page === 0 || isFetching}
+          onClick={() => setPage((p) => Math.max(0, p - 1))}
+        >
           Previous
         </Button>
-        <span className="text-xs text-muted-foreground">Page 1 of 1</span>
-        <Button variant="outline" size="sm" disabled>
+        <span className="text-xs text-muted-foreground">
+          Page {page + 1} of {totalPages}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page >= totalPages - 1 || isFetching}
+          onClick={() => setPage((p) => p + 1)}
+        >
           Next
         </Button>
       </SmartPageFooter>
+
+      {/* ── Create / edit dialog ────────────────────────────────────────────── */}
+      <UserFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        initial={editing ?? EMPTY_USER}
+        title={editing ? "Edit user" : "Invite user"}
+        submitLabel={editing ? "Save changes" : "Create user"}
+        pending={savePending}
+        onSubmit={handleSubmit}
+      />
+
+      {/* ── Delete confirmation ─────────────────────────────────────────────── */}
+      <SmartConfirmDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title={`Delete ${deleteTarget?.name ?? "user"}?`}
+        description="This removes the user from the list. This can't be undone."
+        confirmLabel="Delete"
+        variant="destructive"
+        onConfirm={() => {
+          if (deleteTarget) deleteMutation.mutate(deleteTarget)
+          setDeleteTarget(null)
+        }}
+      />
     </SmartPage>
   )
 }

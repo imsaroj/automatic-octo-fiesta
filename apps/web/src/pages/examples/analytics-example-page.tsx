@@ -9,12 +9,13 @@
  *
  * Uses layout="dashboard" explicitly (auto-detection would also work via hero,
  * but analytics pages often skip the hero).
+ *
+ * KPI cards use the shared `SmartStatCard`; figures and breakdown lists come
+ * from the `@/demo-data` module.
  */
 
 import { useState } from "react"
 import {
-  ArrowDownRight,
-  ArrowUpRight,
   BarChart3,
   Download,
   Globe,
@@ -27,11 +28,7 @@ import {
 } from "lucide-react"
 import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
 import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@workspace/ui/smart-components/smart-card"
+import { SmartStatCard } from "@workspace/ui/smart-components/smart-stat-card"
 import {
   SmartPage,
   SmartPageHeader,
@@ -45,42 +42,27 @@ import {
   SmartPageContent,
   SmartPageSection,
 } from "@workspace/ui/smart-components/page"
+import {
+  analyticsKpis,
+  conversionFunnel,
+  deviceBreakdown,
+  topCountries,
+  trafficChannels,
+  series,
+} from "@/demo-data"
 
-// ─── Metric card ─────────────────────────────────────────────────────────────
+// ─── Shared lookups ───────────────────────────────────────────────────────────
 
-interface KpiCardProps {
-  label: string
-  value: string
-  delta: number
-  format?: "percent" | "number" | "currency"
-  icon?: React.ReactNode
+const KPI_ICONS: Record<string, React.ReactNode> = {
+  sessions: <BarChart3 className="size-4" />,
+  visitors: <TrendingUp className="size-4" />,
 }
 
-function KpiCard({ label, value, delta, icon }: KpiCardProps) {
-  const positive = delta >= 0
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-1">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        {icon && <div className="text-muted-foreground">{icon}</div>}
-      </CardHeader>
-      <CardContent className="pt-0">
-        <p className="text-2xl font-bold tracking-tight">{value}</p>
-        <div
-          className={`mt-1 flex items-center gap-1 text-xs ${positive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
-        >
-          {positive ? (
-            <ArrowUpRight className="size-3.5" />
-          ) : (
-            <ArrowDownRight className="size-3.5" />
-          )}
-          {positive ? "+" : ""}
-          {delta}% vs last period
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
+const DEVICE_ICONS = {
+  desktop: Monitor,
+  mobile: Smartphone,
+  tablet: Tablet,
+} as const
 
 // ─── Bar chart placeholder ────────────────────────────────────────────────────
 
@@ -146,7 +128,7 @@ function FunnelStep({
   )
 }
 
-// ─── Geo row ──────────────────────────────────────────────────────────────────
+// ─── Geo / proportion row ─────────────────────────────────────────────────────
 
 function GeoRow({
   country,
@@ -178,38 +160,37 @@ function GeoRow({
 
 // ─── Overview tab ─────────────────────────────────────────────────────────────
 
+const SESSIONS_SERIES = series({
+  length: 30,
+  seed: 7,
+  min: 12,
+  max: 96,
+  trend: 0.85,
+})
+
 function OverviewTab() {
   return (
     <SmartPageContent padding="md">
       {/* KPIs */}
       <SmartPageSection padding={false}>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <KpiCard
-            label="Sessions"
-            value="248,392"
-            delta={12.4}
-            icon={<BarChart3 className="size-4" />}
-          />
-          <KpiCard
-            label="Unique visitors"
-            value="184,271"
-            delta={8.7}
-            icon={<TrendingUp className="size-4" />}
-          />
-          <KpiCard label="Bounce rate" value="38.2%" delta={-3.1} />
-          <KpiCard label="Avg. session" value="4m 12s" delta={5.8} />
+          {analyticsKpis.map((stat) => (
+            <SmartStatCard
+              key={stat.key}
+              label={stat.label}
+              value={stat.value}
+              delta={stat.delta}
+              deltaLabel={stat.deltaLabel}
+              trend={stat.trend}
+              icon={KPI_ICONS[stat.key]}
+            />
+          ))}
         </div>
       </SmartPageSection>
 
       {/* Sessions over time */}
       <SmartPageSection title="Sessions over time" bordered>
-        <BarChartPlaceholder
-          height={160}
-          data={[
-            12, 19, 15, 28, 22, 34, 29, 38, 33, 41, 36, 48, 42, 55, 50, 62, 57,
-            65, 58, 72, 66, 78, 70, 84, 76, 88, 80, 94, 87, 96,
-          ]}
-        />
+        <BarChartPlaceholder height={160} data={SESSIONS_SERIES} />
         <div className="flex items-center justify-between px-0.5 text-[10px] text-muted-foreground">
           <span>Jun 1</span>
           <span>Jun 8</span>
@@ -222,44 +203,37 @@ function OverviewTab() {
       {/* Channels + Devices */}
       <div className="grid gap-4 md:grid-cols-2">
         <SmartPageSection title="Traffic channels" bordered>
-          {[
-            { label: "Organic search", pct: 42, value: "104,325" },
-            { label: "Direct", pct: 28, value: "69,549" },
-            { label: "Referral", pct: 16, value: "39,743" },
-            { label: "Social", pct: 9, value: "22,355" },
-            { label: "Email", pct: 5, value: "12,420" },
-          ].map((r) => (
+          {trafficChannels.map((r) => (
             <GeoRow
               key={r.label}
               country={r.label}
-              sessions={r.value}
+              sessions={r.value ?? ""}
               pct={r.pct}
             />
           ))}
         </SmartPageSection>
 
         <SmartPageSection title="Device breakdown" bordered>
-          {[
-            { icon: Monitor, label: "Desktop", pct: 54, value: "134,131" },
-            { icon: Smartphone, label: "Mobile", pct: 37, value: "91,905" },
-            { icon: Tablet, label: "Tablet", pct: 9, value: "22,355" },
-          ].map(({ icon: Icon, label, pct, value }) => (
-            <div key={label} className="flex items-center gap-3 py-1.5">
-              <Icon className="size-3.5 text-muted-foreground" />
-              <span className="flex-1 text-xs">{label}</span>
-              <div className="flex items-center gap-2">
-                <div className="h-1 w-20 overflow-hidden rounded-full bg-muted">
-                  <div
-                    className="h-full rounded-full bg-primary/60"
-                    style={{ width: `${pct}%` }}
-                  />
+          {deviceBreakdown.map(({ key, label, pct, value }) => {
+            const Icon = DEVICE_ICONS[key]
+            return (
+              <div key={label} className="flex items-center gap-3 py-1.5">
+                <Icon className="size-3.5 text-muted-foreground" />
+                <span className="flex-1 text-xs">{label}</span>
+                <div className="flex items-center gap-2">
+                  <div className="h-1 w-20 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-primary/60"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <span className="w-12 text-right text-xs text-muted-foreground">
+                    {value}
+                  </span>
                 </div>
-                <span className="w-12 text-right text-xs text-muted-foreground">
-                  {value}
-                </span>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </SmartPageSection>
       </div>
     </SmartPageContent>
@@ -276,26 +250,9 @@ function FunnelTab() {
         description="Visitor flow from landing to purchase for the current period."
         bordered
       >
-        <FunnelStep label="Visitors" value="248,392" pct={100} />
-        <FunnelStep
-          label="Product page views"
-          value="148,321"
-          pct={59.7}
-          drop={40.3}
-        />
-        <FunnelStep label="Add to cart" value="72,840" pct={29.3} drop={30.9} />
-        <FunnelStep
-          label="Checkout started"
-          value="41,280"
-          pct={16.6}
-          drop={43.4}
-        />
-        <FunnelStep
-          label="Purchase completed"
-          value="22,355"
-          pct={9}
-          drop={45.8}
-        />
+        {conversionFunnel.map((step) => (
+          <FunnelStep key={step.label} {...step} />
+        ))}
         <div className="mt-2 flex items-center justify-between rounded-lg bg-muted/50 p-3 text-xs">
           <span className="font-medium">Overall conversion rate</span>
           <Badge
@@ -316,22 +273,11 @@ function GeoTab() {
   return (
     <SmartPageContent padding="md">
       <SmartPageSection title="Top countries" bordered>
-        {[
-          { country: "United States", sessions: "98,240", pct: 39.5 },
-          { country: "South Korea", sessions: "42,180", pct: 17.0 },
-          { country: "United Kingdom", sessions: "28,640", pct: 11.5 },
-          { country: "Germany", sessions: "19,430", pct: 7.8 },
-          { country: "Japan", sessions: "15,820", pct: 6.4 },
-          { country: "France", sessions: "12,470", pct: 5.0 },
-          { country: "Australia", sessions: "9,840", pct: 4.0 },
-          { country: "Canada", sessions: "8,760", pct: 3.5 },
-          { country: "Brazil", sessions: "7,230", pct: 2.9 },
-          { country: "Other", sessions: "5,778", pct: 2.3 },
-        ].map((r) => (
+        {topCountries.map((r) => (
           <GeoRow
-            key={r.country}
-            country={r.country}
-            sessions={r.sessions}
+            key={r.label}
+            country={r.label}
+            sessions={r.value ?? ""}
             pct={r.pct}
           />
         ))}

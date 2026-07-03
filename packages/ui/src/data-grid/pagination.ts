@@ -201,3 +201,44 @@ export function buildServerFetchParams(input: {
 export function toSpringSort(sort: ReadonlyArray<ServerSort>): string[] {
   return sort.map((s) => `${s.field},${s.dir}`)
 }
+
+/**
+ * Serialize a single {@link ServerFilter} into the `<op>:<value>` value used by
+ * the Spring query dialect below:
+ *
+ * - `inRange` → `inRange:<from>:<to>`
+ * - set (array value) → `set:<a>,<b>,<c>`
+ * - everything else → `<op>:<value>`
+ */
+export function encodeSpringFilter(filter: ServerFilter): string {
+  if (filter.type === "inRange") {
+    return `inRange:${String(filter.value)}:${String(filter.valueTo)}`
+  }
+  if (Array.isArray(filter.value)) {
+    return `set:${filter.value.map(String).join(",")}`
+  }
+  return `${filter.type}:${String(filter.value)}`
+}
+
+/**
+ * Serialize normalized {@link ServerFetchParams} into a Spring Data query string
+ * (without the leading `?`) — the encoder half of the query contract:
+ *
+ * - paging  → `page=0&size=20`
+ * - sorting → `sort=name,asc&sort=mrr,desc`  (repeatable, Spring style)
+ * - filters → `<field>=<op>:<value>`, e.g. `name=contains:ada`,
+ *             `mrr=inRange:1000:2000`, `status=set:Active,Pending`
+ *
+ * This is the default `buildQuery` for {@link createPageFetcher}. The matching
+ * *decoder* stays server/app-side (backends parse however they like), so it is
+ * intentionally not shipped here.
+ */
+export function buildSpringQuery(params: ServerFetchParams): string {
+  const sp = new URLSearchParams()
+  sp.set("page", String(params.page))
+  sp.set("size", String(params.pageSize))
+  for (const sort of toSpringSort(params.sort)) sp.append("sort", sort)
+  for (const filter of params.filters)
+    sp.append(filter.field, encodeSpringFilter(filter))
+  return sp.toString()
+}

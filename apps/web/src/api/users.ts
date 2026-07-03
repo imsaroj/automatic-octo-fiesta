@@ -1,10 +1,9 @@
 import { z } from "zod"
 import {
-  pageSchema,
+  createPageFetcher,
   type ServerFetchParams,
   type ServerFetchResult,
 } from "@workspace/ui/data-grid"
-import { buildUsersQuery } from "@/api/users-query"
 
 export const userRowSchema = z.object({
   id: z.number(),
@@ -17,23 +16,25 @@ export const userRowSchema = z.object({
 
 export type UserRow = z.infer<typeof userRowSchema>
 
-const usersPageSchema = pageSchema(userRowSchema)
-
 /**
- * `fetchRows` adapter for SmartServerGrid: serializes normalized grid params to
- * the Spring query contract, calls the MSW-mocked endpoint, and validates the
- * response shape with Zod.
+ * Validated `fetchRows` adapter for SmartServerGrid, built from the shared
+ * `createPageFetcher` helper: it encodes grid params in the Spring dialect,
+ * calls the MSW-mocked endpoint, checks the status, and validates the response
+ * shape with Zod. New server-grid pages get all of that for free.
  */
-export async function fetchUsersPage(
+const fetchUsers = createPageFetcher({
+  url: "/api/users",
+  itemSchema: userRowSchema,
+})
+
+export function fetchUsersPage(
   params: ServerFetchParams,
   signal: AbortSignal,
   options: { simulateError?: boolean } = {}
 ): Promise<ServerFetchResult<UserRow>> {
-  const query = buildUsersQuery(params)
-  const suffix = options.simulateError ? "&simulateError=1" : ""
-  const res = await fetch(`/api/users?${query}${suffix}`, { signal })
-  if (!res.ok) throw new Error(`Server error: ${res.status}`)
-  const data: unknown = await res.json()
-  const page = usersPageSchema.parse(data)
-  return { rows: page.content, total: page.totalElements }
+  return fetchUsers(
+    params,
+    signal,
+    options.simulateError ? { simulateError: "1" } : undefined
+  )
 }

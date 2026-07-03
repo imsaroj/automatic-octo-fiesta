@@ -8,4 +8,15 @@ export type {
   ServerFetchResult,
   SPageResponse,
 } from "./pagination"
-export { pageSchema, buildServerFetchParams, toSpringSort } from "./pagination"
+export {
+  pageSchema,
+  buildServerFetchParams,
+  toSpringSort,
+  encodeSpringFilter,
+  buildSpringQuery,
+} from "./pagination"
+export {
+  createPageFetcher,
+  type PageFetcher,
+  type CreatePageFetcherOptions,
+} from "./create-page-fetcher"
