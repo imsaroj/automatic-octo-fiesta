@@ -16,4 +16,6 @@
 
 // Core engine
 export * from "./smart-form"
+export * from "./field-types"
+export * from "./field-registry"
 export * from "./base"

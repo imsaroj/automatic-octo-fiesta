@@ -9,6 +9,14 @@ import {
   type ScrollMode,
   type PaddingSize,
 } from "./page-context"
+import type { SlotBuckets } from "./layouts/slot-buckets"
+import { StandardLayout } from "./layouts/standard-layout"
+import { SplitLayout } from "./layouts/split-layout"
+import {
+  PageLoadingState,
+  PageErrorState,
+  PageEmptyState,
+} from "./layouts/page-states"
 
 // ─── Slot Detection ────────────────────────────────────────────────────────────
 
@@ -32,21 +40,6 @@ export type PageSlot =
   | "grid-area"
   | "status-bar"
   | "footer"
-
-interface SlotBuckets {
-  header: React.ReactNode[]
-  hero: React.ReactNode[]
-  toolbar: React.ReactNode[]
-  search: React.ReactNode[]
-  filters: React.ReactNode[]
-  tabs: React.ReactNode[]
-  content: React.ReactNode[]
-  sidebar: React.ReactNode[]
-  gridArea: React.ReactNode[]
-  statusBar: React.ReactNode[]
-  footer: React.ReactNode[]
-  body: React.ReactNode[]
-}
 
 function collectSlots(children: React.ReactNode): SlotBuckets {
   const b: SlotBuckets = {
@@ -385,169 +378,20 @@ export function SmartPage({
   let content: React.ReactNode
 
   if (loading) {
-    // Lazy-import to avoid circular deps; render inline for simplicity
     content = <PageLoadingState label={loadingLabel} />
   } else if (error) {
     content = <PageErrorState>{error}</PageErrorState>
   } else if (empty) {
     content = <PageEmptyState>{empty}</PageEmptyState>
   } else if (layout === "split") {
-    content = renderSplitLayout(buckets, scroll, ctx)
+    content = <SplitLayout buckets={buckets} scroll={scroll} ctx={ctx} />
   } else {
-    content = renderStandardLayout(buckets, scroll, ctx)
+    content = <StandardLayout buckets={buckets} scroll={scroll} ctx={ctx} />
   }
 
   return (
     <PageContext.Provider value={ctx}>
       <div className={pageClasses}>{content}</div>
     </PageContext.Provider>
-  )
-}
-
-// ─── Layout Renderers ──────────────────────────────────────────────────────────
-
-function renderStandardLayout(
-  b: SlotBuckets,
-  scroll: ScrollMode,
-  ctx: PageContextValue
-): React.ReactNode {
-  const isPageScroll = scroll === "page"
-
-  // Collect which items are sticky (page-scroll mode only — in contained modes
-  // items above the scroll container are naturally "pinned" by flexbox).
-  const stickyTopItems: React.ReactNode[] = []
-  const flowTopItems: React.ReactNode[] = []
-
-  const pushTop = (items: React.ReactNode[], sticky: boolean) => {
-    if (!items.length) return
-    if (isPageScroll && sticky) {
-      stickyTopItems.push(...items)
-    } else {
-      flowTopItems.push(...items)
-    }
-  }
-
-  pushTop(b.header, ctx.stickyHeader)
-  // hero is never sticky — always scrolls away
-  if (b.hero.length) flowTopItems.push(...b.hero)
-  pushTop(b.toolbar, ctx.stickyToolbar)
-  pushTop(b.search, ctx.stickySearch)
-  pushTop(b.filters, ctx.stickyFilters)
-  if (b.tabs.length) flowTopItems.push(...b.tabs)
-
-  const stickyBottomItems: React.ReactNode[] = []
-  const flowBottomItems: React.ReactNode[] = []
-
-  if (b.statusBar.length) {
-    if (isPageScroll && ctx.stickyStatusBar)
-      stickyBottomItems.push(...b.statusBar)
-    else flowBottomItems.push(...b.statusBar)
-  }
-  if (b.footer.length) {
-    if (isPageScroll && ctx.stickyFooter) stickyBottomItems.push(...b.footer)
-    else flowBottomItems.push(...b.footer)
-  }
-
-  const mainContent =
-    b.gridArea.length > 0
-      ? b.gridArea
-      : b.content.length > 0
-        ? b.content
-        : b.body
-
-  const mainClasses = cn(
-    "flex-1",
-    scroll === "content" && "min-h-0 overflow-y-auto",
-    scroll === "grid" && "flex min-h-0 flex-col"
-  )
-
-  return (
-    <>
-      {stickyTopItems.length > 0 && (
-        <div className="sticky top-0 z-10 bg-background">{stickyTopItems}</div>
-      )}
-      {flowTopItems}
-      <div className={mainClasses}>{mainContent}</div>
-      {flowBottomItems}
-      {stickyBottomItems.length > 0 && (
-        <div className="sticky bottom-0 z-10 bg-background">
-          {stickyBottomItems}
-        </div>
-      )}
-    </>
-  )
-}
-
-function renderSplitLayout(
-  b: SlotBuckets,
-  scroll: ScrollMode,
-  ctx: PageContextValue
-): React.ReactNode {
-  const mainContent = b.content.length > 0 ? b.content : b.body
-  const mainClasses = cn(
-    "min-w-0 flex-1",
-    scroll === "content" && "min-h-0 overflow-y-auto"
-  )
-
-  return (
-    <>
-      {b.header.length > 0 && (
-        <div
-          className={cn(ctx.stickyHeader && scroll !== "page" && "shrink-0")}
-        >
-          {b.header}
-        </div>
-      )}
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        <div className={mainClasses}>
-          {b.toolbar}
-          {b.search}
-          {b.filters}
-          {b.tabs}
-          {mainContent}
-        </div>
-        {b.sidebar.length > 0 && (
-          <div className="shrink-0 overflow-y-auto border-l">{b.sidebar}</div>
-        )}
-      </div>
-      {b.statusBar}
-      {b.footer}
-    </>
-  )
-}
-
-// ─── Inline State Components ───────────────────────────────────────────────────
-// Kept here to avoid circular imports. Users use SmartPageLoading / SmartPageError
-// / SmartPageEmpty directly when they want more control.
-
-function PageLoadingState({ label = "Loading…" }: { label?: string }) {
-  return (
-    <div
-      role="status"
-      aria-live="polite"
-      className="flex flex-1 flex-col items-center justify-center gap-3 py-16"
-    >
-      <span
-        className="inline-block size-8 animate-spin rounded-full border-2 border-current border-t-transparent text-primary"
-        aria-hidden="true"
-      />
-      <p className="text-sm text-muted-foreground">{label}</p>
-    </div>
-  )
-}
-
-function PageErrorState({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex flex-1 items-center justify-center p-8">
-      {children}
-    </div>
-  )
-}
-
-function PageEmptyState({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex flex-1 items-center justify-center p-8">
-      {children}
-    </div>
   )
 }
