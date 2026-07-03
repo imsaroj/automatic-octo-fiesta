@@ -67,10 +67,8 @@ export function SettingsDialog() {
                       <SidebarMenuButton
                         isActive={item.name === "Messages & media"}
                       >
-                        <a href="#">
-                          <item.icon />
-                          <span>{item.name}</span>
-                        </a>
+                        <item.icon />
+                        <span>{item.name}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}

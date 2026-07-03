@@ -71,6 +71,14 @@ export type FieldType =
   | "segmented"
   | "yesno"
 
+/** A single selectable choice for `select` / `combobox` / `multiselect` / `radio` / `segmented` fields. */
+export interface FieldOption {
+  value: string
+  label: string
+  description?: string
+  disabled?: boolean
+}
+
 export interface FieldDefinition<T extends Record<string, unknown>> {
   name: keyof T & string
   type: FieldType
@@ -84,12 +92,7 @@ export interface FieldDefinition<T extends Record<string, unknown>> {
   /** Return `true` to hide the field (and skip validation for it). */
   hidden?: (data: T) => boolean
   // Choice options (select / combobox / multiselect / radio / segmented)
-  options?: {
-    value: string
-    label: string
-    description?: string
-    disabled?: boolean
-  }[]
+  options?: FieldOption[]
   // Number extras (number / decimal / integer / currency / percentage)
   decimalScale?: number
   min?: number
@@ -428,15 +431,27 @@ export function SmartForm<T extends Record<string, unknown>>({
   )
 }
 
+/** The subset of a Standard-Schema validation issue we read for display. */
+interface StandardSchemaIssue {
+  message: string
+}
+
+function isStandardSchemaIssue(value: unknown): value is StandardSchemaIssue {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "message" in value &&
+    typeof (value as { message: unknown }).message === "string"
+  )
+}
+
 /** Normalize TanStack field errors (strings or Standard-Schema issues) to text. */
 function getErrorMessage(errors: ReadonlyArray<unknown>): string | undefined {
   const first = errors?.[0]
   if (first == null) return undefined
   if (typeof first === "string") return first
-  if (typeof first === "object" && "message" in first) {
-    return String((first as { message: unknown }).message)
-  }
-  return String(first)
+  if (isStandardSchemaIssue(first)) return first.message
+  return undefined
 }
 
 function FieldRenderer<T extends Record<string, unknown>>({

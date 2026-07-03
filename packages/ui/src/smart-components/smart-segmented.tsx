@@ -78,7 +78,6 @@ export function SmartSegmented({
       <div
         role="group"
         aria-describedby={hintId}
-        aria-invalid={error != null ? true : undefined}
         className={cn("flex w-full", className)}
       >
         {options.map((opt, i) => (

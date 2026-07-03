@@ -201,21 +201,26 @@ export default function ServerGridPage() {
 
       <SmartPageSearch className="flex-wrap items-end py-3">
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-muted-foreground">
+          <span className="text-xs font-medium text-muted-foreground">
             Name
-          </label>
+          </span>
           <SmartSearchInput
             value={search.name}
             onValueChange={(v) => setSearch((s) => ({ ...s, name: v }))}
             placeholder="Search name…"
             className="h-8 w-48"
+            aria-label="Name"
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-muted-foreground">
+          <label
+            htmlFor="filter-role"
+            className="text-xs font-medium text-muted-foreground"
+          >
             Role
           </label>
           <select
+            id="filter-role"
             className="h-8 rounded-md border border-input bg-background px-2 text-sm"
             value={search.role}
             onChange={(e) => setSearch((s) => ({ ...s, role: e.target.value }))}
@@ -229,10 +234,14 @@ export default function ServerGridPage() {
           </select>
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-muted-foreground">
+          <label
+            htmlFor="filter-status"
+            className="text-xs font-medium text-muted-foreground"
+          >
             Status
           </label>
           <select
+            id="filter-status"
             className="h-8 rounded-md border border-input bg-background px-2 text-sm"
             value={search.status}
             onChange={(e) =>

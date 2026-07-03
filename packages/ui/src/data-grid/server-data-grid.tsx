@@ -22,19 +22,11 @@ import {
   type RowDoubleClickedEvent,
   type RowSelectionOptions,
 } from "ag-grid-community"
-import { AlertCircle, Columns3, FileSpreadsheet, RefreshCw } from "lucide-react"
+import { AlertCircle, FileSpreadsheet, RefreshCw } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 import { downloadXlsx, timestampForFilename } from "@workspace/ui/lib/xlsx"
 import { Button } from "@workspace/ui/components/button"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
+import { GridToolbar } from "./grid-toolbar"
 import { SmartLoadingOverlay } from "@workspace/ui/smart-components/loading-overlay"
 import {
   buildServerFetchParams,
@@ -486,67 +478,30 @@ function SmartServerGridInner<TRow>(
       style={fill ? { height: "100%" } : undefined}
     >
       {showToolbar ? (
-        <div
-          className={cn(
-            "flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between",
-            fill && "px-4 pt-4"
-          )}
-        >
-          <div className="flex items-center gap-3">
-            {title ? (
-              <h3 className="text-base font-semibold">{title}</h3>
-            ) : null}
-            {selection !== "none" && gridSelection.selectedCount > 0 ? (
+        <GridToolbar
+          className={cn("shrink-0", fill && "px-4 pt-4")}
+          title={title}
+          leadingContent={
+            selection !== "none" && gridSelection.selectedCount > 0 ? (
               <span className="text-sm text-muted-foreground">
                 {gridSelection.selectedCount} selected
               </span>
-            ) : null}
-          </div>
-
-          <div className="flex items-center gap-2">
-            {toolbarActions}
-            {refreshable ? (
-              <Button variant="outline" size="sm" onClick={handleRefresh}>
-                <RefreshCw className="h-4 w-4" />
-                Refresh
-              </Button>
-            ) : null}
-            {columnSelector ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={<Button variant="outline" size="sm" />}
-                >
-                  <Columns3 className="h-4 w-4" />
-                  Columns
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuGroup>
-                    <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {toggleableColumns.map((column) => (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        checked={columnVisibility[column.id] ?? true}
-                        onCheckedChange={(checked) =>
-                          handleToggleColumn(column.id, checked)
-                        }
-                        onSelect={(event) => event.preventDefault()}
-                      >
-                        {column.label}
-                      </DropdownMenuCheckboxItem>
-                    ))}
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : null}
-            {exportExcel ? (
-              <Button variant="outline" size="sm" onClick={handleExport}>
-                <FileSpreadsheet className="h-4 w-4" />
-                Export
-              </Button>
-            ) : null}
-          </div>
-        </div>
+            ) : null
+          }
+          toolbarActions={toolbarActions}
+          onRefresh={refreshable ? handleRefresh : undefined}
+          columns={
+            columnSelector
+              ? toggleableColumns.map((column) => ({
+                  ...column,
+                  visible: columnVisibility[column.id] ?? true,
+                }))
+              : undefined
+          }
+          onToggleColumn={handleToggleColumn}
+          onExport={exportExcel ? handleExport : undefined}
+          exportIcon={<FileSpreadsheet className="h-4 w-4" />}
+        />
       ) : null}
 
       <div

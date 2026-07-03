@@ -32,7 +32,6 @@ export async function fetchUsersPage(
   const query = buildUsersQuery(params)
   const suffix = options.simulateError ? "&simulateError=1" : ""
   const res = await fetch(`/api/users?${query}${suffix}`, { signal })
-  console.log(res)
   if (!res.ok) throw new Error(`Server error: ${res.status}`)
   const data: unknown = await res.json()
   const page = usersPageSchema.parse(data)

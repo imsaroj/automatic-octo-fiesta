@@ -71,10 +71,8 @@ export function SmartNavSidebar({
                 {items.map((item) => (
                   <SidebarMenuItem key={item.name}>
                     <SidebarMenuButton isActive={item.name === activeItem}>
-                      <a href="#">
-                        <item.icon />
-                        <span>{item.name}</span>
-                      </a>
+                      <item.icon />
+                      <span>{item.name}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

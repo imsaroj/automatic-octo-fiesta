@@ -7,6 +7,8 @@
     "jsx": "react-jsx",
     "skipLibCheck": true,
     "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noEmit": true,
     "paths": {
       "@workspace/ui/*": ["./src/*"],

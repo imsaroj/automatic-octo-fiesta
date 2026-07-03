@@ -9,6 +9,12 @@ type ThemeProviderProps = {
   defaultTheme?: Theme
   storageKey?: string
   disableTransitionOnChange?: boolean
+  /**
+   * Enable the global "d" keydown shortcut that cycles the theme. Off by
+   * default because a bare "d" keypress outside inputs is easy to trigger
+   * accidentally; prefer the visible theme selector in NavUser.
+   */
+  hotkey?: boolean
 }
 
 type ThemeProviderState = {
@@ -82,6 +88,7 @@ export function ThemeProvider({
   defaultTheme = "system",
   storageKey = "theme",
   disableTransitionOnChange = true,
+  hotkey = false,
   ...props
 }: ThemeProviderProps) {
   const [theme, setThemeState] = React.useState<Theme>(() => {
@@ -140,6 +147,10 @@ export function ThemeProvider({
   }, [theme, applyTheme])
 
   React.useEffect(() => {
+    if (!hotkey) {
+      return undefined
+    }
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.repeat) {
         return
@@ -177,7 +188,7 @@ export function ThemeProvider({
     return () => {
       window.removeEventListener("keydown", handleKeyDown)
     }
-  }, [storageKey])
+  }, [hotkey, storageKey])
 
   React.useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {

@@ -7,20 +7,11 @@ import {
   type RowSelectionOptions,
   type SelectionChangedEvent,
 } from "ag-grid-community"
-import { Columns3, Download } from "lucide-react"
+import { Download } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
-import { Button } from "@workspace/ui/components/button"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
 import { SmartLoadingOverlay } from "@workspace/ui/smart-components/loading-overlay"
 import { SmartSearchInput } from "@workspace/ui/smart-components/search-input"
+import { GridToolbar } from "./grid-toolbar"
 import { dataGridTheme } from "./grid-theme"
 import {
   ensureGridModules,
@@ -173,12 +164,10 @@ export function SmartGrid<TRow>({
   return (
     <div className={cn("flex flex-col gap-3", className)}>
       {showToolbar ? (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            {title ? (
-              <h3 className="text-base font-semibold">{title}</h3>
-            ) : null}
-            {quickSearch ? (
+        <GridToolbar
+          title={title}
+          leadingContent={
+            quickSearch ? (
               <SmartSearchInput
                 value={quickFilter}
                 onValueChange={setQuickFilter}
@@ -186,47 +175,21 @@ export function SmartGrid<TRow>({
                 className="h-9 w-full sm:w-64"
                 aria-label="Search table"
               />
-            ) : null}
-          </div>
-
-          <div className="flex items-center gap-2">
-            {toolbarActions}
-            {columnSelector ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={<Button variant="outline" size="sm" />}
-                >
-                  <Columns3 className="h-4 w-4" />
-                  Columns
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuGroup>
-                    <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {toggleableColumns.map((column) => (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        checked={columnVisibility[column.id] ?? true}
-                        onCheckedChange={(checked) =>
-                          handleToggleColumn(column.id, checked)
-                        }
-                        onSelect={(event) => event.preventDefault()}
-                      >
-                        {column.label}
-                      </DropdownMenuCheckboxItem>
-                    ))}
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : null}
-            {exportCsv ? (
-              <Button variant="outline" size="sm" onClick={handleExport}>
-                <Download className="h-4 w-4" />
-                Export
-              </Button>
-            ) : null}
-          </div>
-        </div>
+            ) : null
+          }
+          toolbarActions={toolbarActions}
+          columns={
+            columnSelector
+              ? toggleableColumns.map((column) => ({
+                  ...column,
+                  visible: columnVisibility[column.id] ?? true,
+                }))
+              : undefined
+          }
+          onToggleColumn={handleToggleColumn}
+          onExport={exportCsv ? handleExport : undefined}
+          exportIcon={<Download className="h-4 w-4" />}
+        />
       ) : null}
 
       <SmartLoadingOverlay loading={loading} label="Loading data…">
