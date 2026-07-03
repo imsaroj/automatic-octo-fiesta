@@ -73,6 +73,7 @@
     "./smart-components/page": "./src/smart-components/page/index.ts",
     "./smart-components/*": "./src/smart-components/*.tsx",
     "./form-engine": "./src/form-engine/index.ts",
+    "./search-engine": "./src/search-engine/index.ts",
     "./data-grid": "./src/data-grid/index.ts",
     "./lexical-text-editor": "./src/lexical-text-editor/index.ts"
   }

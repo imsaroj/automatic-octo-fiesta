@@ -15,8 +15,18 @@ import {
 } from "./field-registry"
 import { useSelector } from "@tanstack/react-store"
 
-const COLS = { 1: "grid-cols-1", 2: "grid-cols-2", 3: "grid-cols-3" } as const
-const SPAN = { 1: "col-span-1", 2: "col-span-2", 3: "col-span-3" } as const
+const COLS = {
+  1: "grid-cols-1",
+  2: "grid-cols-2",
+  3: "grid-cols-3",
+  4: "grid-cols-4",
+} as const
+const SPAN = {
+  1: "col-span-1",
+  2: "col-span-2",
+  3: "col-span-3",
+  4: "col-span-4",
+} as const
 
 export interface SmartFormProps<T extends Record<string, unknown>> {
   /** Zod schema — the single source of truth for validation *and* required-ness. */
@@ -27,7 +37,7 @@ export interface SmartFormProps<T extends Record<string, unknown>> {
   setData?: (data: T) => void
   fields: FieldDefinition<T>[]
   /** Number of grid columns. Default `1`. */
-  columns?: 1 | 2 | 3
+  columns?: 1 | 2 | 3 | 4
   /** Called with the parsed, validated values on a successful submit. */
   onSubmit?: (data: T) => void | Promise<void>
   /** `id` on the `<form>`, so a submit button placed outside can drive it via `form={id}`. */

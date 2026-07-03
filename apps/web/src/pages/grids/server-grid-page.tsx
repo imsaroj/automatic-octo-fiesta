@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react"
-import { Bug, ListChecks, RotateCw, Search } from "lucide-react"
+import { z } from "zod"
+import { Bug, ListChecks, RotateCw } from "lucide-react"
 import { SmartButton } from "@workspace/ui/smart-components/smart-button"
 import { SmartBadge } from "@workspace/ui/smart-components/smart-badge"
 import {
@@ -7,14 +8,16 @@ import {
   SmartPageHeader,
   SmartPageTitle,
   SmartPageDescription,
-  SmartPageActions,
   SmartToolbar,
   SmartPageSearch,
   SmartGridArea,
   SmartPageStatusBar,
   SmartPageFooter,
 } from "@workspace/ui/smart-components/page"
-import { SmartSearchInput } from "@workspace/ui/smart-components/search-input"
+import {
+  SmartSearchForm,
+  type SearchFieldDefinition,
+} from "@workspace/ui/search-engine"
 import {
   SmartServerGrid,
   type DataGridColumn,
@@ -44,13 +47,15 @@ function StatusCell({ value }: { value?: UserRow["status"] }) {
 
 /* ------------------------------- search form ------------------------------ */
 
-interface UserSearch {
-  name: string
-  role: string
-  status: string
-}
+const searchSchema = z.object({
+  name: z.string().max(50).optional(),
+  email: z.string().optional(),
+  role: z.string().optional(),
+  status: z.string().optional(),
+})
+type UserSearch = z.infer<typeof searchSchema>
 
-const EMPTY_SEARCH: UserSearch = { name: "", role: "", status: "" }
+const EMPTY_SEARCH: UserSearch = { name: "", email: "", role: "", status: "" }
 
 const ROLES = [
   "Admin",
@@ -62,29 +67,56 @@ const ROLES = [
 ]
 const STATUSES: UserRow["status"][] = ["Active", "Pending", "Inactive"]
 
-function toFilters(values: UserSearch): ServerFilter[] {
+const searchFields: SearchFieldDefinition<UserSearch>[] = [
+  { name: "name", label: "Name", type: "text", placeholder: "Search name…" },
+  { name: "email", label: "Email", type: "text", placeholder: "Search email…" },
+  {
+    name: "role",
+    label: "Role",
+    type: "select",
+    placeholder: "Any role",
+    options: ROLES.map((r) => ({ value: r, label: r })),
+  },
+  {
+    name: "status",
+    label: "Status",
+    type: "select",
+    placeholder: "Any status",
+    options: STATUSES.map((s) => ({ value: s, label: s })),
+  },
+]
+
+// The query is already pruned + trimmed by SmartSearchForm, so each present key
+// carries a meaningful value.
+function toFilters(query: Partial<UserSearch>): ServerFilter[] {
   const filters: ServerFilter[] = []
-  const name = values.name.trim()
-  if (name)
+  if (query.name)
     filters.push({
       field: "name",
       filterType: "text",
       type: "contains",
-      value: name,
+      value: query.name,
     })
-  if (values.role)
+  if (query.email)
+    filters.push({
+      field: "email",
+      filterType: "text",
+      type: "contains",
+      value: query.email,
+    })
+  if (query.role)
     filters.push({
       field: "role",
       filterType: "text",
       type: "equals",
-      value: values.role,
+      value: query.role,
     })
-  if (values.status)
+  if (query.status)
     filters.push({
       field: "status",
       filterType: "text",
       type: "equals",
-      value: values.status,
+      value: query.status,
     })
   return filters
 }
@@ -137,15 +169,10 @@ export default function ServerGridPage() {
     []
   )
 
-  // Search applies the form values; a fresh array identity tells the grid to
+  // Search applies the pruned query; a fresh array identity tells the grid to
   // reset to page 1 and refetch (see SmartServerGrid's `filters` prop).
-  const handleSearch = useCallback(() => {
-    setAppliedFilters(toFilters(search))
-  }, [search])
-
-  const handleReset = useCallback(() => {
-    setSearch(EMPTY_SEARCH)
-    setAppliedFilters([])
+  const handleSearch = useCallback((query: Partial<UserSearch>) => {
+    setAppliedFilters(toFilters(query))
   }, [])
 
   const toggleError = () => {
@@ -199,71 +226,19 @@ export default function ServerGridPage() {
         </SmartButton>
       </SmartToolbar>
 
-      <SmartPageSearch className="flex-wrap items-end py-3">
-        <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-muted-foreground">
-            Name
-          </span>
-          <SmartSearchInput
-            value={search.name}
-            onValueChange={(v) => setSearch((s) => ({ ...s, name: v }))}
-            placeholder="Search name…"
-            className="h-8 w-48"
-            aria-label="Name"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label
-            htmlFor="filter-role"
-            className="text-xs font-medium text-muted-foreground"
-          >
-            Role
-          </label>
-          <select
-            id="filter-role"
-            className="h-8 rounded-md border border-input bg-background px-2 text-sm"
-            value={search.role}
-            onChange={(e) => setSearch((s) => ({ ...s, role: e.target.value }))}
-          >
-            <option value="">Any role</option>
-            {ROLES.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col gap-1">
-          <label
-            htmlFor="filter-status"
-            className="text-xs font-medium text-muted-foreground"
-          >
-            Status
-          </label>
-          <select
-            id="filter-status"
-            className="h-8 rounded-md border border-input bg-background px-2 text-sm"
-            value={search.status}
-            onChange={(e) =>
-              setSearch((s) => ({ ...s, status: e.target.value }))
-            }
-          >
-            <option value="">Any status</option>
-            {STATUSES.map((st) => (
-              <option key={st} value={st}>
-                {st}
-              </option>
-            ))}
-          </select>
-        </div>
-        <SmartPageActions>
-          <SmartButton variant="ghost" size="sm" onClick={handleReset}>
-            Reset
-          </SmartButton>
-          <SmartButton size="sm" onClick={handleSearch}>
-            <Search className="h-4 w-4" /> Search
-          </SmartButton>
-        </SmartPageActions>
+      <SmartPageSearch className="block py-3">
+        <SmartSearchForm<UserSearch>
+          data={search}
+          setData={setSearch}
+          fields={searchFields}
+          schema={searchSchema}
+          columns={4}
+          search
+          reset
+          showCount
+          onSearch={handleSearch}
+          onReset={() => setAppliedFilters([])}
+        />
       </SmartPageSearch>
 
       <SmartGridArea>

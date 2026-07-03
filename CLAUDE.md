@@ -62,6 +62,7 @@ into arbitrary files:
 @workspace/ui/smart-components/*     → src/smart-components/*.tsx       (Smart* wrappers)
 @workspace/ui/smart-components/page  → src/smart-components/page/index.ts   (page composition barrel)
 @workspace/ui/form-engine            → src/form-engine/index.ts        (declarative form engine)
+@workspace/ui/search-engine          → src/search-engine/index.ts      (search/filter bar on the form engine)
 @workspace/ui/data-grid              → src/data-grid/index.ts          (AG Grid wrappers)
 @workspace/ui/lexical-text-editor    → src/lexical-text-editor/index.ts
 ```
@@ -151,6 +152,23 @@ no per-field wiring. Key design points (see `smart-form.tsx`):
 
 Individual `Smart*Field` files (`smart-input-field.tsx`, etc.) all take `FieldBaseProps<T>` (from `base.ts`) and are
 also exported for standalone use.
+
+### Search engine (`packages/ui/src/search-engine/`)
+
+`SmartSearchForm` (aliased `SearchEngine`) — a declarative **search/filter bar** exported as
+`@workspace/ui/search-engine`. It **composes** `SmartForm` (not a fork): it reuses the same fields, Zod validation,
+required derivation, layout, and field registry, and adds only search concerns on top. Key design points:
+
+- `SearchFieldDefinition<T>` is derived, not duplicated: `FieldDefinition<T> & { type: SearchFieldType }` —
+  intersection distributes over the union, so each field keeps its per-type extras while `type` is constrained to the
+  search-relevant subset (no password / textarea / rich-text). Still assignable to `FieldDefinition<T>[]`.
+- `search` (manual — Search button, emit on submit/Enter) vs `autoSearch`/`search={false}` (debounced auto-search).
+  Auto-search is gated by `schema.safeParse` and deduped via a serialized last-query ref (seeded on mount so the first
+  render doesn't fire).
+- `build-query.ts` — `buildSearchQuery` prunes empty values (blank strings, `null`, empty arrays, `false`, empty
+  range objects) and trims strings, so only meaningful filters reach the API. `countActiveFilters` backs the count badge.
+- Layout delegates to `SmartForm`, but `columns` (1–4) is made responsive by passing a `grid-cols-*` override as
+  `SmartForm`'s `className` (tailwind-merge wins over the fixed grid). `SmartForm` gained additive 4-column support.
 
 ### Rich text editor (`packages/ui/src/lexical-text-editor/`)
 
