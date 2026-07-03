@@ -79,6 +79,9 @@ export default function PickersPage() {
   const [range, setRange] = useState<DateRange | undefined>()
   const [startDate, setStartDate] = useState<Date | undefined>()
   const [endDate, setEndDate] = useState<Date | undefined>()
+  const [shiftDate, setShiftDate] = useState<Date | undefined>()
+  const [prevOnlyDate, setPrevOnlyDate] = useState<Date | undefined>()
+  const [nextOnlyDate, setNextOnlyDate] = useState<Date | undefined>()
   const [framework, setFramework] = useState("")
   const [language, setLanguage] = useState("")
   const [timezone, setTimezone] = useState("")
@@ -204,6 +207,31 @@ export default function PickersPage() {
               label="Deadline"
               description="Cannot be in the past."
               disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+            />
+          </div>
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <SmartDatePicker
+              label="Both steppers + today"
+              description="−1 / +1 day buttons with a reset-to-today control."
+              selected={shiftDate}
+              onSelect={setShiftDate}
+              steppers
+              todayButton
+            />
+            <SmartDatePicker
+              label="Previous day only"
+              description={'steppers="prev" — front button only.'}
+              selected={prevOnlyDate}
+              onSelect={setPrevOnlyDate}
+              steppers="prev"
+            />
+            <SmartDatePicker
+              label="Next day only"
+              description={'steppers="next" — back button only.'}
+              selected={nextOnlyDate}
+              onSelect={setNextOnlyDate}
+              steppers="next"
             />
           </div>
         </SmartPageSection>

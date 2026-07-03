@@ -32,7 +32,7 @@
 
 ---
 
-## Week 2 — Architecture cleanup in the two engines
+## Week 2 — Architecture cleanup in the two engines (Done)
 
 ### 2.1 Field-registry refactor of the form engine
 
