@@ -1,12 +1,22 @@
-import type { ColumnState, GridApi } from "ag-grid-community"
-import type { ServerFilter } from "./pagination"
+import type {
+  ColumnState,
+  GridApi,
+  IDatasource,
+  IGetRowsParams,
+} from "ag-grid-community"
+import {
+  buildServerFetchParams,
+  type ServerFetchParams,
+  type ServerFetchResult,
+  type ServerFilter,
+} from "./pagination"
 import type { XlsxCell } from "@workspace/ui/lib/xlsx"
 
 /**
  * Pure, stateless helpers extracted from {@link SmartServerGrid} so the
  * component file stays focused on wiring AG Grid to React, and so the tricky
- * bits (state persistence, export shaping, error coercion, filter merging) can
- * be unit-tested directly.
+ * bits (the infinite-model datasource, state persistence, export shaping,
+ * error coercion, filter merging) can be unit-tested directly.
  *
  * **Internal** — the data-grid barrel does not re-export this module.
  */
@@ -88,6 +98,81 @@ export function mergeServerFilters(
 ): ServerFilter[] {
   if (!external || external.length === 0) return base
   return [...base, ...external]
+}
+
+/* -------------------------------- datasource ------------------------------- */
+
+/**
+ * Wiring {@link createGridDatasource} needs from the component. The getters
+ * read mutable refs so the datasource object itself can stay **stable** for the
+ * grid's lifetime — handing AG Grid a new datasource purges its cache.
+ */
+export interface CreateGridDatasourceOptions<TRow> {
+  /** Read the latest `fetchRows` prop. */
+  getFetchRows: () => (
+    params: ServerFetchParams,
+    signal: AbortSignal
+  ) => Promise<ServerFetchResult<TRow>>
+  /** Read the latest external (search-form) filters. */
+  getExternalFilters: () => ServerFilter[] | undefined
+  /** Live registry of in-flight requests (for abort-on-unmount etc.). */
+  controllers: Set<AbortController>
+  /** A block resolved — clear any error state. */
+  onSuccess: () => void
+  /** A block failed (not aborted) — surface the error overlay. */
+  onError: (message: string) => void
+  /** A block settled either way — clear the initial-loading overlay. */
+  onSettled: () => void
+}
+
+/**
+ * The infinite-row-model datasource behind {@link SmartServerGrid}: translates
+ * AG Grid's `IGetRowsParams` into normalized {@link ServerFetchParams}, merges
+ * external filters over column filters, tracks an `AbortController` per block,
+ * and routes the outcome into the success/fail callbacks — swallowing
+ * rejections of blocks that were aborted (an abort is not an error).
+ */
+export function createGridDatasource<TRow>(
+  options: CreateGridDatasourceOptions<TRow>
+): IDatasource {
+  return {
+    getRows: (params: IGetRowsParams) => {
+      const serverParams = buildServerFetchParams({
+        startRow: params.startRow,
+        endRow: params.endRow,
+        sortModel: params.sortModel,
+        filterModel: (params.filterModel ?? null) as Record<
+          string,
+          unknown
+        > | null,
+      })
+      // Merge any external (search-form) filters on top of column filters.
+      serverParams.filters = mergeServerFilters(
+        serverParams.filters,
+        options.getExternalFilters()
+      )
+      const controller = new AbortController()
+      options.controllers.add(controller)
+      options
+        .getFetchRows()(serverParams, controller.signal)
+        .then(
+          (result) => {
+            // `lastRow` = the known total, so the grid sizes the scrollbar exactly.
+            params.successCallback(result.rows, result.total)
+            options.onSuccess()
+          },
+          (reason: unknown) => {
+            if (controller.signal.aborted) return
+            params.failCallback()
+            options.onError(errorMessage(reason))
+          }
+        )
+        .finally(() => {
+          options.controllers.delete(controller)
+          options.onSettled()
+        })
+    },
+  }
 }
 
 /* ---------------------------------- export --------------------------------- */

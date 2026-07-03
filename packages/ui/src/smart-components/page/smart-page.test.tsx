@@ -4,6 +4,7 @@ import { createRoot, type Root } from "react-dom/client"
 import { act } from "react"
 
 import { SmartPage, SMART_PAGE_SLOT } from "./smart-page"
+import { usePageContext, type PageLayout } from "./page-context"
 
 /**
  * SmartPage auto-detects its layout from the slot-tagged children and dispatches
@@ -91,4 +92,114 @@ test("the error prop replaces children with the error node", () => {
 
   expect(container.querySelector('[data-testid="err"]')).not.toBeNull()
   expect(container.querySelector('[data-testid="main-content"]')).toBeNull()
+})
+
+test("the empty prop replaces children with the empty node", () => {
+  const Content = slot("content", "main-content")
+  mount(
+    <SmartPage empty={<div data-testid="empty">Nothing yet</div>}>
+      <Content />
+    </SmartPage>
+  )
+
+  expect(container.querySelector('[data-testid="empty"]')).not.toBeNull()
+  expect(container.querySelector('[data-testid="main-content"]')).toBeNull()
+})
+
+// ─── detectLayout ──────────────────────────────────────────────────────────────
+
+/** Reads the resolved layout out of PageContext from inside the page. */
+function LayoutProbe() {
+  const { layout } = usePageContext()
+  return <output data-testid="layout">{layout}</output>
+}
+
+/**
+ * A slot-tagged component that renders the probe as its content, so the probe
+ * is guaranteed to be rendered whichever bucket the layout treats as main.
+ */
+function probeSlot(name: string) {
+  return Object.assign(() => <LayoutProbe />, { [SMART_PAGE_SLOT]: name })
+}
+
+function detectedLayout(children: React.ReactNode): PageLayout {
+  mount(<SmartPage>{children}</SmartPage>)
+  const probe = container.querySelector('[data-testid="layout"]')
+  const layout = probe!.textContent as PageLayout
+  act(() => root.unmount())
+  container.remove()
+  return layout
+}
+
+test("detectLayout: grid-area → grid, hero → dashboard, sidebar → split, else document", () => {
+  const Grid = probeSlot("grid-area")
+  const Hero = probeSlot("hero")
+  const Sidebar = probeSlot("sidebar")
+  const Content = probeSlot("content")
+
+  expect(detectedLayout(<Grid />)).toBe("grid")
+  expect(detectedLayout(<Hero />)).toBe("dashboard")
+  expect(detectedLayout(<Sidebar />)).toBe("split")
+  expect(detectedLayout(<Content />)).toBe("document")
+  expect(detectedLayout(<LayoutProbe />)).toBe("document")
+})
+
+test("grid-area wins over hero and sidebar when several slots are present", () => {
+  const Grid = probeSlot("grid-area")
+  const Hero = slot("hero", "h")
+  const Sidebar = slot("sidebar", "s")
+  // Passed as an array (not a fragment): slot detection walks direct children
+  // only — a fragment wrapper hides the slots, by design.
+  expect(
+    detectedLayout([<Hero key="h" />, <Grid key="g" />, <Sidebar key="s" />])
+  ).toBe("grid")
+})
+
+test("an explicit layout prop overrides detection", () => {
+  const Content = probeSlot("content")
+  const Sidebar = slot("sidebar", "s")
+  mount(
+    <SmartPage layout="document">
+      <Content />
+      <Sidebar />
+    </SmartPage>
+  )
+  expect(container.querySelector('[data-testid="layout"]')!.textContent).toBe(
+    "document"
+  )
+  // Document layout renders the standard (non-split) path — no sidebar column.
+  expect(container.querySelector(".border-l")).toBeNull()
+})
+
+// ─── slot bucketing ────────────────────────────────────────────────────────────
+
+test("slots render in layout order regardless of JSX order", () => {
+  const Header = slot("header", "hdr")
+  const Footer = slot("footer", "ftr")
+  const Content = slot("content", "cnt")
+
+  mount(
+    <SmartPage>
+      <Footer />
+      <p data-testid="loose">Loose body text</p>
+      <Content />
+      <Header />
+    </SmartPage>
+  )
+
+  const order = Array.from(container.querySelectorAll("[data-testid]")).map(
+    (el) => el.getAttribute("data-testid")
+  )
+  // The loose <p> is absent: with a content slot present, `body` children are
+  // superseded (main region priority: grid-area → content → body).
+  expect(order).toEqual(["hdr", "cnt", "ftr"])
+})
+
+test("without a content slot, loose children become the main region", () => {
+  mount(
+    <SmartPage>
+      <p data-testid="loose">Loose body text</p>
+    </SmartPage>
+  )
+  expect(container.querySelector('[data-testid="loose"]')).not.toBeNull()
 })

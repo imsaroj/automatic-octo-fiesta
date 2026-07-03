@@ -17,8 +17,6 @@ import {
   type GetRowIdParams,
   type GridApi,
   type GridReadyEvent,
-  type IDatasource,
-  type IGetRowsParams,
   type RowDoubleClickedEvent,
   type RowSelectionOptions,
 } from "ag-grid-community"
@@ -29,7 +27,6 @@ import { GridToolbar } from "./grid-toolbar"
 import { SmartLoadingOverlay } from "@workspace/ui/smart-components/loading-overlay"
 import { SmartPageError } from "@workspace/ui/smart-components/page/smart-page-error"
 import {
-  buildServerFetchParams,
   type ServerFetchParams,
   type ServerFetchResult,
   type ServerFilter,
@@ -47,9 +44,8 @@ import {
 } from "./grid-internals"
 import {
   collectGridExport,
+  createGridDatasource,
   debounce,
-  errorMessage,
-  mergeServerFilters,
   readPersistedGridState,
   writePersistedGridState,
 } from "./server-grid-internals"
@@ -278,50 +274,6 @@ function SmartServerGridInner<TRow>(
     if (parsed.filterModel) api.setFilterModel(parsed.filterModel)
   }, [])
 
-  // Stable datasource: reads the latest `fetchRows` / `filters` from refs so its
-  // identity never changes (a new datasource would purge the grid).
-  const datasource = useMemo<IDatasource>(
-    () => ({
-      getRows: (params: IGetRowsParams) => {
-        const serverParams = buildServerFetchParams({
-          startRow: params.startRow,
-          endRow: params.endRow,
-          sortModel: params.sortModel,
-          filterModel: (params.filterModel ?? null) as Record<
-            string,
-            unknown
-          > | null,
-        })
-        // Merge any external (search-form) filters on top of column filters.
-        serverParams.filters = mergeServerFilters(
-          serverParams.filters,
-          filtersRef.current
-        )
-        const controller = new AbortController()
-        controllersRef.current.add(controller)
-        fetchRowsRef
-          .current(serverParams, controller.signal)
-          .then(
-            (result) => {
-              // `lastRow` = the known total, so the grid sizes the scrollbar exactly.
-              params.successCallback(result.rows, result.total)
-              setError(null)
-            },
-            (reason: unknown) => {
-              if (controller.signal.aborted) return
-              params.failCallback()
-              setError(errorMessage(reason))
-            }
-          )
-          .finally(() => {
-            controllersRef.current.delete(controller)
-            setInitialLoading(false)
-          })
-      },
-    }),
-    []
-  )
-
   // External filters changed (Search / Reset) → reset to page 1 and refetch.
   // Skip the mount run so the datasource's own first fetch isn't duplicated.
   const didMountRef = useRef(false)
@@ -376,9 +328,24 @@ function SmartServerGridInner<TRow>(
       // Restore sort/filter/columns BEFORE the first fetch so the first request
       // already reflects the persisted state, then start the datasource.
       restoreState(event.api)
-      event.api.setGridOption("datasource", datasource)
+      // Created once per grid instantiation (gridReady fires once), so the
+      // datasource identity is stable for the grid's lifetime — a new one
+      // would purge the cache. It reads the latest `fetchRows` / `filters`
+      // through ref getters; the translation/abort/error flow lives in
+      // `createGridDatasource` (server-grid-internals), where it is unit-tested.
+      event.api.setGridOption(
+        "datasource",
+        createGridDatasource<TRow>({
+          getFetchRows: () => fetchRowsRef.current,
+          getExternalFilters: () => filtersRef.current,
+          controllers: controllersRef.current,
+          onSuccess: () => setError(null),
+          onError: setError,
+          onSettled: () => setInitialLoading(false),
+        })
+      )
     },
-    [datasource, restoreState]
+    [restoreState]
   )
 
   const handleRowDoubleClicked = useCallback(
