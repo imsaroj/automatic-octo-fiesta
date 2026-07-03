@@ -15,6 +15,11 @@ dist-ssr
 # test coverage
 coverage
 
+# playwright
+test-results
+playwright-report
+blob-report
+
 # env files (can opt-in for committing if needed)
 .env*
 
