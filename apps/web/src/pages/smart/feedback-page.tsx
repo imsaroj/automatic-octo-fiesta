@@ -11,10 +11,7 @@ import {
 import {
   SmartPage,
   SmartPageContent,
-  SmartPageDescription,
-  SmartPageHeader,
   SmartPageSection,
-  SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
 import { SmartBadge } from "@workspace/ui/smart-components/smart-badge"
 import {
@@ -82,17 +79,11 @@ const FeedbackPage = () => {
   }
 
   return (
-    <SmartPage layout="detail">
-      <SmartPageHeader>
-        <div>
-          <SmartPageTitle>Feedback & Display</SmartPageTitle>
-          <SmartPageDescription>
-            SmartBadge, SmartButton (loading), SmartAlert, SmartAccordion,
-            SmartSpinner, SmartLoadingOverlay, and SmartToast.
-          </SmartPageDescription>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="detail"
+      title="Feedback & Display"
+      description="SmartBadge, SmartButton (loading), SmartAlert, SmartAccordion, SmartSpinner, SmartLoadingOverlay, and SmartToast."
+    >
       <SmartPageContent maxWidth="2xl" padding="md">
         {/* ── SmartBadge ─────────────────────────────────────── */}
         <SmartPageSection

@@ -16,9 +16,6 @@ import {
 } from "lucide-react"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageActions,
   SmartPageHero,
   SmartPageContent,
   SmartPageSection,
@@ -63,19 +60,16 @@ const BarChartCard = ({ label, seed }: { label: string; seed: number }) => {
 const DashboardLayoutPage = () => {
   return (
     // Hero present → auto-detected "dashboard" layout
-    <SmartPage>
-      <SmartPageHeader compact border={false}>
-        <div className="flex items-center justify-between">
-          <SmartPageTitle>Dashboard layout</SmartPageTitle>
-          <SmartPageActions>
-            <Button variant="outline" size="sm">
-              <ArrowUpRight />
-              View report
-            </Button>
-          </SmartPageActions>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      title="Dashboard layout"
+      actions={
+        <Button variant="outline" size="sm">
+          <ArrowUpRight />
+          View report
+        </Button>
+      }
+      headerProps={{ compact: true, border: false }}
+    >
       <SmartPageHero background="gradient" height="sm">
         <div className="flex items-center gap-2 text-sm font-medium">
           <Activity className="size-4 text-primary" />

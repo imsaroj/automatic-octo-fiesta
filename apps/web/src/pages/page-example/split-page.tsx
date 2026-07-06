@@ -11,9 +11,6 @@ import { useState } from "react"
 import { Archive, Reply, Star, Trash2 } from "lucide-react"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageActions,
   SmartPageContent,
   SmartPageSection,
   SmartSidebar,
@@ -99,18 +96,15 @@ const SplitLayoutPage = () => {
 
   return (
     // SmartSidebar present → auto-detected "split" layout
-    <SmartPage>
-      <SmartPageHeader compact>
-        <div className="flex items-center justify-between">
-          <SmartPageTitle>Inbox</SmartPageTitle>
-          <SmartPageActions>
-            <Badge variant="secondary">
-              {MESSAGES.filter((m) => m.unread).length} unread
-            </Badge>
-          </SmartPageActions>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      title="Inbox"
+      actions={
+        <Badge variant="secondary">
+          {MESSAGES.filter((m) => m.unread).length} unread
+        </Badge>
+      }
+      headerProps={{ compact: true }}
+    >
       {/* Left list — scrolls independently */}
       <SmartSidebar position="left" width="md" padding={false}>
         <ul className="flex flex-col">

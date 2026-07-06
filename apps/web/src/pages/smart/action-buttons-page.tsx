@@ -2,10 +2,7 @@ import { useState } from "react"
 import {
   SmartPage,
   SmartPageContent,
-  SmartPageDescription,
-  SmartPageHeader,
   SmartPageSection,
-  SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
 import { SmartCard } from "@workspace/ui/smart-components/smart-card"
 import { SmartSegmented } from "@workspace/ui/smart-components/smart-segmented"
@@ -132,18 +129,11 @@ const ActionButtonsPage = () => {
   }
 
   return (
-    <SmartPage layout="detail">
-      <SmartPageHeader>
-        <div>
-          <SmartPageTitle>Action Buttons</SmartPageTitle>
-          <SmartPageDescription>
-            27 named presets from one ACTION_BUTTON_CONFIG map — default icon,
-            label, variant, loading text, tooltip, and permission gating, all
-            overridable.
-          </SmartPageDescription>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="detail"
+      title="Action Buttons"
+      description="27 named presets from one ACTION_BUTTON_CONFIG map — default icon, label, variant, loading text, tooltip, and permission gating, all overridable."
+    >
       <SmartPageContent maxWidth="2xl" padding="md">
         {/* ── All presets ────────────────────────────────────── */}
         <SmartPageSection

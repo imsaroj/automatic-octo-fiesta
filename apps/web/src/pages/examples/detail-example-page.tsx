@@ -32,10 +32,7 @@ import {
 import { Textarea } from "@workspace/ui/smart-components/smart-textarea"
 import {
   SmartPage,
-  SmartPageHeader,
   SmartPageTitle,
-  SmartPageActions,
-  SmartPageBreadcrumb,
   SmartPageContent,
   SmartPageSection,
   SmartSidebar,
@@ -71,40 +68,37 @@ const DetailExamplePage = () => {
 
   return (
     // Auto-detected as "split" because SmartSidebar is a direct child
-    <SmartPage>
-      <SmartPageHeader compact>
-        <SmartPageBreadcrumb
-          items={[
-            { label: "Projects", href: "#" },
-            { label: "smart-components", href: "#" },
-            { label: "Issues" },
-          ]}
-        />
-        <div className="flex items-center justify-between">
-          <SmartPageTitle as="h1">
-            <span className="font-normal text-muted-foreground">#42 — </span>
-            Grid layout collapses on narrow viewports
-          </SmartPageTitle>
-          <SmartPageActions>
-            <Button
-              variant={resolved ? "secondary" : "outline"}
-              size="sm"
-              onClick={() => setResolved((v) => !v)}
-            >
-              {resolved ? (
-                <>
-                  <CheckCircle2 className="text-green-600" /> Resolved
-                </>
-              ) : (
-                <>
-                  <Circle /> Mark resolved
-                </>
-              )}
-            </Button>
-          </SmartPageActions>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      breadcrumb={[
+        { label: "Projects", href: "#" },
+        { label: "smart-components", href: "#" },
+        { label: "Issues" },
+      ]}
+      title={
+        <SmartPageTitle as="h1">
+          <span className="font-normal text-muted-foreground">#42 — </span>
+          Grid layout collapses on narrow viewports
+        </SmartPageTitle>
+      }
+      actions={
+        <Button
+          variant={resolved ? "secondary" : "outline"}
+          size="sm"
+          onClick={() => setResolved((v) => !v)}
+        >
+          {resolved ? (
+            <>
+              <CheckCircle2 className="text-green-600" /> Resolved
+            </>
+          ) : (
+            <>
+              <Circle /> Mark resolved
+            </>
+          )}
+        </Button>
+      }
+      headerProps={{ compact: true }}
+    >
       {/* ── Main content (scrolls) ──────────────────────────────────────────── */}
       <SmartPageContent padding="md">
         {/* Issue body */}

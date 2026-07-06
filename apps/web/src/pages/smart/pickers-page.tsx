@@ -1,9 +1,6 @@
 import { useState } from "react"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
   SmartPageContent,
   SmartPageSection,
 } from "@workspace/ui/smart-components/page"
@@ -91,17 +88,11 @@ const PickersPage = () => {
   const [meetingAt, setMeetingAt] = useState<Date | undefined>()
 
   return (
-    <SmartPage layout="detail">
-      <SmartPageHeader>
-        <div>
-          <SmartPageTitle>Pickers</SmartPageTitle>
-          <SmartPageDescription>
-            SmartCalendar, SmartDatePicker, and SmartCombobox — interactive
-            selection controls.
-          </SmartPageDescription>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="detail"
+      title="Pickers"
+      description="SmartCalendar, SmartDatePicker, and SmartCombobox — interactive selection controls."
+    >
       <SmartPageContent maxWidth="2xl" padding="md">
         {/* ── Calendars ─────────────────────────────────────────── */}
         <SmartPageSection

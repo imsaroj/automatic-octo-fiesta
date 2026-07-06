@@ -2,10 +2,7 @@ import { useState } from "react"
 import {
   SmartPage,
   SmartPageContent,
-  SmartPageDescription,
-  SmartPageHeader,
   SmartPageSection,
-  SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
 import { SmartInput } from "@workspace/ui/smart-components/smart-input"
 import { SmartTextarea } from "@workspace/ui/smart-components/smart-textarea"
@@ -110,18 +107,11 @@ const BasicTextFieldsPage = () => {
   const [notes, setNotes] = useState("")
 
   return (
-    <SmartPage layout="detail">
-      <SmartPageHeader>
-        <div>
-          <SmartPageTitle>Basic Text Fields</SmartPageTitle>
-          <SmartPageDescription>
-            A catalogue of every field type — text, numeric, date &amp; time,
-            selection, boolean, and rich text — each built from a Smart*
-            wrapper.
-          </SmartPageDescription>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="detail"
+      title="Basic Text Fields"
+      description="A catalogue of every field type — text, numeric, date & time, selection, boolean, and rich text — each built from a Smart* wrapper."
+    >
       <SmartPageContent maxWidth="2xl" padding="md">
         {/* ── Basic text ──────────────────────────────────────────── */}
         <SmartPageSection

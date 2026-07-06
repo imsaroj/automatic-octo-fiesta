@@ -10,9 +10,6 @@ import {
 } from "@workspace/ui/smart-components/smart-card"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
   SmartPageContent,
   SmartPageEmpty,
 } from "@workspace/ui/smart-components/page"
@@ -145,15 +142,11 @@ const MasterDetailGridPage = () => {
   )
 
   return (
-    <SmartPage layout="document">
-      <SmartPageHeader>
-        <SmartPageTitle>Master Detail Grid</SmartPageTitle>
-        <SmartPageDescription>
-          Select an account in the master grid to drill into its orders in the
-          linked detail panel — a Community-friendly master/detail pattern.
-        </SmartPageDescription>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="document"
+      title="Master Detail Grid"
+      description="Select an account in the master grid to drill into its orders in the linked detail panel — a Community-friendly master/detail pattern."
+    >
       <SmartPageContent>
         <SmartGrid
           title="Accounts"

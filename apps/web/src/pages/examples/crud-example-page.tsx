@@ -28,7 +28,6 @@ import { toast } from "@workspace/ui/smart-components/smart-toaster"
 import { SmartSearchInput } from "@workspace/ui/smart-components/search-input"
 import {
   SmartPage,
-  SmartPageHeader,
   SmartToolbar,
   SmartPageSearch,
   SmartGridArea,
@@ -240,21 +239,19 @@ const CrudExamplePage = () => {
   const savePending = createMutation.isPending || updateMutation.isPending
 
   return (
-    // SmartGridArea's presence auto-detects the "grid" layout
-    <SmartPage>
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <SmartPageHeader
-        breadcrumb={[{ label: "Admin", href: "#" }, { label: "Users" }]}
-        title="Users"
-        description="Manage your organisation's members — backed by TanStack Query."
-        actions={
-          <Button size="sm" onClick={openCreate}>
-            <UserPlus />
-            Invite user
-          </Button>
-        }
-      />
-
+    // SmartGridArea's presence auto-detects the "grid" layout.
+    // Header comes from flat props — no SmartPageHeader import needed.
+    <SmartPage
+      breadcrumb={[{ label: "Admin", href: "#" }, { label: "Users" }]}
+      title="Users"
+      description="Manage your organisation's members — backed by TanStack Query."
+      actions={
+        <Button size="sm" onClick={openCreate}>
+          <UserPlus />
+          Invite user
+        </Button>
+      }
+    >
       {/* ── Toolbar ─────────────────────────────────────────────────────────── */}
       <SmartToolbar>
         <Button variant="outline" size="sm" disabled>

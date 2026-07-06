@@ -2,14 +2,7 @@ import { useCallback, useMemo, useRef } from "react"
 import { RotateCw } from "lucide-react"
 import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
 import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
-import {
-  SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
-  SmartPageActions,
-  SmartGridArea,
-} from "@workspace/ui/smart-components/page"
+import { SmartPage, SmartGridArea } from "@workspace/ui/smart-components/page"
 import {
   SmartServerGrid,
   type DataGridColumn,
@@ -172,28 +165,19 @@ const InfiniteGridPage = () => {
   )
 
   return (
-    <SmartPage>
-      <SmartPageHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <SmartPageTitle>Infinite Scroll Grid</SmartPageTitle>
-            <SmartPageDescription>
-              Rows stream in blocks as you scroll — no pager, constant memory, 1
-              000 rows loaded on demand.
-            </SmartPageDescription>
-          </div>
-          <SmartPageActions>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => gridRef.current?.reload()}
-            >
-              <RotateCw className="h-4 w-4" /> Reload
-            </Button>
-          </SmartPageActions>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      title="Infinite Scroll Grid"
+      description="Rows stream in blocks as you scroll — no pager, constant memory, 1 000 rows loaded on demand."
+      actions={
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => gridRef.current?.reload()}
+        >
+          <RotateCw className="h-4 w-4" /> Reload
+        </Button>
+      }
+    >
       <SmartGridArea>
         <SmartServerGrid
           ref={gridRef}

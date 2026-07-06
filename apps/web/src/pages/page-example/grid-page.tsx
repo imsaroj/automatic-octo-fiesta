@@ -12,9 +12,6 @@ import { useMemo, useState } from "react"
 import { Download, Filter, Plus, X } from "lucide-react"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageActions,
   SmartToolbar,
   SmartPageSearch,
   SmartPageFilters,
@@ -118,21 +115,19 @@ const GridLayoutPage = () => {
 
   return (
     // SmartGridArea present → auto-detected "grid" layout (all regions sticky)
-    <SmartPage>
-      <SmartPageHeader>
-        <div className="flex items-center justify-between">
-          <SmartPageTitle>Accounts</SmartPageTitle>
-          <SmartPageActions>
-            <Button variant="outline" size="sm">
-              <Download /> Export
-            </Button>
-            <Button size="sm">
-              <Plus /> New account
-            </Button>
-          </SmartPageActions>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      title="Accounts"
+      actions={
+        <>
+          <Button variant="outline" size="sm">
+            <Download /> Export
+          </Button>
+          <Button size="sm">
+            <Plus /> New account
+          </Button>
+        </>
+      }
+    >
       <SmartToolbar>
         <span className="text-xs font-medium text-muted-foreground">
           {rows.length} of {allRows.length} accounts

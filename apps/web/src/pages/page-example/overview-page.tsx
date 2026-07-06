@@ -23,9 +23,6 @@ import {
 } from "lucide-react"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
   SmartPageContent,
   SmartPageSection,
 } from "@workspace/ui/smart-components/page"
@@ -128,10 +125,11 @@ const EXAMPLES: Example[] = [
 
 const PageExampleOverview = () => {
   return (
-    <SmartPage layout="document">
-      <SmartPageHeader>
-        <SmartPageTitle>Page Layouts</SmartPageTitle>
-        <SmartPageDescription>
+    <SmartPage
+      layout="document"
+      title="Page Layouts"
+      description={
+        <>
           <code className="rounded bg-muted px-1 py-0.5 text-xs">
             SmartPage
           </code>{" "}
@@ -139,9 +137,9 @@ const PageExampleOverview = () => {
           search, filters, tabs, content, sidebar, grid, status bar and footer —
           into one of seven presets, and manages scroll containment for you.
           Each card below is a live example of one preset or pattern.
-        </SmartPageDescription>
-      </SmartPageHeader>
-
+        </>
+      }
+    >
       <SmartPageContent maxWidth="2xl" centered>
         <SmartPageSection padding={false}>
           <div className="grid gap-4 sm:grid-cols-2">

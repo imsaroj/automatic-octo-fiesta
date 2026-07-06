@@ -14,10 +14,7 @@ import {
 import {
   SmartPage,
   SmartPageContent,
-  SmartPageDescription,
-  SmartPageHeader,
   SmartPageSection,
-  SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
 import {
   SmartDialog,
@@ -110,17 +107,11 @@ const OverlaysPage = () => {
   const [deleted, setDeleted] = useState(false)
 
   return (
-    <SmartPage layout="detail">
-      <SmartPageHeader>
-        <div>
-          <SmartPageTitle>Overlays</SmartPageTitle>
-          <SmartPageDescription>
-            SmartDialog, SmartSheet, SmartDrawer, SmartConfirmDialog, and
-            SmartContextMenu — all overlay and popover patterns.
-          </SmartPageDescription>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="detail"
+      title="Overlays"
+      description="SmartDialog, SmartSheet, SmartDrawer, SmartConfirmDialog, and SmartContextMenu — all overlay and popover patterns."
+    >
       <SmartPageContent maxWidth="2xl" padding="md">
         {/* ── SmartDialog ─────────────────────────────────────── */}
         <SmartPageSection

@@ -29,14 +29,9 @@ import {
 } from "@workspace/ui/smart-components/smart-avatar"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
-  SmartPageBreadcrumb,
   SmartPageTabs,
   SmartPageTab,
   SmartPageTabPanel,
-  SmartPageActions,
   SmartPageContent,
   SmartPageSection,
   SmartPageFooter,
@@ -189,31 +184,23 @@ const SettingsExamplePage = () => {
   const [settingsOpen, setSettingsOpen] = useState(false)
 
   return (
-    <SmartPage layout="detail">
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <SmartPageHeader>
-        <SmartPageBreadcrumb items={[{ label: "Account settings" }]} />
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <SmartPageTitle>Account settings</SmartPageTitle>
-            <SmartPageDescription>
-              Manage your profile, preferences, and security.
-            </SmartPageDescription>
-          </div>
-          <SmartPageActions>
-            <SettingsDialog
-              open={settingsOpen}
-              onOpenChange={setSettingsOpen}
-              trigger={
-                <Button variant="outline" size="sm">
-                  <SlidersHorizontal /> Open in dialog
-                </Button>
-              }
-            />
-          </SmartPageActions>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="detail"
+      breadcrumb={[{ label: "Account settings" }]}
+      title="Account settings"
+      description="Manage your profile, preferences, and security."
+      actions={
+        <SettingsDialog
+          open={settingsOpen}
+          onOpenChange={setSettingsOpen}
+          trigger={
+            <Button variant="outline" size="sm">
+              <SlidersHorizontal /> Open in dialog
+            </Button>
+          }
+        />
+      }
+    >
       {/* ── Tab navigation ─────────────────────────────────────────────────── */}
       <SmartPageTabs value={tab} onValueChange={setTab} variant="line">
         <SmartPageTab value="profile">

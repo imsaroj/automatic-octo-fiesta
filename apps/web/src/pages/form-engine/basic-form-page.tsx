@@ -3,10 +3,7 @@ import { z } from "zod"
 import {
   SmartPage,
   SmartPageContent,
-  SmartPageDescription,
-  SmartPageHeader,
   SmartPageSection,
-  SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
 import { SmartCard } from "@workspace/ui/smart-components/smart-card"
 import { toast } from "@workspace/ui/smart-components/smart-toaster"
@@ -74,15 +71,11 @@ const BasicFormPage = () => {
   const [data, setData] = useState<ContactForm>(EMPTY)
 
   return (
-    <SmartPage layout="detail">
-      <SmartPageHeader>
-        <SmartPageTitle>Basic Form</SmartPageTitle>
-        <SmartPageDescription>
-          SmartForm with a Zod schema — automatic validation, inline errors, and
-          field definitions instead of hand-wired JSX.
-        </SmartPageDescription>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="detail"
+      title="Basic Form"
+      description="SmartForm with a Zod schema — automatic validation, inline errors, and field definitions instead of hand-wired JSX."
+    >
       <SmartPageContent maxWidth="2xl" padding="md">
         <div className="grid gap-6 lg:grid-cols-[1fr_260px]">
           <SmartCard

@@ -4,9 +4,6 @@ import { CheckCircle2 } from "lucide-react"
 import {
   SmartPage,
   SmartPageContent,
-  SmartPageDescription,
-  SmartPageHeader,
-  SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
 import { SmartCard } from "@workspace/ui/smart-components/smart-card"
 import { SmartButton } from "@workspace/ui/smart-components/smart-button"
@@ -202,15 +199,11 @@ const MultiStepFormPage = () => {
   ]
 
   return (
-    <SmartPage layout="detail">
-      <SmartPageHeader>
-        <SmartPageTitle>Multi-Step Form</SmartPageTitle>
-        <SmartPageDescription>
-          A wizard built with SmartStepper + per-step SmartForms. Each step
-          validates independently before advancing.
-        </SmartPageDescription>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="detail"
+      title="Multi-Step Form"
+      description="A wizard built with SmartStepper + per-step SmartForms. Each step validates independently before advancing."
+    >
       <SmartPageContent maxWidth="2xl" padding="md">
         <SmartCard contentClassName="space-y-6">
           <div>

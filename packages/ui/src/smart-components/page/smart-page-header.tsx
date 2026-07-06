@@ -10,7 +10,7 @@ import {
   BreadcrumbPage as BreadcrumbCurrent,
   BreadcrumbSeparator,
 } from "@workspace/ui/components/breadcrumb"
-import { SMART_PAGE_SLOT } from "./smart-page"
+import { SMART_PAGE_SLOT } from "./slot"
 
 // ─── SmartPageHeader ───────────────────────────────────────────────────────────
 

@@ -3,9 +3,6 @@ import { z } from "zod"
 import {
   SmartPage,
   SmartPageContent,
-  SmartPageDescription,
-  SmartPageHeader,
-  SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
 import { SmartCard } from "@workspace/ui/smart-components/smart-card"
 import { toast } from "@workspace/ui/smart-components/smart-toaster"
@@ -207,15 +204,11 @@ const AllFieldsPage = () => {
   const [data, setData] = useState<AllFields>(EMPTY)
 
   return (
-    <SmartPage layout="detail">
-      <SmartPageHeader>
-        <SmartPageTitle>All Field Types</SmartPageTitle>
-        <SmartPageDescription>
-          Every field type the engine supports — text, numeric, date &amp; time,
-          and selection controls — driven by a single Zod schema.
-        </SmartPageDescription>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="detail"
+      title="All Field Types"
+      description="Every field type the engine supports — text, numeric, date & time, and selection controls — driven by a single Zod schema."
+    >
       <SmartPageContent maxWidth="2xl" padding="md">
         <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
           <SmartCard

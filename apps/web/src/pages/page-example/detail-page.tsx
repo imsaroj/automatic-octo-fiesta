@@ -17,11 +17,8 @@ import {
 } from "lucide-react"
 import {
   SmartPage,
-  SmartPageHeader,
   SmartPageTitle,
   SmartPageDescription,
-  SmartPageActions,
-  SmartPageBreadcrumb,
   SmartPageContent,
   SmartPageSection,
 } from "@workspace/ui/smart-components/page"
@@ -70,41 +67,40 @@ const TIMELINE = [
 
 const DetailLayoutPage = () => {
   return (
-    <SmartPage layout="detail">
-      <SmartPageHeader>
-        <SmartPageBreadcrumb
-          items={[
-            { label: "Page Layouts", href: "/page-example" },
-            { label: "Customers", href: "#" },
-            { label: "Grace Hopper" },
-          ]}
-        />
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Avatar className="size-12">
-              <AvatarFallback>GH</AvatarFallback>
-            </Avatar>
-            <div>
-              <div className="flex items-center gap-2">
-                <SmartPageTitle>Grace Hopper</SmartPageTitle>
-                <Badge>Enterprise</Badge>
-              </div>
-              <SmartPageDescription>
-                Customer #4271 · Globex Corporation
-              </SmartPageDescription>
+    <SmartPage
+      layout="detail"
+      breadcrumb={[
+        { label: "Page Layouts", href: "/page-example" },
+        { label: "Customers", href: "#" },
+        { label: "Grace Hopper" },
+      ]}
+      title={
+        <div className="flex items-center gap-3">
+          <Avatar className="size-12">
+            <AvatarFallback>GH</AvatarFallback>
+          </Avatar>
+          <div>
+            <div className="flex items-center gap-2">
+              <SmartPageTitle>Grace Hopper</SmartPageTitle>
+              <Badge>Enterprise</Badge>
             </div>
+            <SmartPageDescription>
+              Customer #4271 · Globex Corporation
+            </SmartPageDescription>
           </div>
-          <SmartPageActions>
-            <Button variant="outline" size="sm">
-              <Pencil /> Edit
-            </Button>
-            <Button variant="ghost" size="icon-sm" aria-label="More actions">
-              <MoreHorizontal />
-            </Button>
-          </SmartPageActions>
         </div>
-      </SmartPageHeader>
-
+      }
+      actions={
+        <>
+          <Button variant="outline" size="sm">
+            <Pencil /> Edit
+          </Button>
+          <Button variant="ghost" size="icon-sm" aria-label="More actions">
+            <MoreHorizontal />
+          </Button>
+        </>
+      }
+    >
       <SmartPageContent maxWidth="2xl" centered padding="md">
         <SmartPageSection padding={false}>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3">

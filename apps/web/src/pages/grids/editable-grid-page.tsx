@@ -3,10 +3,6 @@ import { Plus, Trash2 } from "lucide-react"
 import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
-  SmartPageActions,
   SmartPageContent,
 } from "@workspace/ui/smart-components/page"
 import { SmartGrid, type DataGridColumn } from "@workspace/ui/data-grid"
@@ -117,29 +113,23 @@ const EditableGridPage = () => {
   }
 
   return (
-    <SmartPage layout="document">
-      <SmartPageHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <SmartPageTitle>Editable Grid</SmartPageTitle>
-            <SmartPageDescription>
-              Inline cell editing with text, dropdown and number editors.
-              Double-click a cell (or press Enter) to edit.
-            </SmartPageDescription>
-          </div>
-          <SmartPageActions>
-            {selected.length > 0 && (
-              <Button variant="outline" size="sm" onClick={deleteSelected}>
-                <Trash2 className="h-4 w-4" /> Delete ({selected.length})
-              </Button>
-            )}
-            <Button size="sm" onClick={addRow}>
-              <Plus className="h-4 w-4" /> Add row
+    <SmartPage
+      layout="document"
+      title="Editable Grid"
+      description="Inline cell editing with text, dropdown and number editors. Double-click a cell (or press Enter) to edit."
+      actions={
+        <>
+          {selected.length > 0 && (
+            <Button variant="outline" size="sm" onClick={deleteSelected}>
+              <Trash2 className="h-4 w-4" /> Delete ({selected.length})
             </Button>
-          </SmartPageActions>
-        </div>
-      </SmartPageHeader>
-
+          )}
+          <Button size="sm" onClick={addRow}>
+            <Plus className="h-4 w-4" /> Add row
+          </Button>
+        </>
+      }
+    >
       <SmartPageContent>
         <SmartGrid
           title="Editable members"

@@ -22,9 +22,6 @@ import {
 } from "lucide-react"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageActions,
   SmartPageHero,
   SmartPageContent,
   SmartPageSection,
@@ -105,19 +102,16 @@ const ActivityItem = ({
 const DashboardExamplePage = () => {
   return (
     // Hero detected → "dashboard" layout (page scroll, no height constraints)
-    <SmartPage>
-      <SmartPageHeader compact border={false}>
-        <div className="flex items-center justify-between">
-          <SmartPageTitle>Dashboard</SmartPageTitle>
-          <SmartPageActions>
-            <Button variant="outline" size="sm">
-              <ArrowUpRight />
-              View report
-            </Button>
-          </SmartPageActions>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      title="Dashboard"
+      actions={
+        <Button variant="outline" size="sm">
+          <ArrowUpRight />
+          View report
+        </Button>
+      }
+      headerProps={{ compact: true, border: false }}
+    >
       {/* Hero scrolls away — intentional for dashboard pages */}
       <SmartPageHero background={"muted"} height="sm">
         <p className="text-sm text-muted-foreground">

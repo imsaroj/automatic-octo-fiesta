@@ -31,10 +31,6 @@ import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
 import { SmartStatCard } from "@workspace/ui/smart-components/smart-stat-card"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageActions,
-  SmartPageBreadcrumb,
   SmartToolbar,
   SmartPageTabs,
   SmartPageTab,
@@ -282,23 +278,17 @@ const AnalyticsExamplePage = () => {
   const [period, setPeriod] = useState("30d")
 
   return (
-    <SmartPage layout="dashboard">
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <SmartPageHeader>
-        <SmartPageBreadcrumb items={[{ label: "Analytics" }]} />
-        <div className="flex items-center justify-between">
-          <div>
-            <SmartPageTitle>Analytics</SmartPageTitle>
-          </div>
-          <SmartPageActions>
-            <Button variant="outline" size="sm">
-              <Download />
-              Export CSV
-            </Button>
-          </SmartPageActions>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="dashboard"
+      breadcrumb={[{ label: "Analytics" }]}
+      title="Analytics"
+      actions={
+        <Button variant="outline" size="sm">
+          <Download />
+          Export CSV
+        </Button>
+      }
+    >
       {/* ── Period selector toolbar ─────────────────────────────────────────── */}
       <SmartToolbar>
         <div className="flex items-center gap-0.5 rounded-md border p-0.5">

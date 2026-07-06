@@ -19,9 +19,6 @@ import { Label } from "@workspace/ui/smart-components/smart-label"
 import { Switch } from "@workspace/ui/smart-components/smart-switch"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
   SmartPageContent,
   SmartPageSection,
   SmartPageFooter,
@@ -288,20 +285,16 @@ const WizardExamplePage = () => {
   ]
 
   return (
-    <SmartPage layout="wizard">
-      {/* ── Header: title + step indicator ─────────────────────────────────── */}
-      <SmartPageHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <SmartPageTitle>Set up your workspace</SmartPageTitle>
-            <SmartPageDescription>
-              Step {step + 1} of {STEPS.length} — {STEPS[step].label}
-            </SmartPageDescription>
-          </div>
-          <StepIndicator steps={STEPS} current={step} />
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="wizard"
+      title="Set up your workspace"
+      description={
+        <>
+          Step {step + 1} of {STEPS.length} — {STEPS[step].label}
+        </>
+      }
+      actions={<StepIndicator steps={STEPS} current={step} />}
+    >
       {/* ── Scrollable step content ─────────────────────────────────────────── */}
       {stepComponents[step]}
 

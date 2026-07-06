@@ -5,9 +5,6 @@ import { SmartButton } from "@workspace/ui/smart-components/smart-button"
 import { SmartBadge } from "@workspace/ui/smart-components/smart-badge"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
   SmartToolbar,
   SmartPageSearch,
   SmartGridArea,
@@ -188,20 +185,10 @@ const ServerGridPage = () => {
   }
 
   return (
-    <SmartPage>
-      <SmartPageHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <SmartPageTitle>Server Driven Grid</SmartPageTitle>
-            <SmartPageDescription>
-              AG Grid Community + MSW: a dedicated search form, server-side
-              sorting & pagination, infinite-scroll mode, Excel export, and
-              cross-page selection.
-            </SmartPageDescription>
-          </div>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      title="Server Driven Grid"
+      description="AG Grid Community + MSW: a dedicated search form, server-side sorting & pagination, infinite-scroll mode, Excel export, and cross-page selection."
+    >
       <SmartToolbar>
         <SmartButton
           variant={simulateError ? "destructive" : "outline"}

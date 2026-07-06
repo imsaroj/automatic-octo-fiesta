@@ -2,10 +2,7 @@ import { useState } from "react"
 import {
   SmartPage,
   SmartPageContent,
-  SmartPageDescription,
-  SmartPageHeader,
   SmartPageSection,
-  SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
 import { SmartTextEditor } from "@workspace/ui/lexical-text-editor"
 import { SmartCard } from "@workspace/ui/smart-components/smart-card"
@@ -17,15 +14,10 @@ const TextEditorPage = () => {
   const [json, setJson] = useState("")
 
   return (
-    <SmartPage>
-      <SmartPageHeader>
-        <SmartPageTitle>Text Editor</SmartPageTitle>
-        <SmartPageDescription>
-          SmartTextEditor — Lexical-powered rich text editor with label,
-          description, and error support.
-        </SmartPageDescription>
-      </SmartPageHeader>
-
+    <SmartPage
+      title="Text Editor"
+      description="SmartTextEditor — Lexical-powered rich text editor with label, description, and error support."
+    >
       <SmartPageContent>
         <SmartPageSection>
           <div className="flex max-w-3xl flex-col gap-6">

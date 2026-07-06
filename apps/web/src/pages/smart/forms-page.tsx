@@ -3,10 +3,7 @@ import { DollarSign, Globe } from "lucide-react"
 import {
   SmartPage,
   SmartPageContent,
-  SmartPageDescription,
-  SmartPageHeader,
   SmartPageSection,
-  SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
 import { SmartInput } from "@workspace/ui/smart-components/smart-input"
 import { SmartTextarea } from "@workspace/ui/smart-components/smart-textarea"
@@ -88,18 +85,11 @@ const FormsPage = () => {
   }
 
   return (
-    <SmartPage layout="detail">
-      <SmartPageHeader>
-        <div>
-          <SmartPageTitle>Form Controls</SmartPageTitle>
-          <SmartPageDescription>
-            SmartInput, SmartTextarea, SmartCheckbox, SmartSwitch,
-            SmartRadioGroup, SmartSelect, SmartNativeSelect, SmartInputGroup,
-            SmartField, SmartLabel — all in one realistic profile form.
-          </SmartPageDescription>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="detail"
+      title="Form Controls"
+      description="SmartInput, SmartTextarea, SmartCheckbox, SmartSwitch, SmartRadioGroup, SmartSelect, SmartNativeSelect, SmartInputGroup, SmartField, SmartLabel — all in one realistic profile form."
+    >
       <SmartPageContent maxWidth="2xl" padding="md">
         {/* ── Profile ──────────────────────────────────────────────── */}
         <SmartPageSection

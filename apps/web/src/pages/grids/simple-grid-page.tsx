@@ -4,10 +4,6 @@ import { SmartButton as Button } from "@workspace/ui/smart-components/smart-butt
 import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
-  SmartPageActions,
   SmartPageContent,
 } from "@workspace/ui/smart-components/page"
 import { SmartGrid, type DataGridColumn } from "@workspace/ui/data-grid"
@@ -113,39 +109,35 @@ const SimpleGridPage = () => {
   }
 
   return (
-    <SmartPage layout="document">
-      <SmartPageHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <SmartPageTitle>Simple Grid</SmartPageTitle>
-            <SmartPageDescription>
-              Client-side grid with quick search, sort, filter, column
-              visibility, CSV export and selection — all rows loaded in memory.
-            </SmartPageDescription>
-          </div>
-          <SmartPageActions>
-            <Button variant="outline" size="sm" onClick={simulateLoading}>
-              Simulate loading
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setEmpty((v) => !v)}
-            >
-              {empty ? "Show data" : "Show empty"}
-            </Button>
-            <Button size="sm">
-              <Plus className="h-4 w-4" /> Add user
-            </Button>
-          </SmartPageActions>
-        </div>
-        {selected.length > 0 && (
+    <SmartPage
+      layout="document"
+      title="Simple Grid"
+      description="Client-side grid with quick search, sort, filter, column visibility, CSV export and selection — all rows loaded in memory."
+      actions={
+        <>
+          <Button variant="outline" size="sm" onClick={simulateLoading}>
+            Simulate loading
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setEmpty((v) => !v)}
+          >
+            {empty ? "Show data" : "Show empty"}
+          </Button>
+          <Button size="sm">
+            <Plus className="h-4 w-4" /> Add user
+          </Button>
+        </>
+      }
+      headerProps={{
+        children: selected.length > 0 && (
           <p className="text-sm text-muted-foreground">
             {selected.length} row{selected.length === 1 ? "" : "s"} selected
           </p>
-        )}
-      </SmartPageHeader>
-
+        ),
+      }}
+    >
       <SmartPageContent>
         <SmartGrid
           title="Users"

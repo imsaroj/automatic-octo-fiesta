@@ -11,10 +11,6 @@ import { useState } from "react"
 import { Inbox, Plus } from "lucide-react"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
-  SmartPageActions,
   SmartPageContent,
   SmartPageSection,
   SmartPageEmpty,
@@ -62,32 +58,25 @@ const StatesPage = () => {
           />
         ) : undefined
       }
+      title="Page states"
+      description={
+        <>
+          Toggle a state to swap the whole page for the matching built-in
+          placeholder. The header only shows in the <code>ready</code> state
+          because the state props replace <em>all</em> children.
+        </>
+      }
+      actions={STATES.map((s) => (
+        <Button
+          key={s.id}
+          size="sm"
+          variant={state === s.id ? "default" : "outline"}
+          onClick={() => setState(s.id)}
+        >
+          {s.label}
+        </Button>
+      ))}
     >
-      <SmartPageHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <SmartPageTitle>Page states</SmartPageTitle>
-            <SmartPageDescription>
-              Toggle a state to swap the whole page for the matching built-in
-              placeholder. The header only shows in the <code>ready</code> state
-              because the state props replace <em>all</em> children.
-            </SmartPageDescription>
-          </div>
-          <SmartPageActions>
-            {STATES.map((s) => (
-              <Button
-                key={s.id}
-                size="sm"
-                variant={state === s.id ? "default" : "outline"}
-                onClick={() => setState(s.id)}
-              >
-                {s.label}
-              </Button>
-            ))}
-          </SmartPageActions>
-        </div>
-      </SmartPageHeader>
-
       <SmartPageContent maxWidth="2xl" centered>
         <SmartPageSection title="Ready state" bordered>
           <p className="text-sm text-muted-foreground">

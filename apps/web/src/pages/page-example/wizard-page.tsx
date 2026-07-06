@@ -10,9 +10,6 @@ import { useState } from "react"
 import { Check } from "lucide-react"
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
   SmartPageContent,
   SmartPageSection,
   SmartPageFooter,
@@ -68,19 +65,12 @@ const WizardLayoutPage = () => {
   const isLast = step === STEPS.length - 1
 
   return (
-    <SmartPage layout="wizard">
-      <SmartPageHeader>
-        <div className="flex flex-col gap-3">
-          <div>
-            <SmartPageTitle>Create your workspace</SmartPageTitle>
-            <SmartPageDescription>
-              {STEPS[step].description}
-            </SmartPageDescription>
-          </div>
-          <StepRail current={step} />
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="wizard"
+      title="Create your workspace"
+      description={STEPS[step].description}
+      headerProps={{ children: <StepRail current={step} /> }}
+    >
       <SmartPageContent maxWidth="xl" centered padding="md">
         {step === 0 && (
           <SmartPageSection title="Workspace">

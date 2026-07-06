@@ -201,3 +201,48 @@ test("without a content slot, loose children become the main region", () => {
   )
   expect(container.querySelector('[data-testid="loose"]')).not.toBeNull()
 })
+
+// ─── flat header props ───────────────────────────────────────────────────────────
+
+test("flat header props render a header without nesting SmartPageHeader", () => {
+  const Content = slot("content", "main-content")
+  mount(
+    <SmartPage
+      breadcrumb={[{ label: "Admin", href: "#" }, { label: "Users" }]}
+      title="Users"
+      description="Manage members."
+      actions={<button data-testid="action">Invite</button>}
+    >
+      <Content />
+    </SmartPage>
+  )
+
+  const header = container.querySelector('[data-slot="page-header"]')
+  expect(header).not.toBeNull()
+  expect(header!.querySelector('[data-slot="page-title"]')!.textContent).toBe(
+    "Users"
+  )
+  expect(
+    header!.querySelector('[data-slot="page-description"]')!.textContent
+  ).toBe("Manage members.")
+  expect(header!.querySelector('[data-testid="action"]')).not.toBeNull()
+  expect(container.querySelector('[data-testid="main-content"]')).not.toBeNull()
+})
+
+test("a flat header renders ahead of a composed SmartPageHeader child", () => {
+  const Header = slot("header", "composed-header")
+  mount(
+    <SmartPage title="Flat title">
+      <Header />
+    </SmartPage>
+  )
+
+  // The flat header (its title) comes before the composed header child.
+  const flat = container.querySelector('[data-slot="page-title"]')
+  const composed = container.querySelector('[data-testid="composed-header"]')
+  expect(flat).not.toBeNull()
+  expect(composed).not.toBeNull()
+  expect(
+    flat!.compareDocumentPosition(composed!) & Node.DOCUMENT_POSITION_FOLLOWING
+  ).toBeTruthy()
+})

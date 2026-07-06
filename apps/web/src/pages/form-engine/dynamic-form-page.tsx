@@ -3,10 +3,7 @@ import { z } from "zod"
 import {
   SmartPage,
   SmartPageContent,
-  SmartPageDescription,
-  SmartPageHeader,
   SmartPageSection,
-  SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
 import { SmartCard } from "@workspace/ui/smart-components/smart-card"
 import { SmartForm, type FieldDefinition } from "@workspace/ui/form-engine"
@@ -105,17 +102,18 @@ const DynamicFormPage = () => {
   const [data, setData] = useState<RegistrationForm>(EMPTY)
 
   return (
-    <SmartPage layout="detail">
-      <SmartPageHeader>
-        <SmartPageTitle>Dynamic Form</SmartPageTitle>
-        <SmartPageDescription>
+    <SmartPage
+      layout="detail"
+      title="Dynamic Form"
+      description={
+        <>
           Fields appear and disappear via{" "}
           <code className="font-mono text-xs">hidden</code> predicates.
           Conditional validation lives in the Zod schema via{" "}
           <code className="font-mono text-xs">.refine()</code>.
-        </SmartPageDescription>
-      </SmartPageHeader>
-
+        </>
+      }
+    >
       <SmartPageContent maxWidth="2xl" padding="md">
         <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
           <SmartCard

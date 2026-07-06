@@ -8,10 +8,6 @@
 
 import {
   SmartPage,
-  SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
-  SmartPageActions,
   SmartPageTabs,
   SmartPageTab,
   SmartPageTabPanel,
@@ -24,25 +20,20 @@ import { SmartStatCard } from "@workspace/ui/smart-components/smart-stat-card"
 
 const TabsLayoutPage = () => {
   return (
-    <SmartPage layout="detail">
-      <SmartPageHeader border={false}>
-        <div className="flex items-start justify-between">
-          <div>
-            <SmartPageTitle>Project Alpha</SmartPageTitle>
-            <SmartPageDescription>
-              A tabbed page keeps one header while swapping the body between
-              views.
-            </SmartPageDescription>
-          </div>
-          <SmartPageActions>
-            <Button variant="outline" size="sm">
-              Share
-            </Button>
-            <Button size="sm">Deploy</Button>
-          </SmartPageActions>
-        </div>
-      </SmartPageHeader>
-
+    <SmartPage
+      layout="detail"
+      title="Project Alpha"
+      description="A tabbed page keeps one header while swapping the body between views."
+      actions={
+        <>
+          <Button variant="outline" size="sm">
+            Share
+          </Button>
+          <Button size="sm">Deploy</Button>
+        </>
+      }
+      headerProps={{ border: false }}
+    >
       <SmartPageTabs defaultValue="overview" variant="line">
         <SmartPageTab value="overview">Overview</SmartPageTab>
         <SmartPageTab value="activity">Activity</SmartPageTab>

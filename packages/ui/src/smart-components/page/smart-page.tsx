@@ -9,6 +9,7 @@ import {
   type ScrollMode,
   type PaddingSize,
 } from "./page-context"
+import { SMART_PAGE_SLOT, type PageSlot } from "./slot"
 import type { SlotBuckets } from "./layouts/slot-buckets"
 import { StandardLayout } from "./layouts/standard-layout"
 import { SplitLayout } from "./layouts/split-layout"
@@ -17,29 +18,18 @@ import {
   PageErrorState,
   PageEmptyState,
 } from "./layouts/page-states"
+import {
+  SmartPageHeader,
+  type SmartPageHeaderProps,
+  type SmartPageBreadcrumbItem,
+} from "./smart-page-header"
 
 // ─── Slot Detection ────────────────────────────────────────────────────────────
 
-/**
- * Well-known symbol placed as a static property on every slot component.
- * SmartPage reads this to bucket children without relying on class identity,
- * which would break with HOCs or lazy imports.
- */
-// eslint-disable-next-line react-refresh/only-export-components
-export const SMART_PAGE_SLOT = Symbol.for("@workspace/smart-page-slot")
-
-export type PageSlot =
-  | "header"
-  | "hero"
-  | "toolbar"
-  | "search"
-  | "filters"
-  | "tabs"
-  | "content"
-  | "sidebar"
-  | "grid-area"
-  | "status-bar"
-  | "footer"
+// `SMART_PAGE_SLOT` and `PageSlot` are re-exported here for backwards
+// compatibility — they live in the dependency-free `./slot` leaf so this module
+// can import a slot component (SmartPageHeader) without a circular import.
+export { SMART_PAGE_SLOT, type PageSlot }
 
 const collectSlots = (children: React.ReactNode): SlotBuckets => {
   const b: SlotBuckets = {
@@ -257,6 +247,29 @@ export interface SmartPageProps {
   /** Render an empty state instead of children. Pass `<SmartPageEmpty />` or custom content. */
   empty?: React.ReactNode
 
+  // ─── Flat header props (the common case) ─────────────────────────────────
+  // Set any of these and SmartPage renders a {@link SmartPageHeader} for you —
+  // no need to import or nest one. Nesting `<SmartPageHeader>` as a child stays
+  // available as the escape hatch for full control.
+
+  /** Breadcrumb trail rendered above the title in the auto-rendered header. */
+  breadcrumb?: SmartPageBreadcrumbItem[]
+  /** Page title. A string is styled automatically; pass a node for custom title rows (e.g. a badge beside it). */
+  title?: React.ReactNode
+  /** Supporting description rendered below the title. */
+  description?: React.ReactNode
+  /** Right-aligned header action group, on the same row as the title. */
+  actions?: React.ReactNode
+  /**
+   * Extra props forwarded to the auto-rendered {@link SmartPageHeader} — e.g.
+   * `border` / `compact` styling, or `children` for a custom row below the
+   * flat block. Only applies when a flat header prop is set.
+   */
+  headerProps?: Omit<
+    SmartPageHeaderProps,
+    "breadcrumb" | "title" | "description" | "actions"
+  >
+
   className?: string
   children?: React.ReactNode
 }
@@ -290,6 +303,24 @@ export interface SmartPageProps {
  * ## States
  * Pass `loading`, `error`, or `empty` to replace children with the appropriate
  * full-page state — useful for data-driven views that haven't loaded yet.
+ *
+ * ## Header: flat props vs. composition
+ * For the common case, pass `breadcrumb` / `title` / `description` / `actions`
+ * straight to SmartPage — it renders a {@link SmartPageHeader} for you, so you
+ * never import or nest one. Nesting `<SmartPageHeader>` as a child is still the
+ * escape hatch for full control (custom border/compact, extra rows, …).
+ *
+ * @example Flat header (the common case — no SmartPageHeader import)
+ * ```tsx
+ * <SmartPage
+ *   breadcrumb={[{ label: "Admin", href: "#" }, { label: "Users" }]}
+ *   title="Users"
+ *   description="Manage your organisation's members."
+ *   actions={<Button>Invite user</Button>}
+ * >
+ *   <SmartGridArea>…</SmartGridArea>
+ * </SmartPage>
+ * ```
  *
  * @example Dashboard (natural page scroll, no detection needed)
  * ```tsx
@@ -327,11 +358,48 @@ export const SmartPage = ({
   loadingLabel,
   error,
   empty,
+  breadcrumb,
+  title,
+  description,
+  actions,
+  headerProps,
   className,
   children,
 }: SmartPageProps) => {
   const buckets = React.useMemo(() => collectSlots(children), [children])
-  const layout = layoutProp ?? detectLayout(buckets)
+
+  // Flat header props render a SmartPageHeader for the consumer and slot it
+  // ahead of any composed header children (the escape hatch).
+  const hasFlatHeader =
+    (breadcrumb?.length ?? 0) > 0 ||
+    title != null ||
+    description != null ||
+    actions != null
+
+  const resolvedBuckets = React.useMemo<SlotBuckets>(() => {
+    if (!hasFlatHeader) return buckets
+    const flatHeader = (
+      <SmartPageHeader
+        key="__smart-page-flat-header"
+        breadcrumb={breadcrumb}
+        title={title}
+        description={description}
+        actions={actions}
+        {...headerProps}
+      />
+    )
+    return { ...buckets, header: [flatHeader, ...buckets.header] }
+  }, [
+    buckets,
+    hasFlatHeader,
+    breadcrumb,
+    title,
+    description,
+    actions,
+    headerProps,
+  ])
+
+  const layout = layoutProp ?? detectLayout(resolvedBuckets)
   const defaults = LAYOUT_DEFAULTS[layout]
 
   const scroll = scrollProp ?? defaults.scroll
@@ -384,9 +452,13 @@ export const SmartPage = ({
   } else if (empty) {
     content = <PageEmptyState>{empty}</PageEmptyState>
   } else if (layout === "split") {
-    content = <SplitLayout buckets={buckets} scroll={scroll} ctx={ctx} />
+    content = (
+      <SplitLayout buckets={resolvedBuckets} scroll={scroll} ctx={ctx} />
+    )
   } else {
-    content = <StandardLayout buckets={buckets} scroll={scroll} ctx={ctx} />
+    content = (
+      <StandardLayout buckets={resolvedBuckets} scroll={scroll} ctx={ctx} />
+    )
   }
 
   return (
