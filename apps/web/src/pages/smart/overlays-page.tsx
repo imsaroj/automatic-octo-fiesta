@@ -19,7 +19,10 @@ import {
   SmartPageSection,
   SmartPageTitle,
 } from "@workspace/ui/smart-components/page"
-import { SmartDialog } from "@workspace/ui/smart-components/smart-dialog"
+import {
+  SmartDialog,
+  type SmartDialogSize,
+} from "@workspace/ui/smart-components/smart-dialog"
 import {
   SheetClose,
   SmartSheet,
@@ -40,6 +43,17 @@ const ROLE_OPTIONS = [
   { value: "admin", label: "Admin" },
   { value: "member", label: "Member" },
   { value: "viewer", label: "Viewer" },
+]
+
+const DIALOG_SIZES: SmartDialogSize[] = [
+  "xs",
+  "sm",
+  "md",
+  "lg",
+  "xl",
+  "2xl",
+  "3xl",
+  "full",
 ]
 
 const FILE_CONTEXT_ITEMS = [
@@ -90,6 +104,7 @@ const FILE_CONTEXT_ITEMS = [
 
 export default function OverlaysPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [openSize, setOpenSize] = useState<SmartDialogSize | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deleted, setDeleted] = useState(false)
@@ -180,6 +195,49 @@ export default function OverlaysPage() {
               </p>
             </SmartDialog>
           </div>
+        </SmartPageSection>
+
+        {/* ── SmartDialog sizes ──────────────────────────────── */}
+        <SmartPageSection
+          title="SmartDialog sizes"
+          description="Fixed width + max-height per size prop: xs 400px · sm 600px · md 800px · lg 1000px · xl 1200px · 2xl 1400px · 3xl 1600px · full (viewport − 48px). Tall content scrolls."
+          divider
+        >
+          <div className="flex flex-wrap gap-3">
+            {DIALOG_SIZES.map((size) => (
+              <SmartButton
+                key={size}
+                variant="outline"
+                size="sm"
+                onClick={() => setOpenSize(size)}
+              >
+                {size}
+              </SmartButton>
+            ))}
+          </div>
+          <SmartDialog
+            open={openSize !== null}
+            onOpenChange={(next) => !next && setOpenSize(null)}
+            size={openSize ?? "sm"}
+            header={{
+              title: `size="${openSize ?? "sm"}"`,
+              subtitle:
+                openSize === "full"
+                  ? "The full variant spans the viewport minus a 48px margin — great for immersive editors."
+                  : "Fixed pixel width, centered, with content scrolling past the max-height.",
+            }}
+            footer={
+              <SmartButton size="sm" onClick={() => setOpenSize(null)}>
+                Close
+              </SmartButton>
+            }
+          >
+            <p className="py-2 text-sm text-muted-foreground">
+              This dialog is rendered with{" "}
+              <code>size="{openSize ?? "sm"}"</code>. Pick another button to
+              compare widths.
+            </p>
+          </SmartDialog>
         </SmartPageSection>
 
         {/* ── SmartSheet ─────────────────────────────────────── */}
