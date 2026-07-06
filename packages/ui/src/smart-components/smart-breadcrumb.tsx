@@ -53,26 +53,24 @@ export interface SmartBreadcrumbProps {
  * />
  * ```
  */
-export function SmartBreadcrumb({ items, className }: SmartBreadcrumbProps) {
-  return (
-    <Breadcrumb className={className}>
-      <BreadcrumbList>
-        {items.map((item, index) => {
-          const isLast = index === items.length - 1
-          return (
-            <React.Fragment key={item.label}>
-              {index > 0 && <BreadcrumbSeparator className={item.className} />}
-              <BreadcrumbItem className={item.className}>
-                {isLast ? (
-                  <BreadcrumbPage>{item.label}</BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
-            </React.Fragment>
-          )
-        })}
-      </BreadcrumbList>
-    </Breadcrumb>
-  )
-}
+export const SmartBreadcrumb = ({ items, className }: SmartBreadcrumbProps) => (
+  <Breadcrumb className={className}>
+    <BreadcrumbList>
+      {items.map((item, index) => {
+        const isLast = index === items.length - 1
+        return (
+          <React.Fragment key={item.label}>
+            {index > 0 && <BreadcrumbSeparator className={item.className} />}
+            <BreadcrumbItem className={item.className}>
+              {isLast ? (
+                <BreadcrumbPage>{item.label}</BreadcrumbPage>
+              ) : (
+                <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
+              )}
+            </BreadcrumbItem>
+          </React.Fragment>
+        )
+      })}
+    </BreadcrumbList>
+  </Breadcrumb>
+)

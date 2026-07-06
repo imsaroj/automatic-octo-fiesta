@@ -56,7 +56,7 @@ export interface SmartMonthPickerProps {
  * <SmartMonthPicker label="Billing month" value={month} onValueChange={setMonth} />
  * ```
  */
-export function SmartMonthPicker({
+export const SmartMonthPicker = ({
   value,
   onValueChange,
   placeholder = "Pick a month",
@@ -70,7 +70,7 @@ export function SmartMonthPicker({
   required,
   optional,
   fieldClassName,
-}: SmartMonthPickerProps) {
+}: SmartMonthPickerProps) => {
   const id = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined

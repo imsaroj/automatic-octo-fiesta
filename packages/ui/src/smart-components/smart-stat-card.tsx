@@ -56,7 +56,7 @@ const TREND_STYLES: Record<Trend, string> = {
  * />
  * ```
  */
-export function SmartStatCard({
+export const SmartStatCard = ({
   label,
   value,
   delta,
@@ -64,7 +64,7 @@ export function SmartStatCard({
   deltaLabel,
   icon,
   className,
-}: SmartStatCardProps) {
+}: SmartStatCardProps) => {
   const isNumber = typeof delta === "number"
   const resolvedTrend: Trend =
     trend ?? (isNumber ? (delta >= 0 ? "up" : "down") : "up")

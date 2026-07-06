@@ -7,7 +7,7 @@
  */
 
 /** Mulberry32 — a tiny, fast, seedable PRNG returning floats in `[0, 1)`. */
-export function mulberry32(seed: number): () => number {
+export const mulberry32 = (seed: number): (() => number) => {
   let a = seed >>> 0
   return () => {
     a |= 0
@@ -39,13 +39,13 @@ export interface SeriesOptions {
  * demo visualisations. Values stay within `[min, max]`; a positive `trend`
  * biases later points upward.
  */
-export function series({
+export const series = ({
   length,
   seed = 1,
   min = 20,
   max = 100,
   trend = 0,
-}: SeriesOptions): number[] {
+}: SeriesOptions): number[] => {
   const rand = mulberry32(seed)
   const range = max - min
   return Array.from({ length }, (_, i) => {

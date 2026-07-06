@@ -35,7 +35,7 @@ export type SerializedImageNode = Spread<
 
 // ─── React component rendered by decorate() ──────────────────────────────────
 
-function ImageComponent({
+const ImageComponent = ({
   src,
   alt,
   maxWidth,
@@ -45,7 +45,7 @@ function ImageComponent({
   alt: string
   maxWidth?: number
   nodeKey: NodeKey
-}) {
+}) => {
   const [editor] = useLexicalComposerContext()
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey)
@@ -155,7 +155,7 @@ export class ImageNode extends DecoratorNode<React.JSX.Element> {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-export function $createImageNode({
+export const $createImageNode = ({
   src,
   alt,
   maxWidth,
@@ -165,12 +165,8 @@ export function $createImageNode({
   alt: string
   maxWidth?: number
   key?: NodeKey
-}): ImageNode {
-  return new ImageNode(src, alt, maxWidth, key)
-}
+}): ImageNode => new ImageNode(src, alt, maxWidth, key)
 
-export function $isImageNode(
+export const $isImageNode = (
   node: LexicalNode | null | undefined
-): node is ImageNode {
-  return node instanceof ImageNode
-}
+): node is ImageNode => node instanceof ImageNode

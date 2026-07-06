@@ -7,7 +7,7 @@ export interface SmartInputFieldProps extends FieldBaseProps<string> {
   autoComplete?: string
 }
 
-export function SmartInputField({
+export const SmartInputField = ({
   data,
   setData,
   label,
@@ -22,24 +22,22 @@ export function SmartInputField({
   type = "text",
   maxLength,
   autoComplete,
-}: SmartInputFieldProps) {
-  return (
-    <SmartInput
-      id={id}
-      type={type}
-      value={data}
-      placeholder={placeholder}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      disabled={disabled}
-      readOnly={readOnly}
-      maxLength={maxLength}
-      autoComplete={autoComplete}
-      aria-invalid={error ? true : undefined}
-      onChange={(e) => setData(e.target.value)}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartInputFieldProps) => (
+  <SmartInput
+    id={id}
+    type={type}
+    value={data}
+    placeholder={placeholder}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    disabled={disabled}
+    readOnly={readOnly}
+    maxLength={maxLength}
+    autoComplete={autoComplete}
+    aria-invalid={error ? true : undefined}
+    onChange={(e) => setData(e.target.value)}
+    fieldClassName={className}
+  />
+)

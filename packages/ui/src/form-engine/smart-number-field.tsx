@@ -16,7 +16,7 @@ export interface SmartNumberFieldProps extends FieldBaseProps<number | null> {
   suffix?: string
 }
 
-export function SmartNumberField({
+export const SmartNumberField = ({
   data,
   setData,
   label,
@@ -35,7 +35,7 @@ export function SmartNumberField({
   integer,
   prefix,
   suffix,
-}: SmartNumberFieldProps) {
+}: SmartNumberFieldProps) => {
   const effectiveStep = step ?? 1
 
   const format = React.useCallback(

@@ -17,7 +17,7 @@ afterEach(() => {
   container.remove()
 })
 
-function mount(ui: React.ReactElement) {
+const mount = (ui: React.ReactElement) => {
   container = document.createElement("div")
   document.body.appendChild(container)
   root = createRoot(container)
@@ -35,10 +35,10 @@ const clearButton = () =>
     'button[aria-label="Clear search"]'
   )
 
-function Harness(props: {
+const Harness = (props: {
   onValueChange?: (v: string) => void
   initial?: string
-}) {
+}) => {
   const [value, setValue] = React.useState(props.initial ?? "")
   return (
     <SmartSearchInput

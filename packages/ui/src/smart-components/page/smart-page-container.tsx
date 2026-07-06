@@ -70,9 +70,7 @@ export type { SmartPageProps as SmartPageContainerProps }
  * ```
  */
 export const SmartPageContainer = Object.assign(
-  function SmartPageContainer(props: SmartPageProps) {
-    return <SmartPage {...props} />
-  },
+  (props: SmartPageProps) => <SmartPage {...props} />,
   {
     // ── Header zone ──────────────────────────────────────────────────────────
     Header: SmartPageHeader,

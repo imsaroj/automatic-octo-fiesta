@@ -28,24 +28,23 @@ const range = (n: number, step = 1) =>
   Array.from({ length: Math.ceil(n / step) }, (_, i) => i * step)
 
 /** Parse `"HH:mm"` / `"HH:mm:ss"` → parts. Returns `undefined` when empty. */
-function parseTimeString(value?: string): TimeParts | undefined {
+const parseTimeString = (value?: string): TimeParts | undefined => {
   if (!value) return undefined
   const [h, m, s] = value.split(":").map((p) => Number.parseInt(p, 10))
   if (Number.isNaN(h) || Number.isNaN(m)) return undefined
   return { h, m, s: Number.isNaN(s) ? 0 : s }
 }
 
-function partsToString(parts: TimeParts, withSeconds: boolean): string {
-  return withSeconds
+const partsToString = (parts: TimeParts, withSeconds: boolean): string =>
+  withSeconds
     ? `${pad(parts.h)}:${pad(parts.m)}:${pad(parts.s)}`
     : `${pad(parts.h)}:${pad(parts.m)}`
-}
 
-function formatTimeDisplay(
+const formatTimeDisplay = (
   parts: TimeParts,
   use12Hour: boolean,
   withSeconds: boolean
-): string {
+): string => {
   const secondPart = withSeconds ? `:${pad(parts.s)}` : ""
   if (use12Hour) {
     const period = parts.h < 12 ? "AM" : "PM"
@@ -59,7 +58,7 @@ function formatTimeDisplay(
 /*  Shared column UI                                                          */
 /* -------------------------------------------------------------------------- */
 
-function TimeColumn({
+const TimeColumn = ({
   values,
   selected,
   onSelect,
@@ -69,30 +68,28 @@ function TimeColumn({
   selected: number | undefined
   onSelect: (value: number) => void
   render?: (value: number) => string
-}) {
-  return (
-    <div className="no-scrollbar flex max-h-56 flex-col gap-0.5 overflow-y-auto p-1">
-      {values.map((value) => (
-        <Button
-          key={value}
-          size="icon-sm"
-          variant={value === selected ? "default" : "ghost"}
-          className="w-full shrink-0"
-          onClick={() => onSelect(value)}
-          data-time-selected={value === selected || undefined}
-        >
-          {render(value)}
-        </Button>
-      ))}
-    </div>
-  )
-}
+}) => (
+  <div className="no-scrollbar flex max-h-56 flex-col gap-0.5 overflow-y-auto p-1">
+    {values.map((value) => (
+      <Button
+        key={value}
+        size="icon-sm"
+        variant={value === selected ? "default" : "ghost"}
+        className="w-full shrink-0"
+        onClick={() => onSelect(value)}
+        data-time-selected={value === selected || undefined}
+      >
+        {render(value)}
+      </Button>
+    ))}
+  </div>
+)
 
 /**
  * Hour / minute (/ second) (/ AM–PM) columns operating on 24-hour `TimeParts`.
  * Emits complete parts on every change (missing fields default to 0).
  */
-function TimeColumns({
+const TimeColumns = ({
   parts,
   onChange,
   use12Hour,
@@ -104,7 +101,7 @@ function TimeColumns({
   use12Hour: boolean
   withSeconds: boolean
   minuteStep: number
-}) {
+}) => {
   const base: TimeParts = parts ?? { h: 0, m: 0, s: 0 }
   const scrollRef = React.useRef<HTMLDivElement>(null)
 
@@ -183,7 +180,7 @@ interface FieldProps {
   fieldClassName?: string
 }
 
-function Field({
+const Field = ({
   label,
   description,
   error,
@@ -191,7 +188,7 @@ function Field({
   optional,
   fieldClassName,
   children,
-}: FieldProps & { children: React.ReactNode }) {
+}: FieldProps & { children: React.ReactNode }) => {
   const id = React.useId()
   const hasHint = error != null || description != null
   return (
@@ -260,7 +257,7 @@ export interface SmartTimePickerProps extends FieldProps {
  * <SmartTimePicker label="Start time" value={time} onValueChange={setTime} />
  * ```
  */
-export function SmartTimePicker({
+export const SmartTimePicker = ({
   value,
   onValueChange,
   use12Hour = false,
@@ -270,7 +267,7 @@ export function SmartTimePicker({
   disabled,
   className,
   ...field
-}: SmartTimePickerProps) {
+}: SmartTimePickerProps) => {
   const parts = parseTimeString(value)
 
   return (
@@ -329,11 +326,11 @@ export interface SmartDateTimePickerProps extends FieldProps {
   className?: string
 }
 
-function formatDateTime(
+const formatDateTime = (
   date: Date,
   use12Hour: boolean,
   withSeconds: boolean
-): string {
+): string => {
   const datePart = date.toLocaleDateString(undefined, {
     year: "numeric",
     month: "short",
@@ -356,7 +353,7 @@ function formatDateTime(
  * <SmartDateTimePicker label="Starts at" value={when} onValueChange={setWhen} />
  * ```
  */
-export function SmartDateTimePicker({
+export const SmartDateTimePicker = ({
   value,
   onValueChange,
   use12Hour = false,
@@ -366,7 +363,7 @@ export function SmartDateTimePicker({
   disabled,
   className,
   ...field
-}: SmartDateTimePickerProps) {
+}: SmartDateTimePickerProps) => {
   const parts: TimeParts | undefined = value
     ? { h: value.getHours(), m: value.getMinutes(), s: value.getSeconds() }
     : undefined

@@ -41,7 +41,7 @@ export type PageSlot =
   | "status-bar"
   | "footer"
 
-function collectSlots(children: React.ReactNode): SlotBuckets {
+const collectSlots = (children: React.ReactNode): SlotBuckets => {
   const b: SlotBuckets = {
     header: [],
     hero: [],
@@ -106,7 +106,7 @@ function collectSlots(children: React.ReactNode): SlotBuckets {
   return b
 }
 
-function detectLayout(b: SlotBuckets): PageLayout {
+const detectLayout = (b: SlotBuckets): PageLayout => {
   if (b.gridArea.length > 0) return "grid"
   if (b.hero.length > 0) return "dashboard"
   if (b.sidebar.length > 0) return "split"
@@ -310,7 +310,7 @@ export interface SmartPageProps {
  * </SmartPage>
  * ```
  */
-export function SmartPage({
+export const SmartPage = ({
   layout: layoutProp,
   scroll: scrollProp,
   stickyHeader: stickyHeaderProp,
@@ -329,7 +329,7 @@ export function SmartPage({
   empty,
   className,
   children,
-}: SmartPageProps) {
+}: SmartPageProps) => {
   const buckets = React.useMemo(() => collectSlots(children), [children])
   const layout = layoutProp ?? detectLayout(buckets)
   const defaults = LAYOUT_DEFAULTS[layout]

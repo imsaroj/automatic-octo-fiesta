@@ -64,7 +64,7 @@ export interface SmartInputGroupProps extends React.ComponentProps<"input"> {
  * />
  * ```
  */
-export function SmartInputGroup({
+export const SmartInputGroup = ({
   leadingIcon,
   leadingText,
   trailingIcon,
@@ -80,7 +80,7 @@ export function SmartInputGroup({
   className,
   "aria-invalid": ariaInvalid,
   ...inputProps
-}: SmartInputGroupProps) {
+}: SmartInputGroupProps) => {
   const autoId = React.useId()
   const id = idProp ?? autoId
   const hasHint = error != null || description != null

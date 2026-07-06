@@ -12,7 +12,7 @@ export interface SmartMultiSelectFieldProps extends FieldBaseProps<string[]> {
   searchPlaceholder?: string
 }
 
-export function SmartMultiSelectField({
+export const SmartMultiSelectField = ({
   data,
   setData,
   label,
@@ -26,21 +26,19 @@ export function SmartMultiSelectField({
   options = [],
   maxSelected,
   searchPlaceholder,
-}: SmartMultiSelectFieldProps) {
-  return (
-    <SmartMultiSelect
-      value={data}
-      onValueChange={setData}
-      placeholder={placeholder}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      options={options}
-      maxSelected={maxSelected}
-      searchPlaceholder={searchPlaceholder}
-      disabled={disabled || readOnly}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartMultiSelectFieldProps) => (
+  <SmartMultiSelect
+    value={data}
+    onValueChange={setData}
+    placeholder={placeholder}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    options={options}
+    maxSelected={maxSelected}
+    searchPlaceholder={searchPlaceholder}
+    disabled={disabled || readOnly}
+    fieldClassName={className}
+  />
+)

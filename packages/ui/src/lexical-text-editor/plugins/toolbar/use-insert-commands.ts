@@ -21,7 +21,7 @@ import {
  * land at the root — same as the Lexical playground. Co-located with the insert
  * menu that triggers them.
  */
-export function useRegisterInsertCommands(editor: LexicalEditor) {
+export const useRegisterInsertCommands = (editor: LexicalEditor) => {
   useEffect(() => {
     return mergeRegister(
       editor.registerCommand(

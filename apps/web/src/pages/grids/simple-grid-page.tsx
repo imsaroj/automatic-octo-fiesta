@@ -49,8 +49,8 @@ const LAST = [
 const ROLES = ["Administrator", "Editor", "Viewer", "Owner"]
 const STATUSES: UserRow["status"][] = ["active", "invited", "suspended"]
 
-function makeRows(count: number): UserRow[] {
-  return Array.from({ length: count }, (_, i) => {
+const makeRows = (count: number): UserRow[] =>
+  Array.from({ length: count }, (_, i) => {
     const first = FIRST[i % FIRST.length]
     const last = LAST[(i * 3) % LAST.length]
     return {
@@ -62,7 +62,6 @@ function makeRows(count: number): UserRow[] {
       mrr: 19 + ((i * 37) % 480),
     }
   })
-}
 
 const statusVariant: Record<
   UserRow["status"],
@@ -73,12 +72,12 @@ const statusVariant: Record<
   suspended: "destructive",
 }
 
-function StatusCell({ value }: { value?: UserRow["status"] }) {
+const StatusCell = ({ value }: { value?: UserRow["status"] }) => {
   if (!value) return null
   return <Badge variant={statusVariant[value]}>{value}</Badge>
 }
 
-export default function SimpleGridPage() {
+const SimpleGridPage = () => {
   const [loading, setLoading] = useState(false)
   const [empty, setEmpty] = useState(false)
   const [selected, setSelected] = useState<UserRow[]>([])
@@ -171,3 +170,5 @@ export default function SimpleGridPage() {
     </SmartPage>
   )
 }
+
+export default SimpleGridPage

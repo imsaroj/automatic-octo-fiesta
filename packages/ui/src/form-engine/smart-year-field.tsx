@@ -10,7 +10,7 @@ export interface SmartYearFieldProps extends Omit<
 }
 
 /** Year field — stores a numeric year (or `null` when unset). */
-export function SmartYearField({
+export const SmartYearField = ({
   data,
   setData,
   label,
@@ -22,20 +22,18 @@ export function SmartYearField({
   className,
   fromYear,
   toYear,
-}: SmartYearFieldProps) {
-  return (
-    <SmartYearPicker
-      value={data ?? undefined}
-      onValueChange={(year) => setData(year)}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      disabled={disabled}
-      fromYear={fromYear}
-      toYear={toYear}
-      placeholder={placeholder}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartYearFieldProps) => (
+  <SmartYearPicker
+    value={data ?? undefined}
+    onValueChange={(year) => setData(year)}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    disabled={disabled}
+    fromYear={fromYear}
+    toYear={toYear}
+    placeholder={placeholder}
+    fieldClassName={className}
+  />
+)

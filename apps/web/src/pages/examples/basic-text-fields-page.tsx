@@ -83,7 +83,7 @@ const VIEW_OPTIONS = [
   { value: "board", label: "Board" },
 ]
 
-export default function BasicTextFieldsPage() {
+const BasicTextFieldsPage = () => {
   // Basic text
   const [search, setSearch] = useState("")
   // Selection
@@ -389,3 +389,5 @@ export default function BasicTextFieldsPage() {
     </SmartPage>
   )
 }
+
+export default BasicTextFieldsPage

@@ -117,7 +117,7 @@ export interface SmartDialogProps {
  * Fall back to native Dialog primitives when the trigger needs conditional
  * rendering, multiple triggers, or the header has a non-standard layout.
  */
-export function SmartDialog({
+export const SmartDialog = ({
   open,
   onOpenChange,
   trigger,
@@ -128,37 +128,35 @@ export function SmartDialog({
   dividers = false,
   className,
   children,
-}: SmartDialogProps) {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      {trigger && <DialogTrigger render={trigger} />}
-      <DialogContent
-        showCloseButton={showCloseButton}
-        // Flex column so the header/footer stay fixed and only the body
-        // scrolls — keeps the absolute close button pinned to the corner.
-        className={cn("flex flex-col", SIZE_CLASSES[size], className)}
-      >
-        {header && (
-          // `-mx-4 px-4` bleeds the border to the popup edges (cancels the
-          // p-4), `pb-4` sets the gap between title and the divider line.
-          <DialogHeader
-            className={cn("shrink-0", dividers && "-mx-4 border-b px-4 pb-4")}
-          >
-            <DialogTitle>{header.title}</DialogTitle>
-            {header.subtitle && (
-              <DialogDescription>{header.subtitle}</DialogDescription>
-            )}
-          </DialogHeader>
-        )}
-        <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
-        {footer && (
-          <DialogFooter
-            className={cn("shrink-0", dividers && "-mx-4 border-t px-4 pt-4")}
-          >
-            {footer}
-          </DialogFooter>
-        )}
-      </DialogContent>
-    </Dialog>
-  )
-}
+}: SmartDialogProps) => (
+  <Dialog open={open} onOpenChange={onOpenChange}>
+    {trigger && <DialogTrigger render={trigger} />}
+    <DialogContent
+      showCloseButton={showCloseButton}
+      // Flex column so the header/footer stay fixed and only the body
+      // scrolls — keeps the absolute close button pinned to the corner.
+      className={cn("flex flex-col", SIZE_CLASSES[size], className)}
+    >
+      {header && (
+        // `-mx-4 px-4` bleeds the border to the popup edges (cancels the
+        // p-4), `pb-4` sets the gap between title and the divider line.
+        <DialogHeader
+          className={cn("shrink-0", dividers && "-mx-4 border-b px-4 pb-4")}
+        >
+          <DialogTitle>{header.title}</DialogTitle>
+          {header.subtitle && (
+            <DialogDescription>{header.subtitle}</DialogDescription>
+          )}
+        </DialogHeader>
+      )}
+      <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+      {footer && (
+        <DialogFooter
+          className={cn("shrink-0", dividers && "-mx-4 border-t px-4 pt-4")}
+        >
+          {footer}
+        </DialogFooter>
+      )}
+    </DialogContent>
+  </Dialog>
+)

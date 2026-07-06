@@ -32,7 +32,7 @@ import { LinkEditor } from "./toolbar/link-editor"
  * open-menu + history-command wiring, and lays out the section components
  * (`toolbar/*`). Each section owns its own commands and internal state.
  */
-export function ToolbarPlugin() {
+export const ToolbarPlugin = () => {
   const [editor] = useLexicalComposerContext()
 
   const state = useToolbarState(editor)

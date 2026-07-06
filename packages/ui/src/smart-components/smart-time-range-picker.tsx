@@ -45,7 +45,7 @@ export interface SmartTimeRangePickerProps {
  * />
  * ```
  */
-export function SmartTimeRangePicker({
+export const SmartTimeRangePicker = ({
   value,
   onValueChange,
   use12Hour = false,
@@ -60,7 +60,7 @@ export function SmartTimeRangePicker({
   required,
   optional,
   fieldClassName,
-}: SmartTimeRangePickerProps) {
+}: SmartTimeRangePickerProps) => {
   const id = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined

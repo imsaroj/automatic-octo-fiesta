@@ -17,7 +17,7 @@ interface FakeNode {
   setSelected: (value: boolean) => void
 }
 
-function makeNode(row: Row): FakeNode {
+const makeNode = (row: Row): FakeNode => {
   const node: FakeNode = {
     id: String(row.id),
     data: row,
@@ -31,13 +31,12 @@ function makeNode(row: Row): FakeNode {
 }
 
 /** A mutable AG Grid API stub exposing only what the selection hook touches. */
-function fakeApi(nodesRef: { current: FakeNode[] }): GridApi<Row> {
-  return {
+const fakeApi = (nodesRef: { current: FakeNode[] }): GridApi<Row> =>
+  ({
     forEachNode: (cb: (node: FakeNode) => void) =>
       nodesRef.current.forEach((n) => cb(n)),
     deselectAll: () => nodesRef.current.forEach((n) => (n.selected = false)),
-  } as unknown as GridApi<Row>
-}
+  }) as unknown as GridApi<Row>
 
 const rowSelected = (node: FakeNode): RowSelectedEvent<Row> =>
   ({ node }) as unknown as RowSelectedEvent<Row>

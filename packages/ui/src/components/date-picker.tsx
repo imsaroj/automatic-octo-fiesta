@@ -25,13 +25,13 @@ interface DatePickerProps {
   disabled?: React.ComponentProps<typeof Calendar>["disabled"]
 }
 
-export function DatePicker({
+export const DatePicker = ({
   date,
   onDateChange,
   placeholder = "Pick a date",
   className,
   disabled,
-}: DatePickerProps) {
+}: DatePickerProps) => {
   const [open, setOpen] = React.useState(false)
 
   return (

@@ -22,8 +22,8 @@ import { z } from "zod"
  * const page = usersPageSchema.parse(await api.get("/users", { params }));
  * ```
  */
-export function pageSchema<TItem extends z.ZodTypeAny>(item: TItem) {
-  return z.object({
+export const pageSchema = <TItem extends z.ZodTypeAny>(item: TItem) =>
+  z.object({
     /** The rows for this page. */
     content: z.array(item),
     /** Total rows across every page (drives the infinite-scroll row count). */
@@ -43,7 +43,6 @@ export function pageSchema<TItem extends z.ZodTypeAny>(item: TItem) {
     /** Whether the page is empty. */
     empty: z.boolean().optional(),
   })
-}
 
 /**
  * Convenience type mirroring what {@link pageSchema} parses into — the Spring
@@ -140,10 +139,10 @@ interface AgFilterModelItem {
   condition2?: AgFilterModelItem
 }
 
-function normalizeFilterItem(
+const normalizeFilterItem = (
   field: string,
   raw: AgFilterModelItem
-): ServerFilter {
+): ServerFilter => {
   // For combined conditions we take the first condition (a pragmatic v1 choice —
   // most server contracts accept a single predicate per field).
   const item = raw.condition1 ?? raw
@@ -158,9 +157,9 @@ function normalizeFilterItem(
 }
 
 /** Convert an AG Grid filter model into a flat list of {@link ServerFilter}. */
-export function normalizeFilterModel(
+export const normalizeFilterModel = (
   filterModel: Record<string, unknown> | null | undefined
-): ServerFilter[] {
+): ServerFilter[] => {
   if (!filterModel) return []
   return Object.entries(filterModel).map(([field, raw]) =>
     normalizeFilterItem(field, (raw ?? {}) as AgFilterModelItem)
@@ -173,12 +172,12 @@ export function normalizeFilterModel(
  * framework-agnostic (AG Grid's `sortModel`/`filterModel` are accepted by
  * structural shape, so this module never imports AG Grid).
  */
-export function buildServerFetchParams(input: {
+export const buildServerFetchParams = (input: {
   startRow: number
   endRow: number
   sortModel: ReadonlyArray<{ colId: string; sort: "asc" | "desc" }>
   filterModel?: Record<string, unknown> | null
-}): ServerFetchParams {
+}): ServerFetchParams => {
   const pageSize = Math.max(input.endRow - input.startRow, 1)
   return {
     startRow: input.startRow,
@@ -198,9 +197,8 @@ export function buildServerFetchParams(input: {
  *
  * @example `toSpringSort([{ field: "mrr", dir: "desc" }])` → `["mrr,desc"]`
  */
-export function toSpringSort(sort: ReadonlyArray<ServerSort>): string[] {
-  return sort.map((s) => `${s.field},${s.dir}`)
-}
+export const toSpringSort = (sort: ReadonlyArray<ServerSort>): string[] =>
+  sort.map((s) => `${s.field},${s.dir}`)
 
 /**
  * Serialize a single {@link ServerFilter} into the `<op>:<value>` value used by
@@ -210,7 +208,7 @@ export function toSpringSort(sort: ReadonlyArray<ServerSort>): string[] {
  * - set (array value) → `set:<a>,<b>,<c>`
  * - everything else → `<op>:<value>`
  */
-export function encodeSpringFilter(filter: ServerFilter): string {
+export const encodeSpringFilter = (filter: ServerFilter): string => {
   if (filter.type === "inRange") {
     return `inRange:${String(filter.value)}:${String(filter.valueTo)}`
   }
@@ -233,7 +231,7 @@ export function encodeSpringFilter(filter: ServerFilter): string {
  * *decoder* stays server/app-side (backends parse however they like), so it is
  * intentionally not shipped here.
  */
-export function buildSpringQuery(params: ServerFetchParams): string {
+export const buildSpringQuery = (params: ServerFetchParams): string => {
   const sp = new URLSearchParams()
   sp.set("page", String(params.page))
   sp.set("size", String(params.pageSize))

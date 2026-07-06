@@ -45,73 +45,71 @@ import { SettingsDialog } from "@/components/settings/settings-dialog"
 
 // ─── Profile settings ─────────────────────────────────────────────────────────
 
-function ProfileSettings() {
-  return (
-    <SmartPageContent maxWidth="2xl" padding="md">
-      <SmartPageSection
-        title="Personal information"
-        description="Update your name, email, and profile picture."
-        divider
-      >
-        <div className="flex items-center gap-4">
-          <Avatar className="size-16">
-            <AvatarFallback className="text-lg">SK</AvatarFallback>
-          </Avatar>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              Change avatar
-            </Button>
-            <Button variant="ghost" size="sm">
-              Remove
-            </Button>
-          </div>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="first-name" className="text-xs">
-              First name
-            </Label>
-            <Input id="first-name" defaultValue="Saroj" />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="last-name" className="text-xs">
-              Last name
-            </Label>
-            <Input id="last-name" defaultValue="Kumar" />
-          </div>
-          <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <Label htmlFor="email" className="text-xs">
-              Email address
-            </Label>
-            <Input id="email" type="email" defaultValue="imsaroj@g.skku.edu" />
-          </div>
-        </div>
-      </SmartPageSection>
-
-      <SmartPageSection
-        title="Danger zone"
-        description="Irreversible actions that affect your account permanently."
-        divider
-      >
-        <div className="flex items-center justify-between rounded-lg border border-destructive/30 bg-destructive/5 p-4">
-          <div>
-            <p className="text-xs font-medium">Delete account</p>
-            <p className="text-xs text-muted-foreground">
-              Permanently delete your account and all associated data.
-            </p>
-          </div>
-          <Button variant="destructive" size="sm">
-            Delete account
+const ProfileSettings = () => (
+  <SmartPageContent maxWidth="2xl" padding="md">
+    <SmartPageSection
+      title="Personal information"
+      description="Update your name, email, and profile picture."
+      divider
+    >
+      <div className="flex items-center gap-4">
+        <Avatar className="size-16">
+          <AvatarFallback className="text-lg">SK</AvatarFallback>
+        </Avatar>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">
+            Change avatar
+          </Button>
+          <Button variant="ghost" size="sm">
+            Remove
           </Button>
         </div>
-      </SmartPageSection>
-    </SmartPageContent>
-  )
-}
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="first-name" className="text-xs">
+            First name
+          </Label>
+          <Input id="first-name" defaultValue="Saroj" />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="last-name" className="text-xs">
+            Last name
+          </Label>
+          <Input id="last-name" defaultValue="Kumar" />
+        </div>
+        <div className="flex flex-col gap-1.5 sm:col-span-2">
+          <Label htmlFor="email" className="text-xs">
+            Email address
+          </Label>
+          <Input id="email" type="email" defaultValue="imsaroj@g.skku.edu" />
+        </div>
+      </div>
+    </SmartPageSection>
+
+    <SmartPageSection
+      title="Danger zone"
+      description="Irreversible actions that affect your account permanently."
+      divider
+    >
+      <div className="flex items-center justify-between rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+        <div>
+          <p className="text-xs font-medium">Delete account</p>
+          <p className="text-xs text-muted-foreground">
+            Permanently delete your account and all associated data.
+          </p>
+        </div>
+        <Button variant="destructive" size="sm">
+          Delete account
+        </Button>
+      </div>
+    </SmartPageSection>
+  </SmartPageContent>
+)
 
 // ─── Notifications settings ───────────────────────────────────────────────────
 
-function NotificationsSettings() {
+const NotificationsSettings = () => {
   const [prefs, setPrefs] = useState({
     email_digest: true,
     browser_push: false,
@@ -186,7 +184,7 @@ function NotificationsSettings() {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function SettingsExamplePage() {
+const SettingsExamplePage = () => {
   const [tab, setTab] = useState("profile")
   const [settingsOpen, setSettingsOpen] = useState(false)
 
@@ -270,3 +268,5 @@ export default function SettingsExamplePage() {
     </SmartPage>
   )
 }
+
+export default SettingsExamplePage

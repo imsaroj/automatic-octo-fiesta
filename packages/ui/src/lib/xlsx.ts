@@ -40,7 +40,7 @@ const CRC_TABLE = /* @__PURE__ */ (() => {
   return table
 })()
 
-function crc32(bytes: Uint8Array): number {
+const crc32 = (bytes: Uint8Array): number => {
   let crc = 0xffffffff
   for (let i = 0; i < bytes.length; i += 1) {
     crc = CRC_TABLE[(crc ^ bytes[i]) & 0xff] ^ (crc >>> 8)
@@ -55,11 +55,11 @@ interface ZipEntry {
   data: Uint8Array
 }
 
-function pushU16(out: number[], value: number): void {
+const pushU16 = (out: number[], value: number): void => {
   out.push(value & 0xff, (value >>> 8) & 0xff)
 }
 
-function pushU32(out: number[], value: number): void {
+const pushU32 = (out: number[], value: number): void => {
   out.push(
     value & 0xff,
     (value >>> 8) & 0xff,
@@ -68,12 +68,12 @@ function pushU32(out: number[], value: number): void {
   )
 }
 
-function pushBytes(out: number[], bytes: Uint8Array): void {
+const pushBytes = (out: number[], bytes: Uint8Array): void => {
   for (let i = 0; i < bytes.length; i += 1) out.push(bytes[i])
 }
 
 /** Pack entries into a ZIP archive using stored (method 0 / no compression) entries. */
-function zipStore(entries: ZipEntry[]): Uint8Array {
+const zipStore = (entries: ZipEntry[]): Uint8Array => {
   const encoder = new TextEncoder()
   const local: number[] = []
   const records: {
@@ -149,7 +149,7 @@ const XML_DECLARATION =
  * than tab, LF and CR) so a stray control byte in the data can never corrupt the
  * workbook. Implemented as a char-code scan to avoid a control-char regex.
  */
-function stripIllegalXmlChars(value: string): string {
+const stripIllegalXmlChars = (value: string): string => {
   let out = ""
   for (let i = 0; i < value.length; i += 1) {
     const code = value.charCodeAt(i)
@@ -159,16 +159,15 @@ function stripIllegalXmlChars(value: string): string {
   return out
 }
 
-function escapeXml(value: string): string {
-  return stripIllegalXmlChars(value)
+const escapeXml = (value: string): string =>
+  stripIllegalXmlChars(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
-}
 
 /** 0 → `A`, 25 → `Z`, 26 → `AA`, … (spreadsheet column letters). */
-function columnName(index: number): string {
+const columnName = (index: number): string => {
   let n = index
   let name = ""
   do {
@@ -178,7 +177,7 @@ function columnName(index: number): string {
   return name
 }
 
-function cellXml(ref: string, value: XlsxCell): string {
+const cellXml = (ref: string, value: XlsxCell): string => {
   if (value == null || value === "") return `<c r="${ref}"/>`
   if (typeof value === "number" && Number.isFinite(value))
     return `<c r="${ref}"><v>${value}</v></c>`
@@ -187,14 +186,14 @@ function cellXml(ref: string, value: XlsxCell): string {
   return `<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${escapeXml(String(value))}</t></is></c>`
 }
 
-function rowXml(rowNumber: number, cells: XlsxCell[]): string {
+const rowXml = (rowNumber: number, cells: XlsxCell[]): string => {
   const body = cells
     .map((value, col) => cellXml(`${columnName(col)}${rowNumber}`, value))
     .join("")
   return `<row r="${rowNumber}">${body}</row>`
 }
 
-function sheetXml(sheet: XlsxSheet): string {
+const sheetXml = (sheet: XlsxSheet): string => {
   const rows = [rowXml(1, sheet.headers)]
   sheet.rows.forEach((row, index) => rows.push(rowXml(index + 2, row)))
   return (
@@ -205,48 +204,36 @@ function sheetXml(sheet: XlsxSheet): string {
   )
 }
 
-function contentTypesXml(): string {
-  return (
-    XML_DECLARATION +
-    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
-    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
-    '<Default Extension="xml" ContentType="application/xml"/>' +
-    '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
-    '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
-    "</Types>"
-  )
-}
+const contentTypesXml = (): string =>
+  XML_DECLARATION +
+  '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+  '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+  '<Default Extension="xml" ContentType="application/xml"/>' +
+  '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+  '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
+  "</Types>"
 
-function rootRelsXml(): string {
-  return (
-    XML_DECLARATION +
-    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
-    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>' +
-    "</Relationships>"
-  )
-}
+const rootRelsXml = (): string =>
+  XML_DECLARATION +
+  '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+  '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>' +
+  "</Relationships>"
 
-function workbookXml(sheetName: string): string {
-  return (
-    XML_DECLARATION +
-    '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
-    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
-    `<sheets><sheet name="${escapeXml(sheetName)}" sheetId="1" r:id="rId1"/></sheets>` +
-    "</workbook>"
-  )
-}
+const workbookXml = (sheetName: string): string =>
+  XML_DECLARATION +
+  '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
+  'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+  `<sheets><sheet name="${escapeXml(sheetName)}" sheetId="1" r:id="rId1"/></sheets>` +
+  "</workbook>"
 
-function workbookRelsXml(): string {
-  return (
-    XML_DECLARATION +
-    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
-    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
-    "</Relationships>"
-  )
-}
+const workbookRelsXml = (): string =>
+  XML_DECLARATION +
+  '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+  '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
+  "</Relationships>"
 
 /** Excel worksheet names cannot exceed 31 chars or contain `\ / ? * [ ] :`. */
-function sanitizeSheetName(name: string | undefined): string {
+const sanitizeSheetName = (name: string | undefined): string => {
   const cleaned = (name ?? "").replace(/[\\/?*[\]:]/g, " ").trim()
   return cleaned.length > 0 ? cleaned.slice(0, 31) : "Sheet1"
 }
@@ -255,7 +242,7 @@ function sanitizeSheetName(name: string | undefined): string {
  * Build a single-worksheet `.xlsx` workbook as raw bytes. Pure and
  * environment-agnostic — call {@link downloadXlsx} to also trigger a download.
  */
-export function buildXlsx(sheet: XlsxSheet): Uint8Array {
+export const buildXlsx = (sheet: XlsxSheet): Uint8Array => {
   const encoder = new TextEncoder()
   const entries: ZipEntry[] = [
     { name: "[Content_Types].xml", data: encoder.encode(contentTypesXml()) },
@@ -278,7 +265,7 @@ export function buildXlsx(sheet: XlsxSheet): Uint8Array {
  * (`year-month-day-hour-minute-second-millisecond`). The hour is not
  * zero-padded, matching the requested format.
  */
-export function timestampForFilename(date: Date = new Date()): string {
+export const timestampForFilename = (date: Date = new Date()): string => {
   const pad = (value: number, length = 2): string =>
     String(value).padStart(length, "0")
   return [
@@ -296,7 +283,7 @@ export function timestampForFilename(date: Date = new Date()): string {
  * Build a `.xlsx` workbook and trigger a browser download. `fileName` may omit
  * the `.xlsx` extension (it is appended when missing). No-op outside a DOM.
  */
-export function downloadXlsx(fileName: string, sheet: XlsxSheet): void {
+export const downloadXlsx = (fileName: string, sheet: XlsxSheet): void => {
   if (
     typeof document === "undefined" ||
     typeof URL.createObjectURL !== "function"

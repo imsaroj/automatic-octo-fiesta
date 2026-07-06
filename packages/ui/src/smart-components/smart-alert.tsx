@@ -50,22 +50,18 @@ export interface SmartAlertProps {
  * />
  * ```
  */
-export function SmartAlert({
+export const SmartAlert = ({
   icon,
   title,
   description,
   action,
   variant = "default",
   className,
-}: SmartAlertProps) {
-  return (
-    <Alert variant={variant} className={className}>
-      {icon}
-      {title != null && <AlertTitle>{title}</AlertTitle>}
-      {description != null && (
-        <AlertDescription>{description}</AlertDescription>
-      )}
-      {action != null && <AlertAction>{action}</AlertAction>}
-    </Alert>
-  )
-}
+}: SmartAlertProps) => (
+  <Alert variant={variant} className={className}>
+    {icon}
+    {title != null && <AlertTitle>{title}</AlertTitle>}
+    {description != null && <AlertDescription>{description}</AlertDescription>}
+    {action != null && <AlertAction>{action}</AlertAction>}
+  </Alert>
+)

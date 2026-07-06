@@ -107,7 +107,7 @@ const PAGE_SIZE = 20
 
 // ─── User create/edit dialog ──────────────────────────────────────────────────
 
-function UserFormDialog({
+const UserFormDialog = ({
   open,
   onOpenChange,
   initial,
@@ -123,26 +123,24 @@ function UserFormDialog({
   submitLabel: string
   pending: boolean
   onSubmit: (value: UserForm) => void
-}) {
-  return (
-    <SmartDialog open={open} onOpenChange={onOpenChange} header={{ title }}>
-      {open && (
-        <SmartForm
-          schema={userFormSchema}
-          fields={userFields}
-          data={initial}
-          columns={2}
-          submitLabel={pending ? "Saving…" : submitLabel}
-          onSubmit={onSubmit}
-        />
-      )}
-    </SmartDialog>
-  )
-}
+}) => (
+  <SmartDialog open={open} onOpenChange={onOpenChange} header={{ title }}>
+    {open && (
+      <SmartForm
+        schema={userFormSchema}
+        fields={userFields}
+        data={initial}
+        columns={2}
+        submitLabel={pending ? "Saving…" : submitLabel}
+        onSubmit={onSubmit}
+      />
+    )}
+  </SmartDialog>
+)
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function CrudExamplePage() {
+const CrudExamplePage = () => {
   const queryClient = useQueryClient()
 
   const [search, setSearch] = useState("")
@@ -467,3 +465,5 @@ export default function CrudExamplePage() {
     </SmartPage>
   )
 }
+
+export default CrudExamplePage

@@ -39,126 +39,116 @@ const STEPS = [
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
-function StepIndicator({
+const StepIndicator = ({
   steps,
   current,
 }: {
   steps: typeof STEPS
   current: number
-}) {
-  return (
-    <nav aria-label="Setup progress" className="flex items-center gap-1">
-      {steps.map((step, idx) => {
-        const done = idx < current
-        const active = idx === current
-        return (
-          <div key={step.id} className="flex items-center gap-1">
+}) => (
+  <nav aria-label="Setup progress" className="flex items-center gap-1">
+    {steps.map((step, idx) => {
+      const done = idx < current
+      const active = idx === current
+      return (
+        <div key={step.id} className="flex items-center gap-1">
+          <div
+            className={cn(
+              "flex size-5 items-center justify-center rounded-full text-[10px] font-semibold transition-colors",
+              done && "bg-primary text-primary-foreground",
+              active && "bg-background text-primary ring-2 ring-primary",
+              !done && !active && "bg-muted text-muted-foreground"
+            )}
+            aria-current={active ? "step" : undefined}
+          >
+            {done ? <Check className="size-3" /> : idx + 1}
+          </div>
+          <span
+            className={cn(
+              "hidden text-xs sm:block",
+              active && "font-medium",
+              !active && "text-muted-foreground"
+            )}
+          >
+            {step.label}
+          </span>
+          {idx < steps.length - 1 && (
             <div
               className={cn(
-                "flex size-5 items-center justify-center rounded-full text-[10px] font-semibold transition-colors",
-                done && "bg-primary text-primary-foreground",
-                active && "bg-background text-primary ring-2 ring-primary",
-                !done && !active && "bg-muted text-muted-foreground"
+                "mx-1 h-px w-8 transition-colors",
+                idx < current ? "bg-primary" : "bg-border"
               )}
-              aria-current={active ? "step" : undefined}
-            >
-              {done ? <Check className="size-3" /> : idx + 1}
-            </div>
-            <span
-              className={cn(
-                "hidden text-xs sm:block",
-                active && "font-medium",
-                !active && "text-muted-foreground"
-              )}
-            >
-              {step.label}
-            </span>
-            {idx < steps.length - 1 && (
-              <div
-                className={cn(
-                  "mx-1 h-px w-8 transition-colors",
-                  idx < current ? "bg-primary" : "bg-border"
-                )}
-              />
-            )}
-          </div>
-        )
-      })}
-    </nav>
-  )
-}
+            />
+          )}
+        </div>
+      )
+    })}
+  </nav>
+)
 
 // ─── Step views ───────────────────────────────────────────────────────────────
 
-function WorkspaceStep() {
-  return (
-    <SmartPageContent maxWidth="md" centered padding="md">
-      <SmartPageSection
-        title="Create your workspace"
-        description="A workspace is a shared space where your team collaborates."
-        divider
-      >
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ws-name" className="text-xs">
-              Workspace name
-            </Label>
-            <Input id="ws-name" placeholder="Acme Corp" />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ws-slug" className="text-xs">
-              URL slug
-            </Label>
-            <div className="flex">
-              <span className="inline-flex items-center rounded-l-md border border-r-0 bg-muted px-3 text-xs text-muted-foreground">
-                app.example.com/
-              </span>
-              <Input
-                id="ws-slug"
-                placeholder="acme"
-                className="rounded-l-none"
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ws-industry" className="text-xs">
-              Industry
-            </Label>
-            <Input id="ws-industry" placeholder="Software / SaaS" />
+const WorkspaceStep = () => (
+  <SmartPageContent maxWidth="md" centered padding="md">
+    <SmartPageSection
+      title="Create your workspace"
+      description="A workspace is a shared space where your team collaborates."
+      divider
+    >
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="ws-name" className="text-xs">
+            Workspace name
+          </Label>
+          <Input id="ws-name" placeholder="Acme Corp" />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="ws-slug" className="text-xs">
+            URL slug
+          </Label>
+          <div className="flex">
+            <span className="inline-flex items-center rounded-l-md border border-r-0 bg-muted px-3 text-xs text-muted-foreground">
+              app.example.com/
+            </span>
+            <Input id="ws-slug" placeholder="acme" className="rounded-l-none" />
           </div>
         </div>
-      </SmartPageSection>
-    </SmartPageContent>
-  )
-}
-
-function TeamStep() {
-  return (
-    <SmartPageContent maxWidth="md" centered padding="md">
-      <SmartPageSection
-        title="Invite your team"
-        description="Add email addresses for team members. You can always do this later."
-        divider
-      >
-        <div className="flex flex-col gap-3">
-          {[1, 2, 3].map((n) => (
-            <div key={n} className="flex gap-2">
-              <Input placeholder={`teammate${n}@example.com`} type="email" />
-              <Button variant="outline" size="sm" className="shrink-0">
-                Admin
-              </Button>
-            </div>
-          ))}
-          <Button variant="ghost" size="sm" className="w-fit">
-            + Add another
-          </Button>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="ws-industry" className="text-xs">
+            Industry
+          </Label>
+          <Input id="ws-industry" placeholder="Software / SaaS" />
         </div>
-      </SmartPageSection>
-    </SmartPageContent>
-  )
-}
+      </div>
+    </SmartPageSection>
+  </SmartPageContent>
+)
 
-function PlanStep() {
+const TeamStep = () => (
+  <SmartPageContent maxWidth="md" centered padding="md">
+    <SmartPageSection
+      title="Invite your team"
+      description="Add email addresses for team members. You can always do this later."
+      divider
+    >
+      <div className="flex flex-col gap-3">
+        {[1, 2, 3].map((n) => (
+          <div key={n} className="flex gap-2">
+            <Input placeholder={`teammate${n}@example.com`} type="email" />
+            <Button variant="outline" size="sm" className="shrink-0">
+              Admin
+            </Button>
+          </div>
+        ))}
+        <Button variant="ghost" size="sm" className="w-fit">
+          + Add another
+        </Button>
+      </div>
+    </SmartPageSection>
+  </SmartPageContent>
+)
+
+const PlanStep = () => {
   const [annual, setAnnual] = useState(false)
 
   return (
@@ -252,43 +242,39 @@ function PlanStep() {
   )
 }
 
-function Badge20() {
-  return (
-    <span className="ml-1 rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-400">
-      Save 20%
-    </span>
-  )
-}
+const Badge20 = () => (
+  <span className="ml-1 rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-400">
+    Save 20%
+  </span>
+)
 
-function ReviewStep() {
-  return (
-    <SmartPageContent maxWidth="md" centered padding="md">
-      <SmartPageSection
-        title="Review & launch"
-        description="Everything looks good. Click Launch to create your workspace."
-        divider
-      >
-        <div className="flex flex-col gap-3 rounded-lg bg-muted/40 p-4">
-          {[
-            { label: "Workspace", value: "Acme Corp" },
-            { label: "URL", value: "app.example.com/acme" },
-            { label: "Team size", value: "3 invites pending" },
-            { label: "Plan", value: "Pro · $19/month" },
-          ].map(({ label, value }) => (
-            <div key={label} className="flex justify-between text-xs">
-              <span className="text-muted-foreground">{label}</span>
-              <span className="font-medium">{value}</span>
-            </div>
-          ))}
-        </div>
-      </SmartPageSection>
-    </SmartPageContent>
-  )
-}
+const ReviewStep = () => (
+  <SmartPageContent maxWidth="md" centered padding="md">
+    <SmartPageSection
+      title="Review & launch"
+      description="Everything looks good. Click Launch to create your workspace."
+      divider
+    >
+      <div className="flex flex-col gap-3 rounded-lg bg-muted/40 p-4">
+        {[
+          { label: "Workspace", value: "Acme Corp" },
+          { label: "URL", value: "app.example.com/acme" },
+          { label: "Team size", value: "3 invites pending" },
+          { label: "Plan", value: "Pro · $19/month" },
+        ].map(({ label, value }) => (
+          <div key={label} className="flex justify-between text-xs">
+            <span className="text-muted-foreground">{label}</span>
+            <span className="font-medium">{value}</span>
+          </div>
+        ))}
+      </div>
+    </SmartPageSection>
+  </SmartPageContent>
+)
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function WizardExamplePage() {
+const WizardExamplePage = () => {
   const [step, setStep] = useState(0)
 
   const isFirst = step === 0
@@ -341,3 +327,5 @@ export default function WizardExamplePage() {
     </SmartPage>
   )
 }
+
+export default WizardExamplePage

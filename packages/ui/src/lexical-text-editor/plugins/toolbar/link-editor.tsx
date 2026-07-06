@@ -11,13 +11,13 @@ import { ToolbarButton } from "./primitives"
  * URL input. Owns its own input-open + draft-URL state (ephemeral UI, unrelated
  * to the shared selection state) — `isLink` comes from the toolbar state.
  */
-export function LinkEditor({
+export const LinkEditor = ({
   editor,
   isLink,
 }: {
   editor: LexicalEditor
   isLink: boolean
-}) {
+}) => {
   const [showLinkInput, setShowLinkInput] = useState(false)
   const [linkUrl, setLinkUrl] = useState("")
   const linkInputRef = useRef<HTMLInputElement>(null)
@@ -26,7 +26,7 @@ export function LinkEditor({
     if (showLinkInput) linkInputRef.current?.focus()
   }, [showLinkInput])
 
-  function submitLink() {
+  const submitLink = () => {
     const url = linkUrl.trim()
     if (url) editor.dispatchCommand(TOGGLE_LINK_COMMAND, url)
     setShowLinkInput(false)

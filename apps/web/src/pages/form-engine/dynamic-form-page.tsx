@@ -101,7 +101,7 @@ const EMPTY: RegistrationForm = {
   frequency: "",
 }
 
-export default function DynamicFormPage() {
+const DynamicFormPage = () => {
   const [data, setData] = useState<RegistrationForm>(EMPTY)
 
   return (
@@ -185,3 +185,5 @@ export default function DynamicFormPage() {
     </SmartPage>
   )
 }
+
+export default DynamicFormPage

@@ -30,7 +30,7 @@ type CarouselContextProps = {
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null)
 
-function useCarousel() {
+const useCarousel = () => {
   const context = React.useContext(CarouselContext)
 
   if (!context) {
@@ -40,7 +40,7 @@ function useCarousel() {
   return context
 }
 
-function Carousel({
+const Carousel = ({
   orientation = "horizontal",
   opts,
   setApi,
@@ -48,7 +48,7 @@ function Carousel({
   className,
   children,
   ...props
-}: React.ComponentProps<"div"> & CarouselProps) {
+}: React.ComponentProps<"div"> & CarouselProps) => {
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
@@ -131,7 +131,10 @@ function Carousel({
   )
 }
 
-function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
+const CarouselContent = ({
+  className,
+  ...props
+}: React.ComponentProps<"div">) => {
   const { carouselRef, orientation } = useCarousel()
 
   return (
@@ -152,7 +155,7 @@ function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
+const CarouselItem = ({ className, ...props }: React.ComponentProps<"div">) => {
   const { orientation } = useCarousel()
 
   return (
@@ -170,12 +173,12 @@ function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function CarouselPrevious({
+const CarouselPrevious = ({
   className,
   variant = "outline",
   size = "icon-sm",
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<typeof Button>) => {
   const { orientation, scrollPrev, canScrollPrev } = useCarousel()
 
   return (
@@ -200,12 +203,12 @@ function CarouselPrevious({
   )
 }
 
-function CarouselNext({
+const CarouselNext = ({
   className,
   variant = "outline",
   size = "icon-sm",
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<typeof Button>) => {
   const { orientation, scrollNext, canScrollNext } = useCarousel()
 
   return (

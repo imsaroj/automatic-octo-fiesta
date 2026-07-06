@@ -24,7 +24,7 @@ const TOOLS = [
   { id: "text", icon: <Type className="size-4" />, label: "Text" },
 ]
 
-export default function FullscreenLayoutPage() {
+const FullscreenLayoutPage = () => {
   const [tool, setTool] = useState("select")
   const [zoom, setZoom] = useState(100)
 
@@ -99,3 +99,5 @@ export default function FullscreenLayoutPage() {
     </SmartPage>
   )
 }
+
+export default FullscreenLayoutPage

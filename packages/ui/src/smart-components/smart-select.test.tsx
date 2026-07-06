@@ -18,7 +18,7 @@ afterEach(() => {
   container.remove()
 })
 
-function mount(ui: React.ReactElement) {
+const mount = (ui: React.ReactElement) => {
   container = document.createElement("div")
   document.body.appendChild(container)
   root = createRoot(container)
@@ -28,7 +28,7 @@ function mount(ui: React.ReactElement) {
 const trigger = () =>
   container.querySelector('[data-slot="select-trigger"]') as HTMLElement
 
-function openSelect() {
+const openSelect = () => {
   act(() => {
     trigger().dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }))
     trigger().dispatchEvent(new MouseEvent("mousedown", { bubbles: true }))
@@ -110,7 +110,7 @@ test("grouped options render group labels", () => {
 
 test("selecting an item emits onValueChange and shows the label in the trigger", () => {
   const onValueChange = vi.fn()
-  function Harness() {
+  const Harness = () => {
     const [value, setValue] = React.useState<string | undefined>(undefined)
     return (
       <SmartSelect

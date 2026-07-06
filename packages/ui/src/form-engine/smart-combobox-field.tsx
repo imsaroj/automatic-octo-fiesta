@@ -12,7 +12,7 @@ export interface SmartComboboxFieldProps extends FieldBaseProps<string> {
   emptyText?: string
 }
 
-export function SmartComboboxField({
+export const SmartComboboxField = ({
   data,
   setData,
   label,
@@ -26,21 +26,19 @@ export function SmartComboboxField({
   options,
   searchPlaceholder,
   emptyText,
-}: SmartComboboxFieldProps) {
-  return (
-    <SmartCombobox
-      value={data}
-      onValueChange={(v) => setData(v)}
-      placeholder={placeholder}
-      searchPlaceholder={searchPlaceholder}
-      emptyText={emptyText}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      options={options}
-      disabled={disabled || readOnly}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartComboboxFieldProps) => (
+  <SmartCombobox
+    value={data}
+    onValueChange={(v) => setData(v)}
+    placeholder={placeholder}
+    searchPlaceholder={searchPlaceholder}
+    emptyText={emptyText}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    options={options}
+    disabled={disabled || readOnly}
+    fieldClassName={className}
+  />
+)

@@ -141,31 +141,29 @@ const STEPS = [
 
 // ── Step nav buttons ──────────────────────────────────────────────────────────
 
-function StepNav({
+const StepNav = ({
   onBack,
   nextLabel,
 }: {
   onBack?: () => void
   nextLabel: string
-}) {
-  return (
-    <div className="flex items-center justify-between pt-2">
-      <SmartButton
-        type="button"
-        variant="ghost"
-        disabled={!onBack}
-        onClick={onBack}
-      >
-        Back
-      </SmartButton>
-      <SmartButton type="submit">{nextLabel}</SmartButton>
-    </div>
-  )
-}
+}) => (
+  <div className="flex items-center justify-between pt-2">
+    <SmartButton
+      type="button"
+      variant="ghost"
+      disabled={!onBack}
+      onClick={onBack}
+    >
+      Back
+    </SmartButton>
+    <SmartButton type="submit">{nextLabel}</SmartButton>
+  </div>
+)
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-export default function MultiStepFormPage() {
+const MultiStepFormPage = () => {
   const [step, setStep] = useState(0)
   const [account, setAccount] = useState<Account>({
     fullName: "",
@@ -310,3 +308,5 @@ export default function MultiStepFormPage() {
     </SmartPage>
   )
 }
+
+export default MultiStepFormPage

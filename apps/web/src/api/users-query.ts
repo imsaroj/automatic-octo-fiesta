@@ -29,7 +29,7 @@ const NUMBER_OPS = new Set([
   "lessThanOrEqual",
 ])
 
-function decodeFilter(field: string, raw: string): ServerFilter {
+const decodeFilter = (field: string, raw: string): ServerFilter => {
   const sep = raw.indexOf(":")
   const op = sep >= 0 ? raw.slice(0, sep) : "contains"
   const rest = sep >= 0 ? raw.slice(sep + 1) : raw
@@ -56,7 +56,7 @@ function decodeFilter(field: string, raw: string): ServerFilter {
 }
 
 /** Parse a request's search params back into normalized paging/sort/filter parts. */
-export function parseUsersQuery(sp: URLSearchParams): ParsedUsersQuery {
+export const parseUsersQuery = (sp: URLSearchParams): ParsedUsersQuery => {
   const page = Number(sp.get("page") ?? "0") || 0
   const size = Number(sp.get("size") ?? "20") || 20
   const sorts: ServerSort[] = sp.getAll("sort").map((raw) => {

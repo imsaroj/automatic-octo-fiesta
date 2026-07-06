@@ -18,7 +18,7 @@
  * - object (e.g. a date range) → empty only when every own value is empty
  * - numbers (incl. `0`) → never empty
  */
-export function isEmptyValue(value: unknown): boolean {
+export const isEmptyValue = (value: unknown): boolean => {
   if (value == null) return true
   if (typeof value === "string") return value.trim() === ""
   if (Array.isArray(value)) return value.length === 0
@@ -34,9 +34,9 @@ export function isEmptyValue(value: unknown): boolean {
  * strings along the way. The result is a `Partial<T>` suitable for sending to an
  * API or serializing into a URL — empty fields simply aren't present.
  */
-export function buildSearchQuery<T extends Record<string, unknown>>(
+export const buildSearchQuery = <T extends Record<string, unknown>>(
   data: T
-): Partial<T> {
+): Partial<T> => {
   const out: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(data)) {
     if (isEmptyValue(value)) continue
@@ -46,6 +46,5 @@ export function buildSearchQuery<T extends Record<string, unknown>>(
 }
 
 /** Number of active (non-empty) filters in a raw search-state object. */
-export function countActiveFilters(data: Record<string, unknown>): number {
-  return Object.keys(buildSearchQuery(data)).length
-}
+export const countActiveFilters = (data: Record<string, unknown>): number =>
+  Object.keys(buildSearchQuery(data)).length

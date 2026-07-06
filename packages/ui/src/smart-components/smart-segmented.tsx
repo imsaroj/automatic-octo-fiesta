@@ -37,7 +37,7 @@ export interface SmartSegmentedProps {
  * />
  * ```
  */
-export function SmartSegmented({
+export const SmartSegmented = ({
   options,
   value,
   onValueChange,
@@ -49,7 +49,7 @@ export function SmartSegmented({
   required,
   optional,
   fieldClassName,
-}: SmartSegmentedProps) {
+}: SmartSegmentedProps) => {
   const id = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined

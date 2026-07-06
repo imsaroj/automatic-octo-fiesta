@@ -12,7 +12,7 @@ export interface SmartTimeFieldProps extends Omit<
 }
 
 /** Time field — stores a 24-hour `"HH:mm"` (or `"HH:mm:ss"`) string. */
-export function SmartTimeField({
+export const SmartTimeField = ({
   data,
   setData,
   label,
@@ -25,21 +25,19 @@ export function SmartTimeField({
   use12Hour,
   withSeconds,
   minuteStep,
-}: SmartTimeFieldProps) {
-  return (
-    <SmartTimePicker
-      value={data || undefined}
-      onValueChange={setData}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      disabled={disabled}
-      use12Hour={use12Hour}
-      withSeconds={withSeconds}
-      minuteStep={minuteStep}
-      placeholder={placeholder}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartTimeFieldProps) => (
+  <SmartTimePicker
+    value={data || undefined}
+    onValueChange={setData}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    disabled={disabled}
+    use12Hour={use12Hour}
+    withSeconds={withSeconds}
+    minuteStep={minuteStep}
+    placeholder={placeholder}
+    fieldClassName={className}
+  />
+)

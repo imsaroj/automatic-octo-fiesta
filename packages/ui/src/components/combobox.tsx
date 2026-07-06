@@ -50,7 +50,7 @@ interface ComboboxMultipleProps extends ComboboxBaseProps {
 
 export type ComboboxProps = ComboboxSingleProps | ComboboxMultipleProps
 
-export function Combobox(props: ComboboxProps) {
+export const Combobox = (props: ComboboxProps) => {
   const {
     options,
     placeholder = "Select option...",

@@ -40,6 +40,9 @@ export default defineConfig([
       "jsx-a11y/label-has-associated-control": "off",
       "jsx-a11y/click-events-have-key-events": "off",
       "jsx-a11y/no-noninteractive-element-interactions": "off",
+      // PaginationLink renders an <a> whose content is supplied via {...props}
+      // at each call site (upstream shadcn pattern the rule can't see through).
+      "jsx-a11y/anchor-has-content": "off",
     },
   },
   {

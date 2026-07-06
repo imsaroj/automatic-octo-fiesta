@@ -118,7 +118,7 @@ export interface SmartSearchFormProps<T extends Record<string, unknown>> {
  * parent to layer URL synchronization, saved searches, or filter presets on top
  * without changes here.
  */
-export function SmartSearchForm<T extends Record<string, unknown>>({
+export const SmartSearchForm = <T extends Record<string, unknown>>({
   fields,
   schema,
   data,
@@ -140,7 +140,7 @@ export function SmartSearchForm<T extends Record<string, unknown>>({
   actions,
   registry,
   className,
-}: SmartSearchFormProps<T>) {
+}: SmartSearchFormProps<T>) => {
   const auto = autoSearch === true || !search
   const emitFn = onSearch ?? onSubmit
 

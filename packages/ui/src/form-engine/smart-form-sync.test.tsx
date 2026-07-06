@@ -41,7 +41,7 @@ afterEach(() => {
   container.remove()
 })
 
-function mount(ui: React.ReactElement) {
+const mount = (ui: React.ReactElement) => {
   container = document.createElement("div")
   document.body.appendChild(container)
   root = createRoot(container)
@@ -53,7 +53,7 @@ const nativeSet = Object.getOwnPropertyDescriptor(
   "value"
 )!.set!
 
-function typeInto(input: HTMLInputElement, value: string) {
+const typeInto = (input: HTMLInputElement, value: string) => {
   act(() => {
     nativeSet.call(input, value)
     input.dispatchEvent(new Event("input", { bubbles: true }))
@@ -61,7 +61,7 @@ function typeInto(input: HTMLInputElement, value: string) {
 }
 
 /** Run `fn` while capturing everything React logs to `console.error`. */
-function captureConsoleErrors(fn: () => void): string[] {
+const captureConsoleErrors = (fn: () => void): string[] => {
   const errors: string[] = []
   const spy = vi
     .spyOn(console, "error")
@@ -78,7 +78,7 @@ function captureConsoleErrors(fn: () => void): string[] {
 
 test("rapid successive edits never trigger a max-update-depth loop", () => {
   const setDataCalls: F[] = []
-  function Harness() {
+  const Harness = () => {
     const [data, setData] = React.useState<F>(EMPTY)
     return (
       <SmartForm
@@ -125,7 +125,7 @@ test("rapid successive edits never trigger a max-update-depth loop", () => {
 
 test("mounting with initial data is a stable fixpoint (no sync churn)", () => {
   const setDataCalls: F[] = []
-  function Harness() {
+  const Harness = () => {
     const [data, setData] = React.useState<F>({
       text: "seed",
       note: "",
@@ -151,7 +151,7 @@ test("mounting with initial data is a stable fixpoint (no sync churn)", () => {
 
 test("genuine external data changes are still adopted into the form", () => {
   let setExternal!: (d: F) => void
-  function Harness() {
+  const Harness = () => {
     const [data, setData] = React.useState<F>({
       text: "start",
       note: "",
@@ -187,7 +187,7 @@ test("genuine external data changes are still adopted into the form", () => {
 test("editing after an external adoption round-trips correctly", () => {
   let setExternal!: (d: F) => void
   let latest: F = EMPTY
-  function Harness() {
+  const Harness = () => {
     const [data, setData] = React.useState<F>(EMPTY)
     setExternal = setData
     latest = data

@@ -20,7 +20,7 @@ afterEach(() => {
   container.remove()
 })
 
-function mount(ui: React.ReactElement) {
+const mount = (ui: React.ReactElement) => {
   container = document.createElement("div")
   document.body.appendChild(container)
   root = createRoot(container)
@@ -30,7 +30,7 @@ function mount(ui: React.ReactElement) {
 const byLabel = (label: string) =>
   container.querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`)
 
-function midnightToday() {
+const midnightToday = () => {
   const d = new Date()
   d.setHours(0, 0, 0, 0)
   return d

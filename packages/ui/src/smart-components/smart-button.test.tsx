@@ -17,7 +17,7 @@ afterEach(() => {
   container.remove()
 })
 
-function mount(ui: React.ReactElement) {
+const mount = (ui: React.ReactElement) => {
   container = document.createElement("div")
   document.body.appendChild(container)
   root = createRoot(container)

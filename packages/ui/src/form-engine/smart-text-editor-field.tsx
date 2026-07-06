@@ -13,7 +13,7 @@ export interface SmartTextEditorFieldProps extends FieldBaseProps<string> {
   maxHeight?: string
 }
 
-export function SmartTextEditorField({
+export const SmartTextEditorField = ({
   data,
   setData,
   label,
@@ -28,22 +28,20 @@ export function SmartTextEditorField({
   toolbar,
   minHeight,
   maxHeight,
-}: SmartTextEditorFieldProps) {
-  return (
-    <SmartTextEditor
-      value={data ?? ""}
-      placeholder={placeholder}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      readOnly={readOnly || disabled}
-      format={format}
-      toolbar={toolbar}
-      minHeight={minHeight}
-      maxHeight={maxHeight}
-      onChange={setData}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartTextEditorFieldProps) => (
+  <SmartTextEditor
+    value={data ?? ""}
+    placeholder={placeholder}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    readOnly={readOnly || disabled}
+    format={format}
+    toolbar={toolbar}
+    minHeight={minHeight}
+    maxHeight={maxHeight}
+    onChange={setData}
+    fieldClassName={className}
+  />
+)

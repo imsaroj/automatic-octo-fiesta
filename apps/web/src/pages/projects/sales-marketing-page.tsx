@@ -1,4 +1,4 @@
-export default function SalesMarketingPage() {
+const SalesMarketingPage = () => {
   return (
     <div className="flex h-full items-center justify-center">
       <h1 className="text-2xl font-semibold text-foreground">
@@ -7,3 +7,5 @@ export default function SalesMarketingPage() {
     </div>
   )
 }
+
+export default SalesMarketingPage

@@ -75,7 +75,7 @@ export interface SmartConfirmDialogProps {
  * />
  * ```
  */
-export function SmartConfirmDialog({
+export const SmartConfirmDialog = ({
   open: openProp,
   onOpenChange: onChangeProp,
   trigger,
@@ -87,7 +87,7 @@ export function SmartConfirmDialog({
   onConfirm,
   variant = "default",
   size = "sm",
-}: SmartConfirmDialogProps) {
+}: SmartConfirmDialogProps) => {
   const [local, setLocal] = React.useState(false)
 
   // Support both controlled (openProp provided) and uncontrolled (internal state).

@@ -6,7 +6,7 @@ import type { z } from "zod"
  */
 
 /** Structural equality for plain form data (objects, arrays, primitives, `Date`). */
-export function deepEqual(a: unknown, b: unknown): boolean {
+export const deepEqual = (a: unknown, b: unknown): boolean => {
   if (Object.is(a, b)) return true
   if (
     typeof a !== "object" ||
@@ -38,7 +38,9 @@ export function deepEqual(a: unknown, b: unknown): boolean {
  * default wrappers. Used only to read which fields are required (for the
  * asterisk) — never affects validation.
  */
-function getZodShape(schema: unknown): Record<string, z.ZodType> | undefined {
+const getZodShape = (
+  schema: unknown
+): Record<string, z.ZodType> | undefined => {
   let current = schema as
     | {
         shape?: unknown
@@ -62,7 +64,7 @@ function getZodShape(schema: unknown): Record<string, z.ZodType> | undefined {
  * truth): a field is required when its schema rejects `undefined` — i.e. it is
  * not `.optional()` / `.default()`. Keeps field definitions UI-only.
  */
-export function isFieldRequired(schema: z.ZodType, name: string): boolean {
+export const isFieldRequired = (schema: z.ZodType, name: string): boolean => {
   const shape = getZodShape(schema)
   const fieldSchema = shape?.[name]
   if (!fieldSchema) return false

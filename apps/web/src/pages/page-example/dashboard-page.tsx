@@ -40,7 +40,7 @@ const STAT_ICONS: Record<string, React.ReactNode> = {
   growth: <TrendingUp className="size-4" />,
 }
 
-function BarChartCard({ label, seed }: { label: string; seed: number }) {
+const BarChartCard = ({ label, seed }: { label: string; seed: number }) => {
   const bars = series({ length: 14, seed, min: 30, max: 95, trend: 0.4 })
   return (
     <Card className="h-52">
@@ -60,7 +60,7 @@ function BarChartCard({ label, seed }: { label: string; seed: number }) {
   )
 }
 
-export default function DashboardLayoutPage() {
+const DashboardLayoutPage = () => {
   return (
     // Hero present → auto-detected "dashboard" layout
     <SmartPage>
@@ -154,3 +154,5 @@ export default function DashboardLayoutPage() {
     </SmartPage>
   )
 }
+
+export default DashboardLayoutPage

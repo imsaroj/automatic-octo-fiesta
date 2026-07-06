@@ -40,7 +40,7 @@ interface Account {
 
 /* --------------------------------- data ----------------------------------- */
 
-function makeAccounts(): Account[] {
+const makeAccounts = (): Account[] => {
   const companies = [
     ["Acme Inc", "Ada Lovelace", "Enterprise"],
     ["Globex", "Grace Hopper", "Pro"],
@@ -86,19 +86,19 @@ const orderStatusVariant: Record<
   Refunded: "destructive",
 }
 
-function PlanCell({ value }: { value?: Account["plan"] }) {
+const PlanCell = ({ value }: { value?: Account["plan"] }) => {
   if (!value) return null
   return <Badge variant={planVariant[value]}>{value}</Badge>
 }
 
-function OrderStatusCell({ value }: { value?: Order["status"] }) {
+const OrderStatusCell = ({ value }: { value?: Order["status"] }) => {
   if (!value) return null
   return <Badge variant={orderStatusVariant[value]}>{value}</Badge>
 }
 
 /* ---------------------------------- page ---------------------------------- */
 
-export default function MasterDetailGridPage() {
+const MasterDetailGridPage = () => {
   // eslint-disable-next-line react-hooks/use-memo
   const accounts = useMemo(makeAccounts, [])
   const [selected, setSelected] = useState<Account | null>(accounts[0] ?? null)
@@ -203,3 +203,5 @@ export default function MasterDetailGridPage() {
     </SmartPage>
   )
 }
+
+export default MasterDetailGridPage

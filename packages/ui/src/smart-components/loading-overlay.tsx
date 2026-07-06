@@ -15,13 +15,13 @@ export interface SmartLoadingOverlayProps {
 }
 
 /** Blocks interaction and shows a spinner while an async region is busy. */
-function SmartLoadingOverlay({
+const SmartLoadingOverlay = ({
   loading,
   children,
   label = "Loading…",
   fullscreen = false,
   className,
-}: SmartLoadingOverlayProps) {
+}: SmartLoadingOverlayProps) => {
   const overlay = loading ? (
     <div
       role="status"

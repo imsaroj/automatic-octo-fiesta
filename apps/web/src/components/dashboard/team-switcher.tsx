@@ -17,7 +17,7 @@ import {
 } from "@workspace/ui/components/sidebar"
 import { ChevronsUpDownIcon, PlusIcon } from "lucide-react"
 
-export function TeamSwitcher({
+export const TeamSwitcher = ({
   teams,
 }: {
   teams: {
@@ -25,7 +25,7 @@ export function TeamSwitcher({
     logo: React.ReactNode
     plan: string
   }[]
-}) {
+}) => {
   const { isMobile } = useSidebar()
   const [activeTeam, setActiveTeam] = React.useState(teams[0])
 

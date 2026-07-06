@@ -15,7 +15,7 @@ export interface SmartCheckboxGroupFieldProps extends Omit<
 }
 
 /** "Select all that apply" checkbox group — stores a `string[]` of values. */
-export function SmartCheckboxGroupField({
+export const SmartCheckboxGroupField = ({
   data,
   setData,
   label,
@@ -26,19 +26,17 @@ export function SmartCheckboxGroupField({
   className,
   options = [],
   orientation,
-}: SmartCheckboxGroupFieldProps) {
-  return (
-    <SmartCheckboxGroup
-      value={data}
-      onValueChange={setData}
-      items={options}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      disabled={disabled}
-      orientation={orientation}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartCheckboxGroupFieldProps) => (
+  <SmartCheckboxGroup
+    value={data}
+    onValueChange={setData}
+    items={options}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    disabled={disabled}
+    orientation={orientation}
+    fieldClassName={className}
+  />
+)

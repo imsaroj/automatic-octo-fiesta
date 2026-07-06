@@ -42,7 +42,7 @@ export interface SmartInputProps extends React.ComponentProps<"input"> {
  */
 export { Input }
 
-export function SmartInput({
+export const SmartInput = ({
   label,
   description,
   error,
@@ -52,7 +52,7 @@ export function SmartInput({
   className,
   id: idProp,
   ...inputProps
-}: SmartInputProps) {
+}: SmartInputProps) => {
   const autoId = React.useId()
   const id = idProp ?? autoId
   const hasHint = error != null || description != null

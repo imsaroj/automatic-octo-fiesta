@@ -60,32 +60,30 @@ export interface SmartAccordionProps {
  * Fall back to native Accordion primitives when items have heterogeneous
  * trigger layouts (icons, badges, counts) that differ per item.
  */
-export function SmartAccordion({
+export const SmartAccordion = ({
   items,
   multiple = false,
   defaultValue,
   value,
   onValueChange,
   className,
-}: SmartAccordionProps) {
-  return (
-    <Accordion
-      multiple={multiple}
-      defaultValue={defaultValue}
-      value={value}
-      onValueChange={onValueChange}
-      className={className}
-    >
-      {items.map((item) => (
-        <AccordionItem
-          key={item.value}
-          value={item.value}
-          disabled={item.disabled}
-        >
-          <AccordionTrigger>{item.trigger}</AccordionTrigger>
-          <AccordionContent>{item.content}</AccordionContent>
-        </AccordionItem>
-      ))}
-    </Accordion>
-  )
-}
+}: SmartAccordionProps) => (
+  <Accordion
+    multiple={multiple}
+    defaultValue={defaultValue}
+    value={value}
+    onValueChange={onValueChange}
+    className={className}
+  >
+    {items.map((item) => (
+      <AccordionItem
+        key={item.value}
+        value={item.value}
+        disabled={item.disabled}
+      >
+        <AccordionTrigger>{item.trigger}</AccordionTrigger>
+        <AccordionContent>{item.content}</AccordionContent>
+      </AccordionItem>
+    ))}
+  </Accordion>
+)

@@ -15,7 +15,7 @@ import type { SlotBuckets } from "./slot-buckets"
  * (`content` / `grid`) the bands sit outside the scroll container and are
  * naturally pinned by flexbox, so pinning them again would double up.
  */
-export function StandardLayout({
+export const StandardLayout = ({
   buckets: b,
   scroll,
   ctx,
@@ -23,7 +23,7 @@ export function StandardLayout({
   buckets: SlotBuckets
   scroll: ScrollMode
   ctx: PageContextValue
-}) {
+}) => {
   const isPageScroll = scroll === "page"
 
   // Collect which items are sticky (page-scroll mode only — in contained modes

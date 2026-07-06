@@ -203,7 +203,7 @@ const EMPTY: AllFields = {
   yesno: false,
 }
 
-export default function AllFieldsPage() {
+const AllFieldsPage = () => {
   const [data, setData] = useState<AllFields>(EMPTY)
 
   return (
@@ -252,3 +252,5 @@ export default function AllFieldsPage() {
     </SmartPage>
   )
 }
+
+export default AllFieldsPage

@@ -2,14 +2,14 @@ import { Slider as SliderPrimitive } from "@base-ui/react/slider"
 
 import { cn } from "@workspace/ui/lib/utils"
 
-function Slider({
+const Slider = ({
   className,
   defaultValue,
   value,
   min = 0,
   max = 100,
   ...props
-}: SliderPrimitive.Root.Props) {
+}: SliderPrimitive.Root.Props) => {
   const _values = Array.isArray(value)
     ? value
     : Array.isArray(defaultValue)

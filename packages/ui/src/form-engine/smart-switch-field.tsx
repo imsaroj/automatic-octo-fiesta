@@ -4,7 +4,7 @@ import type { FieldBaseProps } from "./base"
 
 export type SmartSwitchFieldProps = Omit<FieldBaseProps<boolean>, "placeholder">
 
-export function SmartSwitchField({
+export const SmartSwitchField = ({
   data,
   setData,
   label,
@@ -14,7 +14,7 @@ export function SmartSwitchField({
   disabled,
   readOnly,
   className,
-}: SmartSwitchFieldProps) {
+}: SmartSwitchFieldProps) => {
   const labelNode =
     label != null ? (
       <>

@@ -78,7 +78,7 @@ export interface SmartFormProps<T extends Record<string, unknown>> {
  * <SmartForm schema={schema} fields={fields} onSubmit={(value) => save(value)} />
  * ```
  */
-export function SmartForm<T extends Record<string, unknown>>({
+export const SmartForm = <T extends Record<string, unknown>>({
   schema,
   data,
   setData,
@@ -91,7 +91,7 @@ export function SmartForm<T extends Record<string, unknown>>({
   children,
   className,
   registry: registryProp,
-}: SmartFormProps<T>) {
+}: SmartFormProps<T>) => {
   // Resolved once per form: custom entries merged over the built-in registry.
   const registry = React.useMemo<FieldRegistry>(
     () =>
@@ -324,17 +324,16 @@ interface StandardSchemaIssue {
   message: string
 }
 
-function isStandardSchemaIssue(value: unknown): value is StandardSchemaIssue {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "message" in value &&
-    typeof (value as { message: unknown }).message === "string"
-  )
-}
+const isStandardSchemaIssue = (value: unknown): value is StandardSchemaIssue =>
+  typeof value === "object" &&
+  value !== null &&
+  "message" in value &&
+  typeof (value as { message: unknown }).message === "string"
 
 /** Normalize TanStack field errors (strings or Standard-Schema issues) to text. */
-function getErrorMessage(errors: ReadonlyArray<unknown>): string | undefined {
+const getErrorMessage = (
+  errors: ReadonlyArray<unknown>
+): string | undefined => {
   const first = errors?.[0]
   if (first == null) return undefined
   if (typeof first === "string") return first
@@ -342,7 +341,7 @@ function getErrorMessage(errors: ReadonlyArray<unknown>): string | undefined {
   return undefined
 }
 
-function FieldRenderer<T extends Record<string, unknown>>({
+const FieldRenderer = <T extends Record<string, unknown>>({
   field,
   registry,
   required,
@@ -356,7 +355,7 @@ function FieldRenderer<T extends Record<string, unknown>>({
   value: unknown
   onChange: (v: unknown) => void
   error?: string
-}) {
+}) => {
   const entry = registry[field.type]
   if (!entry) return null
 

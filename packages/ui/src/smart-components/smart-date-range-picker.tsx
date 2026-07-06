@@ -36,7 +36,7 @@ export interface SmartDateRangePickerProps {
   fieldClassName?: string
 }
 
-function formatRange(range: DateRange | undefined): string | undefined {
+const formatRange = (range: DateRange | undefined): string | undefined => {
   if (!range?.from) return undefined
   if (!range.to) return format(range.from, "PP")
   return `${format(range.from, "PP")} – ${format(range.to, "PP")}`
@@ -55,7 +55,7 @@ function formatRange(range: DateRange | undefined): string | undefined {
  * />
  * ```
  */
-export function SmartDateRangePicker({
+export const SmartDateRangePicker = ({
   value,
   onValueChange,
   placeholder = "Pick a date range",
@@ -68,7 +68,7 @@ export function SmartDateRangePicker({
   required,
   optional,
   fieldClassName,
-}: SmartDateRangePickerProps) {
+}: SmartDateRangePickerProps) => {
   const id = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined

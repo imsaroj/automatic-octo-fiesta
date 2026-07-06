@@ -53,7 +53,7 @@ export interface SmartCheckboxGroupProps {
  * />
  * ```
  */
-export function SmartCheckboxGroup({
+export const SmartCheckboxGroup = ({
   items,
   value,
   onValueChange,
@@ -67,7 +67,7 @@ export function SmartCheckboxGroup({
   required,
   optional,
   fieldClassName,
-}: SmartCheckboxGroupProps) {
+}: SmartCheckboxGroupProps) => {
   const groupId = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${groupId}-hint` : undefined

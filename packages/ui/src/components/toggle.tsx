@@ -25,20 +25,18 @@ const toggleVariants = cva(
   }
 )
 
-function Toggle({
+const Toggle = ({
   className,
   variant = "default",
   size = "default",
   ...props
-}: TogglePrimitive.Props & VariantProps<typeof toggleVariants>) {
-  return (
-    <TogglePrimitive
-      data-slot="toggle"
-      className={cn(toggleVariants({ variant, size, className }))}
-      {...props}
-    />
-  )
-}
+}: TogglePrimitive.Props & VariantProps<typeof toggleVariants>) => (
+  <TogglePrimitive
+    data-slot="toggle"
+    className={cn(toggleVariants({ variant, size, className }))}
+    {...props}
+  />
+)
 
 // eslint-disable-next-line react-refresh/only-export-components
 export { Toggle, toggleVariants }

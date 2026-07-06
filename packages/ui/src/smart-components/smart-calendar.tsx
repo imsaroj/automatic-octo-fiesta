@@ -89,7 +89,7 @@ export type SmartCalendarProps =
 export { Calendar }
 export type { DateRange }
 
-export function SmartCalendar({
+export const SmartCalendar = ({
   label,
   description,
   error,
@@ -97,7 +97,7 @@ export function SmartCalendar({
   fieldClassName,
   className,
   ...calendarProps
-}: SmartCalendarProps) {
+}: SmartCalendarProps) => {
   const id = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined

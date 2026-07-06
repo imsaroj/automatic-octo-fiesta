@@ -6,7 +6,7 @@ export interface SmartTextareaFieldProps extends FieldBaseProps<string> {
   maxLength?: number
 }
 
-export function SmartTextareaField({
+export const SmartTextareaField = ({
   data,
   setData,
   label,
@@ -20,23 +20,21 @@ export function SmartTextareaField({
   id,
   rows = 3,
   maxLength,
-}: SmartTextareaFieldProps) {
-  return (
-    <SmartTextarea
-      id={id}
-      value={data}
-      placeholder={placeholder}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      disabled={disabled}
-      readOnly={readOnly}
-      rows={rows}
-      maxLength={maxLength}
-      aria-invalid={error ? true : undefined}
-      onChange={(e) => setData(e.target.value)}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartTextareaFieldProps) => (
+  <SmartTextarea
+    id={id}
+    value={data}
+    placeholder={placeholder}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    disabled={disabled}
+    readOnly={readOnly}
+    rows={rows}
+    maxLength={maxLength}
+    aria-invalid={error ? true : undefined}
+    onChange={(e) => setData(e.target.value)}
+    fieldClassName={className}
+  />
+)

@@ -13,7 +13,7 @@ export interface SmartSegmentedFieldProps extends Omit<
   options?: SmartSegmentedOption[]
 }
 
-export function SmartSegmentedField({
+export const SmartSegmentedField = ({
   data,
   setData,
   label,
@@ -23,18 +23,16 @@ export function SmartSegmentedField({
   disabled,
   className,
   options = [],
-}: SmartSegmentedFieldProps) {
-  return (
-    <SmartSegmented
-      value={data}
-      onValueChange={setData}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      options={options}
-      disabled={disabled}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartSegmentedFieldProps) => (
+  <SmartSegmented
+    value={data}
+    onValueChange={setData}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    options={options}
+    disabled={disabled}
+    fieldClassName={className}
+  />
+)

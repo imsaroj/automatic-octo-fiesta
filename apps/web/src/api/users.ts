@@ -27,14 +27,13 @@ const fetchUsers = createPageFetcher({
   itemSchema: userRowSchema,
 })
 
-export function fetchUsersPage(
+export const fetchUsersPage = (
   params: ServerFetchParams,
   signal: AbortSignal,
   options: { simulateError?: boolean } = {}
-): Promise<ServerFetchResult<UserRow>> {
-  return fetchUsers(
+): Promise<ServerFetchResult<UserRow>> =>
+  fetchUsers(
     params,
     signal,
     options.simulateError ? { simulateError: "1" } : undefined
   )
-}

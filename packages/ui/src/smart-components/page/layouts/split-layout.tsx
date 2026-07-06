@@ -9,7 +9,7 @@ import type { SlotBuckets } from "./slot-buckets"
  * a flexible main column (toolbar / search / filters / tabs / content) and a
  * fixed-width sidebar on the right, with status bar and footer below.
  */
-export function SplitLayout({
+export const SplitLayout = ({
   buckets: b,
   scroll,
   ctx,
@@ -17,7 +17,7 @@ export function SplitLayout({
   buckets: SlotBuckets
   scroll: ScrollMode
   ctx: PageContextValue
-}) {
+}) => {
   const mainContent = b.content.length > 0 ? b.content : b.body
   const mainClasses = cn(
     "min-w-0 flex-1",

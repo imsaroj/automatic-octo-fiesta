@@ -9,23 +9,21 @@ export interface SSpinnerProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 /** A dependency-free, token-aware loading spinner. */
-export function SmartSpinner({
+export const SmartSpinner = ({
   className,
   size = 16,
   label = "Loading",
   style,
   ...props
-}: SSpinnerProps) {
-  return (
-    <span
-      role="status"
-      aria-label={label}
-      className={cn(
-        "inline-block animate-spin rounded-full border-2 border-current border-t-transparent align-[-0.125em]",
-        className
-      )}
-      style={{ width: size, height: size, ...style }}
-      {...props}
-    />
-  )
-}
+}: SSpinnerProps) => (
+  <span
+    role="status"
+    aria-label={label}
+    className={cn(
+      "inline-block animate-spin rounded-full border-2 border-current border-t-transparent align-[-0.125em]",
+      className
+    )}
+    style={{ width: size, height: size, ...style }}
+    {...props}
+  />
+)

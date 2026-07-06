@@ -31,7 +31,7 @@ const STATES: { id: State; label: string }[] = [
   { id: "empty", label: "Empty" },
 ]
 
-export default function StatesPage() {
+const StatesPage = () => {
   const [state, setState] = useState<State>("ready")
 
   return (
@@ -100,3 +100,5 @@ export default function StatesPage() {
     </SmartPage>
   )
 }
+
+export default StatesPage

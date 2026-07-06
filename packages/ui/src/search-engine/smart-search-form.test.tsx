@@ -31,7 +31,7 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-function mount(ui: React.ReactElement) {
+const mount = (ui: React.ReactElement) => {
   container = document.createElement("div")
   document.body.appendChild(container)
   root = createRoot(container)
@@ -43,7 +43,7 @@ const nativeSet = Object.getOwnPropertyDescriptor(
   "value"
 )!.set!
 
-function typeInto(selector: string, value: string) {
+const typeInto = (selector: string, value: string) => {
   const input = container.querySelector(selector) as HTMLInputElement
   act(() => {
     nativeSet.call(input, value)

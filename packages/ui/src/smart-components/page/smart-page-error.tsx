@@ -62,14 +62,14 @@ export interface SmartPageErrorProps {
  * </SmartPageContent>
  * ```
  */
-export function SmartPageError({
+export const SmartPageError = ({
   title = "Something went wrong",
   description = "An unexpected error occurred while loading this page.",
   onRetry,
   retryLabel = "Try again",
   variant = "page",
   className,
-}: SmartPageErrorProps) {
+}: SmartPageErrorProps) => {
   const overlay = variant === "overlay"
   return (
     <div

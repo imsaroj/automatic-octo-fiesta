@@ -5,7 +5,7 @@ export interface SmartPasswordFieldProps extends FieldBaseProps<string> {
   autoComplete?: string
 }
 
-export function SmartPasswordField({
+export const SmartPasswordField = ({
   data,
   setData,
   label,
@@ -18,22 +18,20 @@ export function SmartPasswordField({
   className,
   id,
   autoComplete,
-}: SmartPasswordFieldProps) {
-  return (
-    <SmartPasswordInput
-      id={id}
-      value={data}
-      placeholder={placeholder}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      disabled={disabled}
-      readOnly={readOnly}
-      autoComplete={autoComplete}
-      aria-invalid={error ? true : undefined}
-      onChange={(e) => setData(e.target.value)}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartPasswordFieldProps) => (
+  <SmartPasswordInput
+    id={id}
+    value={data}
+    placeholder={placeholder}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    disabled={disabled}
+    readOnly={readOnly}
+    autoComplete={autoComplete}
+    aria-invalid={error ? true : undefined}
+    onChange={(e) => setData(e.target.value)}
+    fieldClassName={className}
+  />
+)

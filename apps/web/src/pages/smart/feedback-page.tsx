@@ -62,7 +62,7 @@ const FAQ_ITEMS = [
   },
 ]
 
-export default function FeedbackPage() {
+const FeedbackPage = () => {
   const [tags, setTags] = useState(["React", "TypeScript", "Tailwind"])
   const [loadingCard, setLoadingCard] = useState(false)
   const [buttonStates, setButtonStates] = useState({
@@ -424,3 +424,5 @@ export default function FeedbackPage() {
     </SmartPage>
   )
 }
+
+export default FeedbackPage

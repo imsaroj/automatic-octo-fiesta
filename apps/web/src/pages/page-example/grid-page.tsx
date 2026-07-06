@@ -53,8 +53,8 @@ const OWNERS = ["Ada", "Grace", "Linus", "Katherine", "Ken", "Margaret"]
 const PLANS: AccountRow["plan"][] = ["Free", "Pro", "Enterprise"]
 const STATUSES: AccountRow["status"][] = ["active", "trial", "churned"]
 
-function makeRows(n: number): AccountRow[] {
-  return Array.from({ length: n }, (_, i) => ({
+const makeRows = (n: number): AccountRow[] =>
+  Array.from({ length: n }, (_, i) => ({
     id: i + 1,
     name: `${NAMES[i % NAMES.length]} ${i + 1}`,
     owner: OWNERS[i % OWNERS.length],
@@ -62,7 +62,6 @@ function makeRows(n: number): AccountRow[] {
     status: STATUSES[i % STATUSES.length],
     mrr: 29 + ((i * 53) % 900),
   }))
-}
 
 const statusVariant: Record<
   AccountRow["status"],
@@ -73,12 +72,12 @@ const statusVariant: Record<
   churned: "destructive",
 }
 
-function StatusCell({ value }: { value?: AccountRow["status"] }) {
+const StatusCell = ({ value }: { value?: AccountRow["status"] }) => {
   if (!value) return null
   return <Badge variant={statusVariant[value]}>{value}</Badge>
 }
 
-export default function GridLayoutPage() {
+const GridLayoutPage = () => {
   const [query, setQuery] = useState("")
   const [planFilter, setPlanFilter] = useState<AccountRow["plan"] | null>("Pro")
   const [selected, setSelected] = useState<AccountRow[]>([])
@@ -229,3 +228,5 @@ export default function GridLayoutPage() {
     </SmartPage>
   )
 }
+
+export default GridLayoutPage

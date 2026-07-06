@@ -111,7 +111,7 @@ const GROUPS: { label: string; buttons: React.ReactNode }[] = [
 
 const DYNAMIC_ACTIONS = ["save", "delete", "export", "approve"] as const
 
-export default function ActionButtonsPage() {
+const ActionButtonsPage = () => {
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
     {}
   )
@@ -304,3 +304,5 @@ export default function ActionButtonsPage() {
     </SmartPage>
   )
 }
+
+export default ActionButtonsPage

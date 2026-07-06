@@ -17,25 +17,22 @@ const PARAMS: ServerFetchParams = {
   ],
 }
 
-function pageResponse(rows: { id: number; name: string }[], total: number) {
-  return {
-    content: rows,
-    totalElements: total,
-    totalPages: 1,
-    number: 0,
-    size: rows.length,
-  }
-}
+const pageResponse = (rows: { id: number; name: string }[], total: number) => ({
+  content: rows,
+  totalElements: total,
+  totalPages: 1,
+  number: 0,
+  size: rows.length,
+})
 
-function okFetch(body: unknown): typeof fetch {
-  return vi.fn(
+const okFetch = (body: unknown): typeof fetch =>
+  vi.fn(
     async () =>
       new Response(JSON.stringify(body), {
         status: 200,
         headers: { "content-type": "application/json" },
       })
   ) as unknown as typeof fetch
-}
 
 describe("createPageFetcher", () => {
   it("builds the Spring query, calls the injected transport, and returns rows + total", async () => {

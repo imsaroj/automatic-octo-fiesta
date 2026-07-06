@@ -57,7 +57,7 @@ export interface SmartDrawerProps {
  * </SmartDrawer>
  * ```
  */
-export function SmartDrawer({
+export const SmartDrawer = ({
   open,
   onOpenChange,
   trigger,
@@ -66,24 +66,22 @@ export function SmartDrawer({
   footer,
   className,
   children,
-}: SmartDrawerProps) {
-  return (
-    <Drawer open={open} onOpenChange={onOpenChange} direction={direction}>
-      {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
-      <DrawerContent className={className}>
-        {header && (
-          <DrawerHeader>
-            <DrawerTitle>{header.title}</DrawerTitle>
-            {header.subtitle && (
-              <DrawerDescription>{header.subtitle}</DrawerDescription>
-            )}
-          </DrawerHeader>
-        )}
-        <div className="flex-1 overflow-y-auto px-4 py-2">{children}</div>
-        {footer && <DrawerFooter>{footer}</DrawerFooter>}
-      </DrawerContent>
-    </Drawer>
-  )
-}
+}: SmartDrawerProps) => (
+  <Drawer open={open} onOpenChange={onOpenChange} direction={direction}>
+    {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
+    <DrawerContent className={className}>
+      {header && (
+        <DrawerHeader>
+          <DrawerTitle>{header.title}</DrawerTitle>
+          {header.subtitle && (
+            <DrawerDescription>{header.subtitle}</DrawerDescription>
+          )}
+        </DrawerHeader>
+      )}
+      <div className="flex-1 overflow-y-auto px-4 py-2">{children}</div>
+      {footer && <DrawerFooter>{footer}</DrawerFooter>}
+    </DrawerContent>
+  </Drawer>
+)
 
 export { DrawerClose }

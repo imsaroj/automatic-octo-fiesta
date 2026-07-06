@@ -113,28 +113,28 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <div className="flex items-center gap-2 px-2 py-1 group-data-[collapsible=icon]:justify-center">
-          <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground group-data-[collapsible=icon]:hidden">
-            <ComponentIcon className="size-5" />
-          </div>
-          <span className="truncate text-base font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
-            smart-component
-          </span>
-          <SidebarTrigger className="ml-auto group-data-[collapsible=icon]:ml-0" />
+export const AppSidebar = ({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) => (
+  <Sidebar collapsible="icon" {...props}>
+    <SidebarHeader>
+      <div className="flex items-center gap-2 px-2 py-1 group-data-[collapsible=icon]:justify-center">
+        <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground group-data-[collapsible=icon]:hidden">
+          <ComponentIcon className="size-5" />
         </div>
-      </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
-  )
-}
+        <span className="truncate text-base font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
+          smart-component
+        </span>
+        <SidebarTrigger className="ml-auto group-data-[collapsible=icon]:ml-0" />
+      </div>
+    </SidebarHeader>
+    <SidebarContent>
+      <NavMain items={data.navMain} />
+      <NavProjects projects={data.projects} />
+    </SidebarContent>
+    <SidebarFooter>
+      <NavUser user={data.user} />
+    </SidebarFooter>
+    <SidebarRail />
+  </Sidebar>
+)

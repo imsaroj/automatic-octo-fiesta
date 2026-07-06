@@ -40,7 +40,7 @@ const statusVariant: Record<
   Inactive: "destructive",
 }
 
-function StatusCell({ value }: { value?: UserRow["status"] }) {
+const StatusCell = ({ value }: { value?: UserRow["status"] }) => {
   if (!value) return null
   return <SmartBadge variant={statusVariant[value]}>{value}</SmartBadge>
 }
@@ -88,7 +88,7 @@ const searchFields: SearchFieldDefinition<UserSearch>[] = [
 
 // The query is already pruned + trimmed by SmartSearchForm, so each present key
 // carries a meaningful value.
-function toFilters(query: Partial<UserSearch>): ServerFilter[] {
+const toFilters = (query: Partial<UserSearch>): ServerFilter[] => {
   const filters: ServerFilter[] = []
   if (query.name)
     filters.push({
@@ -123,7 +123,7 @@ function toFilters(query: Partial<UserSearch>): ServerFilter[] {
 
 /* ---------------------------------- page ---------------------------------- */
 
-export default function ServerGridPage() {
+const ServerGridPage = () => {
   const gridRef = useRef<SmartServerGridHandle<UserRow> | null>(null)
   const [selectedCount, setSelectedCount] = useState(0)
   const [search, setSearch] = useState<UserSearch>(EMPTY_SEARCH)
@@ -276,3 +276,5 @@ export default function ServerGridPage() {
     </SmartPage>
   )
 }
+
+export default ServerGridPage

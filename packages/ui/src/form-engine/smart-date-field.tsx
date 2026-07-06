@@ -3,7 +3,7 @@ import type { FieldBaseProps } from "./base"
 
 export type SmartDateFieldProps = FieldBaseProps<string>
 
-export function SmartDateField({
+export const SmartDateField = ({
   data,
   setData,
   label,
@@ -14,7 +14,7 @@ export function SmartDateField({
   disabled,
   readOnly,
   className,
-}: SmartDateFieldProps) {
+}: SmartDateFieldProps) => {
   const dateValue = data ? new Date(`${data}T00:00:00`) : undefined
 
   const toISO = (date: Date): string => {

@@ -65,7 +65,7 @@ const COMMENTS = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function DetailExamplePage() {
+const DetailExamplePage = () => {
   const [comment, setComment] = useState("")
   const [resolved, setResolved] = useState(false)
 
@@ -329,3 +329,5 @@ export default function DetailExamplePage() {
     </SmartPage>
   )
 }
+
+export default DetailExamplePage

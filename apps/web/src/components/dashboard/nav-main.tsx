@@ -16,7 +16,7 @@ import {
 } from "@workspace/ui/components/sidebar"
 import { ChevronRightIcon } from "lucide-react"
 
-export function NavMain({
+export const NavMain = ({
   items,
 }: {
   items: {
@@ -25,7 +25,7 @@ export function NavMain({
     icon?: React.ReactNode
     items?: { title: string; url: string }[]
   }[]
-}) {
+}) => {
   const location = useLocation()
 
   return (

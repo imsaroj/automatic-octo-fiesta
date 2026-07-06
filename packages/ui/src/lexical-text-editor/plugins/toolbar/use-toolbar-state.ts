@@ -27,7 +27,7 @@ import {
 import type { BlockType } from "./constants"
 
 /** The anchor/focus node the selection resolves to, or `null` for a non-range. */
-function getSelectedNode(selection: ReturnType<typeof $getSelection>) {
+const getSelectedNode = (selection: ReturnType<typeof $getSelection>) => {
   if (!$isRangeSelection(selection)) return null
   const anchor = selection.anchor.getNode()
   const focus = selection.focus.getNode()
@@ -61,7 +61,7 @@ export interface ToolbarState {
  * every toolbar section renders its active/enabled state from. Extracted from
  * `ToolbarPlugin` so the sections stay presentational.
  */
-export function useToolbarState(editor: LexicalEditor): ToolbarState {
+export const useToolbarState = (editor: LexicalEditor): ToolbarState => {
   const [canUndo, setCanUndo] = useState(false)
   const [canRedo, setCanRedo] = useState(false)
   const [blockType, setBlockType] = useState<BlockType>("paragraph")

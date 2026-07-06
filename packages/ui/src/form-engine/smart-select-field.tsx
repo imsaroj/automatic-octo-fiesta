@@ -12,7 +12,7 @@ export interface SmartSelectFieldProps extends FieldBaseProps<string> {
   groups?: SmartSelectGroup[]
 }
 
-export function SmartSelectField({
+export const SmartSelectField = ({
   data,
   setData,
   label,
@@ -25,20 +25,18 @@ export function SmartSelectField({
   className,
   options,
   groups,
-}: SmartSelectFieldProps) {
-  return (
-    <SmartSelect
-      value={data}
-      onValueChange={(v) => setData(v ?? "")}
-      placeholder={placeholder}
-      label={label}
-      description={description}
-      error={error}
-      fieldRequired={required}
-      options={options}
-      groups={groups}
-      disabled={disabled || readOnly}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartSelectFieldProps) => (
+  <SmartSelect
+    value={data}
+    onValueChange={(v) => setData(v ?? "")}
+    placeholder={placeholder}
+    label={label}
+    description={description}
+    error={error}
+    fieldRequired={required}
+    options={options}
+    groups={groups}
+    disabled={disabled || readOnly}
+    fieldClassName={className}
+  />
+)

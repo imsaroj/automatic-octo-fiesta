@@ -28,10 +28,10 @@ export interface UserList {
 }
 
 /** Fetch a page of users, optionally filtered by a name search. */
-export async function fetchUserList(
+export const fetchUserList = async (
   { page = 0, size = 20, search }: UserListParams = {},
   signal?: AbortSignal
-): Promise<UserList> {
+): Promise<UserList> => {
   const sp = new URLSearchParams({ page: String(page), size: String(size) })
   if (search?.trim()) sp.set("name", `contains:${search.trim()}`)
   const res = await fetch(`/api/users?${sp.toString()}`, { signal })
@@ -42,7 +42,7 @@ export async function fetchUserList(
 }
 
 /** Create a user; resolves to the persisted row (with its server-assigned id). */
-export async function createUser(input: NewUser): Promise<UserRow> {
+export const createUser = async (input: NewUser): Promise<UserRow> => {
   const res = await fetch("/api/users", {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -53,10 +53,10 @@ export async function createUser(input: NewUser): Promise<UserRow> {
 }
 
 /** Patch a user; resolves to the updated row. */
-export async function updateUser(
+export const updateUser = async (
   id: number,
   changes: Partial<NewUser>
-): Promise<UserRow> {
+): Promise<UserRow> => {
   const res = await fetch(`/api/users/${id}`, {
     method: "PUT",
     headers: { "content-type": "application/json" },
@@ -67,7 +67,7 @@ export async function updateUser(
 }
 
 /** Delete a user by id. */
-export async function deleteUser(id: number): Promise<void> {
+export const deleteUser = async (id: number): Promise<void> => {
   const res = await fetch(`/api/users/${id}`, { method: "DELETE" })
   if (!res.ok) throw new Error(`Failed to delete user (${res.status})`)
 }

@@ -66,7 +66,7 @@ const DEVICE_ICONS = {
 
 // ─── Bar chart placeholder ────────────────────────────────────────────────────
 
-function BarChartPlaceholder({
+const BarChartPlaceholder = ({
   label,
   data,
   height = 120,
@@ -74,7 +74,7 @@ function BarChartPlaceholder({
   label?: string
   data: number[]
   height?: number
-}) {
+}) => {
   const max = Math.max(...data)
   return (
     <div className="flex flex-col gap-2">
@@ -95,7 +95,7 @@ function BarChartPlaceholder({
 
 // ─── Funnel step ──────────────────────────────────────────────────────────────
 
-function FunnelStep({
+const FunnelStep = ({
   label,
   value,
   pct,
@@ -105,32 +105,30 @@ function FunnelStep({
   value: string
   pct: number
   drop?: number
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center justify-between text-xs">
-        <span>{label}</span>
-        <span className="font-semibold">{value}</span>
-      </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-        <div
-          className="h-full rounded-full bg-primary"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      {drop !== undefined && (
-        <p className="text-[10px] text-red-500 dark:text-red-400">
-          <TrendingDown className="mr-0.5 inline size-2.5" />
-          {drop}% drop-off
-        </p>
-      )}
+}) => (
+  <div className="flex flex-col gap-1">
+    <div className="flex items-center justify-between text-xs">
+      <span>{label}</span>
+      <span className="font-semibold">{value}</span>
     </div>
-  )
-}
+    <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+      <div
+        className="h-full rounded-full bg-primary"
+        style={{ width: `${pct}%` }}
+      />
+    </div>
+    {drop !== undefined && (
+      <p className="text-[10px] text-red-500 dark:text-red-400">
+        <TrendingDown className="mr-0.5 inline size-2.5" />
+        {drop}% drop-off
+      </p>
+    )}
+  </div>
+)
 
 // ─── Geo / proportion row ─────────────────────────────────────────────────────
 
-function GeoRow({
+const GeoRow = ({
   country,
   sessions,
   pct,
@@ -138,25 +136,23 @@ function GeoRow({
   country: string
   sessions: string
   pct: number
-}) {
-  return (
-    <div className="flex items-center gap-3 py-1.5">
-      <Globe className="size-3.5 shrink-0 text-muted-foreground" />
-      <span className="flex-1 text-xs">{country}</span>
-      <div className="flex items-center gap-2">
-        <div className="h-1 w-20 overflow-hidden rounded-full bg-muted">
-          <div
-            className="h-full rounded-full bg-primary/60"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-        <span className="w-12 text-right text-xs text-muted-foreground">
-          {sessions}
-        </span>
+}) => (
+  <div className="flex items-center gap-3 py-1.5">
+    <Globe className="size-3.5 shrink-0 text-muted-foreground" />
+    <span className="flex-1 text-xs">{country}</span>
+    <div className="flex items-center gap-2">
+      <div className="h-1 w-20 overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-primary/60"
+          style={{ width: `${pct}%` }}
+        />
       </div>
+      <span className="w-12 text-right text-xs text-muted-foreground">
+        {sessions}
+      </span>
     </div>
-  )
-}
+  </div>
+)
 
 // ─── Overview tab ─────────────────────────────────────────────────────────────
 
@@ -168,112 +164,41 @@ const SESSIONS_SERIES = series({
   trend: 0.85,
 })
 
-function OverviewTab() {
-  return (
-    <SmartPageContent padding="md">
-      {/* KPIs */}
-      <SmartPageSection padding={false}>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {analyticsKpis.map((stat) => (
-            <SmartStatCard
-              key={stat.key}
-              label={stat.label}
-              value={stat.value}
-              delta={stat.delta}
-              deltaLabel={stat.deltaLabel}
-              trend={stat.trend}
-              icon={KPI_ICONS[stat.key]}
-            />
-          ))}
-        </div>
-      </SmartPageSection>
-
-      {/* Sessions over time */}
-      <SmartPageSection title="Sessions over time" bordered>
-        <BarChartPlaceholder height={160} data={SESSIONS_SERIES} />
-        <div className="flex items-center justify-between px-0.5 text-[10px] text-muted-foreground">
-          <span>Jun 1</span>
-          <span>Jun 8</span>
-          <span>Jun 15</span>
-          <span>Jun 22</span>
-          <span>Jul 1</span>
-        </div>
-      </SmartPageSection>
-
-      {/* Channels + Devices */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <SmartPageSection title="Traffic channels" bordered>
-          {trafficChannels.map((r) => (
-            <GeoRow
-              key={r.label}
-              country={r.label}
-              sessions={r.value ?? ""}
-              pct={r.pct}
-            />
-          ))}
-        </SmartPageSection>
-
-        <SmartPageSection title="Device breakdown" bordered>
-          {deviceBreakdown.map(({ key, label, pct, value }) => {
-            const Icon = DEVICE_ICONS[key]
-            return (
-              <div key={label} className="flex items-center gap-3 py-1.5">
-                <Icon className="size-3.5 text-muted-foreground" />
-                <span className="flex-1 text-xs">{label}</span>
-                <div className="flex items-center gap-2">
-                  <div className="h-1 w-20 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-primary/60"
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                  <span className="w-12 text-right text-xs text-muted-foreground">
-                    {value}
-                  </span>
-                </div>
-              </div>
-            )
-          })}
-        </SmartPageSection>
-      </div>
-    </SmartPageContent>
-  )
-}
-
-// ─── Funnel tab ───────────────────────────────────────────────────────────────
-
-function FunnelTab() {
-  return (
-    <SmartPageContent maxWidth="lg" centered padding="md">
-      <SmartPageSection
-        title="Conversion funnel"
-        description="Visitor flow from landing to purchase for the current period."
-        bordered
-      >
-        {conversionFunnel.map((step) => (
-          <FunnelStep key={step.label} {...step} />
+const OverviewTab = () => (
+  <SmartPageContent padding="md">
+    {/* KPIs */}
+    <SmartPageSection padding={false}>
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {analyticsKpis.map((stat) => (
+          <SmartStatCard
+            key={stat.key}
+            label={stat.label}
+            value={stat.value}
+            delta={stat.delta}
+            deltaLabel={stat.deltaLabel}
+            trend={stat.trend}
+            icon={KPI_ICONS[stat.key]}
+          />
         ))}
-        <div className="mt-2 flex items-center justify-between rounded-lg bg-muted/50 p-3 text-xs">
-          <span className="font-medium">Overall conversion rate</span>
-          <Badge
-            variant="secondary"
-            className="text-green-700 dark:text-green-400"
-          >
-            9.0%
-          </Badge>
-        </div>
-      </SmartPageSection>
-    </SmartPageContent>
-  )
-}
+      </div>
+    </SmartPageSection>
 
-// ─── Geo tab ──────────────────────────────────────────────────────────────────
+    {/* Sessions over time */}
+    <SmartPageSection title="Sessions over time" bordered>
+      <BarChartPlaceholder height={160} data={SESSIONS_SERIES} />
+      <div className="flex items-center justify-between px-0.5 text-[10px] text-muted-foreground">
+        <span>Jun 1</span>
+        <span>Jun 8</span>
+        <span>Jun 15</span>
+        <span>Jun 22</span>
+        <span>Jul 1</span>
+      </div>
+    </SmartPageSection>
 
-function GeoTab() {
-  return (
-    <SmartPageContent padding="md">
-      <SmartPageSection title="Top countries" bordered>
-        {topCountries.map((r) => (
+    {/* Channels + Devices */}
+    <div className="grid gap-4 md:grid-cols-2">
+      <SmartPageSection title="Traffic channels" bordered>
+        {trafficChannels.map((r) => (
           <GeoRow
             key={r.label}
             country={r.label}
@@ -282,13 +207,78 @@ function GeoTab() {
           />
         ))}
       </SmartPageSection>
-    </SmartPageContent>
-  )
-}
+
+      <SmartPageSection title="Device breakdown" bordered>
+        {deviceBreakdown.map(({ key, label, pct, value }) => {
+          const Icon = DEVICE_ICONS[key]
+          return (
+            <div key={label} className="flex items-center gap-3 py-1.5">
+              <Icon className="size-3.5 text-muted-foreground" />
+              <span className="flex-1 text-xs">{label}</span>
+              <div className="flex items-center gap-2">
+                <div className="h-1 w-20 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-primary/60"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                <span className="w-12 text-right text-xs text-muted-foreground">
+                  {value}
+                </span>
+              </div>
+            </div>
+          )
+        })}
+      </SmartPageSection>
+    </div>
+  </SmartPageContent>
+)
+
+// ─── Funnel tab ───────────────────────────────────────────────────────────────
+
+const FunnelTab = () => (
+  <SmartPageContent maxWidth="lg" centered padding="md">
+    <SmartPageSection
+      title="Conversion funnel"
+      description="Visitor flow from landing to purchase for the current period."
+      bordered
+    >
+      {conversionFunnel.map((step) => (
+        <FunnelStep key={step.label} {...step} />
+      ))}
+      <div className="mt-2 flex items-center justify-between rounded-lg bg-muted/50 p-3 text-xs">
+        <span className="font-medium">Overall conversion rate</span>
+        <Badge
+          variant="secondary"
+          className="text-green-700 dark:text-green-400"
+        >
+          9.0%
+        </Badge>
+      </div>
+    </SmartPageSection>
+  </SmartPageContent>
+)
+
+// ─── Geo tab ──────────────────────────────────────────────────────────────────
+
+const GeoTab = () => (
+  <SmartPageContent padding="md">
+    <SmartPageSection title="Top countries" bordered>
+      {topCountries.map((r) => (
+        <GeoRow
+          key={r.label}
+          country={r.label}
+          sessions={r.value ?? ""}
+          pct={r.pct}
+        />
+      ))}
+    </SmartPageSection>
+  </SmartPageContent>
+)
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function AnalyticsExamplePage() {
+const AnalyticsExamplePage = () => {
   const [period, setPeriod] = useState("30d")
 
   return (
@@ -349,3 +339,5 @@ export default function AnalyticsExamplePage() {
     </SmartPage>
   )
 }
+
+export default AnalyticsExamplePage

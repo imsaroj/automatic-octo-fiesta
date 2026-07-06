@@ -34,7 +34,9 @@ export interface PersistedGridState {
  * is stored or when storage is unavailable / the value is corrupt (so callers
  * just start fresh).
  */
-export function readPersistedGridState(key: string): PersistedGridState | null {
+export const readPersistedGridState = (
+  key: string
+): PersistedGridState | null => {
   try {
     const raw = localStorage.getItem(key)
     if (!raw) return null
@@ -46,10 +48,10 @@ export function readPersistedGridState(key: string): PersistedGridState | null {
 }
 
 /** Persist column/filter state under `key`; silently no-ops if storage fails. */
-export function writePersistedGridState(
+export const writePersistedGridState = (
   key: string,
   state: PersistedGridState
-): void {
+): void => {
   try {
     localStorage.setItem(key, JSON.stringify(state))
   } catch {
@@ -60,10 +62,10 @@ export function writePersistedGridState(
 /* --------------------------------- debounce -------------------------------- */
 
 /** Tiny trailing debounce — keeps persistence off the hot path of resize/scroll. */
-export function debounce<A extends unknown[]>(
+export const debounce = <A extends unknown[]>(
   fn: (...args: A) => void,
   ms: number
-): (...args: A) => void {
+): ((...args: A) => void) => {
   let timer: ReturnType<typeof setTimeout> | undefined
   return (...args: A) => {
     if (timer) clearTimeout(timer)
@@ -74,7 +76,7 @@ export function debounce<A extends unknown[]>(
 /* ------------------------------- error coercion ---------------------------- */
 
 /** Best-effort message from an unknown thrown value (incl. `NormalizedApiError`). */
-export function errorMessage(error: unknown): string {
+export const errorMessage = (error: unknown): string => {
   if (
     error &&
     typeof error === "object" &&
@@ -92,10 +94,10 @@ export function errorMessage(error: unknown): string {
  * Merge external (search-form) filters on top of the grid's own column filters.
  * Returns `base` untouched when there are no external filters.
  */
-export function mergeServerFilters(
+export const mergeServerFilters = (
   base: ServerFilter[],
   external: ServerFilter[] | undefined
-): ServerFilter[] {
+): ServerFilter[] => {
   if (!external || external.length === 0) return base
   return [...base, ...external]
 }
@@ -132,48 +134,46 @@ export interface CreateGridDatasourceOptions<TRow> {
  * and routes the outcome into the success/fail callbacks — swallowing
  * rejections of blocks that were aborted (an abort is not an error).
  */
-export function createGridDatasource<TRow>(
+export const createGridDatasource = <TRow>(
   options: CreateGridDatasourceOptions<TRow>
-): IDatasource {
-  return {
-    getRows: (params: IGetRowsParams) => {
-      const serverParams = buildServerFetchParams({
-        startRow: params.startRow,
-        endRow: params.endRow,
-        sortModel: params.sortModel,
-        filterModel: (params.filterModel ?? null) as Record<
-          string,
-          unknown
-        > | null,
-      })
-      // Merge any external (search-form) filters on top of column filters.
-      serverParams.filters = mergeServerFilters(
-        serverParams.filters,
-        options.getExternalFilters()
+): IDatasource => ({
+  getRows: (params: IGetRowsParams) => {
+    const serverParams = buildServerFetchParams({
+      startRow: params.startRow,
+      endRow: params.endRow,
+      sortModel: params.sortModel,
+      filterModel: (params.filterModel ?? null) as Record<
+        string,
+        unknown
+      > | null,
+    })
+    // Merge any external (search-form) filters on top of column filters.
+    serverParams.filters = mergeServerFilters(
+      serverParams.filters,
+      options.getExternalFilters()
+    )
+    const controller = new AbortController()
+    options.controllers.add(controller)
+    options
+      .getFetchRows()(serverParams, controller.signal)
+      .then(
+        (result) => {
+          // `lastRow` = the known total, so the grid sizes the scrollbar exactly.
+          params.successCallback(result.rows, result.total)
+          options.onSuccess()
+        },
+        (reason: unknown) => {
+          if (controller.signal.aborted) return
+          params.failCallback()
+          options.onError(errorMessage(reason))
+        }
       )
-      const controller = new AbortController()
-      options.controllers.add(controller)
-      options
-        .getFetchRows()(serverParams, controller.signal)
-        .then(
-          (result) => {
-            // `lastRow` = the known total, so the grid sizes the scrollbar exactly.
-            params.successCallback(result.rows, result.total)
-            options.onSuccess()
-          },
-          (reason: unknown) => {
-            if (controller.signal.aborted) return
-            params.failCallback()
-            options.onError(errorMessage(reason))
-          }
-        )
-        .finally(() => {
-          options.controllers.delete(controller)
-          options.onSettled()
-        })
-    },
-  }
-}
+      .finally(() => {
+        options.controllers.delete(controller)
+        options.onSettled()
+      })
+  },
+})
 
 /* ---------------------------------- export --------------------------------- */
 
@@ -189,7 +189,9 @@ export interface GridExportTable {
  * visibility and order. Only rows present in the grid's cache are included
  * (the infinite row model never holds every page at once).
  */
-export function collectGridExport<TRow>(api: GridApi<TRow>): GridExportTable {
+export const collectGridExport = <TRow>(
+  api: GridApi<TRow>
+): GridExportTable => {
   const displayed = api.getAllDisplayedColumns()
   const headers = displayed.map((column) => {
     const headerName = column.getColDef().headerName

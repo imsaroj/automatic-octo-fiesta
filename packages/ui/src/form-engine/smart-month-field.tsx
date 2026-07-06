@@ -10,7 +10,7 @@ export interface SmartMonthFieldProps extends Omit<
 }
 
 /** Month field — stores a `"YYYY-MM"` string; empty means "unset". */
-export function SmartMonthField({
+export const SmartMonthField = ({
   data,
   setData,
   label,
@@ -22,7 +22,7 @@ export function SmartMonthField({
   className,
   fromYear,
   toYear,
-}: SmartMonthFieldProps) {
+}: SmartMonthFieldProps) => {
   const [y, m] = data ? data.split("-").map(Number) : []
   const value = y && m ? new Date(y, m - 1, 1) : undefined
 

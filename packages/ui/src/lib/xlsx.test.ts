@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import { buildXlsx, timestampForFilename } from "@/lib/xlsx"
 
 /** Reference CRC-32 used to independently verify the writer's stored entries. */
-function crc32(bytes: Uint8Array): number {
+const crc32 = (bytes: Uint8Array): number => {
   let crc = 0xffffffff
   for (let i = 0; i < bytes.length; i += 1) {
     crc ^= bytes[i]
@@ -12,7 +12,7 @@ function crc32(bytes: Uint8Array): number {
 }
 
 /** Minimal reader for the *stored* ZIP the writer produces (no inflate needed). */
-function readStoredZip(buf: Uint8Array): Map<string, string> {
+const readStoredZip = (buf: Uint8Array): Map<string, string> => {
   const view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength)
   const decoder = new TextDecoder()
   const entries = new Map<string, string>()

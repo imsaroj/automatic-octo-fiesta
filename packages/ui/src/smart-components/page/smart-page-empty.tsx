@@ -48,35 +48,33 @@ export interface SmartPageEmptyProps {
  * </SmartPageContent>
  * ```
  */
-export function SmartPageEmpty({
+export const SmartPageEmpty = ({
   icon,
   title,
   description,
   action,
   className,
-}: SmartPageEmptyProps) {
-  return (
-    <div
-      role="status"
-      className={cn(
-        "flex h-full min-h-60 flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-10 text-center",
-        className
-      )}
-    >
-      {icon && (
-        <div className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground [&>svg]:size-6">
-          {icon}
-        </div>
-      )}
-      <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-semibold">{title}</h3>
-        {description && (
-          <p className="mx-auto max-w-sm text-xs text-muted-foreground">
-            {description}
-          </p>
-        )}
+}: SmartPageEmptyProps) => (
+  <div
+    role="status"
+    className={cn(
+      "flex h-full min-h-60 flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-10 text-center",
+      className
+    )}
+  >
+    {icon && (
+      <div className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground [&>svg]:size-6">
+        {icon}
       </div>
-      {action && <div className="pt-1">{action}</div>}
+    )}
+    <div className="flex flex-col gap-1">
+      <h3 className="text-sm font-semibold">{title}</h3>
+      {description && (
+        <p className="mx-auto max-w-sm text-xs text-muted-foreground">
+          {description}
+        </p>
+      )}
     </div>
-  )
-}
+    {action && <div className="pt-1">{action}</div>}
+  </div>
+)

@@ -91,7 +91,7 @@ export interface SmartSheetProps {
  * </SmartSheet>
  * ```
  */
-export function SmartSheet({
+export const SmartSheet = ({
   open,
   onOpenChange,
   trigger,
@@ -102,30 +102,28 @@ export function SmartSheet({
   dividers = false,
   className,
   children,
-}: SmartSheetProps) {
-  return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      {trigger && <SheetTrigger render={trigger} />}
-      <SheetContent
-        side={side}
-        showCloseButton={showCloseButton}
-        className={className}
-      >
-        {header && (
-          <SheetHeader className={cn(dividers && "border-b")}>
-            <SheetTitle>{header.title}</SheetTitle>
-            {header.subtitle && (
-              <SheetDescription>{header.subtitle}</SheetDescription>
-            )}
-          </SheetHeader>
-        )}
-        <div className="flex-1 overflow-y-auto px-6 py-2">{children}</div>
-        {footer && (
-          <SheetFooter className={cn(dividers && "border-t")}>
-            {footer}
-          </SheetFooter>
-        )}
-      </SheetContent>
-    </Sheet>
-  )
-}
+}: SmartSheetProps) => (
+  <Sheet open={open} onOpenChange={onOpenChange}>
+    {trigger && <SheetTrigger render={trigger} />}
+    <SheetContent
+      side={side}
+      showCloseButton={showCloseButton}
+      className={className}
+    >
+      {header && (
+        <SheetHeader className={cn(dividers && "border-b")}>
+          <SheetTitle>{header.title}</SheetTitle>
+          {header.subtitle && (
+            <SheetDescription>{header.subtitle}</SheetDescription>
+          )}
+        </SheetHeader>
+      )}
+      <div className="flex-1 overflow-y-auto px-6 py-2">{children}</div>
+      {footer && (
+        <SheetFooter className={cn(dividers && "border-t")}>
+          {footer}
+        </SheetFooter>
+      )}
+    </SheetContent>
+  </Sheet>
+)

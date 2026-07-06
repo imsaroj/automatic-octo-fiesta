@@ -73,7 +73,7 @@ const GROUPED_TIMEZONES = [
   },
 ]
 
-export default function PickersPage() {
+const PickersPage = () => {
   const [singleDate, setSingleDate] = useState<Date | undefined>()
   const [multiDates, setMultiDates] = useState<Date[] | undefined>()
   const [range, setRange] = useState<DateRange | undefined>()
@@ -360,3 +360,5 @@ export default function PickersPage() {
     </SmartPage>
   )
 }
+
+export default PickersPage

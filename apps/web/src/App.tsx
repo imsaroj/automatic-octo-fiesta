@@ -87,95 +87,90 @@ const MultiStepFormPage = lazy(
   () => import("@/pages/form-engine/multi-step-form-page")
 )
 
-export function App() {
-  return (
-    <BrowserRouter>
-      <PlaygroundShell>
-        <Suspense fallback={<SmartPageLoading />}>
-          <Routes>
-            {/* Overview */}
-            <Route path="/" element={<DashboardPage />} />
+export const App = () => (
+  <BrowserRouter>
+    <PlaygroundShell>
+      <Suspense fallback={<SmartPageLoading />}>
+        <Routes>
+          {/* Overview */}
+          <Route path="/" element={<DashboardPage />} />
 
-            {/* Grids */}
-            <Route path="/grids/simple" element={<SimpleGridPage />} />
-            <Route path="/grids/server" element={<ServerGridPage />} />
-            <Route path="/grids/infinite" element={<InfiniteGridPage />} />
-            <Route path="/grids/editable" element={<EditableGridPage />} />
-            <Route
-              path="/grids/master-detail"
-              element={<MasterDetailGridPage />}
-            />
+          {/* Grids */}
+          <Route path="/grids/simple" element={<SimpleGridPage />} />
+          <Route path="/grids/server" element={<ServerGridPage />} />
+          <Route path="/grids/infinite" element={<InfiniteGridPage />} />
+          <Route path="/grids/editable" element={<EditableGridPage />} />
+          <Route
+            path="/grids/master-detail"
+            element={<MasterDetailGridPage />}
+          />
 
-            {/* Examples */}
-            <Route path="/examples/fields" element={<BasicTextFieldsPage />} />
-            <Route path="/examples/crud" element={<CrudExamplePage />} />
-            <Route
-              path="/examples/dashboard"
-              element={<DashboardExamplePage />}
-            />
-            <Route
-              path="/examples/settings"
-              element={<SettingsExamplePage />}
-            />
-            <Route path="/examples/detail" element={<DetailExamplePage />} />
-            <Route path="/examples/wizard" element={<WizardExamplePage />} />
-            <Route
-              path="/examples/analytics"
-              element={<AnalyticsExamplePage />}
-            />
+          {/* Examples */}
+          <Route path="/examples/fields" element={<BasicTextFieldsPage />} />
+          <Route path="/examples/crud" element={<CrudExamplePage />} />
+          <Route
+            path="/examples/dashboard"
+            element={<DashboardExamplePage />}
+          />
+          <Route path="/examples/settings" element={<SettingsExamplePage />} />
+          <Route path="/examples/detail" element={<DetailExamplePage />} />
+          <Route path="/examples/wizard" element={<WizardExamplePage />} />
+          <Route
+            path="/examples/analytics"
+            element={<AnalyticsExamplePage />}
+          />
 
-            {/* Projects */}
-            <Route
-              path="/projects/design-engineering"
-              element={<DesignEngineeringPage />}
-            />
-            <Route
-              path="/projects/sales-marketing"
-              element={<SalesMarketingPage />}
-            />
-            <Route path="/projects/travel" element={<TravelPage />} />
+          {/* Projects */}
+          <Route
+            path="/projects/design-engineering"
+            element={<DesignEngineeringPage />}
+          />
+          <Route
+            path="/projects/sales-marketing"
+            element={<SalesMarketingPage />}
+          />
+          <Route path="/projects/travel" element={<TravelPage />} />
 
-            {/* Smart component showcases */}
-            <Route path="/smart/forms" element={<FormsPage />} />
-            <Route path="/smart/pickers" element={<PickersPage />} />
-            <Route path="/smart/overlays" element={<OverlaysPage />} />
-            <Route path="/smart/feedback" element={<FeedbackPage />} />
-            <Route path="/smart/text-editor" element={<TextEditorPage />} />
-            <Route path="/smart/buttons" element={<ActionButtonsPage />} />
+          {/* Smart component showcases */}
+          <Route path="/smart/forms" element={<FormsPage />} />
+          <Route path="/smart/pickers" element={<PickersPage />} />
+          <Route path="/smart/overlays" element={<OverlaysPage />} />
+          <Route path="/smart/feedback" element={<FeedbackPage />} />
+          <Route path="/smart/text-editor" element={<TextEditorPage />} />
+          <Route path="/smart/buttons" element={<ActionButtonsPage />} />
 
-            {/* Page layout examples */}
-            <Route path="/page-example" element={<PageExampleOverview />} />
-            <Route
-              path="/page-example/document"
-              element={<DocumentLayoutPage />}
-            />
-            <Route
-              path="/page-example/dashboard"
-              element={<DashboardLayoutPage />}
-            />
-            <Route path="/page-example/grid" element={<GridLayoutPage />} />
-            <Route path="/page-example/split" element={<SplitLayoutPage />} />
-            <Route path="/page-example/detail" element={<DetailLayoutPage />} />
-            <Route path="/page-example/wizard" element={<WizardLayoutPage />} />
-            <Route
-              path="/page-example/fullscreen"
-              element={<FullscreenLayoutPage />}
-            />
-            <Route path="/page-example/tabs" element={<TabsLayoutPage />} />
-            <Route path="/page-example/states" element={<PageStatesPage />} />
-            <Route
-              path="/page-example/container"
-              element={<ContainerLayoutPage />}
-            />
+          {/* Page layout examples */}
+          <Route path="/page-example" element={<PageExampleOverview />} />
+          <Route
+            path="/page-example/document"
+            element={<DocumentLayoutPage />}
+          />
+          <Route
+            path="/page-example/dashboard"
+            element={<DashboardLayoutPage />}
+          />
+          <Route path="/page-example/grid" element={<GridLayoutPage />} />
+          <Route path="/page-example/split" element={<SplitLayoutPage />} />
+          <Route path="/page-example/detail" element={<DetailLayoutPage />} />
+          <Route path="/page-example/wizard" element={<WizardLayoutPage />} />
+          <Route
+            path="/page-example/fullscreen"
+            element={<FullscreenLayoutPage />}
+          />
+          <Route path="/page-example/tabs" element={<TabsLayoutPage />} />
+          <Route path="/page-example/states" element={<PageStatesPage />} />
+          <Route
+            path="/page-example/container"
+            element={<ContainerLayoutPage />}
+          />
 
-            {/* Form engine */}
-            <Route path="/form-engine/basic" element={<BasicFormPage />} />
-            <Route path="/form-engine/all-fields" element={<AllFieldsPage />} />
-            <Route path="/form-engine/dynamic" element={<DynamicFormPage />} />
-            <Route path="/form-engine/wizard" element={<MultiStepFormPage />} />
-          </Routes>
-        </Suspense>
-      </PlaygroundShell>
-    </BrowserRouter>
-  )
-}
+          {/* Form engine */}
+          <Route path="/form-engine/basic" element={<BasicFormPage />} />
+          <Route path="/form-engine/all-fields" element={<AllFieldsPage />} />
+          <Route path="/form-engine/dynamic" element={<DynamicFormPage />} />
+          <Route path="/form-engine/wizard" element={<MultiStepFormPage />} />
+        </Routes>
+      </Suspense>
+    </PlaygroundShell>
+  </BrowserRouter>
+)

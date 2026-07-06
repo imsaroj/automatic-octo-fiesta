@@ -21,7 +21,7 @@ afterEach(() => {
   container.remove()
 })
 
-function mount(ui: React.ReactElement) {
+const mount = (ui: React.ReactElement) => {
   container = document.createElement("div")
   document.body.appendChild(container)
   root = createRoot(container)
@@ -29,11 +29,10 @@ function mount(ui: React.ReactElement) {
 }
 
 /** Build a slot-tagged component the way the real slot components are tagged. */
-function slot(name: string, testid: string) {
-  return Object.assign(() => <div data-testid={testid} />, {
+const slot = (name: string, testid: string) =>
+  Object.assign(() => <div data-testid={testid} />, {
     [SMART_PAGE_SLOT]: name,
   })
-}
 
 test("a sidebar slot renders the split layout with a bordered sidebar column", () => {
   const Sidebar = slot("sidebar", "sidebar-content")
@@ -109,7 +108,7 @@ test("the empty prop replaces children with the empty node", () => {
 // ─── detectLayout ──────────────────────────────────────────────────────────────
 
 /** Reads the resolved layout out of PageContext from inside the page. */
-function LayoutProbe() {
+const LayoutProbe = () => {
   const { layout } = usePageContext()
   return <output data-testid="layout">{layout}</output>
 }
@@ -118,11 +117,10 @@ function LayoutProbe() {
  * A slot-tagged component that renders the probe as its content, so the probe
  * is guaranteed to be rendered whichever bucket the layout treats as main.
  */
-function probeSlot(name: string) {
-  return Object.assign(() => <LayoutProbe />, { [SMART_PAGE_SLOT]: name })
-}
+const probeSlot = (name: string) =>
+  Object.assign(() => <LayoutProbe />, { [SMART_PAGE_SLOT]: name })
 
-function detectedLayout(children: React.ReactNode): PageLayout {
+const detectedLayout = (children: React.ReactNode): PageLayout => {
   mount(<SmartPage>{children}</SmartPage>)
   const probe = container.querySelector('[data-testid="layout"]')
   const layout = probe!.textContent as PageLayout

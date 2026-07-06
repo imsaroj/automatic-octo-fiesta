@@ -16,34 +16,32 @@ export interface SmartSearchInputProps {
   "aria-label"?: string
 }
 
-export function SmartSearchInput({
+export const SmartSearchInput = ({
   value,
   onValueChange,
   placeholder = "Search…",
   className,
   "aria-label": ariaLabel,
-}: SmartSearchInputProps) {
-  return (
-    <InputGroup className={cn(className)}>
-      <InputGroupAddon>
-        <Search className="text-muted-foreground" />
+}: SmartSearchInputProps) => (
+  <InputGroup className={cn(className)}>
+    <InputGroupAddon>
+      <Search className="text-muted-foreground" />
+    </InputGroupAddon>
+    <InputGroupInput
+      value={value}
+      onChange={(e) => onValueChange(e.target.value)}
+      placeholder={placeholder}
+      aria-label={ariaLabel}
+    />
+    {value ? (
+      <InputGroupAddon align="inline-end">
+        <InputGroupButton
+          onClick={() => onValueChange("")}
+          aria-label="Clear search"
+        >
+          <X />
+        </InputGroupButton>
       </InputGroupAddon>
-      <InputGroupInput
-        value={value}
-        onChange={(e) => onValueChange(e.target.value)}
-        placeholder={placeholder}
-        aria-label={ariaLabel}
-      />
-      {value ? (
-        <InputGroupAddon align="inline-end">
-          <InputGroupButton
-            onClick={() => onValueChange("")}
-            aria-label="Clear search"
-          >
-            <X />
-          </InputGroupButton>
-        </InputGroupAddon>
-      ) : null}
-    </InputGroup>
-  )
-}
+    ) : null}
+  </InputGroup>
+)

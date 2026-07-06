@@ -80,11 +80,11 @@ export interface SmartGridAreaProps extends React.HTMLAttributes<HTMLDivElement>
 export const SmartGridArea = React.forwardRef<
   HTMLDivElement,
   SmartGridAreaProps
->(function SmartGridArea(
-  { toolbar, border = false, rounded = false, className, children, ...props },
-  ref
-) {
-  return (
+>(
+  (
+    { toolbar, border = false, rounded = false, className, children, ...props },
+    ref
+  ) => (
     <div
       ref={ref}
       data-slot="grid-area"
@@ -107,6 +107,6 @@ export const SmartGridArea = React.forwardRef<
       <div className="flex min-h-0 flex-1 flex-col">{children}</div>
     </div>
   )
-})
+)
 ;(SmartGridArea as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
   "grid-area"

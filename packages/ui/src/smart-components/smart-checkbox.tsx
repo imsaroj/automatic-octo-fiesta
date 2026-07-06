@@ -40,14 +40,14 @@ export interface SmartCheckboxProps extends Omit<
  */
 export { Checkbox }
 
-export function SmartCheckbox({
+export const SmartCheckbox = ({
   label,
   description,
   wrapperClassName,
   className,
   disabled,
   ...checkboxProps
-}: SmartCheckboxProps) {
+}: SmartCheckboxProps) => {
   const id = React.useId()
   const descId = description ? `${id}-desc` : undefined
 

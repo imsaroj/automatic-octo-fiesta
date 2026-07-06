@@ -8,19 +8,18 @@ export interface SmartSlugFieldProps extends FieldBaseProps<string> {
 }
 
 /** Slugify: lowercase, spaces/underscores → hyphens, strip invalid chars. */
-function slugify(raw: string): string {
-  return raw
+const slugify = (raw: string): string =>
+  raw
     .toLowerCase()
     .replace(/[\s_]+/g, "-")
     .replace(/[^a-z0-9-]/g, "")
     .replace(/-{2,}/g, "-")
-}
 
 /**
  * URL-slug input. Normalizes as the user types (lowercase, hyphenated, stripped
  * of invalid characters) while preserving a trailing hyphen mid-word.
  */
-export function SmartSlugField({
+export const SmartSlugField = ({
   data,
   setData,
   label,
@@ -34,26 +33,24 @@ export function SmartSlugField({
   id,
   prefix = "/",
   maxLength,
-}: SmartSlugFieldProps) {
-  return (
-    <SmartInputGroup
-      id={id}
-      leadingText={prefix}
-      value={data}
-      placeholder={placeholder ?? "my-page-slug"}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      disabled={disabled}
-      readOnly={readOnly}
-      maxLength={maxLength}
-      autoCapitalize="off"
-      autoCorrect="off"
-      spellCheck={false}
-      aria-invalid={error ? true : undefined}
-      onChange={(e) => setData(slugify(e.target.value))}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartSlugFieldProps) => (
+  <SmartInputGroup
+    id={id}
+    leadingText={prefix}
+    value={data}
+    placeholder={placeholder ?? "my-page-slug"}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    disabled={disabled}
+    readOnly={readOnly}
+    maxLength={maxLength}
+    autoCapitalize="off"
+    autoCorrect="off"
+    spellCheck={false}
+    aria-invalid={error ? true : undefined}
+    onChange={(e) => setData(slugify(e.target.value))}
+    fieldClassName={className}
+  />
+)

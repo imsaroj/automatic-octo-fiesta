@@ -14,7 +14,7 @@ export interface SmartYesNoFieldProps extends Omit<
  * Boolean field rendered as a Yes / No radio pair. Stores a `boolean`;
  * `null`/`undefined` renders as no selection.
  */
-export function SmartYesNoField({
+export const SmartYesNoField = ({
   data,
   setData,
   label,
@@ -26,7 +26,7 @@ export function SmartYesNoField({
   yesLabel = "Yes",
   noLabel = "No",
   orientation = "horizontal",
-}: SmartYesNoFieldProps) {
+}: SmartYesNoFieldProps) => {
   const value = data ? "yes" : !data ? "no" : ""
 
   return (

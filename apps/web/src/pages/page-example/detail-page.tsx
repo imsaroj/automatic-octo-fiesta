@@ -68,7 +68,7 @@ const TIMELINE = [
   { time: "Last week", text: "Signed up for a trial." },
 ]
 
-export default function DetailLayoutPage() {
+const DetailLayoutPage = () => {
   return (
     <SmartPage layout="detail">
       <SmartPageHeader>
@@ -164,3 +164,5 @@ export default function DetailLayoutPage() {
     </SmartPage>
   )
 }
+
+export default DetailLayoutPage

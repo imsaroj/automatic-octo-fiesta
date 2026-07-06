@@ -7,7 +7,7 @@ export type SmartCheckboxFieldProps = Omit<
   "placeholder" | "readOnly"
 >
 
-export function SmartCheckboxField({
+export const SmartCheckboxField = ({
   data,
   setData,
   label,
@@ -16,7 +16,7 @@ export function SmartCheckboxField({
   required,
   disabled,
   className,
-}: SmartCheckboxFieldProps) {
+}: SmartCheckboxFieldProps) => {
   const labelNode =
     label != null ? (
       <>

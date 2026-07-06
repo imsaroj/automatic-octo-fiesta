@@ -21,7 +21,7 @@ import type {
 
 type Row = { id: string; name: string }
 
-function deferred<T>() {
+const deferred = <T>() => {
   let resolve!: (value: T) => void
   let reject!: (reason?: unknown) => void
   const promise = new Promise<T>((res, rej) => {
@@ -35,14 +35,14 @@ function deferred<T>() {
 const flush = () => new Promise((r) => setTimeout(r))
 
 /** A fake AG Grid block request (`IGetRowsParams`) with spy callbacks. */
-function fakeGetRowsParams(
+const fakeGetRowsParams = (
   overrides: Partial<{
     startRow: number
     endRow: number
     sortModel: Array<{ colId: string; sort: "asc" | "desc" }>
     filterModel: Record<string, unknown> | null
   }> = {}
-) {
+) => {
   const successCallback = vi.fn()
   const failCallback = vi.fn()
   return {
@@ -61,7 +61,7 @@ function fakeGetRowsParams(
 }
 
 /** A datasource wired to spies, with every option overridable per test. */
-function harness(overrides: Partial<CreateGridDatasourceOptions<Row>> = {}) {
+const harness = (overrides: Partial<CreateGridDatasourceOptions<Row>> = {}) => {
   const fetchRows =
     vi.fn<
       (

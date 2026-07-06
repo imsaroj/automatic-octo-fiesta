@@ -17,7 +17,7 @@ import {
 } from "@workspace/ui/smart-components/page"
 import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
 
-export default function DocumentLayoutPage() {
+const DocumentLayoutPage = () => {
   return (
     <SmartPage layout="document">
       <SmartPageHeader>
@@ -108,3 +108,5 @@ export default function DocumentLayoutPage() {
     </SmartPage>
   )
 }
+
+export default DocumentLayoutPage

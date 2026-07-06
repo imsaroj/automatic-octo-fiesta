@@ -29,43 +29,41 @@ const STEPS = [
   { id: "review", label: "Review", description: "Confirm and finish." },
 ]
 
-function StepRail({ current }: { current: number }) {
-  return (
-    <nav aria-label="Progress" className="flex items-center gap-1">
-      {STEPS.map((step, idx) => {
-        const done = idx < current
-        const active = idx === current
-        return (
-          <div key={step.id} className="flex items-center gap-1">
-            <div
-              className={cn(
-                "flex size-6 items-center justify-center rounded-full text-[11px] font-semibold transition-colors",
-                done && "bg-primary text-primary-foreground",
-                active && "bg-background text-primary ring-2 ring-primary",
-                !done && !active && "bg-muted text-muted-foreground"
-              )}
-            >
-              {done ? <Check className="size-3.5" /> : idx + 1}
-            </div>
-            <span
-              className={cn(
-                "hidden text-xs sm:inline",
-                active ? "font-medium" : "text-muted-foreground"
-              )}
-            >
-              {step.label}
-            </span>
-            {idx < STEPS.length - 1 && (
-              <div className="mx-1 h-px w-6 bg-border sm:w-10" />
+const StepRail = ({ current }: { current: number }) => (
+  <nav aria-label="Progress" className="flex items-center gap-1">
+    {STEPS.map((step, idx) => {
+      const done = idx < current
+      const active = idx === current
+      return (
+        <div key={step.id} className="flex items-center gap-1">
+          <div
+            className={cn(
+              "flex size-6 items-center justify-center rounded-full text-[11px] font-semibold transition-colors",
+              done && "bg-primary text-primary-foreground",
+              active && "bg-background text-primary ring-2 ring-primary",
+              !done && !active && "bg-muted text-muted-foreground"
             )}
+          >
+            {done ? <Check className="size-3.5" /> : idx + 1}
           </div>
-        )
-      })}
-    </nav>
-  )
-}
+          <span
+            className={cn(
+              "hidden text-xs sm:inline",
+              active ? "font-medium" : "text-muted-foreground"
+            )}
+          >
+            {step.label}
+          </span>
+          {idx < STEPS.length - 1 && (
+            <div className="mx-1 h-px w-6 bg-border sm:w-10" />
+          )}
+        </div>
+      )
+    })}
+  </nav>
+)
 
-export default function WizardLayoutPage() {
+const WizardLayoutPage = () => {
   const [step, setStep] = useState(0)
   const isLast = step === STEPS.length - 1
 
@@ -183,3 +181,5 @@ export default function WizardLayoutPage() {
     </SmartPage>
   )
 }
+
+export default WizardLayoutPage

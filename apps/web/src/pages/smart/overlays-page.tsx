@@ -102,7 +102,7 @@ const FILE_CONTEXT_ITEMS = [
   },
 ]
 
-export default function OverlaysPage() {
+const OverlaysPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [openSize, setOpenSize] = useState<SmartDialogSize | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -438,3 +438,5 @@ export default function OverlaysPage() {
     </SmartPage>
   )
 }
+
+export default OverlaysPage

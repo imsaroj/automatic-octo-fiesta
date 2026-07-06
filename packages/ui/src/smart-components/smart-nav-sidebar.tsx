@@ -56,32 +56,30 @@ export interface SmartNavSidebarProps {
  * </SmartNavSidebar>
  * ```
  */
-export function SmartNavSidebar({
+export const SmartNavSidebar = ({
   items,
   activeItem,
   children,
-}: SmartNavSidebarProps) {
-  return (
-    <SidebarProvider className="items-start">
-      <Sidebar collapsible="none" className="hidden md:flex">
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {items.map((item) => (
-                  <SidebarMenuItem key={item.name}>
-                    <SidebarMenuButton isActive={item.name === activeItem}>
-                      <item.icon />
-                      <span>{item.name}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-      </Sidebar>
-      {children}
-    </SidebarProvider>
-  )
-}
+}: SmartNavSidebarProps) => (
+  <SidebarProvider className="items-start">
+    <Sidebar collapsible="none" className="hidden md:flex">
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items.map((item) => (
+                <SidebarMenuItem key={item.name}>
+                  <SidebarMenuButton isActive={item.name === activeItem}>
+                    <item.icon />
+                    <span>{item.name}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+    {children}
+  </SidebarProvider>
+)

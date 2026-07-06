@@ -25,13 +25,13 @@ import type { ToolbarMenuControls } from "./constants"
 type InsertMode = null | "image" | "table"
 
 /** The "Insert" dropdown: horizontal rule, page break, table builder, image. */
-export function InsertMenu({
+export const InsertMenu = ({
   editor,
   menu,
 }: {
   editor: LexicalEditor
   menu: ToolbarMenuControls
-}) {
+}) => {
   const isOpen = menu.openMenu === "insert"
   const onClose = menu.closeMenu
 
@@ -53,7 +53,7 @@ export function InsertMenu({
     }
   }
 
-  function insertImage() {
+  const insertImage = () => {
     if (!imageUrl.trim()) return
     editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
       src: imageUrl.trim(),
@@ -62,7 +62,7 @@ export function InsertMenu({
     onClose()
   }
 
-  function insertTable() {
+  const insertTable = () => {
     const rows = Math.max(1, Math.min(20, parseInt(tableRows) || 3))
     const cols = Math.max(1, Math.min(20, parseInt(tableCols) || 3))
     editor.update(() => {

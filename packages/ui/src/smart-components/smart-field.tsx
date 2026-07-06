@@ -49,7 +49,7 @@ export interface SmartFieldProps {
  * Fall back to raw Label + control when the field needs two controls
  * (e.g. a start/end date range) — `cloneElement` only works on a single child.
  */
-export function SmartField({
+export const SmartField = ({
   id: idProp,
   label,
   description,
@@ -58,7 +58,7 @@ export function SmartField({
   optional,
   className,
   children,
-}: SmartFieldProps) {
+}: SmartFieldProps) => {
   const autoId = React.useId()
   const resolvedId = idProp ?? autoId
   const hasHint = error != null || description != null

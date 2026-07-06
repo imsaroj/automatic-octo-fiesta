@@ -44,24 +44,19 @@ export interface SmartPageSearchProps extends React.HTMLAttributes<HTMLDivElemen
 export const SmartPageSearch = React.forwardRef<
   HTMLDivElement,
   SmartPageSearchProps
->(function SmartPageSearch(
-  { border = true, className, children, ...props },
-  ref
-) {
-  return (
-    <div
-      ref={ref}
-      data-slot="page-search"
-      className={cn(
-        "flex shrink-0 items-center gap-3 px-4 py-2",
-        border && "border-b",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </div>
-  )
-})
+>(({ border = true, className, children, ...props }, ref) => (
+  <div
+    ref={ref}
+    data-slot="page-search"
+    className={cn(
+      "flex shrink-0 items-center gap-3 px-4 py-2",
+      border && "border-b",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+))
 ;(SmartPageSearch as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
   "search"

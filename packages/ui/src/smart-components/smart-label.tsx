@@ -22,24 +22,22 @@ export interface SmartLabelProps extends React.ComponentProps<"label"> {
  */
 export { Label }
 
-export function SmartLabel({
+export const SmartLabel = ({
   required,
   optional,
   children,
   className,
   ...props
-}: SmartLabelProps) {
-  return (
-    <Label className={cn(className)} {...props}>
-      {children}
-      {required && (
-        <span className="text-destructive" aria-hidden="true">
-          *
-        </span>
-      )}
-      {optional && (
-        <span className="font-normal text-muted-foreground"> (optional)</span>
-      )}
-    </Label>
-  )
-}
+}: SmartLabelProps) => (
+  <Label className={cn(className)} {...props}>
+    {children}
+    {required && (
+      <span className="text-destructive" aria-hidden="true">
+        *
+      </span>
+    )}
+    {optional && (
+      <span className="font-normal text-muted-foreground"> (optional)</span>
+    )}
+  </Label>
+)

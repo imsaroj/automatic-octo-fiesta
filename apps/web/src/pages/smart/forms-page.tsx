@@ -59,7 +59,7 @@ const PLAN_OPTIONS = [
   },
 ]
 
-export default function FormsPage() {
+const FormsPage = () => {
   const [saving, setSaving] = useState(false)
   const [emailError, setEmailError] = useState<string | undefined>()
   const [notifications, setNotifications] = useState({
@@ -313,3 +313,5 @@ export default function FormsPage() {
     </SmartPage>
   )
 }
+
+export default FormsPage

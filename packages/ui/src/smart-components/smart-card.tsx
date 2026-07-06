@@ -73,14 +73,14 @@ export {
   CardAction,
 }
 
-export function SmartCard({
+export const SmartCard = ({
   header,
   footer,
   contentClassName,
   size = "default",
   className,
   children,
-}: SmartCardProps) {
+}: SmartCardProps) => {
   const hasHeader =
     header &&
     (header.title != null || header.subtitle != null || header.actions != null)

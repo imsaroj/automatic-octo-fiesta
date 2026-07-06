@@ -27,13 +27,13 @@ const badgeVariants = cva(
   }
 )
 
-function Badge({
+const Badge = ({
   className,
   variant = "default",
   render,
   ...props
-}: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
-  return useRender({
+}: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) =>
+  useRender({
     defaultTagName: "span",
     props: mergeProps<"span">(
       {
@@ -47,7 +47,6 @@ function Badge({
       variant,
     },
   })
-}
 
 // eslint-disable-next-line react-refresh/only-export-components
 export { Badge, badgeVariants }

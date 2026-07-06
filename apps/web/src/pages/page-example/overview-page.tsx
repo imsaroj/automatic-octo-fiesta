@@ -126,7 +126,7 @@ const EXAMPLES: Example[] = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function PageExampleOverview() {
+const PageExampleOverview = () => {
   return (
     <SmartPage layout="document">
       <SmartPageHeader>
@@ -177,3 +177,5 @@ export default function PageExampleOverview() {
     </SmartPage>
   )
 }
+
+export default PageExampleOverview

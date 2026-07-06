@@ -93,13 +93,13 @@ export interface SmartTextEditorProps {
 
 // ─── Value-sync plugin ───────────────────────────────────────────────────────
 
-function ValueSyncPlugin({
+const ValueSyncPlugin = ({
   value,
   format,
 }: {
   value: string | undefined
   format: SmartTextEditorFormat
-}) {
+}) => {
   const [editor] = useLexicalComposerContext()
   const prevRef = useRef<string | undefined>(undefined)
 
@@ -150,7 +150,7 @@ function ValueSyncPlugin({
 
 // ─── SmartTextEditor ─────────────────────────────────────────────────────────
 
-export function SmartTextEditor({
+export const SmartTextEditor = ({
   label,
   description,
   error,
@@ -169,7 +169,7 @@ export function SmartTextEditor({
   editorClassName,
   minHeight = "120px",
   maxHeight,
-}: SmartTextEditorProps) {
+}: SmartTextEditorProps) => {
   const id = useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined

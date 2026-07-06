@@ -44,7 +44,7 @@ export interface SmartDatePickerProps {
 }
 
 /** Midnight-today, so today-resets/steppers don't carry a time component. */
-function today() {
+const today = () => {
   const d = new Date()
   d.setHours(0, 0, 0, 0)
   return d
@@ -74,7 +74,7 @@ function today() {
  * <SmartDatePicker selected={date} onSelect={setDate} steppers="next" />
  * ```
  */
-export function SmartDatePicker({
+export const SmartDatePicker = ({
   label,
   description,
   error,
@@ -88,7 +88,7 @@ export function SmartDatePicker({
   disabled,
   steppers,
   todayButton,
-}: SmartDatePickerProps) {
+}: SmartDatePickerProps) => {
   const id = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined

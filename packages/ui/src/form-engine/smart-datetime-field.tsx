@@ -14,7 +14,7 @@ export interface SmartDateTimeFieldProps extends Omit<
  * Combined date + time field. Stores an ISO 8601 string (`Date.toISOString()`);
  * an empty string means "unset".
  */
-export function SmartDateTimeField({
+export const SmartDateTimeField = ({
   data,
   setData,
   label,
@@ -27,7 +27,7 @@ export function SmartDateTimeField({
   use12Hour,
   withSeconds,
   minuteStep,
-}: SmartDateTimeFieldProps) {
+}: SmartDateTimeFieldProps) => {
   const value = data ? new Date(data) : undefined
   const selected = value && !Number.isNaN(value.getTime()) ? value : undefined
 

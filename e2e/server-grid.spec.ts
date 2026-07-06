@@ -9,7 +9,7 @@ import { test, expect, type Page } from "@playwright/test"
 
 const pagingPanel = (page: Page) => page.locator(".ag-paging-panel")
 
-async function gotoServerGrid(page: Page) {
+const gotoServerGrid = async (page: Page) => {
   await page.goto("/grids/server")
   // First block fetched through MSW (450 ms simulated latency) — the pager
   // knowing the exact total proves a real `Page<T>` response was parsed.

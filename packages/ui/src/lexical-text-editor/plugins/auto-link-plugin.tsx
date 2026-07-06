@@ -19,6 +19,6 @@ const MATCHERS = [
 ]
 
 /** Automatically converts typed URLs and email addresses into links. */
-export function AutoLinkPlugin() {
-  return <LexicalAutoLinkPlugin matchers={MATCHERS} />
-}
+export const AutoLinkPlugin = () => (
+  <LexicalAutoLinkPlugin matchers={MATCHERS} />
+)

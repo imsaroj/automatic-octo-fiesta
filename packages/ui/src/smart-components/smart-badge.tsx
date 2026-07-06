@@ -37,7 +37,7 @@ export interface SmartBadgeProps extends VariantProps<typeof badgeVariants> {
  * <SmartBadge variant="outline" onRemove={() => removeTag(id)}>React</SmartBadge>
  * ```
  */
-export function SmartBadge({
+export const SmartBadge = ({
   dot,
   dotColor = "gray",
   onRemove,
@@ -45,32 +45,30 @@ export function SmartBadge({
   children,
   className,
   variant,
-}: SmartBadgeProps) {
-  return (
-    <Badge
-      variant={variant}
-      className={cn("gap-1", onRemove && "pr-0.5", className)}
-    >
-      {dot && (
-        <span
-          aria-hidden="true"
-          className={cn(
-            "size-1.5 shrink-0 rounded-full",
-            dotColors[dotColor] ?? dotColors.gray
-          )}
-        />
-      )}
-      {children}
-      {onRemove && (
-        <button
-          type="button"
-          onClick={onRemove}
-          aria-label={removeLabel}
-          className="ml-0.5 inline-flex size-3.5 items-center justify-center rounded-full opacity-60 outline-none hover:opacity-100 focus-visible:ring-1 focus-visible:ring-current"
-        >
-          <X className="size-2.5" aria-hidden="true" />
-        </button>
-      )}
-    </Badge>
-  )
-}
+}: SmartBadgeProps) => (
+  <Badge
+    variant={variant}
+    className={cn("gap-1", onRemove && "pr-0.5", className)}
+  >
+    {dot && (
+      <span
+        aria-hidden="true"
+        className={cn(
+          "size-1.5 shrink-0 rounded-full",
+          dotColors[dotColor] ?? dotColors.gray
+        )}
+      />
+    )}
+    {children}
+    {onRemove && (
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label={removeLabel}
+        className="ml-0.5 inline-flex size-3.5 items-center justify-center rounded-full opacity-60 outline-none hover:opacity-100 focus-visible:ring-1 focus-visible:ring-current"
+      >
+        <X className="size-2.5" aria-hidden="true" />
+      </button>
+    )}
+  </Badge>
+)

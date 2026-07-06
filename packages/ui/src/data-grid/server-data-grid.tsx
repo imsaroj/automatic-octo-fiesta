@@ -180,10 +180,10 @@ export interface SmartServerGridProps<TRow> {
  * />
  * ```
  */
-function SmartServerGridInner<TRow>(
+const SmartServerGridInner = <TRow,>(
   props: SmartServerGridProps<TRow>,
   ref: ForwardedRef<SmartServerGridHandle<TRow>>
-): ReactElement {
+): ReactElement => {
   const {
     columns,
     fetchRows,

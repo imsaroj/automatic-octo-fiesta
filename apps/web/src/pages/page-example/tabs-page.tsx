@@ -22,7 +22,7 @@ import { SmartButton as Button } from "@workspace/ui/smart-components/smart-butt
 import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
 import { SmartStatCard } from "@workspace/ui/smart-components/smart-stat-card"
 
-export default function TabsLayoutPage() {
+const TabsLayoutPage = () => {
   return (
     <SmartPage layout="detail">
       <SmartPageHeader border={false}>
@@ -136,3 +136,5 @@ export default function TabsLayoutPage() {
     </SmartPage>
   )
 }
+
+export default TabsLayoutPage

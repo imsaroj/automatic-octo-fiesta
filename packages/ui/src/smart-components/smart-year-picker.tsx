@@ -35,9 +35,8 @@ export interface SmartYearPickerProps {
 }
 
 /** Floor `year` to the start of its 12-year page. */
-function pageStart(year: number, fromYear: number) {
-  return fromYear + Math.floor((year - fromYear) / PAGE_SIZE) * PAGE_SIZE
-}
+const pageStart = (year: number, fromYear: number) =>
+  fromYear + Math.floor((year - fromYear) / PAGE_SIZE) * PAGE_SIZE
 
 /**
  * Popover year picker — a paged 12-year grid. Produces a numeric year.
@@ -46,7 +45,7 @@ function pageStart(year: number, fromYear: number) {
  * <SmartYearPicker label="Model year" value={year} onValueChange={setYear} />
  * ```
  */
-export function SmartYearPicker({
+export const SmartYearPicker = ({
   value,
   onValueChange,
   placeholder = "Pick a year",
@@ -60,7 +59,7 @@ export function SmartYearPicker({
   required,
   optional,
   fieldClassName,
-}: SmartYearPickerProps) {
+}: SmartYearPickerProps) => {
   const id = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined

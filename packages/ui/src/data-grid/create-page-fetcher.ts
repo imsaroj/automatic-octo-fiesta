@@ -47,7 +47,7 @@ export interface CreatePageFetcherOptions<TItem> {
   fetchImpl?: typeof fetch
 }
 
-function mergeQuery(query: string, extra?: Record<string, string>): string {
+const mergeQuery = (query: string, extra?: Record<string, string>): string => {
   if (!extra) return query
   const sp = new URLSearchParams(query)
   for (const [key, value] of Object.entries(extra)) sp.set(key, value)
@@ -72,13 +72,13 @@ function mergeQuery(query: string, extra?: Record<string, string>): string {
  * // <SmartServerGrid fetchRows={fetchUsers} … />
  * ```
  */
-export function createPageFetcher<TItem>({
+export const createPageFetcher = <TItem>({
   url,
   itemSchema,
   buildQuery = buildSpringQuery,
   mapError = (response) => new Error(`Server error: ${response.status}`),
   fetchImpl,
-}: CreatePageFetcherOptions<TItem>): PageFetcher<TItem> {
+}: CreatePageFetcherOptions<TItem>): PageFetcher<TItem> => {
   const envelope = pageSchema(itemSchema)
   return async (params, signal, extraParams) => {
     const doFetch = fetchImpl ?? fetch

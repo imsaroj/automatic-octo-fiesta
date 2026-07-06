@@ -19,7 +19,7 @@ afterEach(() => {
   container.remove()
 })
 
-function mount(ui: React.ReactElement) {
+const mount = (ui: React.ReactElement) => {
   container = document.createElement("div")
   document.body.appendChild(container)
   root = createRoot(container)
@@ -31,14 +31,14 @@ const nativeSet = Object.getOwnPropertyDescriptor(
   "value"
 )!.set!
 
-function typeInto(input: HTMLInputElement, value: string) {
+const typeInto = (input: HTMLInputElement, value: string) => {
   act(() => {
     nativeSet.call(input, value)
     input.dispatchEvent(new Event("input", { bubbles: true }))
   })
 }
 
-function Harness(props: { integer?: boolean }) {
+const Harness = (props: { integer?: boolean }) => {
   const [data, setData] = React.useState<number | null>(null)
   return (
     <SmartNumberField
@@ -51,9 +51,7 @@ function Harness(props: { integer?: boolean }) {
   )
 }
 
-function getInput() {
-  return container.querySelector("#n") as HTMLInputElement
-}
+const getInput = () => container.querySelector("#n") as HTMLInputElement
 
 test("strips alphabetic characters from a decimal field as the user types", () => {
   mount(<Harness />)

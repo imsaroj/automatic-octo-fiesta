@@ -25,7 +25,7 @@ export const INSERT_PAGE_BREAK_COMMAND = createCommand<void>(
 // Returns null — visual comes from the <hr> in createDOM() + theme CSS.
 // Handles selection state so keyboard/click selection works correctly.
 
-function PageBreakComponent({ nodeKey }: { nodeKey: NodeKey }) {
+const PageBreakComponent = ({ nodeKey }: { nodeKey: NodeKey }) => {
   const [editor] = useLexicalComposerContext()
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey)
@@ -114,12 +114,9 @@ export class PageBreakNode extends DecoratorNode<React.JSX.Element> {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-export function $createPageBreakNode(key?: NodeKey): PageBreakNode {
-  return new PageBreakNode(key)
-}
+export const $createPageBreakNode = (key?: NodeKey): PageBreakNode =>
+  new PageBreakNode(key)
 
-export function $isPageBreakNode(
+export const $isPageBreakNode = (
   node: LexicalNode | null | undefined
-): node is PageBreakNode {
-  return node instanceof PageBreakNode
-}
+): node is PageBreakNode => node instanceof PageBreakNode

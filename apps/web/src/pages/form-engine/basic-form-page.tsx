@@ -70,7 +70,7 @@ const fields: FieldDefinition<ContactForm>[] = [
   },
 ]
 
-export default function BasicFormPage() {
+const BasicFormPage = () => {
   const [data, setData] = useState<ContactForm>(EMPTY)
 
   return (
@@ -129,3 +129,5 @@ export default function BasicFormPage() {
     </SmartPage>
   )
 }
+
+export default BasicFormPage

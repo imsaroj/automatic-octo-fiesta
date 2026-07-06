@@ -53,7 +53,7 @@ export interface SmartNativeSelectProps extends Omit<
  * />
  * ```
  */
-export function SmartNativeSelect({
+export const SmartNativeSelect = ({
   options,
   groups,
   placeholder,
@@ -68,7 +68,7 @@ export function SmartNativeSelect({
   required,
   disabled,
   ...selectProps
-}: SmartNativeSelectProps) {
+}: SmartNativeSelectProps) => {
   const autoId = React.useId()
   const id = idProp ?? autoId
   const hasHint = error != null || description != null

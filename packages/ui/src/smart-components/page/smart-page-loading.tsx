@@ -33,22 +33,20 @@ export interface SmartPageLoadingProps {
  * </SmartPageContent>
  * ```
  */
-export function SmartPageLoading({
+export const SmartPageLoading = ({
   label = "Loading…",
   className,
-}: SmartPageLoadingProps) {
-  return (
-    <div
-      role="status"
-      aria-live="polite"
-      aria-label={label}
-      className={cn(
-        "flex h-full min-h-[240px] flex-col items-center justify-center gap-3",
-        className
-      )}
-    >
-      <SmartSpinner size={28} className="text-primary" label={label} />
-      <p className="text-sm text-muted-foreground">{label}</p>
-    </div>
-  )
-}
+}: SmartPageLoadingProps) => (
+  <div
+    role="status"
+    aria-live="polite"
+    aria-label={label}
+    className={cn(
+      "flex h-full min-h-[240px] flex-col items-center justify-center gap-3",
+      className
+    )}
+  >
+    <SmartSpinner size={28} className="text-primary" label={label} />
+    <p className="text-sm text-muted-foreground">{label}</p>
+  </div>
+)

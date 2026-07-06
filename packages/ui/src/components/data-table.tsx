@@ -39,12 +39,12 @@ interface DataTableProps<TData, TValue> {
   filterPlaceholder?: string
 }
 
-export function DataTable<TData, TValue>({
+export const DataTable = <TData, TValue>({
   columns,
   data,
   filterColumn,
   filterPlaceholder = "Filter...",
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

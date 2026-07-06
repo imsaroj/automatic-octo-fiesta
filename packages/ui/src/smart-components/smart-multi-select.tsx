@@ -57,7 +57,7 @@ export interface SmartMultiSelectProps {
  * />
  * ```
  */
-export function SmartMultiSelect({
+export const SmartMultiSelect = ({
   options,
   value = [],
   onValueChange,
@@ -73,7 +73,7 @@ export function SmartMultiSelect({
   required,
   optional,
   fieldClassName,
-}: SmartMultiSelectProps) {
+}: SmartMultiSelectProps) => {
   const id = React.useId()
   const [open, setOpen] = React.useState(false)
   const hasHint = error != null || description != null

@@ -66,7 +66,7 @@ export interface SmartRadioGroupProps {
  * />
  * ```
  */
-export function SmartRadioGroup({
+export const SmartRadioGroup = ({
   items,
   value,
   onValueChange,
@@ -80,7 +80,7 @@ export function SmartRadioGroup({
   error,
   required,
   fieldClassName,
-}: SmartRadioGroupProps) {
+}: SmartRadioGroupProps) => {
   const groupId = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${groupId}-hint` : undefined

@@ -74,7 +74,7 @@ export interface SmartSidebarProps extends React.HTMLAttributes<HTMLElement> {
  * ```
  */
 export const SmartSidebar = React.forwardRef<HTMLElement, SmartSidebarProps>(
-  function SmartSidebar(
+  (
     {
       width = "md",
       position = "right",
@@ -86,7 +86,7 @@ export const SmartSidebar = React.forwardRef<HTMLElement, SmartSidebarProps>(
       ...props
     },
     ref
-  ) {
+  ) => {
     const { scroll } = usePageContext()
     const isContained = scroll === "content" || scroll === "grid"
 

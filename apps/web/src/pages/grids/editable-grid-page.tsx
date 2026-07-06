@@ -25,7 +25,7 @@ interface EditableRow {
 const ROLES = ["admin", "engineer", "designer", "analyst"]
 const DEPTS = ["engineering", "design", "operations", "finance"]
 
-function seedRows(): EditableRow[] {
+const seedRows = (): EditableRow[] => {
   const seed = [
     ["Ada", "Lovelace", "engineer", "engineering", 98000],
     ["Grace", "Hopper", "admin", "operations", 120000],
@@ -44,7 +44,7 @@ function seedRows(): EditableRow[] {
   }))
 }
 
-export default function EditableGridPage() {
+const EditableGridPage = () => {
   const [rows, setRows] = useState<EditableRow[]>(seedRows)
   const [selected, setSelected] = useState<EditableRow[]>([])
 
@@ -156,3 +156,5 @@ export default function EditableGridPage() {
     </SmartPage>
   )
 }
+
+export default EditableGridPage

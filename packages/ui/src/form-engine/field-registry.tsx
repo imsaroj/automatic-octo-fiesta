@@ -79,21 +79,19 @@ const asStringArray = (value: unknown) => (value as string[]) ?? []
 const asBool = (value: unknown) => (value as boolean) ?? false
 
 /** Shared builder for the string-valued controls (input, textarea, date, …). */
-function stringEntry(
+const stringEntry = (
   component: React.ComponentType<Record<string, unknown>>,
   extra?: (ctx: FieldRenderContext) => Record<string, unknown>
-): FieldEntry {
-  return {
-    component,
-    defaultValue: "",
-    mapProps: (ctx) => ({
-      ...ctx.common,
-      data: asString(ctx.value),
-      setData: ctx.setValue,
-      ...extra?.(ctx),
-    }),
-  }
-}
+): FieldEntry => ({
+  component,
+  defaultValue: "",
+  mapProps: (ctx) => ({
+    ...ctx.common,
+    data: asString(ctx.value),
+    setData: ctx.setValue,
+    ...extra?.(ctx),
+  }),
+})
 
 const numberEntry = (
   derive: (field: ResolvedFieldDefinition) => Record<string, unknown>
@@ -367,9 +365,7 @@ export const defaultFieldRegistry = {
  * <SmartForm registry={registry} … />
  * ```
  */
-export function registerField(
+export const registerField = (
   entries: Record<string, FieldEntry>,
   base: FieldRegistry = defaultFieldRegistry
-): FieldRegistry {
-  return { ...base, ...entries }
-}
+): FieldRegistry => ({ ...base, ...entries })

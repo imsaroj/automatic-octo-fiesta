@@ -34,19 +34,17 @@ const ActionPermissionContext =
  * </ActionPermissionProvider>
  * ```
  */
-export function ActionPermissionProvider({
+export const ActionPermissionProvider = ({
   can,
   children,
 }: {
   can: ActionPermissionChecker
   children: React.ReactNode
-}) {
-  return (
-    <ActionPermissionContext.Provider value={can}>
-      {children}
-    </ActionPermissionContext.Provider>
-  )
-}
+}) => (
+  <ActionPermissionContext.Provider value={can}>
+    {children}
+  </ActionPermissionContext.Provider>
+)
 
 export interface ActionButtonProps extends SmartButtonProps {
   /** Which entry of `ACTION_BUTTON_CONFIG` supplies the defaults. */
@@ -70,9 +68,9 @@ export interface ActionButtonProps extends SmartButtonProps {
   deniedBehavior?: "hide" | "disable"
 }
 
-function toIconOnlySize(
+const toIconOnlySize = (
   size: SmartButtonProps["size"]
-): SmartButtonProps["size"] {
+): SmartButtonProps["size"] => {
   switch (size) {
     case undefined:
     case null:
@@ -101,7 +99,7 @@ function toIconOnlySize(
  * <ActionButton action="delete" iconOnly onClick={remove} />
  * ```
  */
-export function ActionButton({
+export const ActionButton = ({
   action,
   icon,
   iconOnly = false,
@@ -117,7 +115,7 @@ export function ActionButton({
   children,
   "aria-label": ariaLabel,
   ...props
-}: ActionButtonProps) {
+}: ActionButtonProps) => {
   const can = React.useContext(ActionPermissionContext)
   const allowed = permission ?? can?.(action) ?? true
   if (!allowed && deniedBehavior === "hide") return null
@@ -171,10 +169,10 @@ export type ActionButtonPresetProps = Omit<ActionButtonProps, "action">
  * `ACTION_BUTTON_CONFIG` with a new action.
  */
 // eslint-disable-next-line react-refresh/only-export-components
-export function createActionButton(action: ActionKind, displayName: string) {
-  function ActionButtonPreset(props: ActionButtonPresetProps) {
-    return <ActionButton action={action} {...props} />
-  }
+export const createActionButton = (action: ActionKind, displayName: string) => {
+  const ActionButtonPreset = (props: ActionButtonPresetProps) => (
+    <ActionButton action={action} {...props} />
+  )
   ActionButtonPreset.displayName = displayName
   return ActionButtonPreset
 }

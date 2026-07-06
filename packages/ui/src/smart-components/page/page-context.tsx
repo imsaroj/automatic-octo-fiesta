@@ -75,6 +75,4 @@ export const PageContext = createContext<PageContextValue>(defaultContext)
  * Returns the current page layout context.
  * Available to any component rendered inside a {@link SmartPage}.
  */
-export function usePageContext(): PageContextValue {
-  return useContext(PageContext)
-}
+export const usePageContext = (): PageContextValue => useContext(PageContext)

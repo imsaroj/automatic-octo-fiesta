@@ -22,23 +22,21 @@ export interface SmartButtonProps
  * </SmartButton>
  * ```
  */
-export function SmartButton({
+export const SmartButton = ({
   loading = false,
   loadingText,
   disabled,
   children,
   ...props
-}: SmartButtonProps) {
-  return (
-    <Button disabled={disabled || loading} {...props}>
-      {loading ? (
-        <>
-          <SmartSpinner size={12} label="Loading" />
-          {loadingText ?? children}
-        </>
-      ) : (
-        children
-      )}
-    </Button>
-  )
-}
+}: SmartButtonProps) => (
+  <Button disabled={disabled || loading} {...props}>
+    {loading ? (
+      <>
+        <SmartSpinner size={12} label="Loading" />
+        {loadingText ?? children}
+      </>
+    ) : (
+      children
+    )}
+  </Button>
+)

@@ -27,7 +27,7 @@ interface PortalDropdownProps {
   chevron?: boolean
 }
 
-export function PortalDropdown({
+export const PortalDropdown = ({
   label,
   isOpen,
   onToggle,
@@ -37,7 +37,7 @@ export function PortalDropdown({
   disabled,
   title,
   chevron = true,
-}: PortalDropdownProps) {
+}: PortalDropdownProps) => {
   const triggerRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
 
@@ -107,7 +107,7 @@ export function PortalDropdown({
   )
 }
 
-export function DropdownItem({
+export const DropdownItem = ({
   label,
   icon,
   active,
@@ -123,35 +123,33 @@ export function DropdownItem({
   description?: string
   className?: string
   style?: React.CSSProperties
-}) {
-  return (
-    <button
-      type="button"
-      role="option"
-      aria-selected={active}
-      onClick={onClick}
-      style={style}
-      className={cn(
-        "flex w-full items-center gap-2 px-2.5 py-1.5 text-left text-xs",
-        "transition-colors hover:bg-muted",
-        active && "bg-muted font-medium",
-        className
-      )}
-    >
-      {icon && (
-        <span className="size-3.5 shrink-0 text-muted-foreground">{icon}</span>
-      )}
-      <span className="flex-1">{label}</span>
-      {description && (
-        <span className="text-[10px] text-muted-foreground">{description}</span>
-      )}
-    </button>
-  )
-}
+}) => (
+  <button
+    type="button"
+    role="option"
+    aria-selected={active}
+    onClick={onClick}
+    style={style}
+    className={cn(
+      "flex w-full items-center gap-2 px-2.5 py-1.5 text-left text-xs",
+      "transition-colors hover:bg-muted",
+      active && "bg-muted font-medium",
+      className
+    )}
+  >
+    {icon && (
+      <span className="size-3.5 shrink-0 text-muted-foreground">{icon}</span>
+    )}
+    <span className="flex-1">{label}</span>
+    {description && (
+      <span className="text-[10px] text-muted-foreground">{description}</span>
+    )}
+  </button>
+)
 
 // ─── Toolbar primitives ───────────────────────────────────────────────────────
 
-export function ToolbarButton({
+export const ToolbarButton = ({
   active,
   disabled,
   onClick,
@@ -165,24 +163,22 @@ export function ToolbarButton({
   title: string
   children: React.ReactNode
   className?: string
-}) {
-  return (
-    <Button
-      type="button"
-      variant={active ? "secondary" : "ghost"}
-      size="icon-sm"
-      disabled={disabled}
-      onClick={onClick}
-      title={title}
-      aria-label={title}
-      aria-pressed={active}
-      className={className}
-    >
-      {children}
-    </Button>
-  )
-}
+}) => (
+  <Button
+    type="button"
+    variant={active ? "secondary" : "ghost"}
+    size="icon-sm"
+    disabled={disabled}
+    onClick={onClick}
+    title={title}
+    aria-label={title}
+    aria-pressed={active}
+    className={className}
+  >
+    {children}
+  </Button>
+)
 
-export function ToolbarSeparator() {
-  return <Separator orientation="vertical" className="mx-0.5 h-4 self-center" />
-}
+export const ToolbarSeparator = () => (
+  <Separator orientation="vertical" className="mx-0.5 h-4 self-center" />
+)

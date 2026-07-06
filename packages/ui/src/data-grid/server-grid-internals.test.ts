@@ -100,7 +100,7 @@ interface Row {
 }
 
 /** A minimal AG Grid API stub exposing just what `collectGridExport` reads. */
-function fakeExportApi(rows: Row[]): GridApi<Row> {
+const fakeExportApi = (rows: Row[]): GridApi<Row> => {
   const columns = [
     { colId: "name", colDef: { headerName: "Name" } },
     { colId: "mrr", colDef: {} as { headerName?: string } }, // no headerName → falls back to colId

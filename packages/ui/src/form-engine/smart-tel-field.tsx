@@ -7,7 +7,7 @@ export interface SmartTelFieldProps extends FieldBaseProps<string> {
 }
 
 /** Phone-number input: `type="tel"` with a leading phone icon. */
-export function SmartTelField({
+export const SmartTelField = ({
   data,
   setData,
   label,
@@ -20,25 +20,23 @@ export function SmartTelField({
   className,
   id,
   autoComplete = "tel",
-}: SmartTelFieldProps) {
-  return (
-    <SmartInputGroup
-      id={id}
-      type="tel"
-      inputMode="tel"
-      leadingIcon={<PhoneIcon />}
-      value={data}
-      placeholder={placeholder ?? "+1 (555) 000-0000"}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      disabled={disabled}
-      readOnly={readOnly}
-      autoComplete={autoComplete}
-      aria-invalid={error ? true : undefined}
-      onChange={(e) => setData(e.target.value)}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartTelFieldProps) => (
+  <SmartInputGroup
+    id={id}
+    type="tel"
+    inputMode="tel"
+    leadingIcon={<PhoneIcon />}
+    value={data}
+    placeholder={placeholder ?? "+1 (555) 000-0000"}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    disabled={disabled}
+    readOnly={readOnly}
+    autoComplete={autoComplete}
+    aria-invalid={error ? true : undefined}
+    onChange={(e) => setData(e.target.value)}
+    fieldClassName={className}
+  />
+)

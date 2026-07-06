@@ -65,7 +65,7 @@ interface ToggleDef {
   default: boolean
 }
 
-function ToggleList({ items }: { items: ToggleDef[] }) {
+const ToggleList = ({ items }: { items: ToggleDef[] }) => {
   const [state, setState] = React.useState<Record<string, boolean>>(() =>
     Object.fromEntries(items.map((i) => [i.key, i.default]))
   )
@@ -87,24 +87,22 @@ function ToggleList({ items }: { items: ToggleDef[] }) {
   )
 }
 
-function SectionTitle({
+const SectionTitle = ({
   title,
   description,
 }: {
   title: string
   description: string
-}) {
-  return (
-    <div className="mb-4 flex flex-col gap-1">
-      <h2 className="text-sm font-semibold">{title}</h2>
-      <p className="text-xs text-muted-foreground">{description}</p>
-    </div>
-  )
-}
+}) => (
+  <div className="mb-4 flex flex-col gap-1">
+    <h2 className="text-sm font-semibold">{title}</h2>
+    <p className="text-xs text-muted-foreground">{description}</p>
+  </div>
+)
 
 // ─── Per-section content ────────────────────────────────────────────────────
 
-function SectionContent({ section }: { section: string }) {
+const SectionContent = ({ section }: { section: string }) => {
   switch (section) {
     case "Notifications":
       return (
@@ -256,12 +254,12 @@ export interface SettingsDialogProps {
   defaultSection?: string
 }
 
-export function SettingsDialog({
+export const SettingsDialog = ({
   trigger,
   open,
   onOpenChange,
   defaultSection = "Notifications",
-}: SettingsDialogProps) {
+}: SettingsDialogProps) => {
   const [active, setActive] = React.useState(defaultSection)
 
   return (

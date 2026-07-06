@@ -82,8 +82,8 @@ const ALL_ROWS: UserRow[] = Array.from({ length: 1000 }, (_, i) => ({
 
 /* ----------------------------- mock fetch --------------------------------- */
 
-function applyFilters(rows: UserRow[], filters: ServerFilter[]): UserRow[] {
-  return rows.filter((row) =>
+const applyFilters = (rows: UserRow[], filters: ServerFilter[]): UserRow[] =>
+  rows.filter((row) =>
     filters.every((f) => {
       const val = String(row[f.field as keyof UserRow] ?? "").toLowerCase()
       const term = String(f.value ?? "").toLowerCase()
@@ -92,12 +92,11 @@ function applyFilters(rows: UserRow[], filters: ServerFilter[]): UserRow[] {
       return true
     })
   )
-}
 
-async function fetchUsersPage(
+const fetchUsersPage = async (
   params: ServerFetchParams,
   signal: AbortSignal
-): Promise<ServerFetchResult<UserRow>> {
+): Promise<ServerFetchResult<UserRow>> => {
   await new Promise((resolve, reject) => {
     const t = window.setTimeout(resolve, 250)
     signal.addEventListener("abort", () => {
@@ -132,14 +131,14 @@ const statusVariant: Record<Status, "default" | "secondary" | "destructive"> = {
   Inactive: "destructive",
 }
 
-function StatusCell({ value }: { value?: Status }) {
+const StatusCell = ({ value }: { value?: Status }) => {
   if (!value) return null
   return <Badge variant={statusVariant[value]}>{value}</Badge>
 }
 
 /* ---------------------------------- page ---------------------------------- */
 
-export default function InfiniteGridPage() {
+const InfiniteGridPage = () => {
   const gridRef = useRef<SmartServerGridHandle<UserRow> | null>(null)
 
   const fetchRows = useCallback(
@@ -217,3 +216,5 @@ export default function InfiniteGridPage() {
     </SmartPage>
   )
 }
+
+export default InfiniteGridPage

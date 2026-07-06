@@ -43,22 +43,20 @@ export interface SmartToolbarProps extends React.HTMLAttributes<HTMLDivElement> 
  * ```
  */
 export const SmartToolbar = React.forwardRef<HTMLDivElement, SmartToolbarProps>(
-  function SmartToolbar({ border = true, className, children, ...props }, ref) {
-    return (
-      <div
-        ref={ref}
-        data-slot="toolbar"
-        className={cn(
-          "flex shrink-0 items-center gap-2 px-4 py-2",
-          border && "border-b",
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    )
-  }
+  ({ border = true, className, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      data-slot="toolbar"
+      className={cn(
+        "flex shrink-0 items-center gap-2 px-4 py-2",
+        border && "border-b",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
 )
 ;(SmartToolbar as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
   "toolbar"

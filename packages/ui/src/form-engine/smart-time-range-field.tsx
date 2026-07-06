@@ -18,7 +18,7 @@ export interface SmartTimeRangeFieldProps extends Omit<
 }
 
 /** Time-range field — stores `{ start, end }` as 24-hour `"HH:mm"` strings. */
-export function SmartTimeRangeField({
+export const SmartTimeRangeField = ({
   data,
   setData,
   label,
@@ -32,22 +32,20 @@ export function SmartTimeRangeField({
   minuteStep,
   startPlaceholder,
   endPlaceholder,
-}: SmartTimeRangeFieldProps) {
-  return (
-    <SmartTimeRangePicker
-      value={data}
-      onValueChange={setData}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      disabled={disabled}
-      use12Hour={use12Hour}
-      withSeconds={withSeconds}
-      minuteStep={minuteStep}
-      startPlaceholder={startPlaceholder}
-      endPlaceholder={endPlaceholder}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartTimeRangeFieldProps) => (
+  <SmartTimeRangePicker
+    value={data}
+    onValueChange={setData}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    disabled={disabled}
+    use12Hour={use12Hour}
+    withSeconds={withSeconds}
+    minuteStep={minuteStep}
+    startPlaceholder={startPlaceholder}
+    endPlaceholder={endPlaceholder}
+    fieldClassName={className}
+  />
+)

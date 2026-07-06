@@ -44,7 +44,7 @@ export type SmartComboboxProps = ComboboxProps & SmartComboboxFieldProps
  * />
  * ```
  */
-export function SmartCombobox({
+export const SmartCombobox = ({
   label,
   description,
   error,
@@ -53,7 +53,7 @@ export function SmartCombobox({
   fieldClassName,
   className,
   ...comboboxProps
-}: SmartComboboxProps) {
+}: SmartComboboxProps) => {
   const id = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined

@@ -70,7 +70,7 @@ export interface SmartPageTabsProps {
  * </SmartPage>
  * ```
  */
-export function SmartPageTabs({
+export const SmartPageTabs = ({
   defaultValue,
   value,
   onValueChange,
@@ -78,7 +78,7 @@ export function SmartPageTabs({
   variant = "line",
   className,
   children,
-}: SmartPageTabsProps) {
+}: SmartPageTabsProps) => {
   // Collect SmartPageTab triggers vs SmartPageTabPanel panels from children
   const triggers: React.ReactNode[] = []
   const panels: React.ReactNode[] = []
@@ -130,23 +130,21 @@ export interface SmartPageTabProps {
  * <SmartPageTab value="overview">Overview</SmartPageTab>
  * ```
  */
-export function SmartPageTab({
+export const SmartPageTab = ({
   value,
   className,
   children,
-}: SmartPageTabProps) {
-  return (
-    <TabsTrigger
-      value={value}
-      className={cn(
-        "h-9 rounded-none border-0 px-4 text-xs font-medium",
-        className
-      )}
-    >
-      {children}
-    </TabsTrigger>
-  )
-}
+}: SmartPageTabProps) => (
+  <TabsTrigger
+    value={value}
+    className={cn(
+      "h-9 rounded-none border-0 px-4 text-xs font-medium",
+      className
+    )}
+  >
+    {children}
+  </TabsTrigger>
+)
 ;(SmartPageTab as unknown as Record<string, unknown>)._smartTabRole = "tab"
 
 // ─── SmartPageTabPanel ─────────────────────────────────────────────────────────
@@ -169,16 +167,14 @@ export interface SmartPageTabPanelProps {
  * </SmartPageTabPanel>
  * ```
  */
-export function SmartPageTabPanel({
+export const SmartPageTabPanel = ({
   value,
   className,
   children,
-}: SmartPageTabPanelProps) {
-  return (
-    <TabsContent value={value} className={cn("flex-1 outline-none", className)}>
-      {children}
-    </TabsContent>
-  )
-}
+}: SmartPageTabPanelProps) => (
+  <TabsContent value={value} className={cn("flex-1 outline-none", className)}>
+    {children}
+  </TabsContent>
+)
 ;(SmartPageTabPanel as unknown as Record<string, unknown>)._smartTabRole =
   "panel"

@@ -31,7 +31,7 @@ const parseDay = (value?: string): Date | undefined =>
  * Date-range field. Stores `{ from, to }` as ISO `"YYYY-MM-DD"` date strings
  * (serializable), converting to/from the picker's `Date` range.
  */
-export function SmartDateRangeField({
+export const SmartDateRangeField = ({
   data,
   setData,
   label,
@@ -42,7 +42,7 @@ export function SmartDateRangeField({
   disabled,
   className,
   numberOfMonths,
-}: SmartDateRangeFieldProps) {
+}: SmartDateRangeFieldProps) => {
   const value: DateRange | undefined = data?.from
     ? { from: parseDay(data.from), to: parseDay(data.to) }
     : undefined

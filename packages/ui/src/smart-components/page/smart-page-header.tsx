@@ -66,26 +66,21 @@ export interface SmartPageHeaderProps extends React.HTMLAttributes<HTMLElement> 
 export const SmartPageHeader = React.forwardRef<
   HTMLElement,
   SmartPageHeaderProps
->(function SmartPageHeader(
-  { border = true, compact = false, className, children, ...props },
-  ref
-) {
-  return (
-    <header
-      ref={ref}
-      data-slot="page-header"
-      className={cn(
-        "flex shrink-0 flex-col",
-        compact ? "px-4 py-2" : "px-6 py-4",
-        border && "border-b",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </header>
-  )
-})
+>(({ border = true, compact = false, className, children, ...props }, ref) => (
+  <header
+    ref={ref}
+    data-slot="page-header"
+    className={cn(
+      "flex shrink-0 flex-col",
+      compact ? "px-4 py-2" : "px-6 py-4",
+      border && "border-b",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </header>
+))
 ;(SmartPageHeader as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
   "header"
 
@@ -109,19 +104,17 @@ export interface SmartPageTitleProps extends React.HTMLAttributes<HTMLHeadingEle
 export const SmartPageTitle = React.forwardRef<
   HTMLHeadingElement,
   SmartPageTitleProps
->(function SmartPageTitle({ as: Tag = "h1", className, ...props }, ref) {
-  return (
-    <Tag
-      ref={ref}
-      data-slot="page-title"
-      className={cn(
-        "text-lg leading-tight font-semibold tracking-tight",
-        className
-      )}
-      {...props}
-    />
-  )
-})
+>(({ as: Tag = "h1", className, ...props }, ref) => (
+  <Tag
+    ref={ref}
+    data-slot="page-title"
+    className={cn(
+      "text-lg leading-tight font-semibold tracking-tight",
+      className
+    )}
+    {...props}
+  />
+))
 
 // ─── SmartPageDescription ──────────────────────────────────────────────────────
 
@@ -137,16 +130,14 @@ export const SmartPageTitle = React.forwardRef<
 export const SmartPageDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
->(function SmartPageDescription({ className, ...props }, ref) {
-  return (
-    <p
-      ref={ref}
-      data-slot="page-description"
-      className={cn("text-sm text-muted-foreground", className)}
-      {...props}
-    />
-  )
-})
+>(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    data-slot="page-description"
+    className={cn("text-sm text-muted-foreground", className)}
+    {...props}
+  />
+))
 
 // ─── SmartPageActions ──────────────────────────────────────────────────────────
 
@@ -166,16 +157,14 @@ export const SmartPageDescription = React.forwardRef<
 export const SmartPageActions = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(function SmartPageActions({ className, ...props }, ref) {
-  return (
-    <div
-      ref={ref}
-      data-slot="page-actions"
-      className={cn("ml-auto flex shrink-0 items-center gap-2", className)}
-      {...props}
-    />
-  )
-})
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    data-slot="page-actions"
+    className={cn("ml-auto flex shrink-0 items-center gap-2", className)}
+    {...props}
+  />
+))
 
 // ─── SmartPageBreadcrumb ───────────────────────────────────────────────────────
 
@@ -208,10 +197,10 @@ export interface SmartPageBreadcrumbProps {
  * />
  * ```
  */
-export function SmartPageBreadcrumb({
+export const SmartPageBreadcrumb = ({
   items,
   className,
-}: SmartPageBreadcrumbProps) {
+}: SmartPageBreadcrumbProps) => {
   if (!items.length) return null
   return (
     <Breadcrumb className={cn("mb-1", className)}>

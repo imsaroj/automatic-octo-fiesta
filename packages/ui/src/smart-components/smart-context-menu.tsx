@@ -57,10 +57,10 @@ export type SmartContextMenuItemConfig =
 
 // ---- Renderer ----
 
-function renderItem(
+const renderItem = (
   item: SmartContextMenuItemConfig,
   index: number
-): React.ReactNode {
+): React.ReactNode => {
   if (item.type === "separator") {
     return <ContextMenuSeparator key={index} />
   }
@@ -138,17 +138,15 @@ export interface SmartContextMenuProps {
  * </SmartContextMenu>
  * ```
  */
-export function SmartContextMenu({
+export const SmartContextMenu = ({
   children,
   items,
   className,
-}: SmartContextMenuProps) {
-  return (
-    <ContextMenu>
-      <ContextMenuTrigger className={className}>{children}</ContextMenuTrigger>
-      <ContextMenuContent>
-        {items.map((item, idx) => renderItem(item, idx))}
-      </ContextMenuContent>
-    </ContextMenu>
-  )
-}
+}: SmartContextMenuProps) => (
+  <ContextMenu>
+    <ContextMenuTrigger className={className}>{children}</ContextMenuTrigger>
+    <ContextMenuContent>
+      {items.map((item, idx) => renderItem(item, idx))}
+    </ContextMenuContent>
+  </ContextMenu>
+)

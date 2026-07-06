@@ -93,7 +93,7 @@ const MESSAGES: Message[] = [
   },
 ]
 
-export default function SplitLayoutPage() {
+const SplitLayoutPage = () => {
   const [activeId, setActiveId] = useState(1)
   const active = MESSAGES.find((m) => m.id === activeId) ?? MESSAGES[0]
 
@@ -197,3 +197,5 @@ export default function SplitLayoutPage() {
     </SmartPage>
   )
 }
+
+export default SplitLayoutPage

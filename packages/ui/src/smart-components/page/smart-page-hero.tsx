@@ -66,11 +66,11 @@ const heightClasses: Record<
 export const SmartPageHero = React.forwardRef<
   HTMLDivElement,
   SmartPageHeroProps
->(function SmartPageHero(
-  { background = "muted", height = "md", className, children, ...props },
-  ref
-) {
-  return (
+>(
+  (
+    { background = "muted", height = "md", className, children, ...props },
+    ref
+  ) => (
     <div
       ref={ref}
       data-slot="page-hero"
@@ -85,5 +85,5 @@ export const SmartPageHero = React.forwardRef<
       {children}
     </div>
   )
-})
+)
 ;(SmartPageHero as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] = "hero"

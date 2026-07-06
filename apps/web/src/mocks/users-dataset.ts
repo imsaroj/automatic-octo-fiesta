@@ -36,8 +36,8 @@ const ROLES = [
 const STATUSES: UserRow["status"][] = ["Active", "Inactive", "Pending"]
 
 /** 300 deterministic rows. */
-function seedUsers(): UserRow[] {
-  return Array.from({ length: 300 }, (_, i) => {
+const seedUsers = (): UserRow[] =>
+  Array.from({ length: 300 }, (_, i) => {
     const first = FIRST[i % FIRST.length]
     const last = LAST[(i * 3) % LAST.length]
     const id = i + 1
@@ -50,7 +50,6 @@ function seedUsers(): UserRow[] {
       mrr: 400 + ((i * 53) % 2200),
     }
   })
-}
 
 /**
  * The mock "database" — a mutable, in-memory table seeded deterministically.
@@ -60,7 +59,7 @@ function seedUsers(): UserRow[] {
 let users: UserRow[] = seedUsers()
 let nextId = users.length + 1
 
-function matchFilter(row: UserRow, filter: ServerFilter): boolean {
+const matchFilter = (row: UserRow, filter: ServerFilter): boolean => {
   const raw = row[filter.field as keyof UserRow]
   const text = String(raw).toLowerCase()
   const value = String(filter.value).toLowerCase()
@@ -100,7 +99,11 @@ function matchFilter(row: UserRow, filter: ServerFilter): boolean {
   }
 }
 
-function compareBySorts(a: UserRow, b: UserRow, sorts: ServerSort[]): number {
+const compareBySorts = (
+  a: UserRow,
+  b: UserRow,
+  sorts: ServerSort[]
+): number => {
   for (const sort of sorts) {
     const av = a[sort.field as keyof UserRow]
     const bv = b[sort.field as keyof UserRow]
@@ -121,10 +124,12 @@ export interface UsersQuery {
 }
 
 /** Apply filters → sort → page, returning the page slice plus the filtered total. */
-export function queryUsers(query: UsersQuery): {
+export const queryUsers = (
+  query: UsersQuery
+): {
   content: UserRow[]
   total: number
-} {
+} => {
   let rows = users.filter((row) =>
     query.filters.every((f) => matchFilter(row, f))
   )
@@ -143,17 +148,17 @@ export function queryUsers(query: UsersQuery): {
 export type NewUser = Omit<UserRow, "id">
 
 /** Insert a new user at the top of the table and return the created row. */
-export function insertUser(input: NewUser): UserRow {
+export const insertUser = (input: NewUser): UserRow => {
   const created: UserRow = { ...input, id: nextId++ }
   users.unshift(created)
   return created
 }
 
 /** Patch an existing user; returns the updated row or `undefined` if missing. */
-export function patchUser(
+export const patchUser = (
   id: number,
   changes: Partial<NewUser>
-): UserRow | undefined {
+): UserRow | undefined => {
   const row = users.find((u) => u.id === id)
   if (!row) return undefined
   Object.assign(row, changes)
@@ -161,7 +166,7 @@ export function patchUser(
 }
 
 /** Remove a user by id; returns `true` if a row was deleted. */
-export function removeUser(id: number): boolean {
+export const removeUser = (id: number): boolean => {
   const before = users.length
   users = users.filter((u) => u.id !== id)
   return users.length < before

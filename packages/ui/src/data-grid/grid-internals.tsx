@@ -16,7 +16,7 @@ import { SmartEmptyState } from "./empty-state"
 let modulesRegistered = false
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function ensureGridModules(): void {
+export const ensureGridModules = (): void => {
   if (!modulesRegistered) {
     ModuleRegistry.registerModules([AllCommunityModule])
     modulesRegistered = true
@@ -40,24 +40,22 @@ export interface NoRowsParams {
   description?: string
 }
 
-export function NoRowsOverlay(props: NoRowsParams) {
-  return (
-    <div className="flex h-full w-full items-center justify-center p-6">
-      <SmartEmptyState
-        className="border-0"
-        title={props.title ?? "No data"}
-        description={props.description ?? "There is nothing to display yet."}
-      />
-    </div>
-  )
-}
+export const NoRowsOverlay = (props: NoRowsParams) => (
+  <div className="flex h-full w-full items-center justify-center p-6">
+    <SmartEmptyState
+      className="border-0"
+      title={props.title ?? "No data"}
+      description={props.description ?? "There is nothing to display yet."}
+    />
+  </div>
+)
 
 /** Stable id for a column: explicit `colId`, else `field`, else positional. */
 // eslint-disable-next-line react-refresh/only-export-components
-export function resolveColumnId<TRow>(
+export const resolveColumnId = <TRow,>(
   column: DataGridColumn<TRow>,
   index: number
-): string {
+): string => {
   if (column.colId) return column.colId
   if (typeof column.field === "string") return column.field
   return `col-${index}`
@@ -65,10 +63,10 @@ export function resolveColumnId<TRow>(
 
 /** Human label for a column: `headerName`, else `field`, else a fallback. */
 // eslint-disable-next-line react-refresh/only-export-components
-export function resolveColumnLabel<TRow>(
+export const resolveColumnLabel = <TRow,>(
   column: DataGridColumn<TRow>,
   fallback: string
-): string {
+): string => {
   if (column.headerName) return column.headerName
   if (typeof column.field === "string") return column.field
   return fallback

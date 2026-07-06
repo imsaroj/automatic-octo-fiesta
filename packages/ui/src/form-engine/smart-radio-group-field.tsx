@@ -14,7 +14,7 @@ export interface SmartRadioGroupFieldProps extends Omit<
   orientation?: "horizontal" | "vertical"
 }
 
-export function SmartRadioGroupField({
+export const SmartRadioGroupField = ({
   data,
   setData,
   label,
@@ -25,19 +25,17 @@ export function SmartRadioGroupField({
   className,
   options = [],
   orientation,
-}: SmartRadioGroupFieldProps) {
-  return (
-    <SmartRadioGroup
-      value={data}
-      onValueChange={setData}
-      label={label}
-      description={description}
-      error={error}
-      required={required}
-      items={options}
-      disabled={disabled}
-      orientation={orientation}
-      fieldClassName={className}
-    />
-  )
-}
+}: SmartRadioGroupFieldProps) => (
+  <SmartRadioGroup
+    value={data}
+    onValueChange={setData}
+    label={label}
+    description={description}
+    error={error}
+    required={required}
+    items={options}
+    disabled={disabled}
+    orientation={orientation}
+    fieldClassName={className}
+  />
+)

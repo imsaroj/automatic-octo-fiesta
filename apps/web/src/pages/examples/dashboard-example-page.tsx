@@ -50,13 +50,13 @@ const STAT_ICONS: Record<string, React.ReactNode> = {
 
 // ─── Sparkline placeholder ────────────────────────────────────────────────────
 
-function SparklinePlaceholder({
+const SparklinePlaceholder = ({
   label,
   seed,
 }: {
   label: string
   seed: number
-}) {
+}) => {
   const bars = series({ length: 12, seed, min: 40, max: 95, trend: 0.4 })
   return (
     <Card className="h-52">
@@ -78,7 +78,7 @@ function SparklinePlaceholder({
 
 // ─── Activity item ────────────────────────────────────────────────────────────
 
-function ActivityItem({
+const ActivityItem = ({
   name,
   action,
   time,
@@ -86,25 +86,23 @@ function ActivityItem({
   name: string
   action: string
   time: string
-}) {
-  return (
-    <div className="flex items-center gap-3 py-2">
-      <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold">
-        {name[0]}
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-xs font-medium">
-          <span className="font-semibold">{name}</span> {action}
-        </p>
-      </div>
-      <time className="shrink-0 text-xs text-muted-foreground">{time}</time>
+}) => (
+  <div className="flex items-center gap-3 py-2">
+    <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold">
+      {name[0]}
     </div>
-  )
-}
+    <div className="min-w-0 flex-1">
+      <p className="truncate text-xs font-medium">
+        <span className="font-semibold">{name}</span> {action}
+      </p>
+    </div>
+    <time className="shrink-0 text-xs text-muted-foreground">{time}</time>
+  </div>
+)
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function DashboardExamplePage() {
+const DashboardExamplePage = () => {
   return (
     // Hero detected → "dashboard" layout (page scroll, no height constraints)
     <SmartPage>
@@ -187,3 +185,5 @@ export default function DashboardExamplePage() {
     </SmartPage>
   )
 }
+
+export default DashboardExamplePage

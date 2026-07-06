@@ -39,7 +39,7 @@ import {
 import { useTheme } from "@/components/theme-provider"
 import { SettingsDialog } from "@/components/settings/settings-dialog"
 
-export function NavUser({
+export const NavUser = ({
   user,
 }: {
   user: {
@@ -47,7 +47,7 @@ export function NavUser({
     email: string
     avatar: string
   }
-}) {
+}) => {
   const { isMobile } = useSidebar()
   const { theme, setTheme } = useTheme()
   const [settingsOpen, setSettingsOpen] = useState(false)

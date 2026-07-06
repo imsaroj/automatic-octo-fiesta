@@ -34,10 +34,10 @@ export interface ServerGridSelection<TRow> {
  * re-selects any loaded node whose id is still in the set. Drive it from AG
  * Grid's `onRowSelected` (user toggles) and `onModelUpdated` (blocks arrive).
  */
-export function useServerGridSelection<TRow>(
+export const useServerGridSelection = <TRow>(
   gridApiRef: RefObject<GridApi<TRow> | null>,
   onSelectionChange?: (selection: ServerSelection<TRow>) => void
-): ServerGridSelection<TRow> {
+): ServerGridSelection<TRow> => {
   // Selection that survives block reloads: the id set is the source of truth.
   const selectedIdsRef = useRef<Set<string>>(new Set())
   // Guards against treating our own programmatic re-selection as a user action.

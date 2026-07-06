@@ -36,7 +36,7 @@ export interface SmartPasswordInputProps extends Omit<
  * />
  * ```
  */
-export function SmartPasswordInput({
+export const SmartPasswordInput = ({
   label,
   description,
   error,
@@ -47,7 +47,7 @@ export function SmartPasswordInput({
   id: idProp,
   disabled,
   ...inputProps
-}: SmartPasswordInputProps) {
+}: SmartPasswordInputProps) => {
   const autoId = React.useId()
   const id = idProp ?? autoId
   const [show, setShow] = React.useState(false)

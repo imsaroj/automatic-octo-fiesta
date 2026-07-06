@@ -34,7 +34,7 @@ export interface SmartTextareaProps extends React.ComponentProps<"textarea"> {
  */
 export { Textarea }
 
-export function SmartTextarea({
+export const SmartTextarea = ({
   label,
   description,
   error,
@@ -44,7 +44,7 @@ export function SmartTextarea({
   className,
   id: idProp,
   ...textareaProps
-}: SmartTextareaProps) {
+}: SmartTextareaProps) => {
   const autoId = React.useId()
   const id = idProp ?? autoId
   const hasHint = error != null || description != null

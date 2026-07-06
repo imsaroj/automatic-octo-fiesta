@@ -44,7 +44,7 @@ import type { ToolbarState } from "./use-toolbar-state"
 
 // Smart font-size stepping — bigger sizes step by bigger amounts.
 // Matches the Lexical playground's calculateNextFontSize.
-function calculateNextFontSize(current: number, delta: 1 | -1): number {
+const calculateNextFontSize = (current: number, delta: 1 | -1): number => {
   if (delta === -1) {
     if (current > MAX_FONT_SIZE) return MAX_FONT_SIZE
     if (current >= 48) return current - 12
@@ -61,7 +61,7 @@ function calculateNextFontSize(current: number, delta: 1 | -1): number {
   return MAX_FONT_SIZE
 }
 
-function ColorPaletteDropdown({
+const ColorPaletteDropdown = ({
   editor,
   colors,
   styleProperty,
@@ -77,7 +77,7 @@ function ColorPaletteDropdown({
   title: string
   menuName: string
   menu: ToolbarMenuControls
-}) {
+}) => {
   const apply = (value: string) => {
     editor.update(() => {
       const sel = $getSelection()
@@ -119,7 +119,7 @@ function ColorPaletteDropdown({
   )
 }
 
-function FontFamilyControl({
+const FontFamilyControl = ({
   editor,
   value,
   menu,
@@ -127,7 +127,7 @@ function FontFamilyControl({
   editor: LexicalEditor
   value: string
   menu: ToolbarMenuControls
-}) {
+}) => {
   const current =
     FONT_FAMILIES.find((f) => f.value === value) ?? FONT_FAMILIES[0]
 
@@ -168,7 +168,7 @@ function FontFamilyControl({
   )
 }
 
-function FontSizeControl({
+const FontSizeControl = ({
   editor,
   value,
   menu,
@@ -176,7 +176,7 @@ function FontSizeControl({
   editor: LexicalEditor
   value: string
   menu: ToolbarMenuControls
-}) {
+}) => {
   const px = parseInt(value) || DEFAULT_FONT_SIZE
 
   const apply = (newPx: number) => {
@@ -286,7 +286,7 @@ const FORMAT_BUTTONS: Array<{
  * buttons (bold/italic/…/inline-code), and text/highlight color palettes.
  * Rendered in place of the code-language control for non-code blocks.
  */
-export function InlineMarks({
+export const InlineMarks = ({
   editor,
   state,
   menu,
@@ -294,43 +294,41 @@ export function InlineMarks({
   editor: LexicalEditor
   state: ToolbarState
   menu: ToolbarMenuControls
-}) {
-  return (
-    <>
-      <FontFamilyControl editor={editor} value={state.fontFamily} menu={menu} />
-      <FontSizeControl editor={editor} value={state.fontSize} menu={menu} />
+}) => (
+  <>
+    <FontFamilyControl editor={editor} value={state.fontFamily} menu={menu} />
+    <FontSizeControl editor={editor} value={state.fontSize} menu={menu} />
 
-      <ToolbarSeparator />
+    <ToolbarSeparator />
 
-      {FORMAT_BUTTONS.map(({ format, title, icon, stateKey }) => (
-        <ToolbarButton
-          key={format}
-          active={state[stateKey] as boolean}
-          title={title}
-          onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, format)}
-        >
-          {icon}
-        </ToolbarButton>
-      ))}
+    {FORMAT_BUTTONS.map(({ format, title, icon, stateKey }) => (
+      <ToolbarButton
+        key={format}
+        active={state[stateKey] as boolean}
+        title={title}
+        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, format)}
+      >
+        {icon}
+      </ToolbarButton>
+    ))}
 
-      <ColorPaletteDropdown
-        editor={editor}
-        colors={TEXT_COLORS}
-        styleProperty="color"
-        icon={<Baseline className="size-3" />}
-        title="Text color"
-        menuName="textColor"
-        menu={menu}
-      />
-      <ColorPaletteDropdown
-        editor={editor}
-        colors={HIGHLIGHT_COLORS}
-        styleProperty="background-color"
-        icon={<PaintBucket className="size-3" />}
-        title="Highlight color"
-        menuName="bgColor"
-        menu={menu}
-      />
-    </>
-  )
-}
+    <ColorPaletteDropdown
+      editor={editor}
+      colors={TEXT_COLORS}
+      styleProperty="color"
+      icon={<Baseline className="size-3" />}
+      title="Text color"
+      menuName="textColor"
+      menu={menu}
+    />
+    <ColorPaletteDropdown
+      editor={editor}
+      colors={HIGHLIGHT_COLORS}
+      styleProperty="background-color"
+      icon={<PaintBucket className="size-3" />}
+      title="Highlight color"
+      menuName="bgColor"
+      menu={menu}
+    />
+  </>
+)

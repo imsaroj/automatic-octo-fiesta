@@ -22,7 +22,7 @@ import {
   Trash2Icon,
 } from "lucide-react"
 
-export function NavProjects({
+export const NavProjects = ({
   projects,
 }: {
   projects: {
@@ -30,7 +30,7 @@ export function NavProjects({
     url: string
     icon: React.ReactNode
   }[]
-}) {
+}) => {
   const { isMobile } = useSidebar()
   const location = useLocation()
 

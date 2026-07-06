@@ -46,7 +46,7 @@ const SLOTS = [
   "SmartPageError",
 ]
 
-export default function ContainerLayoutPage() {
+const ContainerLayoutPage = () => {
   return (
     <SmartPage layout="document">
       <SmartPageHeader>
@@ -112,3 +112,5 @@ export default function ContainerLayoutPage() {
     </SmartPage>
   )
 }
+
+export default ContainerLayoutPage

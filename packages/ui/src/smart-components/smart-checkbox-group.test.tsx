@@ -18,7 +18,7 @@ afterEach(() => {
   container.remove()
 })
 
-function mount(ui: React.ReactElement) {
+const mount = (ui: React.ReactElement) => {
   container = document.createElement("div")
   document.body.appendChild(container)
   root = createRoot(container)
@@ -77,7 +77,7 @@ test("uncontrolled: toggling accumulates and removes values", () => {
 })
 
 test("controlled: value drives checked state; edits round-trip through setData-style state", () => {
-  function Harness() {
+  const Harness = () => {
     const [value, setValue] = React.useState<string[]>(["sms"])
     return (
       <SmartCheckboxGroup

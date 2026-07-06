@@ -78,7 +78,7 @@ export interface SmartGridProps<TRow> {
  * <SmartGrid rows={users} columns={columns} loading={isLoading} selection="multiple" />
  * ```
  */
-export function SmartGrid<TRow>({
+export const SmartGrid = <TRow,>({
   rows,
   columns,
   loading = false,
@@ -98,7 +98,7 @@ export function SmartGrid<TRow>({
   height = 480,
   emptyState,
   className,
-}: SmartGridProps<TRow>) {
+}: SmartGridProps<TRow>) => {
   ensureGridModules()
 
   const gridRef = useRef<AgGridReact<TRow>>(null)

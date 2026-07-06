@@ -34,7 +34,7 @@ import {
  * the chosen block type with `SKIP_SELECTION_FOCUS_TAG` so Lexical doesn't
  * restore DOM focus mid-change — matching the playground's format helpers.
  */
-export function BlockFormatMenu({
+export const BlockFormatMenu = ({
   editor,
   blockType,
   menu,
@@ -42,8 +42,8 @@ export function BlockFormatMenu({
   editor: LexicalEditor
   blockType: BlockType
   menu: ToolbarMenuControls
-}) {
-  function applyBlockType(type: BlockType) {
+}) => {
+  const applyBlockType = (type: BlockType) => {
     menu.closeMenu()
     if (type === "bullet") {
       editor.update(() => {
@@ -115,7 +115,7 @@ export function BlockFormatMenu({
 }
 
 /** Language picker shown in place of the text-style controls for code blocks. */
-export function CodeLanguageControl({
+export const CodeLanguageControl = ({
   editor,
   language,
   elementKey,
@@ -125,7 +125,7 @@ export function CodeLanguageControl({
   language: string
   elementKey: NodeKey | null
   menu: ToolbarMenuControls
-}) {
+}) => {
   const friendly =
     CODE_LANGUAGE_OPTIONS.find(([v]) => v === language)?.[1] ?? "Plain Text"
 

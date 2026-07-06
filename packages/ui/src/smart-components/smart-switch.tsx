@@ -40,13 +40,13 @@ export interface SmartSwitchProps extends Omit<
  */
 export { Switch }
 
-export function SmartSwitch({
+export const SmartSwitch = ({
   label,
   description,
   wrapperClassName,
   disabled,
   ...switchProps
-}: SmartSwitchProps) {
+}: SmartSwitchProps) => {
   const id = React.useId()
   const descId = description ? `${id}-desc` : undefined
 

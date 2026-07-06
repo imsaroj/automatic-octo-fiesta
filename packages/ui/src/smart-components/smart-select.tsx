@@ -80,7 +80,7 @@ export interface SmartSelectProps {
  * />
  * ```
  */
-export function SmartSelect({
+export const SmartSelect = ({
   options,
   groups,
   value,
@@ -98,7 +98,7 @@ export function SmartSelect({
   fieldRequired,
   optional,
   fieldClassName,
-}: SmartSelectProps) {
+}: SmartSelectProps) => {
   const id = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined
