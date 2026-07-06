@@ -11,6 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@workspace/ui/components/sheet"
+import { cn } from "@workspace/ui/lib/utils"
 
 export { SheetClose }
 
@@ -40,6 +41,12 @@ export interface SmartSheetProps {
   footer?: React.ReactNode
   /** Show the × close button. @default true */
   showCloseButton?: boolean
+  /**
+   * Draw full-width separator lines under the header and above the footer,
+   * visually grouping them apart from the scrollable body (shadcn style).
+   * @default false
+   */
+  dividers?: boolean
   className?: string
   children?: React.ReactNode
 }
@@ -92,6 +99,7 @@ export function SmartSheet({
   header,
   footer,
   showCloseButton = true,
+  dividers = false,
   className,
   children,
 }: SmartSheetProps) {
@@ -104,7 +112,7 @@ export function SmartSheet({
         className={className}
       >
         {header && (
-          <SheetHeader>
+          <SheetHeader className={cn(dividers && "border-b")}>
             <SheetTitle>{header.title}</SheetTitle>
             {header.subtitle && (
               <SheetDescription>{header.subtitle}</SheetDescription>
@@ -112,7 +120,11 @@ export function SmartSheet({
           </SheetHeader>
         )}
         <div className="flex-1 overflow-y-auto px-6 py-2">{children}</div>
-        {footer && <SheetFooter>{footer}</SheetFooter>}
+        {footer && (
+          <SheetFooter className={cn(dividers && "border-t")}>
+            {footer}
+          </SheetFooter>
+        )}
       </SheetContent>
     </Sheet>
   )

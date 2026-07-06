@@ -255,6 +255,7 @@ export default function OverlaysPage() {
                   Open sheet
                 </SmartButton>
               }
+              dividers
               header={{
                 title: "User settings",
                 subtitle: "Adjust preferences for this user.",
