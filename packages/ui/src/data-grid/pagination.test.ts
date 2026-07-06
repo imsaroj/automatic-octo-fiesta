@@ -2,10 +2,13 @@ import { describe, expect, it } from "vitest"
 import { z } from "zod"
 import {
   buildServerFetchParams,
+  buildSpringQuery,
+  encodeSpringFilter,
   normalizeFilterModel,
   pageSchema,
   toSpringSort,
 } from "@/data-grid/pagination"
+import type { ServerFetchParams } from "@/data-grid/pagination"
 
 const userRowSchema = z.object({
   id: z.number(),
@@ -185,5 +188,121 @@ describe("toSpringSort", () => {
 
   it("returns an empty array when nothing is sorted", () => {
     expect(toSpringSort([])).toEqual([])
+  })
+})
+
+describe("encodeSpringFilter", () => {
+  it("encodes a scalar operator as `<op>:<value>`", () => {
+    expect(
+      encodeSpringFilter({
+        field: "name",
+        filterType: "text",
+        type: "contains",
+        value: "ada",
+      })
+    ).toBe("contains:ada")
+  })
+
+  it("encodes an `inRange` filter with both bounds", () => {
+    expect(
+      encodeSpringFilter({
+        field: "mrr",
+        filterType: "number",
+        type: "inRange",
+        value: 1000,
+        valueTo: 2000,
+      })
+    ).toBe("inRange:1000:2000")
+  })
+
+  it("encodes an array (set) value as a comma-joined `set:` list", () => {
+    expect(
+      encodeSpringFilter({
+        field: "status",
+        filterType: "set",
+        type: "set",
+        value: ["Active", "Pending"],
+      })
+    ).toBe("set:Active,Pending")
+  })
+
+  it("prefers the range branch over the array branch when both could apply", () => {
+    // inRange is checked first, so an array `value` is still stringified as a scalar.
+    expect(
+      encodeSpringFilter({
+        field: "mrr",
+        filterType: "number",
+        type: "inRange",
+        value: [1, 2],
+        valueTo: 3,
+      })
+    ).toBe("inRange:1,2:3")
+  })
+})
+
+describe("buildSpringQuery", () => {
+  const base: ServerFetchParams = {
+    startRow: 0,
+    endRow: 20,
+    page: 0,
+    pageSize: 20,
+    sort: [],
+    filters: [],
+  }
+
+  it("always emits page + size, even with no sort or filters", () => {
+    expect(buildSpringQuery(base)).toBe("page=0&size=20")
+  })
+
+  it("appends one repeated `sort` param per sorted column, in order", () => {
+    const query = buildSpringQuery({
+      ...base,
+      sort: [
+        { field: "name", dir: "asc" },
+        { field: "mrr", dir: "desc" },
+      ],
+    })
+    // URLSearchParams encodes the comma, so decode before asserting Spring shape.
+    expect(decodeURIComponent(query)).toBe(
+      "page=0&size=20&sort=name,asc&sort=mrr,desc"
+    )
+  })
+
+  it("serializes each filter as `<field>=<op>:<value>`", () => {
+    const query = buildSpringQuery({
+      ...base,
+      filters: [
+        { field: "name", filterType: "text", type: "contains", value: "ada" },
+        {
+          field: "mrr",
+          filterType: "number",
+          type: "inRange",
+          value: 1000,
+          valueTo: 2000,
+        },
+        {
+          field: "status",
+          filterType: "set",
+          type: "set",
+          value: ["Active", "Pending"],
+        },
+      ],
+    })
+    expect(decodeURIComponent(query)).toBe(
+      "page=0&size=20&name=contains:ada&mrr=inRange:1000:2000&status=set:Active,Pending"
+    )
+  })
+
+  it("percent-encodes values that contain reserved characters", () => {
+    const query = buildSpringQuery({
+      ...base,
+      filters: [
+        { field: "name", filterType: "text", type: "contains", value: "a b&c" },
+      ],
+    })
+    // Raw output stays URL-safe…
+    expect(query).toContain("name=contains%3Aa+b%26c")
+    // …and round-trips back to the intended Spring value.
+    expect(new URLSearchParams(query).get("name")).toBe("contains:a b&c")
   })
 })
