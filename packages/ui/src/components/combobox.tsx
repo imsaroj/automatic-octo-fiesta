@@ -280,7 +280,6 @@ function useComboboxAnchor() {
   return React.useRef<HTMLDivElement | null>(null)
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export {
   Combobox,
   ComboboxInput,
@@ -297,5 +296,6 @@ export {
   ComboboxChipsInput,
   ComboboxTrigger,
   ComboboxValue,
+  // eslint-disable-next-line react-refresh/only-export-components
   useComboboxAnchor,
 }
