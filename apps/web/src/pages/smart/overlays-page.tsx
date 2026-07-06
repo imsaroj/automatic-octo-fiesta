@@ -200,7 +200,7 @@ export default function OverlaysPage() {
         {/* ── SmartDialog sizes ──────────────────────────────── */}
         <SmartPageSection
           title="SmartDialog sizes"
-          description="Fixed width + max-height per size prop: xs 400px · sm 600px · md 800px · lg 1000px · xl 1200px · 2xl 1400px · 3xl 1600px · full (viewport − 48px). Tall content scrolls."
+          description="Fixed width × fixed height per size prop: xs 400×60vh · sm 600×70vh · md 800×80vh · lg 1000×85vh · xl 1200×90vh · 2xl 1400×90vh · 3xl 1600×92vh · full (viewport − 48px). Tall content scrolls."
           divider
         >
           <div className="flex flex-wrap gap-3">
@@ -224,7 +224,7 @@ export default function OverlaysPage() {
               subtitle:
                 openSize === "full"
                   ? "The full variant spans the viewport minus a 48px margin — great for immersive editors."
-                  : "Fixed pixel width, centered, with content scrolling past the max-height.",
+                  : "Fixed width and height, centered, with content scrolling inside.",
             }}
             footer={
               <SmartButton size="sm" onClick={() => setOpenSize(null)}>
