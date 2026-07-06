@@ -54,6 +54,29 @@ const ActionButtonsPage = lazy(
   () => import("@/pages/smart/action-buttons-page")
 )
 
+// Page layout examples
+const PageExampleOverview = lazy(
+  () => import("@/pages/page-example/overview-page")
+)
+const DocumentLayoutPage = lazy(
+  () => import("@/pages/page-example/document-page")
+)
+const DashboardLayoutPage = lazy(
+  () => import("@/pages/page-example/dashboard-page")
+)
+const GridLayoutPage = lazy(() => import("@/pages/page-example/grid-page"))
+const SplitLayoutPage = lazy(() => import("@/pages/page-example/split-page"))
+const DetailLayoutPage = lazy(() => import("@/pages/page-example/detail-page"))
+const WizardLayoutPage = lazy(() => import("@/pages/page-example/wizard-page"))
+const FullscreenLayoutPage = lazy(
+  () => import("@/pages/page-example/fullscreen-page")
+)
+const TabsLayoutPage = lazy(() => import("@/pages/page-example/tabs-page"))
+const PageStatesPage = lazy(() => import("@/pages/page-example/states-page"))
+const ContainerLayoutPage = lazy(
+  () => import("@/pages/page-example/container-page")
+)
+
 // Form engine demos
 const BasicFormPage = lazy(() => import("@/pages/form-engine/basic-form-page"))
 const AllFieldsPage = lazy(() => import("@/pages/form-engine/all-fields-page"))
@@ -119,6 +142,31 @@ export function App() {
             <Route path="/smart/feedback" element={<FeedbackPage />} />
             <Route path="/smart/text-editor" element={<TextEditorPage />} />
             <Route path="/smart/buttons" element={<ActionButtonsPage />} />
+
+            {/* Page layout examples */}
+            <Route path="/page-example" element={<PageExampleOverview />} />
+            <Route
+              path="/page-example/document"
+              element={<DocumentLayoutPage />}
+            />
+            <Route
+              path="/page-example/dashboard"
+              element={<DashboardLayoutPage />}
+            />
+            <Route path="/page-example/grid" element={<GridLayoutPage />} />
+            <Route path="/page-example/split" element={<SplitLayoutPage />} />
+            <Route path="/page-example/detail" element={<DetailLayoutPage />} />
+            <Route path="/page-example/wizard" element={<WizardLayoutPage />} />
+            <Route
+              path="/page-example/fullscreen"
+              element={<FullscreenLayoutPage />}
+            />
+            <Route path="/page-example/tabs" element={<TabsLayoutPage />} />
+            <Route path="/page-example/states" element={<PageStatesPage />} />
+            <Route
+              path="/page-example/container"
+              element={<ContainerLayoutPage />}
+            />
 
             {/* Form engine */}
             <Route path="/form-engine/basic" element={<BasicFormPage />} />
