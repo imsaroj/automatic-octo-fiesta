@@ -332,11 +332,13 @@ const OverlaysPage = () => {
                 subtitle: "Choose an action for this file.",
               }}
               footer={
-                <DrawerClose asChild>
-                  <SmartButton variant="outline" className="w-full">
-                    Cancel
-                  </SmartButton>
-                </DrawerClose>
+                <DrawerClose
+                  render={
+                    <SmartButton variant="outline" className="w-full">
+                      Cancel
+                    </SmartButton>
+                  }
+                />
               }
             >
               <div className="flex flex-col gap-2 pb-2">
