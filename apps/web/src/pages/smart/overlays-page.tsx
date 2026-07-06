@@ -219,6 +219,7 @@ export default function OverlaysPage() {
             open={openSize !== null}
             onOpenChange={(next) => !next && setOpenSize(null)}
             size={openSize ?? "sm"}
+            dividers
             header={{
               title: `size="${openSize ?? "sm"}"`,
               subtitle:

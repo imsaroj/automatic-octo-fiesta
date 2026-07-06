@@ -75,6 +75,12 @@ export interface SmartDialogProps {
   showCloseButton?: boolean
   /** Dialog width preset. `full` fills the whole page. @default "sm" */
   size?: SmartDialogSize
+  /**
+   * Draw full-width separator lines under the header and above the footer,
+   * visually grouping them apart from the scrollable body (shadcn style).
+   * @default false
+   */
+  dividers?: boolean
   className?: string
   children?: React.ReactNode
 }
@@ -119,6 +125,7 @@ export function SmartDialog({
   footer,
   showCloseButton = true,
   size = "sm",
+  dividers = false,
   className,
   children,
 }: SmartDialogProps) {
@@ -132,7 +139,11 @@ export function SmartDialog({
         className={cn("flex flex-col", SIZE_CLASSES[size], className)}
       >
         {header && (
-          <DialogHeader className="shrink-0">
+          // `-mx-4 px-4` bleeds the border to the popup edges (cancels the
+          // p-4), `pb-4` sets the gap between title and the divider line.
+          <DialogHeader
+            className={cn("shrink-0", dividers && "-mx-4 border-b px-4 pb-4")}
+          >
             <DialogTitle>{header.title}</DialogTitle>
             {header.subtitle && (
               <DialogDescription>{header.subtitle}</DialogDescription>
@@ -140,7 +151,13 @@ export function SmartDialog({
           </DialogHeader>
         )}
         <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
-        {footer && <DialogFooter className="shrink-0">{footer}</DialogFooter>}
+        {footer && (
+          <DialogFooter
+            className={cn("shrink-0", dividers && "-mx-4 border-t px-4 pt-4")}
+          >
+            {footer}
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   )
