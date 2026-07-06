@@ -89,8 +89,7 @@ export default function GridLayoutPage() {
     const q = query.trim().toLowerCase()
     return allRows.filter((r) => {
       if (planFilter && r.plan !== planFilter) return false
-      if (q && !`${r.name} ${r.owner}`.toLowerCase().includes(q)) return false
-      return true
+      return !(q && !`${r.name} ${r.owner}`.toLowerCase().includes(q))
     })
   }, [allRows, query, planFilter])
 
@@ -156,14 +155,19 @@ export default function GridLayoutPage() {
 
       <SmartPageFilters label="Filters:">
         {PLANS.map((plan) => (
-          <Badge
+          // SmartBadge is non-interactive (it drops onClick), so wrap it in a
+          // real <button> to get a keyboard-accessible, toggleable filter chip.
+          <button
             key={plan}
-            variant={planFilter === plan ? "default" : "outline"}
-            className="cursor-pointer"
+            type="button"
+            aria-pressed={planFilter === plan}
             onClick={() => setPlanFilter((p) => (p === plan ? null : plan))}
+            className="cursor-pointer rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
-            {plan}
-          </Badge>
+            <Badge variant={planFilter === plan ? "default" : "outline"}>
+              {plan}
+            </Badge>
+          </button>
         ))}
         {planFilter && (
           <Button variant="ghost" size="xs" onClick={() => setPlanFilter(null)}>

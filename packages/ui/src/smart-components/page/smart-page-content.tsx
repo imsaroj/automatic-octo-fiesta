@@ -8,8 +8,10 @@ import { SMART_PAGE_SLOT } from "./smart-page"
 const PADDING_CLASSES: Record<PaddingSize, string> = {
   none: "",
   sm: "p-3",
-  md: "p-4 md:p-6",
-  lg: "p-6 md:p-8",
+  // Trim the top padding so content sits close to the page header (whose own
+  // py-4 already contributes ~16px). Sides/bottom keep the full padding.
+  md: "p-4 pt-2 md:px-6 md:pt-2 md:pb-6",
+  lg: "p-6 pt-3 md:px-8 md:pt-3 md:pb-8",
 }
 
 const MAX_WIDTH_CLASSES = {

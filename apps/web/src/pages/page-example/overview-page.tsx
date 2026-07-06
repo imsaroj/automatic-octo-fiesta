@@ -116,11 +116,11 @@ const EXAMPLES: Example[] = [
   },
   {
     to: "/page-example/container",
-    title: "Compound API",
-    layout: "SmartPageContainer",
+    title: "Composition",
+    layout: "document",
     icon: <Boxes className="size-5" />,
     description:
-      "The same slots via a single import — SmartPageContainer.Header, .Content, .Footer and friends.",
+      "Every region as a standalone slot export — the building blocks the other layouts are composed from.",
   },
 ]
 

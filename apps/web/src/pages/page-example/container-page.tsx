@@ -1,101 +1,114 @@
 /**
- * Page Example — Compound API (SmartPageContainer)
+ * Page Example — Slot composition
  *
- * `SmartPageContainer` bundles every page slot as a static property, so the
- * whole layout comes from a single import. `SmartPageContainer.Header` is
- * exactly `SmartPageHeader`, `.Content` is `SmartPageContent`, and so on — it's
- * a convenience surface, not a different component.
+ * A plain `document` layout composed from the standalone slot exports
+ * (`SmartPageHeader`, `SmartPageContent`, `SmartPageSection`, `SmartPageFooter`,
+ * …) — the same import style every other example uses. It doubles as a quick
+ * reference for the full slot vocabulary available on `SmartPage`.
  */
 
 import { Plus } from "lucide-react"
-import { SmartPageContainer as Page } from "@workspace/ui/smart-components/page"
+import {
+  SmartPage,
+  SmartPageHeader,
+  SmartPageBreadcrumb,
+  SmartPageTitle,
+  SmartPageDescription,
+  SmartPageActions,
+  SmartPageContent,
+  SmartPageSection,
+  SmartPageFooter,
+} from "@workspace/ui/smart-components/page"
 import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
 import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
 
+const SLOTS = [
+  "SmartPageHeader",
+  "SmartPageTitle",
+  "SmartPageDescription",
+  "SmartPageActions",
+  "SmartPageBreadcrumb",
+  "SmartPageHero",
+  "SmartToolbar",
+  "SmartPageSearch",
+  "SmartPageFilters",
+  "SmartPageTabs",
+  "SmartPageTab",
+  "SmartPageTabPanel",
+  "SmartPageContent",
+  "SmartPageSection",
+  "SmartSidebar",
+  "SmartGridArea",
+  "SmartPageStatusBar",
+  "SmartPageFooter",
+  "SmartPageEmpty",
+  "SmartPageLoading",
+  "SmartPageError",
+]
+
 export default function ContainerLayoutPage() {
   return (
-    <Page layout="document">
-      <Page.Header>
-        <Page.Breadcrumb
+    <SmartPage layout="document">
+      <SmartPageHeader>
+        <SmartPageBreadcrumb
           items={[
             { label: "Page Layouts", href: "/page-example" },
-            { label: "Compound API" },
+            { label: "Composition" },
           ]}
         />
         <div className="flex items-center justify-between">
           <div>
-            <Page.Title>Single-import layout</Page.Title>
-            <Page.Description>
-              Everything below comes from one <code>SmartPageContainer</code>{" "}
-              import via its dot-notation sub-components.
-            </Page.Description>
+            <SmartPageTitle>Slot composition</SmartPageTitle>
+            <SmartPageDescription>
+              Every region is a standalone slot component you drop in as a
+              direct child of <code>SmartPage</code> — the same import style
+              used across all of these examples.
+            </SmartPageDescription>
           </div>
-          <Page.Actions>
+          <SmartPageActions>
             <Button size="sm">
               <Plus /> New
             </Button>
-          </Page.Actions>
+          </SmartPageActions>
         </div>
-      </Page.Header>
+      </SmartPageHeader>
 
-      <Page.Content maxWidth="2xl" centered>
-        <Page.Section
-          title="Why a compound API?"
-          description="Fewer imports, same components."
+      <SmartPageContent maxWidth="2xl" centered={true}>
+        <SmartPageSection
+          title="How composition works"
+          description="Slots are order-independent — SmartPage places each one."
           divider
         >
           <p className="text-sm text-muted-foreground">
-            When a page uses many slots, importing each one adds up. The
-            compound surface keeps the call site tidy — <code>Page.Header</code>
-            , <code>Page.Content</code>, <code>Page.Section</code>,{" "}
-            <code>Page.Footer</code> — while rendering the identical elements
-            you would get from the standalone exports.
+            You import the slots you need and render them as children.{" "}
+            <code>SmartPage</code> reads which slots are present, picks the
+            right layout, and wires up sticky regions and scroll containment for
+            you — so the same building blocks compose a document, a dashboard, a
+            grid or a wizard.
           </p>
-        </Page.Section>
+        </SmartPageSection>
 
-        <Page.Section title="Available on the container" bordered>
+        <SmartPageSection title="Available slots" bordered>
           <div className="flex flex-wrap gap-2">
-            {[
-              "Header",
-              "Title",
-              "Description",
-              "Actions",
-              "Breadcrumb",
-              "Hero",
-              "Toolbar",
-              "Search",
-              "Filters",
-              "Tabs",
-              "Tab",
-              "TabPanel",
-              "Content",
-              "Section",
-              "Sidebar",
-              "GridArea",
-              "StatusBar",
-              "Footer",
-              "Empty",
-              "Loading",
-              "Error",
-            ].map((name) => (
+            {SLOTS.map((name) => (
               <Badge
                 key={name}
                 variant="secondary"
                 className="font-mono text-[10px]"
               >
-                Page.{name}
+                {name}
               </Badge>
             ))}
           </div>
-        </Page.Section>
-      </Page.Content>
+        </SmartPageSection>
+      </SmartPageContent>
 
-      <Page.Footer>
+      <SmartPageFooter>
         <Button variant="ghost" size="sm">
           Cancel
         </Button>
         <Button size="sm">Save changes</Button>
-      </Page.Footer>
-    </Page>
+      </SmartPageFooter>
+    </SmartPage>
   )
 }
