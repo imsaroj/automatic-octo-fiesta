@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
@@ -30,7 +32,7 @@ type CarouselContextProps = {
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null)
 
-const useCarousel = () => {
+function useCarousel() {
   const context = React.useContext(CarouselContext)
 
   if (!context) {
@@ -40,7 +42,7 @@ const useCarousel = () => {
   return context
 }
 
-const Carousel = ({
+function Carousel({
   orientation = "horizontal",
   opts,
   setApi,
@@ -48,7 +50,7 @@ const Carousel = ({
   className,
   children,
   ...props
-}: React.ComponentProps<"div"> & CarouselProps) => {
+}: React.ComponentProps<"div"> & CarouselProps) {
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
@@ -131,10 +133,7 @@ const Carousel = ({
   )
 }
 
-const CarouselContent = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
   const { carouselRef, orientation } = useCarousel()
 
   return (
@@ -155,7 +154,7 @@ const CarouselContent = ({
   )
 }
 
-const CarouselItem = ({ className, ...props }: React.ComponentProps<"div">) => {
+function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
   const { orientation } = useCarousel()
 
   return (
@@ -173,12 +172,12 @@ const CarouselItem = ({ className, ...props }: React.ComponentProps<"div">) => {
   )
 }
 
-const CarouselPrevious = ({
+function CarouselPrevious({
   className,
   variant = "outline",
   size = "icon-sm",
   ...props
-}: React.ComponentProps<typeof Button>) => {
+}: React.ComponentProps<typeof Button>) {
   const { orientation, scrollPrev, canScrollPrev } = useCarousel()
 
   return (
@@ -203,12 +202,12 @@ const CarouselPrevious = ({
   )
 }
 
-const CarouselNext = ({
+function CarouselNext({
   className,
   variant = "outline",
   size = "icon-sm",
   ...props
-}: React.ComponentProps<typeof Button>) => {
+}: React.ComponentProps<typeof Button>) {
   const { orientation, scrollNext, canScrollNext } = useCarousel()
 
   return (

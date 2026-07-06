@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 import type { TooltipValueType } from "recharts"
@@ -29,7 +27,7 @@ type ChartContextProps = {
 
 const ChartContext = React.createContext<ChartContextProps | null>(null)
 
-const useChart = () => {
+function useChart() {
   const context = React.useContext(ChartContext)
 
   if (!context) {
@@ -39,7 +37,7 @@ const useChart = () => {
   return context
 }
 
-const ChartContainer = ({
+function ChartContainer({
   id,
   className,
   children,
@@ -55,7 +53,7 @@ const ChartContainer = ({
     width: number
     height: number
   }
-}) => {
+}) {
   const uniqueId = React.useId()
   const chartId = `chart-${id ?? uniqueId.replace(/:/g, "")}`
 
@@ -116,7 +114,7 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip
 
-const ChartTooltipContent = ({
+function ChartTooltipContent({
   active,
   payload,
   className,
@@ -143,7 +141,7 @@ const ChartTooltipContent = ({
       TooltipNameType
     >,
     "accessibilityLayer"
-  >) => {
+  >) {
   const { config } = useChart()
 
   const tooltipLabel = React.useMemo(() => {
@@ -191,7 +189,7 @@ const ChartTooltipContent = ({
   return (
     <div
       className={cn(
-        "grid min-w-32 items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs/relaxed shadow-xl",
+        "grid min-w-32 items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl",
         className
       )}
     >
@@ -272,7 +270,7 @@ const ChartTooltipContent = ({
 
 const ChartLegend = RechartsPrimitive.Legend
 
-const ChartLegendContent = ({
+function ChartLegendContent({
   className,
   hideIcon = false,
   payload,
@@ -281,7 +279,7 @@ const ChartLegendContent = ({
 }: React.ComponentProps<"div"> & {
   hideIcon?: boolean
   nameKey?: string
-} & RechartsPrimitive.DefaultLegendContentProps) => {
+} & RechartsPrimitive.DefaultLegendContentProps) {
   const { config } = useChart()
 
   if (!payload?.length) {
@@ -327,11 +325,11 @@ const ChartLegendContent = ({
   )
 }
 
-const getPayloadConfigFromPayload = (
+function getPayloadConfigFromPayload(
   config: ChartConfig,
   payload: unknown,
   key: string
-) => {
+) {
   if (typeof payload !== "object" || payload === null) {
     return undefined
   }

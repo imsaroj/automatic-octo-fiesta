@@ -67,8 +67,14 @@ export const SmartDrawer = ({
   className,
   children,
 }: SmartDrawerProps) => (
-  <Drawer open={open} onOpenChange={onOpenChange} direction={direction}>
-    {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
+  <Drawer
+    open={open}
+    onOpenChange={onOpenChange}
+    swipeDirection={
+      direction === "bottom" ? "down" : direction === "top" ? "up" : direction
+    }
+  >
+    {trigger && <DrawerTrigger render={trigger} />}
     <DrawerContent className={className}>
       {header && (
         <DrawerHeader>

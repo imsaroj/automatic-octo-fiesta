@@ -6,9 +6,10 @@ import { act } from "react"
 import { SmartCombobox } from "./smart-combobox"
 
 /**
- * SmartCombobox = searchable select + field decoration. Covered: decoration
- * (label/error/required), popup open with options, single-select round-trip,
- * and the multiple variant's badge rendering.
+ * SmartCombobox = searchable select (Base UI Combobox) + field decoration.
+ * Covered: decoration (label/error/required), the type-ahead input display,
+ * opening the popup with all options, single-select round-trip, the multiple
+ * variant's chip rendering, and the disabled state.
  */
 
 let container: HTMLDivElement
@@ -25,20 +26,22 @@ const mount = (ui: React.ReactElement) => {
   act(() => root.render(<React.StrictMode>{ui}</React.StrictMode>))
 }
 
-const trigger = () =>
-  container.querySelector('[role="combobox"]') as HTMLButtonElement
+/** The combobox anchor is a `role="combobox"` input. */
+const input = () =>
+  container.querySelector('input[role="combobox"]') as HTMLInputElement
 
-const openCombobox = () => {
+const openList = () => {
   act(() => {
-    trigger().dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }))
-    trigger().dispatchEvent(new MouseEvent("mousedown", { bubbles: true }))
-    trigger().click()
+    input().focus()
+    input().dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }))
+    input().dispatchEvent(new MouseEvent("mousedown", { bubbles: true }))
+    input().click()
   })
 }
 
-const commandItems = () =>
+const listItems = () =>
   Array.from(
-    document.querySelectorAll<HTMLElement>('[data-slot="command-item"]')
+    document.querySelectorAll<HTMLElement>('[data-slot="combobox-item"]')
   )
 
 const OPTIONS = [
@@ -68,7 +71,8 @@ test("renders label, required asterisk, and error hint", () => {
 
 test("shows the placeholder until a value is selected", () => {
   mount(<SmartCombobox placeholder="Select framework…" options={OPTIONS} />)
-  expect(trigger().textContent).toContain("Select framework…")
+  expect(input().placeholder).toBe("Select framework…")
+  expect(input().value).toBe("")
 
   act(() =>
     root.render(
@@ -79,18 +83,18 @@ test("shows the placeholder until a value is selected", () => {
       />
     )
   )
-  expect(trigger().textContent).toContain("Remix")
+  // The selected option's label fills the type-ahead input.
+  expect(input().value).toBe("Remix")
 })
 
-test("opens the popup with a search input and all options", () => {
+test("opens the popup with all options", () => {
   mount(<SmartCombobox options={OPTIONS} />)
 
-  expect(trigger().getAttribute("aria-expanded")).toBe("false")
-  openCombobox()
+  expect(input().getAttribute("aria-expanded")).toBe("false")
+  openList()
 
-  expect(trigger().getAttribute("aria-expanded")).toBe("true")
-  expect(document.querySelector('[data-slot="command-input"]')).not.toBeNull()
-  expect(commandItems().map((i) => i.textContent)).toEqual([
+  expect(input().getAttribute("aria-expanded")).toBe("true")
+  expect(listItems().map((i) => i.textContent)).toEqual([
     "Next.js",
     "Remix",
     "Vite",
@@ -100,19 +104,19 @@ test("opens the popup with a search input and all options", () => {
 test("selecting an option emits onValueChange and closes the popup", () => {
   const onValueChange = vi.fn()
   mount(<SmartCombobox options={OPTIONS} onValueChange={onValueChange} />)
-  openCombobox()
+  openList()
 
-  const remix = commandItems().find((i) => i.textContent === "Remix")!
+  const remix = listItems().find((i) => i.textContent === "Remix")!
   act(() => {
-    // cmdk items select on click.
+    remix.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }))
     remix.click()
   })
 
   expect(onValueChange).toHaveBeenCalledWith("remix")
-  expect(trigger().getAttribute("aria-expanded")).toBe("false")
+  expect(input().getAttribute("aria-expanded")).toBe("false")
 })
 
-test("multiple: selected values render as badges on the trigger", () => {
+test("multiple: selected values render as removable chips", () => {
   mount(
     <SmartCombobox
       multiple
@@ -121,12 +125,16 @@ test("multiple: selected values render as badges on the trigger", () => {
       onValueChange={() => {}}
     />
   )
-  expect(trigger().textContent).toContain("Next.js")
-  expect(trigger().textContent).toContain("Vite")
-  expect(trigger().textContent).not.toContain("Remix")
+  const chips = Array.from(
+    container.querySelectorAll<HTMLElement>('[data-slot="combobox-chip"]')
+  ).map((c) => c.textContent)
+  const text = chips.join(" ")
+  expect(text).toContain("Next.js")
+  expect(text).toContain("Vite")
+  expect(text).not.toContain("Remix")
 })
 
-test("disabled disables the trigger", () => {
+test("disabled disables the input", () => {
   mount(<SmartCombobox options={OPTIONS} disabled />)
-  expect(trigger().disabled).toBe(true)
+  expect(input().disabled).toBe(true)
 })
