@@ -10,7 +10,15 @@
  */
 
 import { useState } from "react"
-import { Bell, CreditCard, Key, Palette, Shield, User } from "lucide-react"
+import {
+  Bell,
+  CreditCard,
+  Key,
+  Palette,
+  Shield,
+  SlidersHorizontal,
+  User,
+} from "lucide-react"
 import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
 import { Input } from "@workspace/ui/smart-components/smart-input"
 import { Label } from "@workspace/ui/smart-components/smart-label"
@@ -28,10 +36,12 @@ import {
   SmartPageTabs,
   SmartPageTab,
   SmartPageTabPanel,
+  SmartPageActions,
   SmartPageContent,
   SmartPageSection,
   SmartPageFooter,
 } from "@workspace/ui/smart-components/page"
+import { SettingsDialog } from "@/components/settings/settings-dialog"
 
 // ─── Profile settings ─────────────────────────────────────────────────────────
 
@@ -178,17 +188,31 @@ function NotificationsSettings() {
 
 export default function SettingsExamplePage() {
   const [tab, setTab] = useState("profile")
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   return (
     <SmartPage layout="detail">
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <SmartPageHeader>
         <SmartPageBreadcrumb items={[{ label: "Account settings" }]} />
-        <div>
-          <SmartPageTitle>Account settings</SmartPageTitle>
-          <SmartPageDescription>
-            Manage your profile, preferences, and security.
-          </SmartPageDescription>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <SmartPageTitle>Account settings</SmartPageTitle>
+            <SmartPageDescription>
+              Manage your profile, preferences, and security.
+            </SmartPageDescription>
+          </div>
+          <SmartPageActions>
+            <SettingsDialog
+              open={settingsOpen}
+              onOpenChange={setSettingsOpen}
+              trigger={
+                <Button variant="outline" size="sm">
+                  <SlidersHorizontal /> Open in dialog
+                </Button>
+              }
+            />
+          </SmartPageActions>
         </div>
       </SmartPageHeader>
 

@@ -1,3 +1,4 @@
+import { useState } from "react"
 import {
   Avatar,
   AvatarFallback,
@@ -25,17 +26,18 @@ import {
 } from "@workspace/ui/components/sidebar"
 import {
   ChevronsUpDownIcon,
-  SparklesIcon,
   BadgeCheckIcon,
   CreditCardIcon,
   BellIcon,
   LogOutIcon,
+  SettingsIcon,
   SunIcon,
   MoonIcon,
   MonitorIcon,
   SunMoonIcon,
 } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
+import { SettingsDialog } from "@/components/settings/settings-dialog"
 
 export function NavUser({
   user,
@@ -48,6 +50,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const { theme, setTheme } = useTheme()
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   return (
     <SidebarMenu>
@@ -90,13 +93,17 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <SparklesIcon />
-                Upgrade to Pro
+              <DropdownMenuItem
+                onClick={() => {
+                  // Defer so the dropdown finishes closing before the dialog
+                  // opens — avoids a focus / pointer-events race between the
+                  // two modal overlays.
+                  setTimeout(() => setSettingsOpen(true), 0)
+                }}
+              >
+                <SettingsIcon />
+                Settings
               </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
               <DropdownMenuItem>
                 <BadgeCheckIcon />
                 Account
@@ -145,6 +152,7 @@ export function NavUser({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
       </SidebarMenuItem>
     </SidebarMenu>
   )
