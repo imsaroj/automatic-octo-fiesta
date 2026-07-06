@@ -64,6 +64,7 @@ const data = {
         { title: "Overlays", url: "/smart/overlays" },
         { title: "Feedback & Display", url: "/smart/feedback" },
         { title: "Text Editor", url: "/smart/text-editor" },
+        { title: "Action Buttons", url: "/smart/buttons" },
       ],
     },
     {

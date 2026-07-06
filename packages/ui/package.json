@@ -71,6 +71,7 @@
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
     "./smart-components/page": "./src/smart-components/page/index.ts",
+    "./smart-components/buttons": "./src/smart-components/buttons/index.ts",
     "./smart-components/*": "./src/smart-components/*.tsx",
     "./form-engine": "./src/form-engine/index.ts",
     "./search-engine": "./src/search-engine/index.ts",

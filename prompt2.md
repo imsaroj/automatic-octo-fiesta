@@ -4,7 +4,7 @@
 
 ---
 
-## Week 1 — Testing foundation
+## Week 1 — Testing foundation (Done)
 
 ### 1.1 Component render-test suite for the Smart wrapper layer
 

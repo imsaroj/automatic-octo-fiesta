@@ -61,6 +61,7 @@ into arbitrary files:
 @workspace/ui/lib/*                  → src/lib/*.ts
 @workspace/ui/smart-components/*     → src/smart-components/*.tsx       (Smart* wrappers)
 @workspace/ui/smart-components/page  → src/smart-components/page/index.ts   (page composition barrel)
+@workspace/ui/smart-components/buttons → src/smart-components/buttons/index.ts (action-button presets barrel)
 @workspace/ui/form-engine            → src/form-engine/index.ts        (declarative form engine)
 @workspace/ui/search-engine          → src/search-engine/index.ts      (search/filter bar on the form engine)
 @workspace/ui/data-grid              → src/data-grid/index.ts          (AG Grid wrappers)
@@ -121,6 +122,13 @@ flat API can't express (see the doc comment in `smart-card.tsx` for the pattern)
 
 There is a `shadcn-smart-wrappers` skill that converts native shadcn compound usage (`SCard`, `SDialog`, …) into these
 wrappers — prefer `Smart*` wrappers when writing or editing TSX in this repo.
+
+**`smart-components/buttons/`** — action-button presets (barrel: `@workspace/ui/smart-components/buttons`). One
+`ACTION_BUTTON_CONFIG` map (`action-config.ts`) is the single source of truth for each action's icon, label, variant,
+loading text, and button type; the generic `ActionButton` resolves it and adds icon-only mode, tooltip, and optional
+permission gating (`ActionPermissionProvider`); `createActionButton` stamps out the 27 named presets (`AddButton`,
+`DeleteButton`, `SaveButton`, …) in `action-buttons.tsx`. Prefer these presets over hand-configured `SmartButton`s for
+standard CRUD/toolbar actions; extend by adding a config entry plus one `createActionButton` line.
 
 **Field/value convention:** input-like Smart components are controlled through a `data` / `setData(value)` pair (not
 `value`/`onChange`) — see `FieldBaseProps<T>` in `form-engine/base.ts`. The form engine relies on this convention.

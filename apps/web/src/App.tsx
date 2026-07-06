@@ -50,6 +50,9 @@ const PickersPage = lazy(() => import("@/pages/smart/pickers-page"))
 const OverlaysPage = lazy(() => import("@/pages/smart/overlays-page"))
 const FeedbackPage = lazy(() => import("@/pages/smart/feedback-page"))
 const TextEditorPage = lazy(() => import("@/pages/smart/text-editor-page"))
+const ActionButtonsPage = lazy(
+  () => import("@/pages/smart/action-buttons-page")
+)
 
 // Form engine demos
 const BasicFormPage = lazy(() => import("@/pages/form-engine/basic-form-page"))
@@ -115,6 +118,7 @@ export function App() {
             <Route path="/smart/overlays" element={<OverlaysPage />} />
             <Route path="/smart/feedback" element={<FeedbackPage />} />
             <Route path="/smart/text-editor" element={<TextEditorPage />} />
+            <Route path="/smart/buttons" element={<ActionButtonsPage />} />
 
             {/* Form engine */}
             <Route path="/form-engine/basic" element={<BasicFormPage />} />
