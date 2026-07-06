@@ -7,35 +7,57 @@ yarn-error.log*
 .pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+.pnpm-store
+
+# Build output
 dist
 dist-ssr
+build
+out
 *.local
 
-# test coverage
+# Caches
+.cache
+.vite
+.eslintcache
+
+# Test coverage
 coverage
 
-# playwright
+# Playwright
 test-results
 playwright-report
 blob-report
 
-# env files (can opt-in for committing if needed)
-.env*
+# Env files (can opt-in for committing if needed)
+.env
+.env.*
+!.env.example
 
-# turbo
+# Turbo
 .turbo
+
+# Vercel
+.vercel
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# typescript
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# TypeScript
 *.tsbuildinfo
