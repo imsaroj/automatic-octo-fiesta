@@ -10,8 +10,6 @@ import {
   SmartPage,
   SmartPageHeader,
   SmartPageTitle,
-  SmartPageDescription,
-  SmartPageBreadcrumb,
   SmartPageContent,
   SmartPageSection,
 } from "@workspace/ui/smart-components/page"
@@ -20,22 +18,24 @@ import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
 const DocumentLayoutPage = () => {
   return (
     <SmartPage layout="document">
-      <SmartPageHeader>
-        <SmartPageBreadcrumb
-          items={[
-            { label: "Page Layouts", href: "/page-example" },
-            { label: "Document" },
-          ]}
-        />
-        <div className="flex items-center gap-2">
-          <SmartPageTitle>Building a design system</SmartPageTitle>
-          <Badge variant="secondary">Guide</Badge>
-        </div>
-        <SmartPageDescription>
-          A worked example of the <code>document</code> layout — the page
-          scrolls naturally and the content column stays comfortably readable.
-        </SmartPageDescription>
-      </SmartPageHeader>
+      <SmartPageHeader
+        breadcrumb={[
+          { label: "Page Layouts", href: "/page-example" },
+          { label: "Document" },
+        ]}
+        title={
+          <div className="flex items-center gap-2">
+            <SmartPageTitle>Building a design system</SmartPageTitle>
+            <Badge variant="secondary">Guide</Badge>
+          </div>
+        }
+        description={
+          <>
+            A worked example of the <code>document</code> layout — the page
+            scrolls naturally and the content column stays comfortably readable.
+          </>
+        }
+      />
 
       <SmartPageContent maxWidth="2xl" centered>
         <SmartPageSection title="Introduction">

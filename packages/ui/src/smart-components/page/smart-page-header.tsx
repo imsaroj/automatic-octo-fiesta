@@ -14,7 +14,10 @@ import { SMART_PAGE_SLOT } from "./smart-page"
 
 // ─── SmartPageHeader ───────────────────────────────────────────────────────────
 
-export interface SmartPageHeaderProps extends React.HTMLAttributes<HTMLElement> {
+export interface SmartPageHeaderProps extends Omit<
+  React.HTMLAttributes<HTMLElement>,
+  "title"
+> {
   /**
    * Renders a bottom border beneath the header.
    * @default true
@@ -26,6 +29,20 @@ export interface SmartPageHeaderProps extends React.HTMLAttributes<HTMLElement> 
    * @default false
    */
   compact?: boolean
+
+  // ─── Flat convenience props ──────────────────────────────────────────────
+  // Cover the common breadcrumb + title + description + actions header without
+  // hand-nesting the sub-components. Any set flat prop renders its standard
+  // block; `children` still render below it (see the doc comment).
+
+  /** Breadcrumb trail rendered above the title. */
+  breadcrumb?: SmartPageBreadcrumbItem[]
+  /** Page title. A string is wrapped in {@link SmartPageTitle}; pass a node for custom title rows (e.g. a badge beside it). */
+  title?: React.ReactNode
+  /** Supporting description rendered below the title (always wrapped in {@link SmartPageDescription}; inline nodes like `<code>` are fine). */
+  description?: React.ReactNode
+  /** Right-aligned action group, laid out on the same row as the title. */
+  actions?: React.ReactNode
 }
 
 /**
@@ -46,7 +63,27 @@ export interface SmartPageHeaderProps extends React.HTMLAttributes<HTMLElement> 
  * container when `stickyHeader` is enabled. In `"content"` / `"grid"` modes
  * the header sits above the scroll container so it's always visible.
  *
- * @example
+ * ## Flat props vs. composition
+ * For the common case, pass `breadcrumb` / `title` / `description` / `actions`
+ * and the header lays them out for you. Composition is still the escape hatch:
+ * any `children` render *below* the flat block, so you can mix both.
+ *
+ * @example Flat props (the common case)
+ * ```tsx
+ * <SmartPageHeader
+ *   breadcrumb={[{ label: "Users", href: "/users" }, { label: "New" }]}
+ *   title="New User"
+ *   description="Fill in the details below."
+ *   actions={
+ *     <>
+ *       <Button variant="outline">Cancel</Button>
+ *       <Button>Save</Button>
+ *     </>
+ *   }
+ * />
+ * ```
+ *
+ * @example Composition escape hatch (full control)
  * ```tsx
  * <SmartPageHeader>
  *   <SmartPageBreadcrumb items={[{ label: "Users", href: "/users" }, { label: "New" }]} />
@@ -56,7 +93,6 @@ export interface SmartPageHeaderProps extends React.HTMLAttributes<HTMLElement> 
  *       <SmartPageDescription>Fill in the details below.</SmartPageDescription>
  *     </div>
  *     <SmartPageActions>
- *       <Button variant="outline">Cancel</Button>
  *       <Button>Save</Button>
  *     </SmartPageActions>
  *   </div>
@@ -66,21 +102,63 @@ export interface SmartPageHeaderProps extends React.HTMLAttributes<HTMLElement> 
 export const SmartPageHeader = React.forwardRef<
   HTMLElement,
   SmartPageHeaderProps
->(({ border = true, compact = false, className, children, ...props }, ref) => (
-  <header
-    ref={ref}
-    data-slot="page-header"
-    className={cn(
-      "flex shrink-0 flex-col",
-      compact ? "px-4 py-2" : "px-6 py-4",
-      border && "border-b",
-      className
-    )}
-    {...props}
-  >
-    {children}
-  </header>
-))
+>(
+  (
+    {
+      border = true,
+      compact = false,
+      breadcrumb,
+      title,
+      description,
+      actions,
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const hasTitleRow = title != null || description != null || actions != null
+    const hasFlat = (breadcrumb?.length ?? 0) > 0 || hasTitleRow
+
+    return (
+      <header
+        ref={ref}
+        data-slot="page-header"
+        className={cn(
+          "flex shrink-0 flex-col",
+          compact ? "px-4 py-2" : "px-6 py-4",
+          border && "border-b",
+          className
+        )}
+        {...props}
+      >
+        {breadcrumb && breadcrumb.length > 0 && (
+          <SmartPageBreadcrumb items={breadcrumb} />
+        )}
+        {hasTitleRow && (
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              {typeof title === "string" ? (
+                <SmartPageTitle>{title}</SmartPageTitle>
+              ) : (
+                title
+              )}
+              {description != null && (
+                <SmartPageDescription>{description}</SmartPageDescription>
+              )}
+            </div>
+            {actions != null && <SmartPageActions>{actions}</SmartPageActions>}
+          </div>
+        )}
+        {hasFlat && children ? (
+          <div className="mt-2">{children}</div>
+        ) : (
+          children
+        )}
+      </header>
+    )
+  }
+)
 ;(SmartPageHeader as unknown as Record<symbol, unknown>)[SMART_PAGE_SLOT] =
   "header"
 

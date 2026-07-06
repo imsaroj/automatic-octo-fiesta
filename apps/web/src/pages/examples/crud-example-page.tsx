@@ -29,10 +29,6 @@ import { SmartSearchInput } from "@workspace/ui/smart-components/search-input"
 import {
   SmartPage,
   SmartPageHeader,
-  SmartPageTitle,
-  SmartPageDescription,
-  SmartPageActions,
-  SmartPageBreadcrumb,
   SmartToolbar,
   SmartPageSearch,
   SmartGridArea,
@@ -247,25 +243,17 @@ const CrudExamplePage = () => {
     // SmartGridArea's presence auto-detects the "grid" layout
     <SmartPage>
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <SmartPageHeader>
-        <SmartPageBreadcrumb
-          items={[{ label: "Admin", href: "#" }, { label: "Users" }]}
-        />
-        <div className="flex items-center justify-between">
-          <div>
-            <SmartPageTitle>Users</SmartPageTitle>
-            <SmartPageDescription>
-              Manage your organisation's members — backed by TanStack Query.
-            </SmartPageDescription>
-          </div>
-          <SmartPageActions>
-            <Button size="sm" onClick={openCreate}>
-              <UserPlus />
-              Invite user
-            </Button>
-          </SmartPageActions>
-        </div>
-      </SmartPageHeader>
+      <SmartPageHeader
+        breadcrumb={[{ label: "Admin", href: "#" }, { label: "Users" }]}
+        title="Users"
+        description="Manage your organisation's members — backed by TanStack Query."
+        actions={
+          <Button size="sm" onClick={openCreate}>
+            <UserPlus />
+            Invite user
+          </Button>
+        }
+      />
 
       {/* ── Toolbar ─────────────────────────────────────────────────────────── */}
       <SmartToolbar>
