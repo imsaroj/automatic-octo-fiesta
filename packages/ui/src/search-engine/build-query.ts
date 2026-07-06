@@ -22,7 +22,7 @@ export function isEmptyValue(value: unknown): boolean {
   if (value == null) return true
   if (typeof value === "string") return value.trim() === ""
   if (Array.isArray(value)) return value.length === 0
-  if (typeof value === "boolean") return value === false
+  if (typeof value === "boolean") return !value
   if (value instanceof Date) return false
   if (typeof value === "object")
     return Object.values(value as Record<string, unknown>).every(isEmptyValue)
