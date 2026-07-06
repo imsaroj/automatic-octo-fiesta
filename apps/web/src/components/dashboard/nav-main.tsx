@@ -13,7 +13,16 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@workspace/ui/components/sidebar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu"
 import { ChevronRightIcon } from "lucide-react"
 
 export const NavMain = ({
@@ -27,6 +36,8 @@ export const NavMain = ({
   }[]
 }) => {
   const location = useLocation()
+  const { state, isMobile } = useSidebar()
+  const isCollapsed = state === "collapsed" && !isMobile
 
   return (
     <SidebarGroup>
@@ -36,6 +47,42 @@ export const NavMain = ({
           const isActive =
             location.pathname === item.url ||
             item.items?.some((sub) => location.pathname === sub.url)
+
+          // When the sidebar is collapsed to icons, an inline collapsible
+          // submenu would be CSS-hidden, so surface the sub-items as a
+          // dropdown flyout on click instead.
+          if (isCollapsed) {
+            return (
+              <SidebarMenuItem key={item.title}>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={<SidebarMenuButton isActive={isActive} />}
+                  >
+                    {item.icon}
+                    <span>{item.title}</span>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    side="right"
+                    align="start"
+                    sideOffset={4}
+                    className="min-w-48"
+                  >
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
+                      {item.items?.map((subItem) => (
+                        <DropdownMenuItem
+                          key={subItem.title}
+                          render={<Link to={subItem.url} />}
+                        >
+                          {subItem.title}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </SidebarMenuItem>
+            )
+          }
 
           return (
             <Collapsible
