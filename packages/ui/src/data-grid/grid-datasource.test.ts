@@ -70,6 +70,7 @@ const harness = (overrides: Partial<CreateGridDatasourceOptions<Row>> = {}) => {
       ) => Promise<ServerFetchResult<Row>>
     >()
   const controllers = new Set<AbortController>()
+  const onFetchStart = vi.fn()
   const onSuccess = vi.fn()
   const onError = vi.fn()
   const onSettled = vi.fn()
@@ -77,12 +78,21 @@ const harness = (overrides: Partial<CreateGridDatasourceOptions<Row>> = {}) => {
     getFetchRows: () => fetchRows,
     getExternalFilters: () => undefined,
     controllers,
+    onFetchStart,
     onSuccess,
     onError,
     onSettled,
     ...overrides,
   })
-  return { datasource, fetchRows, controllers, onSuccess, onError, onSettled }
+  return {
+    datasource,
+    fetchRows,
+    controllers,
+    onFetchStart,
+    onSuccess,
+    onError,
+    onSettled,
+  }
 }
 
 test("translates the block request into normalized paging + sort params", async () => {
@@ -111,12 +121,14 @@ test("translates the block request into normalized paging + sort params", async 
 })
 
 test("success: rows + exact total reach successCallback; error state clears", async () => {
-  const { datasource, fetchRows, onSuccess, onError, onSettled } = harness()
+  const { datasource, fetchRows, onFetchStart, onSuccess, onError, onSettled } =
+    harness()
   const rows: Row[] = [{ id: "1", name: "Ada" }]
   fetchRows.mockResolvedValue({ rows, total: 101 })
 
   const { params, successCallback, failCallback } = fakeGetRowsParams()
   datasource.getRows(params)
+  expect(onFetchStart).toHaveBeenCalledTimes(1)
   await flush()
 
   expect(successCallback).toHaveBeenCalledWith(rows, 101)

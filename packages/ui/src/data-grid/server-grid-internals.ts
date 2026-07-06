@@ -119,6 +119,8 @@ export interface CreateGridDatasourceOptions<TRow> {
   getExternalFilters: () => ServerFilter[] | undefined
   /** Live registry of in-flight requests (for abort-on-unmount etc.). */
   controllers: Set<AbortController>
+  /** A block fetch started — drives the "loading more" indicator. */
+  onFetchStart: () => void
   /** A block resolved — clear any error state. */
   onSuccess: () => void
   /** A block failed (not aborted) — surface the error overlay. */
@@ -138,6 +140,7 @@ export const createGridDatasource = <TRow>(
   options: CreateGridDatasourceOptions<TRow>
 ): IDatasource => ({
   getRows: (params: IGetRowsParams) => {
+    options.onFetchStart()
     const serverParams = buildServerFetchParams({
       startRow: params.startRow,
       endRow: params.endRow,

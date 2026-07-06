@@ -234,6 +234,11 @@ const SmartServerGridInner = <TRow,>(
   const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // In-flight block count drives the "loading more" bar shown while infinite
+  // scroll fetches subsequent pages (the overlay only covers the first load).
+  const inFlightRef = useRef(0)
+  const [loadingMore, setLoadingMore] = useState(false)
+
   const [columnVisibility, setColumnVisibility] = useState<
     Record<string, boolean>
   >(() => {
@@ -339,9 +344,17 @@ const SmartServerGridInner = <TRow,>(
           getFetchRows: () => fetchRowsRef.current,
           getExternalFilters: () => filtersRef.current,
           controllers: controllersRef.current,
+          onFetchStart: () => {
+            inFlightRef.current += 1
+            setLoadingMore(true)
+          },
           onSuccess: () => setError(null),
           onError: setError,
-          onSettled: () => setInitialLoading(false),
+          onSettled: () => {
+            setInitialLoading(false)
+            inFlightRef.current = Math.max(0, inFlightRef.current - 1)
+            if (inFlightRef.current === 0) setLoadingMore(false)
+          },
         })
       )
     },
@@ -484,6 +497,21 @@ const SmartServerGridInner = <TRow,>(
           onColumnVisible={schedulePersist}
           onColumnPinned={schedulePersist}
         />
+        {loadingMore && !initialLoading && !error ? (
+          <div
+            role="status"
+            aria-live="polite"
+            aria-label="Loading more rows"
+            className="pointer-events-none absolute inset-x-0 top-0 z-40 h-0.5 overflow-hidden bg-primary/20"
+          >
+            <div
+              className="h-full w-1/4 bg-primary"
+              style={{
+                animation: "grid-indeterminate 1.1s ease-in-out infinite",
+              }}
+            />
+          </div>
+        ) : null}
         {initialLoading && !error ? (
           <SmartLoadingOverlay loading label="Loading data…" />
         ) : null}
