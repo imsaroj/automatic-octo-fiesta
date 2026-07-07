@@ -13,6 +13,7 @@ export interface SmartSegmentedFieldProps extends Omit<
   options?: SmartSegmentedOption[]
 }
 
+/** Single choice rendered as a segmented control. */
 export const SmartSegmentedField = ({
   data,
   setData,

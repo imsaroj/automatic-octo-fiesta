@@ -7,7 +7,7 @@ import { SmartEmptyState } from "./empty-state"
 
 /**
  * Internal helpers shared by {@link SmartGrid} (client-side) and
- * {@link ServerSmartGrid} (server-side / infinite). Not part of the public API —
+ * {@link SmartServerGrid} (server-side / infinite). Not part of the public API —
  * the data-grid barrel does not re-export this module.
  */
 

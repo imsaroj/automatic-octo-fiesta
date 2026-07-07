@@ -24,7 +24,7 @@ import {
   type NoRowsParams,
 } from "./grid-internals"
 
-// Re-exported so `@s-component/ui` continues to surface these public types.
+// Re-exported so consumers can import these public types straight from the grid entrypoint.
 export type { DataGridColumn, DataGridDensity } from "./grid-internals"
 
 export interface SmartGridProps<TRow> {
@@ -46,7 +46,7 @@ export interface SmartGridProps<TRow> {
   exportCsv?: boolean
   /** CSV file name (without extension). Default `"export"`. */
   exportFileName?: string
-  /** SPagination. Default `true`. */
+  /** Enable client-side pagination. Default `true`. */
   pagination?: boolean
   /** Rows per page. Default `10`. */
   pageSize?: number

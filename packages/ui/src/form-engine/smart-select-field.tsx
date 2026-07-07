@@ -12,6 +12,7 @@ export interface SmartSelectFieldProps extends FieldBaseProps<string> {
   groups?: SmartSelectGroup[]
 }
 
+/** Single-choice dropdown from flat `options` or grouped `groups`. */
 export const SmartSelectField = ({
   data,
   setData,

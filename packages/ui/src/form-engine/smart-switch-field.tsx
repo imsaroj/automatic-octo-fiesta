@@ -4,6 +4,7 @@ import type { FieldBaseProps } from "./base"
 
 export type SmartSwitchFieldProps = Omit<FieldBaseProps<boolean>, "placeholder">
 
+/** Single boolean toggle switch with an inline label and error message. */
 export const SmartSwitchField = ({
   data,
   setData,

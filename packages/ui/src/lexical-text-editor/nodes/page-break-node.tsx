@@ -17,6 +17,7 @@ import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection"
 
 // ─── Command ─────────────────────────────────────────────────────────────────
 
+/** Lexical command that inserts a {@link PageBreakNode} at the current selection. */
 export const INSERT_PAGE_BREAK_COMMAND = createCommand<void>(
   "INSERT_PAGE_BREAK_COMMAND"
 )
@@ -63,6 +64,11 @@ const PageBreakComponent = ({ nodeKey }: { nodeKey: NodeKey }) => {
 
 export type SerializedPageBreakNode = SerializedLexicalNode
 
+/**
+ * Block-level Lexical decorator node marking a print page break. Renders a
+ * dashed `<hr>` with `page-break-after: always`; the decorated component draws
+ * nothing itself and only manages keyboard/click selection state.
+ */
 export class PageBreakNode extends DecoratorNode<React.JSX.Element> {
   static getType(): string {
     return "page-break"

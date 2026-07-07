@@ -13,6 +13,7 @@ export interface SmartTextEditorFieldProps extends FieldBaseProps<string> {
   maxHeight?: string
 }
 
+/** Lexical rich-text editor field; serializes its value as HTML or JSON. */
 export const SmartTextEditorField = ({
   data,
   setData,

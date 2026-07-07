@@ -5,6 +5,7 @@ export interface SmartPasswordFieldProps extends FieldBaseProps<string> {
   autoComplete?: string
 }
 
+/** Masked password input with a show/hide toggle. */
 export const SmartPasswordField = ({
   data,
   setData,

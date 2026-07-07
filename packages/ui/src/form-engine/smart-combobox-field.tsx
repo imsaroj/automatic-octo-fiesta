@@ -12,6 +12,7 @@ export interface SmartComboboxFieldProps extends FieldBaseProps<string> {
   emptyText?: string
 }
 
+/** Searchable single-choice combobox for a string value. */
 export const SmartComboboxField = ({
   data,
   setData,

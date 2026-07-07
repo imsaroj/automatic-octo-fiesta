@@ -16,6 +16,11 @@ export interface SmartSearchInputProps {
   "aria-label"?: string
 }
 
+/**
+ * Controlled search input with a leading magnifier icon and a clear button that
+ * appears once the field is non-empty. A thin, presentational control — debouncing
+ * and query wiring are left to the caller.
+ */
 export const SmartSearchInput = ({
   value,
   onValueChange,

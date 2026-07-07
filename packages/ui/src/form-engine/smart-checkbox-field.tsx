@@ -7,6 +7,7 @@ export type SmartCheckboxFieldProps = Omit<
   "placeholder" | "readOnly"
 >
 
+/** Single boolean checkbox with an inline label, description, and error message. */
 export const SmartCheckboxField = ({
   data,
   setData,

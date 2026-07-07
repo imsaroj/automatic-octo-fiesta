@@ -20,6 +20,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 // ─── Command ────────────────────────────────────────────────────────────────
 
+/** Lexical command that inserts an {@link ImageNode} at the current selection. */
 export const INSERT_IMAGE_COMMAND = createCommand<{
   src: string
   alt: string
@@ -85,6 +86,11 @@ const ImageComponent = ({
 
 // ─── Node ────────────────────────────────────────────────────────────────────
 
+/**
+ * Block-level Lexical decorator node for an image. In the editor it renders a
+ * selectable `<img>` via {@link ImageComponent}; on serialization it round-trips
+ * through JSON and exports a plain `<img>` for HTML output.
+ */
 export class ImageNode extends DecoratorNode<React.JSX.Element> {
   __src: string
   __alt: string

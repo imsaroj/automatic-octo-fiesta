@@ -14,6 +14,7 @@ export interface SmartRadioGroupFieldProps extends Omit<
   orientation?: "horizontal" | "vertical"
 }
 
+/** Single choice from a visible radio group. */
 export const SmartRadioGroupField = ({
   data,
   setData,

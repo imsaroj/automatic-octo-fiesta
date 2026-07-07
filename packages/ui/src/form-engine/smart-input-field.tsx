@@ -7,6 +7,7 @@ export interface SmartInputFieldProps extends FieldBaseProps<string> {
   autoComplete?: string
 }
 
+/** Single-line text input for `text`, `email`, and `url` string values. */
 export const SmartInputField = ({
   data,
   setData,

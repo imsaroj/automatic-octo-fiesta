@@ -16,6 +16,13 @@ export interface SmartNumberFieldProps extends FieldBaseProps<number | null> {
   suffix?: string
 }
 
+/**
+ * Numeric input bound to a `number | null` value. Sanitizes keystrokes to a
+ * valid number (preserving in-progress input like `"-"` or `"1."`), clamps to
+ * `min`/`max` on blur, and supports arrow-key stepping. Renders leading/trailing
+ * addons via an input group when `prefix`/`suffix` are set (e.g. currency,
+ * percentage); otherwise uses the lighter plain input.
+ */
 export const SmartNumberField = ({
   data,
   setData,

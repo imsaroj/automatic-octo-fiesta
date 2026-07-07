@@ -6,6 +6,7 @@ export interface SmartTextareaFieldProps extends FieldBaseProps<string> {
   maxLength?: number
 }
 
+/** Multi-line plain-text input. */
 export const SmartTextareaField = ({
   data,
   setData,

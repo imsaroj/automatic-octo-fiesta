@@ -7,7 +7,7 @@ import {
 } from "./pagination"
 
 /**
- * A `fetchRows` implementation for {@link SmartServerDataGrid}: takes the
+ * A `fetchRows` implementation for {@link SmartServerGrid}: takes the
  * normalized grid request plus an abort signal and resolves to a block of rows
  * and the total count. An optional third argument carries per-call query params
  * (e.g. a demo `simulateError` toggle) merged on top of the built query.
@@ -55,7 +55,7 @@ const mergeQuery = (query: string, extra?: Record<string, string>): string => {
 }
 
 /**
- * Build a validated `fetchRows` adapter for {@link SmartServerDataGrid}: it
+ * Build a validated `fetchRows` adapter for {@link SmartServerGrid}: it
  * serializes normalized grid params to a query string, calls `url`, checks the
  * HTTP status, and validates the response against the Spring Data `Page<T>`
  * envelope before returning `{ rows, total }`.

@@ -9,9 +9,6 @@ import { Separator } from "@workspace/ui/components/separator"
 import { cn } from "@workspace/ui/lib/utils"
 
 // ─── PortalDropdown ───────────────────────────────────────────────────────────
-// Renders the panel into document.body — same pattern as the Lexical playground
-// DropDown. Because the panel lives outside the editor DOM, clicking items
-// does not steal the editor's DOM focus.
 
 const DROPDOWN_PADDING = 4
 
@@ -27,6 +24,12 @@ interface PortalDropdownProps {
   chevron?: boolean
 }
 
+/**
+ * Toolbar dropdown whose panel is portalled to `document.body`, mirroring the
+ * Lexical playground's DropDown. Rendering outside the editor DOM keeps item
+ * clicks from stealing the editor's DOM focus. The panel is positioned beneath
+ * the trigger and closes on an outside pointer-down.
+ */
 export const PortalDropdown = ({
   label,
   isOpen,

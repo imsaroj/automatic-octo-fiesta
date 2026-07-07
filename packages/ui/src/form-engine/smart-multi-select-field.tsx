@@ -12,6 +12,7 @@ export interface SmartMultiSelectFieldProps extends FieldBaseProps<string[]> {
   searchPlaceholder?: string
 }
 
+/** Searchable multi-choice select bound to a string-array value. */
 export const SmartMultiSelectField = ({
   data,
   setData,

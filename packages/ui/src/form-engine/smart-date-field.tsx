@@ -3,6 +3,10 @@ import type { FieldBaseProps } from "./base"
 
 export type SmartDateFieldProps = FieldBaseProps<string>
 
+/**
+ * Single calendar-date field. Stores the value as an ISO `yyyy-MM-dd` string and
+ * parses it back at local midnight, so the round-trip is time-zone stable.
+ */
 export const SmartDateField = ({
   data,
   setData,
