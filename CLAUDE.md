@@ -67,6 +67,7 @@ into arbitrary files:
 @workspace/ui/data-grid              → src/data-grid/index.ts          (AG Grid wrappers)
 @workspace/ui/tree-engine            → src/tree-engine/index.ts        (SmartTree)
 @workspace/ui/transfer-list-engine   → src/transfer-list-engine/index.ts (SmartTransferList)
+@workspace/ui/calendar-engine        → src/calendar-engine/index.ts    (SmartCalendar)
 @workspace/ui/lexical-text-editor    → src/lexical-text-editor/index.ts
 ```
 
@@ -220,6 +221,33 @@ exactly one side at a time, keyed by stable `id`. `onChange` receives a `Transfe
 `direction` and which items `moved`. Target ids are controllable (`targetIds`/`defaultTargetIds`); imperative
 move-all/move-selected/`getTargetIds` actions come through `SmartTransferListHandle` via `ref`. Pure move/partition/filter
 helpers live in `transfer-utils.ts` (unit-tested in `transfer-utils.test.tsx`).
+
+### Calendar engine (`packages/ui/src/calendar-engine/`)
+
+`SmartCalendar` — a calendar & booking surface exported as `@workspace/ui/calendar-engine`. Generic over a per-event
+`data` payload (`CalendarEvent<T>`). Key design points:
+
+- **Views:** `month` / `week` / `day` / `agenda`. Week & day share the time-grid (`time-grid-view.tsx`); month is
+  `month-view.tsx`; agenda is a flat list. `date` and `view` are each independently controllable (`date`/`defaultDate`,
+  `view`/`defaultView`) or uncontrolled via `useControllable` (`use-calendar.ts`); imperative
+  next/prev/today/goToDate/setView come through `SmartCalendarHandle` via `ref`.
+- **Events:** timed, all-day, and multi-day; 8 preset color tokens (`event-color.ts`). Overlapping timed events are
+  packed into side-by-side lanes by `layoutDayEvents`.
+- **Editing:** `editable` turns on pointer **drag-to-move (across day columns) + edge-resize** in the time-grid (a
+  movement threshold preserves plain clicks) and **drag-to-reschedule** in month; both emit `onEventChange`
+  (`EventChangeMeta`, `kind: "move" | "resize"`). Per-event opt-out via `event.editable`.
+- **Recurrence (`recurrence.ts`):** a compact RRULE subset (`RecurrenceRule`: daily/weekly/monthly, `interval`,
+  `byWeekday`, `count`/`until`, `exceptions`). `expandEvents` turns templates into concrete instances across the visible
+  range before rendering (instances carry `occurrence: { templateId, date }`). Series editing helpers —
+  `detachOccurrence` (this only), `splitSeries` (this & following), `updateSeries` (all) — implement the three-way edit
+  choice.
+- **Booking (`booking.ts`):** `availability` (weekly `AvailabilityWindow[]`) drives `generateFreeSlots` (windows minus
+  booked events, honoring `slotCapacity` and dropping past slots); the time-grid renders them as pickable chips firing
+  `onSlotBook`. `onSlotSelect` fires for clicks on empty grid/day cells.
+- All date math + layout is pure and unit-tested (`calendar-utils.test.tsx`, `recurrence.test.tsx`, `booking.test.tsx`);
+  prefer those helpers over hand-rolled date arithmetic. `apps/web`'s `calendar-page.tsx` is the reference recipe
+  (create/edit/delete dialog, recurring-scope prompt, drag/resize, availability booking). Note `apps/web` does **not**
+  depend on `date-fns` — the demo uses native `Date` helpers; `date-fns` lives in `packages/ui` only.
 
 ### `lib/` (`packages/ui/src/lib/`)
 

@@ -82,6 +82,7 @@
     "./data-grid": "./src/data-grid/index.ts",
     "./tree-engine": "./src/tree-engine/index.ts",
     "./transfer-list-engine": "./src/transfer-list-engine/index.ts",
+    "./calendar-engine": "./src/calendar-engine/index.ts",
     "./lexical-text-editor": "./src/lexical-text-editor/index.ts"
   }
 }
