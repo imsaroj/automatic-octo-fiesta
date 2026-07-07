@@ -41,6 +41,17 @@ const LANGUAGES = [
   { value: "kotlin", label: "Kotlin" },
 ]
 
+const DATE_FORMATS = [
+  { value: "YYYY-MM-DD", label: "YYYY-MM-DD (ISO)" },
+  { value: "DD-MM-YYYY", label: "DD-MM-YYYY" },
+  { value: "MM-DD-YYYY", label: "MM-DD-YYYY (US)" },
+  { value: "YYYY.MM.DD", label: "YYYY.MM.DD" },
+  { value: "YYYY/MM/DD", label: "YYYY/MM/DD" },
+  { value: "DD/MM/YYYY", label: "DD/MM/YYYY (EU)" },
+  { value: "MMM D, YYYY", label: "MMM D, YYYY" },
+  { value: "PPP", label: "PPP (long — default)" },
+]
+
 const GROUPED_TIMEZONES = [
   {
     label: "Asia",
@@ -79,6 +90,17 @@ const PickersPage = () => {
   const [shiftDate, setShiftDate] = useState<Date | undefined>()
   const [prevOnlyDate, setPrevOnlyDate] = useState<Date | undefined>()
   const [nextOnlyDate, setNextOnlyDate] = useState<Date | undefined>()
+  // Shared across every format card so one pick shows the same day rendered
+  // in every pattern at once.
+  const [formatDate, setFormatDate] = useState<Date | undefined>(
+    () => new Date()
+  )
+  const [pickedFormat, setPickedFormat] = useState("YYYY-MM-DD")
+  const [dropdownDate, setDropdownDate] = useState<Date | undefined>()
+  const [monthsOnlyDate, setMonthsOnlyDate] = useState<Date | undefined>()
+  const [yearsOnlyDate, setYearsOnlyDate] = useState<Date | undefined>()
+  const [localDate, setLocalDate] = useState<Date | undefined>()
+  const [utcDate, setUtcDate] = useState<Date | undefined>()
   const [framework, setFramework] = useState("")
   const [language, setLanguage] = useState("")
   const [timezone, setTimezone] = useState("")
@@ -224,6 +246,117 @@ const PickersPage = () => {
               onSelect={setNextOnlyDate}
               steppers="next"
             />
+          </div>
+        </SmartPageSection>
+
+        {/* ── DatePicker display formats ────────────────────────── */}
+        <SmartPageSection
+          title="SmartDatePicker — display formats"
+          description="The dateFormat prop controls how the chosen day is rendered in the trigger. Intuitive upper-case tokens (YYYY, DD) are normalized, so every card below shows the same date at once — pick a day in any one to update them all."
+          divider
+        >
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {DATE_FORMATS.map((f) => (
+              <SmartDatePicker
+                key={f.value}
+                label={f.label}
+                selected={formatDate}
+                onSelect={setFormatDate}
+                dateFormat={f.value}
+              />
+            ))}
+          </div>
+
+          <div className="mt-6 grid items-start gap-4 sm:grid-cols-2">
+            <SmartCombobox
+              label="Live format switcher"
+              description="Change the pattern applied to the picker beside it."
+              options={DATE_FORMATS}
+              value={pickedFormat}
+              onValueChange={(v) => setPickedFormat(v || "YYYY-MM-DD")}
+            />
+            <SmartDatePicker
+              label={`Rendered as “${pickedFormat}”`}
+              selected={formatDate}
+              onSelect={setFormatDate}
+              dateFormat={pickedFormat}
+            />
+          </div>
+        </SmartPageSection>
+
+        {/* ── DatePicker month/year navigation ──────────────────── */}
+        <SmartPageSection
+          title="SmartDatePicker — month & year navigation"
+          description="captionLayout swaps the static caption for dropdowns. Bound the year range with startMonth / endMonth."
+          divider
+        >
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <SmartDatePicker
+              label="Month + year dropdowns"
+              description='captionLayout="dropdown"'
+              selected={dropdownDate}
+              onSelect={setDropdownDate}
+              captionLayout="dropdown"
+              startMonth={new Date(1970, 0)}
+              endMonth={new Date(2035, 11)}
+            />
+            <SmartDatePicker
+              label="Month dropdown only"
+              description='captionLayout="dropdown-months"'
+              selected={monthsOnlyDate}
+              onSelect={setMonthsOnlyDate}
+              captionLayout="dropdown-months"
+            />
+            <SmartDatePicker
+              label="Year dropdown only"
+              description='captionLayout="dropdown-years"'
+              selected={yearsOnlyDate}
+              onSelect={setYearsOnlyDate}
+              captionLayout="dropdown-years"
+              startMonth={new Date(2000, 0)}
+              endMonth={new Date(2030, 11)}
+            />
+          </div>
+        </SmartPageSection>
+
+        {/* ── DatePicker today source (time zone) ───────────────── */}
+        <SmartPageSection
+          title="SmartDatePicker — today source"
+          description="timeZone decides which calendar day the today button / steppers resolve to. “local” reads the browser clock; “utc” reads the current UTC day (they differ around midnight)."
+          divider
+        >
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <SmartDatePicker
+              label="Local today"
+              description='timeZone="local" (default)'
+              selected={localDate}
+              onSelect={setLocalDate}
+              todayButton
+              steppers
+            />
+            <SmartDatePicker
+              label="UTC today"
+              description='timeZone="utc"'
+              selected={utcDate}
+              onSelect={setUtcDate}
+              todayButton
+              steppers
+              timeZone="utc"
+            />
+            <div className="flex flex-col justify-center gap-1 rounded-lg border bg-muted/40 px-4 py-3 text-xs text-muted-foreground">
+              <span>
+                Browser now:{" "}
+                <span className="font-medium text-foreground">
+                  {new Date().toString()}
+                </span>
+              </span>
+              <span>
+                UTC now:{" "}
+                <span className="font-medium text-foreground">
+                  {new Date().toUTCString()}
+                </span>
+              </span>
+            </div>
           </div>
         </SmartPageSection>
 
