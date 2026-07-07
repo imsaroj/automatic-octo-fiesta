@@ -3,23 +3,17 @@
 import * as React from "react"
 import {
   Bell,
-  Check,
   Globe,
-  Home,
-  Keyboard,
-  Link as LinkIcon,
   Lock,
-  Menu,
-  MessageCircle,
   Paintbrush,
-  Settings,
-  Video,
+  User,
   type LucideIcon,
 } from "lucide-react"
 
 import { SmartBreadcrumb } from "@workspace/ui/smart-components/smart-breadcrumb"
 import { SmartButton } from "@workspace/ui/smart-components/smart-button"
 import { SmartInput } from "@workspace/ui/smart-components/smart-input"
+import { SmartSelect } from "@workspace/ui/smart-components/smart-select"
 import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
 import {
   Dialog,
@@ -42,18 +36,11 @@ import {
 // ─── Navigation ─────────────────────────────────────────────────────────────
 
 const NAV: { name: string; icon: LucideIcon }[] = [
+  { name: "Account", icon: User },
   { name: "Notifications", icon: Bell },
-  { name: "Navigation", icon: Menu },
-  { name: "Home", icon: Home },
   { name: "Appearance", icon: Paintbrush },
-  { name: "Messages & media", icon: MessageCircle },
   { name: "Language & region", icon: Globe },
-  { name: "Accessibility", icon: Keyboard },
-  { name: "Mark as read", icon: Check },
-  { name: "Audio & video", icon: Video },
-  { name: "Connected accounts", icon: LinkIcon },
   { name: "Privacy & visibility", icon: Lock },
-  { name: "Advanced", icon: Settings },
 ]
 
 // ─── Reusable toggle-list row ───────────────────────────────────────────────
@@ -104,6 +91,38 @@ const SectionTitle = ({
 
 const SectionContent = ({ section }: { section: string }) => {
   switch (section) {
+    case "Account":
+      return (
+        <>
+          <SectionTitle
+            title="Account"
+            description="Your basic profile details."
+          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <SmartInput label="Full name" defaultValue="Saroj Kumar" />
+            <SmartInput
+              label="Email"
+              type="email"
+              defaultValue="imsaroj@g.skku.edu"
+            />
+            <div className="sm:col-span-2">
+              <SmartInput label="Username" defaultValue="saroj" />
+            </div>
+            <div className="sm:col-span-2">
+              <SmartSelect
+                label="Role"
+                defaultValue="admin"
+                options={[
+                  { value: "admin", label: "Admin" },
+                  { value: "editor", label: "Editor" },
+                  { value: "viewer", label: "Viewer" },
+                ]}
+              />
+            </div>
+          </div>
+        </>
+      )
+
     case "Notifications":
       return (
         <>
@@ -147,8 +166,29 @@ const SectionContent = ({ section }: { section: string }) => {
         <>
           <SectionTitle
             title="Appearance"
-            description="Tune the density and motion of the interface."
+            description="Tune the look and feel of the interface."
           />
+          <div className="mb-2 grid gap-4 sm:grid-cols-2">
+            <SmartSelect
+              label="Theme"
+              defaultValue="system"
+              options={[
+                { value: "system", label: "System" },
+                { value: "light", label: "Light" },
+                { value: "dark", label: "Dark" },
+              ]}
+            />
+            <SmartSelect
+              label="Accent color"
+              defaultValue="blue"
+              options={[
+                { value: "blue", label: "Blue" },
+                { value: "green", label: "Green" },
+                { value: "violet", label: "Violet" },
+                { value: "orange", label: "Orange" },
+              ]}
+            />
+          </div>
           <ToggleList
             items={[
               {
@@ -163,12 +203,6 @@ const SectionContent = ({ section }: { section: string }) => {
                 description: "Minimize non-essential animations.",
                 default: false,
               },
-              {
-                key: "avatars",
-                label: "Show avatars",
-                description: "Display member avatars in lists.",
-                default: true,
-              },
             ]}
           />
         </>
@@ -182,8 +216,26 @@ const SectionContent = ({ section }: { section: string }) => {
             description="Set your display language and local formats."
           />
           <div className="grid gap-4 sm:grid-cols-2">
-            <SmartInput label="Display language" defaultValue="English (US)" />
-            <SmartInput label="Time zone" defaultValue="GMT+09:00 — Seoul" />
+            <SmartSelect
+              label="Display language"
+              defaultValue="en-US"
+              options={[
+                { value: "en-US", label: "English (US)" },
+                { value: "en-GB", label: "English (UK)" },
+                { value: "ko-KR", label: "한국어" },
+                { value: "hi-IN", label: "हिन्दी" },
+              ]}
+            />
+            <SmartSelect
+              label="Time zone"
+              defaultValue="Asia/Seoul"
+              options={[
+                { value: "Asia/Seoul", label: "GMT+09:00 — Seoul" },
+                { value: "Asia/Kolkata", label: "GMT+05:30 — Kolkata" },
+                { value: "Europe/London", label: "GMT+00:00 — London" },
+                { value: "America/New_York", label: "GMT−05:00 — New York" },
+              ]}
+            />
             <div className="sm:col-span-2">
               <SmartSwitch
                 label="Use 24-hour time"
@@ -228,17 +280,7 @@ const SectionContent = ({ section }: { section: string }) => {
       )
 
     default:
-      return (
-        <>
-          <SectionTitle
-            title={section}
-            description="These settings aren't wired up in this demo yet."
-          />
-          <div className="flex h-40 items-center justify-center rounded-lg border border-dashed text-xs text-muted-foreground">
-            {section} settings would appear here.
-          </div>
-        </>
-      )
+      return null
   }
 }
 
@@ -250,7 +292,7 @@ export interface SettingsDialogProps {
   /** Controlled open state. */
   open?: boolean
   onOpenChange?: (open: boolean) => void
-  /** Section selected when the dialog first opens. @default "Notifications" */
+  /** Section selected when the dialog first opens. @default "Account" */
   defaultSection?: string
 }
 
@@ -258,7 +300,7 @@ export const SettingsDialog = ({
   trigger,
   open,
   onOpenChange,
-  defaultSection = "Notifications",
+  defaultSection = "Account",
 }: SettingsDialogProps) => {
   const [active, setActive] = React.useState(defaultSection)
 
