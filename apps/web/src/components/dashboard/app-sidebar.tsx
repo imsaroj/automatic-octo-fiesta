@@ -84,6 +84,7 @@ const data = {
         { title: "Feedback & Display", url: "/smart/feedback" },
         { title: "Text Editor", url: "/smart/text-editor" },
         { title: "Action Buttons", url: "/smart/buttons" },
+        { title: "Tree Engine", url: "/smart/tree" },
       ],
     },
     {

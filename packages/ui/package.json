@@ -80,6 +80,7 @@
     "./form-engine": "./src/form-engine/index.ts",
     "./search-engine": "./src/search-engine/index.ts",
     "./data-grid": "./src/data-grid/index.ts",
+    "./tree-engine": "./src/tree-engine/index.ts",
     "./lexical-text-editor": "./src/lexical-text-editor/index.ts"
   }
 }

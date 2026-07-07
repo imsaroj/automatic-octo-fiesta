@@ -53,6 +53,7 @@ const TextEditorPage = lazy(() => import("@/pages/smart/text-editor-page"))
 const ActionButtonsPage = lazy(
   () => import("@/pages/smart/action-buttons-page")
 )
+const TreePage = lazy(() => import("@/pages/smart/tree-page"))
 
 // Page layout examples
 const PageExampleOverview = lazy(
@@ -138,6 +139,7 @@ export const App = () => (
           <Route path="/smart/feedback" element={<FeedbackPage />} />
           <Route path="/smart/text-editor" element={<TextEditorPage />} />
           <Route path="/smart/buttons" element={<ActionButtonsPage />} />
+          <Route path="/smart/tree" element={<TreePage />} />
 
           {/* Page layout examples */}
           <Route path="/page-example" element={<PageExampleOverview />} />
