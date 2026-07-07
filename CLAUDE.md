@@ -65,6 +65,8 @@ into arbitrary files:
 @workspace/ui/form-engine            → src/form-engine/index.ts        (declarative form engine)
 @workspace/ui/search-engine          → src/search-engine/index.ts      (search/filter bar on the form engine)
 @workspace/ui/data-grid              → src/data-grid/index.ts          (AG Grid wrappers)
+@workspace/ui/tree-engine            → src/tree-engine/index.ts        (SmartTree)
+@workspace/ui/transfer-list-engine   → src/transfer-list-engine/index.ts (SmartTransferList)
 @workspace/ui/lexical-text-editor    → src/lexical-text-editor/index.ts
 ```
 
@@ -189,6 +191,35 @@ required derivation, layout, and field registry, and adds only search concerns o
 registers the node set (including custom `image-node` and `page-break-node`), `editorTheme` styles them, and
 `plugins/` holds the toolbar, auto-link, and code-highlight plugins. Value format is HTML or JSON
 (`SmartTextEditorFormat`). See the memory note on Lexical gotchas for known pitfalls.
+
+### Tree engine (`packages/ui/src/tree-engine/`)
+
+`SmartTree` — a generic, hierarchical tree/file-explorer exported as `@workspace/ui/tree-engine`. Generic over a per-node
+`data` payload (`TreeNode<T>`). Key design points:
+
+- **Node shape:** a node is a folder when it has `children` (even `[]`) **or** `isFolder: true` — the latter enables lazy
+  loading without eager children. Per-node flags (`disabled`/`selectable`/`checkable`/`draggable`) gate each interaction
+  independently.
+- Selection (`none`/`single`/`multiple`), tri-state checkboxes (`computeCheckState` derives parent
+  indeterminate/checked from leaves), keyboard nav, inline rename, and drag-and-drop reordering (`TreeDropPosition`
+  `before`/`after`/`inside`, `moveNode`).
+- Search has three modes (`TreeFilterMode`): `highlight` (mark, keep all visible), `filter` (hide non-matching branches,
+  keep ancestors of matches), `none`.
+- **State is Set-backed** via `useControllable`/`useIdSet` (`use-tree.ts`) — each of expanded/selected/checked is
+  independently controllable (`*Ids` + `default*Ids` + `on*Change`) or uncontrolled. Imperative actions
+  (expand/collapse/select/check/rename/focus, plus `get*Ids` getters) are exposed through `SmartTreeHandle` via `ref`.
+- `tree-utils.ts` — pure tree algorithms (`buildNodeMap`, `buildParentMap`, `getDescendantIds`/`getAncestorIds`,
+  `insertNode`/`removeNode`/`updateNode`/`moveNode`, `flattenVisible`, `computeMatches`, `walkTree`); unit-tested in
+  `tree-utils.test.tsx`. Prefer these for tree mutations rather than hand-rolling recursion.
+
+### Transfer list engine (`packages/ui/src/transfer-list-engine/`)
+
+`SmartTransferList` — a dual-list "shuttle" (move items between a source and target list) exported as
+`@workspace/ui/transfer-list-engine`. Generic over a per-item `data` payload (`TransferItem<T>`). Each item lives in
+exactly one side at a time, keyed by stable `id`. `onChange` receives a `TransferChangeMeta` describing the
+`direction` and which items `moved`. Target ids are controllable (`targetIds`/`defaultTargetIds`); imperative
+move-all/move-selected/`getTargetIds` actions come through `SmartTransferListHandle` via `ref`. Pure move/partition/filter
+helpers live in `transfer-utils.ts` (unit-tested in `transfer-utils.test.tsx`).
 
 ### `lib/` (`packages/ui/src/lib/`)
 
