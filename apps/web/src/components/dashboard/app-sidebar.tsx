@@ -86,6 +86,7 @@ const data = {
         { title: "Action Buttons", url: "/smart/buttons" },
         { title: "Tree Engine", url: "/smart/tree" },
         { title: "Tree Explorer", url: "/smart/tree-explorer" },
+        { title: "Transfer List", url: "/smart/transfer-list" },
       ],
     },
     {
