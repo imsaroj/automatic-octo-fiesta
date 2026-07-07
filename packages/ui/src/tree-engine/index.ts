@@ -22,6 +22,9 @@ export {
   getAncestorIds,
   buildNodeMap,
   buildParentMap,
+  insertNode,
+  removeNode,
+  updateNode,
   moveNode,
   walkTree,
 } from "./tree-utils"

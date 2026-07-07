@@ -257,6 +257,61 @@ export function toggleChecked(
   return next
 }
 
+/**
+ * Immutably insert `child` under `parentId` (appended by default, or at
+ * `index`). Pass `parentId: null` to insert at the root level.
+ */
+export function insertNode<T>(
+  nodes: TreeNode<T>[],
+  parentId: string | null,
+  child: TreeNode<T>,
+  index?: number
+): TreeNode<T>[] {
+  if (parentId === null) {
+    const next = [...nodes]
+    next.splice(index ?? next.length, 0, child)
+    return next
+  }
+  return nodes.map((n) => {
+    if (n.id === parentId) {
+      const children = n.children ? [...n.children] : []
+      children.splice(index ?? children.length, 0, child)
+      return { ...n, children }
+    }
+    return n.children
+      ? { ...n, children: insertNode(n.children, parentId, child, index) }
+      : n
+  })
+}
+
+/** Immutably remove the node with `id` (and its whole subtree). */
+export function removeNode<T>(nodes: TreeNode<T>[], id: string): TreeNode<T>[] {
+  return nodes
+    .filter((n) => n.id !== id)
+    .map((n) =>
+      n.children ? { ...n, children: removeNode(n.children, id) } : n
+    )
+}
+
+/**
+ * Immutably update the node with `id`, applying either a partial patch (merged
+ * over the node) or a mapper that returns the next node.
+ */
+export function updateNode<T>(
+  nodes: TreeNode<T>[],
+  id: string,
+  patch: Partial<TreeNode<T>> | ((node: TreeNode<T>) => TreeNode<T>)
+): TreeNode<T>[] {
+  return nodes.map((n) => {
+    if (n.id === id) {
+      return typeof patch === "function" ? patch(n) : { ...n, ...patch }
+    }
+    return n.children
+      ? { ...n, children: updateNode(n.children, id, patch) }
+      : n
+  })
+}
+
 /** Immutably move a node to a new position relative to a target. */
 export function moveNode<T>(
   nodes: TreeNode<T>[],
