@@ -1,6 +1,7 @@
 import { Search, X } from "lucide-react"
 
 import { cn } from "@workspace/ui/lib/utils"
+import { withLeadingSpaceGuard } from "@workspace/ui/lib/leading-space"
 import {
   InputGroup,
   InputGroupAddon,
@@ -14,6 +15,12 @@ export interface SmartSearchInputProps {
   placeholder?: string
   className?: string
   "aria-label"?: string
+  /**
+   * By default the query may not *start* with whitespace: Space at the
+   * beginning is ignored and pasted leading spaces are stripped; spaces after
+   * the first character work normally. Set to `true` to allow a leading space.
+   */
+  allowLeadingSpace?: boolean
 }
 
 /**
@@ -27,6 +34,7 @@ export const SmartSearchInput = ({
   placeholder = "Search…",
   className,
   "aria-label": ariaLabel,
+  allowLeadingSpace,
 }: SmartSearchInputProps) => (
   <InputGroup className={cn(className)}>
     <InputGroupAddon>
@@ -34,9 +42,12 @@ export const SmartSearchInput = ({
     </InputGroupAddon>
     <InputGroupInput
       value={value}
-      onChange={(e) => onValueChange(e.target.value)}
       placeholder={placeholder}
       aria-label={ariaLabel}
+      {...withLeadingSpaceGuard<HTMLInputElement>(
+        { onChange: (e) => onValueChange(e.target.value) },
+        allowLeadingSpace
+      )}
     />
     {value ? (
       <InputGroupAddon align="inline-end">

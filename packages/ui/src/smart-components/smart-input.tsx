@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { cn } from "@workspace/ui/lib/utils"
+import { withLeadingSpaceGuard } from "@workspace/ui/lib/leading-space"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 
@@ -18,6 +19,13 @@ export interface SmartInputProps extends React.ComponentProps<"input"> {
   optional?: boolean
   /** Class applied to the outer field wrapper. */
   fieldClassName?: string
+  /**
+   * By default the value may not *start* with whitespace: Space at the
+   * beginning is ignored (including a held space bar) and pasted leading
+   * spaces are stripped; spaces after the first character work normally.
+   * Set to `true` to allow a leading space.
+   */
+  allowLeadingSpace?: boolean
 }
 
 /**
@@ -51,6 +59,9 @@ export const SmartInput = ({
   fieldClassName,
   className,
   id: idProp,
+  allowLeadingSpace,
+  onKeyDown,
+  onChange,
   ...inputProps
 }: SmartInputProps) => {
   const autoId = React.useId()
@@ -85,6 +96,7 @@ export const SmartInput = ({
         aria-describedby={hintId}
         aria-invalid={error != null ? true : undefined}
         {...inputProps}
+        {...withLeadingSpaceGuard({ onKeyDown, onChange }, allowLeadingSpace)}
       />
       {hasHint && (
         <p

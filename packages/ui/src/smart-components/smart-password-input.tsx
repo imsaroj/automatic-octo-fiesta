@@ -3,6 +3,7 @@
 import * as React from "react"
 import { Eye, EyeOff } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
+import { withLeadingSpaceGuard } from "@workspace/ui/lib/leading-space"
 import {
   InputGroup,
   InputGroupAddon,
@@ -21,6 +22,13 @@ export interface SmartPasswordInputProps extends Omit<
   required?: boolean
   optional?: boolean
   fieldClassName?: string
+  /**
+   * By default the value may not *start* with whitespace: Space at the
+   * beginning is ignored (including a held space bar) and pasted leading
+   * spaces are stripped; spaces after the first character work normally.
+   * Set to `true` if leading spaces are legal in your passwords.
+   */
+  allowLeadingSpace?: boolean
 }
 
 /**
@@ -46,6 +54,9 @@ export const SmartPasswordInput = ({
   className,
   id: idProp,
   disabled,
+  allowLeadingSpace,
+  onKeyDown,
+  onChange,
   ...inputProps
 }: SmartPasswordInputProps) => {
   const autoId = React.useId()
@@ -84,6 +95,7 @@ export const SmartPasswordInput = ({
           aria-invalid={error != null ? true : undefined}
           className={className}
           {...inputProps}
+          {...withLeadingSpaceGuard({ onKeyDown, onChange }, allowLeadingSpace)}
         />
         <InputGroupAddon align="inline-end">
           <InputGroupButton

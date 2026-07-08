@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { cn } from "@workspace/ui/lib/utils"
+import { withLeadingSpaceGuard } from "@workspace/ui/lib/leading-space"
 import {
   InputGroup,
   InputGroupAddon,
@@ -39,6 +40,13 @@ export interface SmartInputGroupProps extends React.ComponentProps<"input"> {
   required?: boolean
   optional?: boolean
   fieldClassName?: string
+  /**
+   * By default the value may not *start* with whitespace: Space at the
+   * beginning is ignored (including a held space bar) and pasted leading
+   * spaces are stripped; spaces after the first character work normally.
+   * Set to `true` to allow a leading space.
+   */
+  allowLeadingSpace?: boolean
 }
 
 /**
@@ -79,6 +87,9 @@ export const SmartInputGroup = ({
   id: idProp,
   className,
   "aria-invalid": ariaInvalid,
+  allowLeadingSpace,
+  onKeyDown,
+  onChange,
   ...inputProps
 }: SmartInputGroupProps) => {
   const autoId = React.useId()
@@ -132,6 +143,7 @@ export const SmartInputGroup = ({
           aria-describedby={hintId}
           aria-invalid={error != null ? true : ariaInvalid}
           {...inputProps}
+          {...withLeadingSpaceGuard({ onKeyDown, onChange }, allowLeadingSpace)}
         />
         {hasTrailing && (
           <InputGroupAddon align="inline-end">
