@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import {
+  CheckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronsLeftIcon,
@@ -197,69 +198,104 @@ function ListPanel<T>({
       )}
 
       <ScrollArea style={{ height: listHeight }}>
-        <ul role="listbox" aria-multiselectable className="p-1">
+        <ul
+          role="listbox"
+          aria-multiselectable
+          aria-label={
+            typeof title === "string"
+              ? title
+              : side === "source"
+                ? "Available items"
+                : "Selected items"
+          }
+          className="p-1"
+        >
           {visible.length === 0 ? (
-            <li className="px-3 py-6 text-center text-xs text-muted-foreground">
+            <li
+              role="presentation"
+              className="px-3 py-6 text-center text-xs text-muted-foreground"
+            >
               {query ? "No matches." : (empty ?? "Nothing here.")}
             </li>
           ) : (
             visible.map((item) => {
               const isSelected = selected.has(item.id)
+              const itemDisabled = disabled || item.disabled === true
               return (
-                <li key={item.id}>
-                  <button
-                    type="button"
-                    role="option"
-                    aria-selected={isSelected}
-                    disabled={disabled || item.disabled}
-                    onClick={() => onToggle(item.id)}
-                    onDoubleClick={() => onMoveOne(item.id)}
+                // Option is the `<li>` itself (a direct child of the listbox),
+                // not a nested <button> — an ARIA listbox option must not
+                // contain nested interactive controls. Keyboard: the row is a
+                // roving tab stop that toggles on Enter/Space and moves on
+                // double-activation, mirroring the previous button semantics.
+                <li
+                  key={item.id}
+                  role="option"
+                  aria-selected={isSelected}
+                  aria-disabled={itemDisabled || undefined}
+                  tabIndex={itemDisabled ? undefined : 0}
+                  onClick={() => {
+                    if (!itemDisabled) onToggle(item.id)
+                  }}
+                  onDoubleClick={() => {
+                    if (!itemDisabled) onMoveOne(item.id)
+                  }}
+                  onKeyDown={(e) => {
+                    if (itemDisabled) return
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault()
+                      onToggle(item.id)
+                    }
+                  }}
+                  className={cn(
+                    "flex w-full cursor-default items-center rounded-sm text-left transition-colors",
+                    sz.row,
+                    sz.text,
+                    "hover:bg-accent/60 focus-visible:bg-accent focus-visible:outline-none",
+                    isSelected && "bg-accent hover:bg-accent",
+                    itemDisabled && "pointer-events-none opacity-50"
+                  )}
+                >
+                  {/* Visual-only checkbox — selection is conveyed by the
+                      option's aria-selected, so this must not be interactive. */}
+                  <span
+                    aria-hidden
                     className={cn(
-                      "flex w-full items-center rounded-sm text-left transition-colors",
-                      sz.row,
-                      sz.text,
-                      "hover:bg-accent/60 focus-visible:bg-accent focus-visible:outline-none",
-                      isSelected && "bg-accent hover:bg-accent",
-                      "disabled:pointer-events-none disabled:opacity-50"
+                      "flex size-4 shrink-0 items-center justify-center rounded-[4px] border border-input",
+                      isSelected &&
+                        "border-primary bg-primary text-primary-foreground"
                     )}
                   >
-                    <Checkbox
-                      checked={isSelected}
-                      disabled={disabled || item.disabled}
-                      tabIndex={-1}
-                      className="pointer-events-none"
-                      aria-hidden
-                    />
-                    {item.icon != null && (
-                      <span
-                        className={cn(
-                          "flex shrink-0 items-center justify-center text-muted-foreground [&_svg]:size-4",
-                          sz.icon
-                        )}
-                      >
-                        {item.icon}
-                      </span>
-                    )}
-                    {renderItem ? (
-                      <span className="min-w-0 flex-1">
-                        {renderItem(item, side)}
-                      </span>
-                    ) : (
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate">{item.label}</span>
-                        {item.description != null && (
-                          <span className="block truncate text-xs text-muted-foreground">
-                            {item.description}
-                          </span>
-                        )}
-                      </span>
-                    )}
-                    {item.badge != null && (
-                      <span className="ml-auto shrink-0 text-xs text-muted-foreground">
-                        {item.badge}
-                      </span>
-                    )}
-                  </button>
+                    {isSelected && <CheckIcon className="size-3" />}
+                  </span>
+                  {item.icon != null && (
+                    <span
+                      className={cn(
+                        "flex shrink-0 items-center justify-center text-muted-foreground [&_svg]:size-4",
+                        sz.icon
+                      )}
+                    >
+                      {item.icon}
+                    </span>
+                  )}
+                  {renderItem ? (
+                    <span className="min-w-0 flex-1">
+                      {renderItem(item, side)}
+                    </span>
+                  ) : (
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate">{item.label}</span>
+                      {item.description != null && (
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {item.description}
+                        </span>
+                      )}
+                    </span>
+                  )}
+                  {item.badge != null && (
+                    <span className="ml-auto shrink-0 text-xs text-muted-foreground">
+                      {item.badge}
+                    </span>
+                  )}
                 </li>
               )
             })

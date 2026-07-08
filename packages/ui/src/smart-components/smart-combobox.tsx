@@ -83,6 +83,12 @@ export const SmartCombobox = ({
           erases the `multiple`↔`value` correlation TS needs to keep it. */}
       <Combobox
         {...(comboboxProps as ComboboxProps)}
+        // A role="combobox" trigger needs an explicit name; default it from a
+        // string label unless the caller passed one.
+        aria-label={
+          comboboxProps["aria-label"] ??
+          (typeof label === "string" ? label : undefined)
+        }
         className={cn("w-full", className)}
       />
       {hasHint && (

@@ -32,6 +32,13 @@ interface ComboboxBaseProps {
   emptyText?: string
   disabled?: boolean
   className?: string
+  /**
+   * Accessible name for the trigger. A `role="combobox"` control derives its
+   * name from a label, not its (value-bearing) content, so pass this whenever
+   * there is no associated `<label>` — `SmartCombobox` fills it from a string
+   * `label` automatically.
+   */
+  "aria-label"?: string
 }
 
 interface ComboboxSingleProps extends ComboboxBaseProps {
@@ -58,6 +65,7 @@ export const Combobox = (props: ComboboxProps) => {
     emptyText = "No option found.",
     disabled,
     className,
+    "aria-label": ariaLabel,
   } = props
   const [open, setOpen] = React.useState(false)
 
@@ -97,6 +105,7 @@ export const Combobox = (props: ComboboxProps) => {
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            aria-label={ariaLabel}
             disabled={disabled}
             className={cn(
               "h-auto min-h-7 w-[200px] justify-between",

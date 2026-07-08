@@ -63,7 +63,8 @@
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  /* 0.53 (≈#6b6b6b) clears WCAG AA 4.5:1 on --muted (#f5f5f5); 0.556 was 4.34. */
+  --muted-foreground: oklch(0.53 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -133,6 +134,19 @@
   }
   html {
     @apply font-serif;
+  }
+  /* Honor prefers-reduced-motion: collapse animations/transitions to instant
+     for users who ask for reduced motion (and stabilizes automated a11y scans,
+     which must not sample mid-transition colors). */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

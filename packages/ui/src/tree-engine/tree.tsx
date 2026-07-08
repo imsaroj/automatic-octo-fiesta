@@ -170,18 +170,22 @@ const TreeCheckbox = ({
   indeterminate,
   disabled,
   size,
+  label,
   onToggle,
 }: {
   checked: boolean
   indeterminate: boolean
   disabled?: boolean
   size: string
+  /** Accessible name — the node's label, so the checkbox isn't anonymous. */
+  label?: string
   onToggle: () => void
 }) => (
   <button
     type="button"
     role="checkbox"
     aria-checked={indeterminate ? "mixed" : checked}
+    aria-label={label}
     tabIndex={-1}
     disabled={disabled}
     onClick={(e) => {
@@ -788,6 +792,7 @@ function TreeRow<T>({
         indeterminate={indeterminate}
         disabled={node.disabled}
         size={sizes.check}
+        label={typeof node.label === "string" ? node.label : undefined}
         onToggle={onToggleCheck}
       />
     ) : null
