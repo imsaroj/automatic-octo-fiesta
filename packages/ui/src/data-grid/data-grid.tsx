@@ -12,6 +12,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { SmartLoadingOverlay } from "@workspace/ui/smart-components/loading-overlay"
 import { SmartSearchInput } from "@workspace/ui/smart-components/search-input"
 import { GridToolbar } from "./grid-toolbar"
+import { escapeCsvFormula } from "./formula-guard"
 import { dataGridTheme } from "./grid-theme"
 import {
   ensureGridModules,
@@ -155,7 +156,11 @@ export const SmartGrid = <TRow,>({
   }
 
   const handleExport = (): void => {
-    gridApi?.exportDataAsCsv({ fileName: `${exportFileName}.csv` })
+    gridApi?.exportDataAsCsv({
+      fileName: `${exportFileName}.csv`,
+      // Neutralize spreadsheet formula injection (=/+/-/@ leading strings).
+      processCellCallback: (params) => escapeCsvFormula(params.value),
+    })
   }
 
   const showToolbar =

@@ -11,6 +11,7 @@ import {
   type ServerFilter,
 } from "./pagination"
 import type { XlsxCell } from "@workspace/ui/lib/xlsx"
+import { escapeCsvFormula } from "./formula-guard"
 
 /**
  * Pure, stateless helpers extracted from {@link SmartServerGrid} so the
@@ -217,7 +218,9 @@ export const collectGridExport = <TRow>(
           colKey: column,
           useFormatter: true,
         }) as XlsxCell | null
-        return value ?? ""
+        // Guard against spreadsheet formula injection if the .xlsx is re-saved
+        // as CSV — a leading =/+/-/@ in a string is neutralized with a quote.
+        return escapeCsvFormula(value ?? "")
       })
     )
   })

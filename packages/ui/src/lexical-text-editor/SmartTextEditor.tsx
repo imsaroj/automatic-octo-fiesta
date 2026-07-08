@@ -31,6 +31,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 
 import { editorTheme } from "./editor-theme"
 import { editorNodes } from "./editor-nodes"
+import { sanitizeEditorHtml } from "./sanitize"
 import { ToolbarPlugin } from "./plugins/toolbar-plugin"
 import { CodeHighlightPlugin } from "./plugins/code-highlight-plugin"
 import { AutoLinkPlugin } from "./plugins/auto-link-plugin"
@@ -129,7 +130,11 @@ const ValueSyncPlugin = ({
     } else {
       editor.update(
         () => {
-          const dom = new DOMParser().parseFromString(value, "text/html")
+          // Sanitize inbound HTML before it becomes editor nodes (stored-XSS guard).
+          const dom = new DOMParser().parseFromString(
+            sanitizeEditorHtml(value),
+            "text/html"
+          )
           const nodes = $generateNodesFromDOM(editor, dom)
           const root = $getRoot()
           root.clear()
@@ -150,6 +155,17 @@ const ValueSyncPlugin = ({
 
 // ─── SmartTextEditor ─────────────────────────────────────────────────────────
 
+/**
+ * Lexical-based rich-text editor with a flat prop API.
+ *
+ * **HTML sanitization contract (`format="html"`):** inbound HTML is sanitized
+ * on parse via {@link sanitizeEditorHtml}, so pasting or loading hostile markup
+ * cannot inject script into the editor. Output HTML from `onChange` reflects the
+ * editor's own node set, but **apps that persist and later re-render that HTML
+ * must sanitize on the way out** — render it with {@link SafeEditorHtml} or run
+ * it through {@link sanitizeEditorHtml} before `dangerouslySetInnerHTML`. The
+ * `"json"` format is not affected (it never touches the DOM).
+ */
 export const SmartTextEditor = ({
   label,
   description,
@@ -184,8 +200,9 @@ export const SmartTextEditor = ({
         editorState = initialContent
       } else {
         editorState = (editorInstance: LexicalEditor) => {
+          // Sanitize inbound HTML before it becomes editor nodes (stored-XSS guard).
           const dom = new DOMParser().parseFromString(
-            initialContent,
+            sanitizeEditorHtml(initialContent),
             "text/html"
           )
           const nodes = $generateNodesFromDOM(editorInstance, dom)

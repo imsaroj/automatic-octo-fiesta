@@ -1,0 +1,28 @@
+version: 2
+updates:
+  # pnpm workspace — a single manifest scan covers the whole monorepo.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    # Batch the noise: one PR for all minor/patch bumps, majors stay separate
+    # so breaking changes are reviewed one at a time.
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+    commit-message:
+      prefix: chore
+      include: scope
+
+  # Keep the GitHub Actions in ci.yml current too.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: chore

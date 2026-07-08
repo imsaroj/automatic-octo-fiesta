@@ -11,6 +11,7 @@ const NODE_TESTS = [
   "src/calendar-engine/calendar-utils.test.tsx",
   "src/calendar-engine/recurrence.test.tsx",
   "src/data-grid/create-page-fetcher.test.ts",
+  "src/data-grid/formula-guard.test.ts",
   "src/data-grid/grid-datasource.test.ts",
   "src/data-grid/pagination.test.ts",
   "src/form-engine/field-types.test.tsx",
