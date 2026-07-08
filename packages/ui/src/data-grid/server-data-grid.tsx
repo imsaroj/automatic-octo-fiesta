@@ -307,8 +307,10 @@ const SmartServerGridInner = <TRow,>(
   const rowSelection = useMemo<RowSelectionOptions | undefined>(() => {
     // No `headerCheckbox` in the infinite row model (AG Grid warning #129) — a
     // "select all" can't span rows the client hasn't loaded. Per-row checkboxes
-    // plus our cross-page id tracking are what make sense here.
-    if (selection === "multiple") return { mode: "multiRow", checkboxes: true }
+    // plus our cross-page id tracking are what make sense here. `multiRow`
+    // defaults headerCheckbox to true, so it must be disabled explicitly.
+    if (selection === "multiple")
+      return { mode: "multiRow", checkboxes: true, headerCheckbox: false }
     if (selection === "single") return { mode: "singleRow", checkboxes: true }
     return undefined
   }, [selection])
@@ -474,8 +476,11 @@ const SmartServerGridInner = <TRow,>(
           suppressCellFocus={true}
           rowSelection={rowSelection}
           pagination={pagination}
-          paginationPageSize={pageSize}
-          paginationPageSizeSelector={pageSizeOptions}
+          // Page-size props only apply to the pager; passing them in infinite
+          // scroll mode trips AG Grid warning #94 when `pageSize` isn't one of
+          // the selector options (`cacheBlockSize` already carries the size).
+          paginationPageSize={pagination ? pageSize : undefined}
+          paginationPageSizeSelector={pagination ? pageSizeOptions : undefined}
           rowHeight={rowHeightByDensity[density]}
           getRowId={getRowIdCb}
           animateRows
