@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <meta
+      name="description"
+      content="Smart Component is a source-first React 19 UI system for forms, data grids, search, trees, calendars, rich text, and smart wrappers."
+    />
+    <meta
+      name="theme-color"
+      content="#0b1020"
+    />
+    <title>Smart Component</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #070b17;
+        --bg-alt: #0b1020;
+        --panel: rgba(11, 16, 32, 0.76);
+        --panel-strong: rgba(17, 24, 39, 0.9);
+        --line: rgba(255, 255, 255, 0.12);
+        --line-strong: rgba(255, 255, 255, 0.2);
+        --text: #ecf2ff;
+        --muted: #aab4d4;
+        --accent: #8be9fd;
+        --accent-2: #ffd166;
+        --accent-3: #9bffb8;
+        --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+        --radius: 24px;
+        --radius-sm: 16px;
+        --max: 1160px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(139, 233, 253, 0.18), transparent 35%),
+          radial-gradient(circle at 85% 15%, rgba(255, 209, 102, 0.16), transparent 28%),
+          radial-gradient(circle at 50% 100%, rgba(155, 255, 184, 0.12), transparent 30%),
+          linear-gradient(180deg, #040714 0%, var(--bg) 45%, #050814 100%);
+        font-family: "Manrope", "Segoe UI", sans-serif;
+        line-height: 1.5;
+        min-height: 100vh;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 85%);
+        opacity: 0.5;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .wrap {
+        position: relative;
+        width: min(calc(100% - 32px), var(--max));
+        margin: 0 auto;
+        padding: 28px 0 48px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 0 26px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+
+      .brand-mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(139, 233, 253, 0.2), rgba(255, 209, 102, 0.18));
+        border: 1px solid var(--line);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        font-family: "Fraunces", serif;
+        font-size: 1.1rem;
+      }
+
+      .topnav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .topnav a:hover,
+      .topnav a:focus-visible {
+        color: var(--text);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 28px;
+        align-items: stretch;
+        padding: 20px 0 34px;
+      }
+
+      .panel {
+        position: relative;
+        background: linear-gradient(180deg, rgba(16, 22, 42, 0.9), rgba(8, 12, 24, 0.86));
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(16px);
+      }
+
+      .hero-copy {
+        padding: 34px;
+        overflow: hidden;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 18px 0 14px;
+        font-family: "Fraunces", serif;
+        font-size: clamp(3rem, 7vw, 5.4rem);
+        line-height: 0.95;
+        letter-spacing: -0.03em;
+      }
+
+      .lede {
+        max-width: 60ch;
+        margin: 0 0 22px;
+        font-size: 1.07rem;
+        color: var(--muted);
+      }
+
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 13px 18px;
+        border-radius: 14px;
+        border: 1px solid transparent;
+        font-weight: 800;
+        transition:
+          transform 160ms ease,
+          border-color 160ms ease,
+          background 160ms ease;
+      }
+
+      .button:hover,
+      .button:focus-visible {
+        transform: translateY(-1px);
+      }
+
+      .button.primary {
+        color: #07101b;
+        background: linear-gradient(135deg, var(--accent), var(--accent-3));
+      }
+
+      .button.secondary {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: var(--line);
+        color: var(--text);
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .stat {
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .stat strong {
+        display: block;
+        font-size: 1.3rem;
+        margin-bottom: 4px;
+      }
+
+      .stat span {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .hero-aside {
+        padding: 24px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .info-card {
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+      }
+
+      .info-card h2,
+      .section h2 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+        letter-spacing: 0.02em;
+      }
+
+      .info-card p,
+      .section p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .meta-list {
+        display: grid;
+        gap: 10px;
+        margin: 14px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .meta-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--muted);
+      }
+
+      .meta-list li:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+
+      .meta-list strong {
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      .section {
+        margin-top: 24px;
+        padding: 26px;
+      }
+
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        align-items: end;
+        margin-bottom: 18px;
+      }
+
+      .section-head .sub {
+        max-width: 68ch;
+        color: var(--muted);
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        padding: 20px;
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .pill {
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+        font-size: 0.88rem;
+        white-space: nowrap;
+      }
+
+      .link-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .link-list a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text);
+      }
+
+      .link-list a:hover,
+      .link-list a:focus-visible {
+        border-color: var(--line-strong);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .link-list small {
+        color: var(--muted);
+      }
+
+      .footer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 22px 4px 0;
+        color: var(--muted);
+        font-size: 0.93rem;
+      }
+
+      @media (max-width: 920px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+
+        .card-grid,
+        .link-list,
+        .stat-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .section-head,
+        .topbar,
+        .footer {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .wrap {
+          width: min(calc(100% - 20px), var(--max));
+          padding-top: 16px;
+        }
+
+        .hero-copy,
+        .section,
+        .hero-aside {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: clamp(2.4rem, 16vw, 4rem);
+        }
+
+        .lede {
+          font-size: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="topbar">
+        <a class="brand" href="#top">
+          <span class="brand-mark">S</span>
+          <span>Smart Component</span>
+        </a>
+        <nav class="topnav" aria-label="Primary">
+          <a href="#overview">Overview</a>
+          <a href="#guides">Guides</a>
+          <a href="#docs">Docs</a>
+          <a href="https://github.com/khanalsaroj/smart-component" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+      </header>
+
+      <main id="top">
+        <section class="hero">
+          <article class="panel hero-copy">
+            <span class="eyebrow">React 19 UI system</span>
+            <h1>Copy less UI. Ship more product.</h1>
+            <p class="lede">
+              Smart Component is a source-first React 19 UI system for forms, data
+              grids, search, trees, calendars, rich text, and flat smart wrappers.
+              It turns recurring product patterns into documented, tested building
+              blocks instead of one-off glue.
+            </p>
+
+            <div class="cta-row">
+              <a class="button primary" href="README.md">Read the docs</a>
+              <a class="button secondary" href="https://github.com/khanalsaroj/smart-component" target="_blank" rel="noreferrer">Project repo</a>
+            </div>
+
+            <div class="stat-grid" aria-label="Highlights">
+              <div class="stat">
+                <strong>Source-first</strong>
+                <span>No build step for the library package.</span>
+              </div>
+              <div class="stat">
+                <strong>Domain engines</strong>
+                <span>Forms, grids, search, tree, calendar, and more.</span>
+              </div>
+              <div class="stat">
+                <strong>Flat wrappers</strong>
+                <span>Config-driven `Smart*` components with escape hatches.</span>
+              </div>
+            </div>
+          </article>
+
+          <aside class="panel hero-aside">
+            <div class="info-card">
+              <h2>What this repo ships</h2>
+              <p>
+                A monorepo with a playground app, a source-only `@workspace/ui`
+                package, and docs that stay aligned with the public API.
+              </p>
+              <ul class="meta-list">
+                <li><span>Playground</span><strong>apps/web</strong></li>
+                <li><span>Library</span><strong>packages/ui</strong></li>
+                <li><span>Docs</span><strong>docs/</strong></li>
+              </ul>
+            </div>
+
+            <div class="info-card">
+              <h2>GitHub Pages target</h2>
+              <p>
+                Put this folder on GitHub Pages and use `docs/index.html` as the
+                entry point for the repo site.
+              </p>
+            </div>
+
+            <div class="info-card">
+              <h2>Key docs</h2>
+              <div class="pill-row">
+                <span class="pill">form-engine</span>
+                <span class="pill">data-grid</span>
+                <span class="pill">search-engine</span>
+                <span class="pill">tree-engine</span>
+                <span class="pill">calendar-engine</span>
+                <span class="pill">smart-components</span>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="panel section" id="overview">
+          <div class="section-head">
+            <div>
+              <h2>Overview</h2>
+              <p class="sub">
+                The goal is predictable public APIs, less glue code, and a codebase
+                that still reads clearly after the first week.
+              </p>
+            </div>
+            <p class="sub">Built around documented guides, explicit exports, and tested examples.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card">
+              <h3>Smart wrappers</h3>
+              <p>
+                Flat, config-driven versions of shadcn/ui compound components like
+                dialogs, sheets, cards, selects, comboboxes, steppers, and toasters.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Form engine</h3>
+              <p>
+                Declarative forms built on TanStack Form and Zod v4, with schema-driven
+                validation and field definitions.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Data grid</h3>
+              <p>
+                Client and server-side grids, selection, pagination, CSV export, and a
+                reusable fetch pipeline.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Domain engines</h3>
+              <p>
+                Tree, transfer list, calendar, search, and rich text editor engines that
+                package common product patterns.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel section" id="guides">
+          <div class="section-head">
+            <div>
+              <h2>Guides</h2>
+              <p class="sub">
+                Start here if you want the public entrypoints and their consumer docs.
+              </p>
+            </div>
+          </div>
+
+          <ul class="link-list">
+            <li><a href="form-engine.md"><span>Form engine</span><small>@workspace/ui/form-engine</small></a></li>
+            <li><a href="data-grid.md"><span>Data grid</span><small>@workspace/ui/data-grid</small></a></li>
+            <li><a href="search-engine.md"><span>Search engine</span><small>@workspace/ui/search-engine</small></a></li>
+            <li><a href="tree-engine.md"><span>Tree engine</span><small>@workspace/ui/tree-engine</small></a></li>
+            <li><a href="transfer-list-engine.md"><span>Transfer list engine</span><small>@workspace/ui/transfer-list-engine</small></a></li>
+            <li><a href="calendar-engine.md"><span>Calendar engine</span><small>@workspace/ui/calendar-engine</small></a></li>
+            <li><a href="lexical-text-editor.md"><span>Lexical text editor</span><small>@workspace/ui/lexical-text-editor</small></a></li>
+            <li><a href="smart-components.md"><span>Smart wrappers</span><small>@workspace/ui/smart-components/*</small></a></li>
+          </ul>
+        </section>
+
+        <section class="panel section" id="docs">
+          <div class="section-head">
+            <div>
+              <h2>Docs and references</h2>
+              <p class="sub">
+                These files explain the system design, component map, and security
+                notes behind the public API.
+              </p>
+            </div>
+          </div>
+
+          <ul class="link-list">
+            <li><a href="README.md"><span>Docs README</span><small>Consumer guide index</small></a></li>
+            <li><a href="component-map.md"><span>Component map</span><small>Export to demo route map</small></a></li>
+            <li><a href="security.md"><span>Security notes</span><small>Sanitization and guards</small></a></li>
+            <li><a href="https://github.com/khanalsaroj/smart-component/blob/main/ARCHITECTURE.md" target="_blank" rel="noreferrer"><span>Architecture</span><small>Repo-level design notes</small></a></li>
+          </ul>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>Smart Component</span>
+        <span>Static landing page for GitHub Pages</span>
+      </footer>
+    </div>
+  </body>
+</html>
