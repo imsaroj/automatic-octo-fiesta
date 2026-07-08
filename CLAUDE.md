@@ -49,6 +49,19 @@ This is a **pnpm + Turborepo monorepo** with two workspaces:
 - **`packages/ui`** — The shared UI library (`@workspace/ui`). All reusable components live here. No build step —
   exported directly as source via the `exports` map in `package.json`.
 
+### Conventions (ref idiom & `"use client"`)
+
+Two intentional, uniform conventions in the hand-written library:
+
+- **`forwardRef` is kept, not migrated to React 19 ref-as-prop.** React 19 supports `ref` as a plain prop, but
+  `forwardRef` is not deprecated and the generic-handle components (`SmartServerGrid`, `SmartTree`,
+  `SmartTransferList`, `SmartCalendar`) genuinely need it (`forwardRef` erases generics, so they are re-cast after
+  definition — see `server-data-grid.tsx`). Rather than split the codebase into two ref idioms, all hand-written
+  components use `forwardRef` consistently. A blanket ref-as-prop migration is a deferred, cosmetic follow-up.
+- **`"use client"` is kept on every client component file uniformly.** The app is Vite-only today so the directive is
+  a no-op, but keeping it costs nothing and future-proofs the library for React Server Components consumption. Don't
+  add or remove it selectively — it's all-or-nothing by policy.
+
 ### `packages/ui` exports map
 
 Consumers import via the subpaths declared in `packages/ui/package.json` `exports` — always match those, don't reach
