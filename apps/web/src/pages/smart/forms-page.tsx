@@ -196,7 +196,7 @@ const FormsPage = () => {
               label="Country"
               placeholder="Select country…"
               options={COUNTRIES}
-              value={country ?? undefined}
+              value={country}
               onValueChange={(v) => setCountry(v)}
               required
             />

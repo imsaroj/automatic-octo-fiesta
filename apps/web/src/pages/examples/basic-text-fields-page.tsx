@@ -275,7 +275,7 @@ const BasicTextFieldsPage = () => {
               label="Country (select)"
               placeholder="Select country…"
               options={COUNTRIES}
-              value={country ?? undefined}
+              value={country}
               onValueChange={setCountry}
               required
             />

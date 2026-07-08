@@ -29,7 +29,12 @@ export interface SmartSelectProps {
   options?: SmartSelectOption[]
   /** Grouped options with a section label. Mutually exclusive with `options`. */
   groups?: SmartSelectGroup[]
-  value?: string
+  /**
+   * Controlled value. Pass `null` (not `undefined`) for "controlled with no
+   * selection" — Base UI decides controlled-ness on first render (`undefined`
+   * = uncontrolled) and warns if the value later flips to a string.
+   */
+  value?: string | null
   onValueChange?: (value: string | null) => void
   defaultValue?: string
   name?: string

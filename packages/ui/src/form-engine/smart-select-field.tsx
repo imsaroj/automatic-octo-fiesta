@@ -28,7 +28,7 @@ export const SmartSelectField = ({
   groups,
 }: SmartSelectFieldProps) => (
   <SmartSelect
-    value={data}
+    value={data ?? null}
     onValueChange={(v) => setData(v ?? "")}
     placeholder={placeholder}
     label={label}

@@ -111,14 +111,16 @@ test("grouped options render group labels", () => {
 test("selecting an item emits onValueChange and shows the label in the trigger", () => {
   const onValueChange = vi.fn()
   const Harness = () => {
-    const [value, setValue] = React.useState<string | undefined>(undefined)
+    // `null`, not `undefined`: the select must be controlled from the first
+    // render so it never flips uncontrolled → controlled (Base UI warns).
+    const [value, setValue] = React.useState<string | null>(null)
     return (
       <SmartSelect
         options={OPTIONS}
         value={value}
         onValueChange={(v) => {
           onValueChange(v)
-          setValue(v ?? undefined)
+          setValue(v)
         }}
       />
     )
