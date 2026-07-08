@@ -1,7 +1,111 @@
 # Technical Audit Report — `smart-component`
 
 > **Audit date:** 2026-07-02 · **Auditor role:** Principal Software Architect / Staff Engineer
-> **Method:** Full repository inspection (source, configs, tooling, tests, git history) plus verification runs of `pnpm typecheck`, `pnpm lint`, `pnpm test` (all green) and `pnpm build` (green with bundle-size warning).
+> **Method:** Full repository inspection (source, configs, tooling, tests, git history) plus verification runs of
+> `pnpm typecheck`, `pnpm lint`, `pnpm test` (all green) and `pnpm build` (green with bundle-size warning).
+
+---
+
+# Status Update — 2026-07-07
+
+> **Scope:** 40 commits landed since the audit snapshot (`03cab09`, 2026-07-02) — repo went from 28 to 69 commits in 5
+> days.
+> **Verified today:** full test suite (`vitest run`: **288/288 passing across 36 files**) and production build (green;
+> 117 chunks).
+> The original audit below is kept as-is for the point-in-time record; this section tracks what changed.
+
+## Headline: most Critical/High findings are resolved
+
+| Original finding                                       | Status          | Evidence                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------ | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| #1 No CI pipeline (**Critical**)                       | ✅ **Resolved** | `.github/workflows/ci.yml`: format-check → lint → typecheck → test-with-coverage → build, plus a separate Playwright E2E job with report artifact upload. ⚠️ but see "New issues" — the push trigger targets `master`.                                                   |
+| #2 Single 2.6 MB bundle, no code splitting (**High**)  | ✅ **Resolved** | All routes `React.lazy` in `App.tsx`; `manualChunks` in `vite.config.ts` splits `react-vendor` (214 kB), `lexical` (386 kB), `ag-grid` (1.09 MB) into lazy chunks. Build now emits **117 chunks**; initial JS ≈ 430 kB vs 2.6 MB.                                        |
+| #3 Zero component tests; grid tests deleted (**High**) | ✅ **Resolved** | **288 tests / 36 files** (was 52 / 7). Component render tests for smart components + form engine; `grid-datasource.test.ts` restores server-grid coverage; Playwright smoke E2E (5 specs: navigation, theme, form-engine, server-grid, action-buttons) wired into CI.    |
+| #5 README boilerplate (**Medium→High**)                | ✅ **Resolved** | `a847b50` rewrote README (243 lines added) — narrative walkthrough of the library layers.                                                                                                                                                                                |
+| #6 Theme toggle unreachable; `d` hotkey trap           | ✅ **Resolved** | `useTheme` now consumed in `nav-user.tsx` (visible toggle); the global `d` hotkey is **opt-in, off by default** (`theme-provider.tsx`).                                                                                                                                  |
+| #7 `console.log(res)` in `users.ts`                    | ✅ **Resolved** | Gone; only an intentional demo `console.log("Submitted:")` remains in `all-fields-page.tsx`.                                                                                                                                                                             |
+| #8 Duplicate `use-mobile`                              | ✅ **Resolved** | Single copy in `packages/ui/src/hooks/use-mobile.ts`; app copy deleted.                                                                                                                                                                                                  |
+| #9 `FieldDefinition` non-discriminated bag             | ✅ **Resolved** | `form-engine/field-types.ts` now defines `FieldDefinition<T>` as a **discriminated union** (`TextField \| TelField \| SlugField \| …`).                                                                                                                                  |
+| #11 `toolbar-plugin.tsx` 1,375 LOC                     | ✅ **Resolved** | Decomposed to **135 LOC** orchestrator + `plugins/toolbar/` section modules.                                                                                                                                                                                             |
+| #12 Suspect `@source` globs in `globals.css`           | ✅ **Resolved** | Depth fixed (`../../../../apps/**`); dead glob removed.                                                                                                                                                                                                                  |
+| #13 tsconfig `turbo` leftover; strictness drift        | ✅ **Resolved** | `packages/ui/tsconfig.json` cleaned; now also enforces `noUnusedLocals`/`noUnusedParameters`.                                                                                                                                                                            |
+| #14 No coverage thresholds                             | ✅ **Resolved** | `vitest.config.ts` coverage thresholds (statements 21 / lines 22 / …) as a documented "don't regress" baseline (~24% lines measured); enforced via `test:coverage` in CI. shadcn primitives excluded by policy.                                                          |
+| #4 Orphaned primitives + misplaced deps (**Medium**)   | 🟡 **Partial**  | `vitest` moved to devDependencies ✅; `resizable` removed ✅; but `chart.tsx`/`carousel.tsx`/`data-table.tsx` remain and `recharts`/`@tanstack/react-table`/`embla-carousel-react` were deliberately (re-)added as deps — retention is now a choice, still undocumented. |
+| #10 `AllCommunityModule` registration                  | ❌ **Open**     | `grid-internals.tsx` still registers all of AG Grid Community — the 1.09 MB ag-grid chunk is the remaining bundle heavyweight (lazy-loaded now, so impact is deferred, not eliminated).                                                                                  |
+| #15 No release/versioning (Changesets)                 | ❌ **Open**     | Still `0.0.x`, private, no changesets.                                                                                                                                                                                                                                   |
+| #16 Lexical HTML sanitization contract                 | ❌ **Open**     | No DOMPurify / documented contract yet.                                                                                                                                                                                                                                  |
+| #17 In-flight skill rename                             | ✅ **Resolved** | Working tree is clean.                                                                                                                                                                                                                                                   |
+
+Also done from the Top-20 list: **jsx-a11y** (`eslint-plugin-jsx-a11y` in both workspaces), **shared `GridToolbar`** (
+`data-grid/grid-toolbar.tsx`), **`createPageFetcher`** (`data-grid/create-page-fetcher.ts` — exactly the wrapper the
+audit proposed, with injectable transport and its own tests), **demo-data module** + **`SmartStatCard`** (the KPI-card
+extraction the audit suggested).
+
+## New since the audit (not in the original report)
+
+The library grew four whole new domain engines plus supporting layers — source went from ~27.3k to **~39.5k lines** (~
+304 files):
+
+- **Search engine** (`@workspace/ui/search-engine`) — `SmartSearchForm`, a declarative filter bar composing
+  `SmartForm` (manual/auto-search, query pruning, active-filter count).
+- **Tree engine** (`@workspace/ui/tree-engine`) — `SmartTree`: lazy folders, tri-state checkboxes, keyboard nav, inline
+  rename, drag-and-drop; pure `tree-utils.ts` with tests.
+- **Transfer-list engine** (`@workspace/ui/transfer-list-engine`) — `SmartTransferList` dual-list shuttle; pure
+  `transfer-utils.ts` with tests.
+- **Calendar engine** (`@workspace/ui/calendar-engine`) — `SmartCalendar`: month/week/day/agenda views,
+  drag-to-move/resize editing, an RRULE-subset recurrence model with series-edit helpers, and availability/slot-booking;
+  date math unit-tested (3,651 LOC in one commit).
+- **Action-button presets** (`@workspace/ui/smart-components/buttons`) — config-driven `ActionButton` + 27 named presets
+  with optional permission gating, plus a showcase page and E2E spec.
+- **TanStack Query adoption in `apps/web`** — `QueryClientProvider` + a reference CRUD example page (optimistic delete
+  with rollback) against new MSW mutation handlers; the library itself stays fetch-agnostic.
+- **`SmartPage` flat-props migration** — page layouts moved from compound/slot markup to a flat props API across 35
+  files; `SmartDialog`/`SmartSheet` gained size presets and `dividers`.
+- **Misc:** date-picker custom formats/dropdown-nav/time-zone support, Noto Serif variable font + typography defaults,
+  sidebar flyouts for collapsed submenus, "loading more" indicator for infinite scroll, Spring query-encoder unit tests,
+  Turbo upgraded to 2.10.4.
+
+## New issues spotted today
+
+> **Update 2026-07-08:** all four items below are resolved (God Prompt 1).
+
+1. ✅ **CI push trigger targets a nonexistent branch.** ~~`ddbf927` switched `on.push.branches` to `[master]`~~ —
+   fixed 2026-07-08: `ci.yml` now triggers on `[main]`; no `master` reference remains in the workflow.
+2. ✅ **Orphan-primitive policy still undecided** — resolved 2026-07-08: CLAUDE.md's shadcn/ui section now has a
+   "Vendored primitives policy" subsection (primitives are regenerable vendor code, kept with their deps for future
+   adoption). Tree-shaking re-verified: production build (117 JS chunks) contains zero `recharts`/`embla` signatures.
+3. ✅ **Test-suite hygiene:** resolved 2026-07-08. The "controlled/uncontrolled Select" warning came from **Base UI**
+   (not React DOM) — controlled `SmartSelect` values flipping `undefined` → string. Fixed at the source:
+   `SmartSelect.value` now accepts `string | null` (`null` = controlled-empty), `SmartSelectField` passes
+   `data ?? null`, and the two demo pages pass their `string | null` state directly; the suite runs warning-free.
+   Test wall time: `vitest.config.ts` split into `node`/`jsdom` **projects** — 13 pure-logic files (160 tests) now run
+   under `node` (6 ms environment vs. seconds per jsdom file). Back-to-back A/B on the same machine: **88.9 s → 55.5 s
+   wall** (−38 %), cumulative environment **605.6 s → 259.6 s** (−57 %), identical 288/288 pass count.
+4. ✅ **Commit-message drift:** hook verified working 2026-07-08 — `git commit -m "WHAT"` on a scratch branch is
+   rejected by the husky `commit-msg` hook (commitlint: subject/type-empty, exit 1), including on Windows. `03cab09`
+   predates nothing broken; the convention is enforced going forward.
+
+## Updated scores
+
+| Dimension            | 07-02 | 07-07 | What moved it                                                                                   |
+| -------------------- | ----: | ----: | ----------------------------------------------------------------------------------------------- |
+| Architecture         |     8 | **8** | Four new engines follow the established layering cleanly; release/ops story still missing       |
+| Code Quality         |     9 | **9** | Discipline held through 12k new lines (discriminated unions, decomposed toolbar)                |
+| Performance          |     5 | **7** | Route splitting + vendor chunks fixed initial load; AG Grid module slimming still open          |
+| Security             |     6 | **6** | Unchanged; Lexical sanitize contract still undefined                                            |
+| Accessibility        |     6 | **7** | jsx-a11y linting added; visible theme toggle; hotkey tamed                                      |
+| Developer Experience |     7 | **8** | CI + E2E + coverage gates; README real; (−) push trigger misconfigured                          |
+| Documentation        |     5 | **7** | README rewritten; CLAUDE.md kept in lockstep with all four new engines; still no ADRs/Storybook |
+| Testing              |     5 | **7** | 288 tests / 36 files, component render tests, Playwright smoke suite, coverage floor in CI      |
+| **Overall Project**  | **7** | **8** | Every Critical/High item closed except AG Grid slimming; remaining debt is Medium or policy     |
+
+## Remaining priorities (carried forward)
+
+1. ~~**Fix the CI push branch (`master` → `main`)**~~ ✅ done 2026-07-08.
+2. Register specific AG Grid modules instead of `AllCommunityModule` (the 1.09 MB chunk).
+3. ~~Decide & document the orphan-primitive/dependency retention policy.~~ ✅ done 2026-07-08 (CLAUDE.md).
+4. Lexical HTML sanitization contract (DOMPurify helper or documented consumer requirement).
+5. Changesets/versioning when external consumption is planned; ADRs for the big decisions.
 
 ---
 
@@ -9,20 +113,30 @@
 
 ## What is this project?
 
-`smart-component` is a **pnpm + Turborepo monorepo** housing a React 19 **enterprise UI component library** (`packages/ui`, published internally as `@workspace/ui`) and a **Vite playground/demo application** (`apps/web`) that exercises every component. The library is organized in four ascending layers:
+`smart-component` is a **pnpm + Turborepo monorepo** housing a React 19 **enterprise UI component library** (
+`packages/ui`, published internally as `@workspace/ui`) and a **Vite playground/demo application** (`apps/web`) that
+exercises every component. The library is organized in four ascending layers:
 
 1. **shadcn/ui primitives** (50 components, Base UI–backed, Tailwind v4) — `packages/ui/src/components/`
-2. **Smart wrappers** (41 components + an 18-file slot-based `SmartPage` layout system) — `packages/ui/src/smart-components/`
-3. **Domain engines** — a declarative **form engine** (TanStack Form + Zod, 26 files, 30+ field types), a **data-grid layer** (AG Grid Community: client-side `SmartGrid` + infinite-row-model `SmartServerGrid`), and a **Lexical rich-text editor** module
+2. **Smart wrappers** (41 components + an 18-file slot-based `SmartPage` layout system) —
+   `packages/ui/src/smart-components/`
+3. **Domain engines** — a declarative **form engine** (TanStack Form + Zod, 26 files, 30+ field types), a **data-grid
+   layer** (AG Grid Community: client-side `SmartGrid` + infinite-row-model `SmartServerGrid`), and a **Lexical
+   rich-text editor** module
 4. **Dependency-free utilities** — `cn()`, number/string formatters, and a hand-rolled OOXML `.xlsx` writer
 
 ## Purpose
 
-To provide a reusable, opinionated component kit that collapses shadcn/ui compound-component boilerplate into flat, prop-driven "Smart" APIs, and to solve hard enterprise UI problems once (server-driven grids with cross-page selection, schema-driven forms, Excel export, full-viewport page layouts). An ESLint guardrail in the web app (`apps/web/eslint.config.js`) actively enforces consuming the Smart layer instead of raw primitives.
+To provide a reusable, opinionated component kit that collapses shadcn/ui compound-component boilerplate into flat,
+prop-driven "Smart" APIs, and to solve hard enterprise UI problems once (server-driven grids with cross-page selection,
+schema-driven forms, Excel export, full-viewport page layouts). An ESLint guardrail in the web app (
+`apps/web/eslint.config.js`) actively enforces consuming the Smart layer instead of raw primitives.
 
 ## Current maturity
 
-**Early / pre-release.** 28 commits, first commit ~2026-06-30 (days old). Versions are `0.0.0`/`0.0.1`, all packages private, no publishing pipeline, no CI, no versioning strategy. Despite this, code quality and internal documentation are far above what the age suggests.
+**Early / pre-release.** 28 commits, first commit ~2026-06-30 (days old). Versions are `0.0.0`/`0.0.1`, all packages
+private, no publishing pipeline, no CI, no versioning strategy. Despite this, code quality and internal documentation
+are far above what the age suggests.
 
 ## Estimated project size
 
@@ -39,26 +153,45 @@ To provide a reusable, opinionated component kit that collapses shadcn/ui compou
 
 ## Overall architecture quality
 
-**Strong (8/10).** Clear layering, disciplined module boundaries, pure logic extracted from components into testable helpers (`pagination.ts`, `server-grid-internals.ts`), well-reasoned React patterns (refs-for-latest-props to keep AG Grid datasources stable, id-set as source of truth for cross-page selection, slot detection via `Symbol.for` in `SmartPage`). The main gaps are operational, not structural: no CI, no code splitting, no release machinery.
+**Strong (8/10).** Clear layering, disciplined module boundaries, pure logic extracted from components into testable
+helpers (`pagination.ts`, `server-grid-internals.ts`), well-reasoned React patterns (refs-for-latest-props to keep AG
+Grid datasources stable, id-set as source of truth for cross-page selection, slot detection via `Symbol.for` in
+`SmartPage`). The main gaps are operational, not structural: no CI, no code splitting, no release machinery.
 
 ## Strengths
 
-- **Exceptional inline documentation.** Nearly every exported symbol carries JSDoc explaining _why_, not just _what_ (e.g. the generic-`forwardRef` cast in `server-data-grid.tsx:601`, the self-update echo guard in `smart-form.tsx:283`). `CLAUDE.md` doubles as an accurate architecture doc.
-- **Zero `any` in production code, zero TODO/FIXME markers.** Strict TS everywhere; `unknown` + narrowing used where dynamism is needed.
+- **Exceptional inline documentation.** Nearly every exported symbol carries JSDoc explaining _why_, not just _what_ (
+  e.g. the generic-`forwardRef` cast in `server-data-grid.tsx:601`, the self-update echo guard in `smart-form.tsx:283`).
+  `CLAUDE.md` doubles as an accurate architecture doc.
+- **Zero `any` in production code, zero TODO/FIXME markers.** Strict TS everywhere; `unknown` + narrowing used where
+  dynamism is needed.
 - **All quality gates pass:** typecheck, ESLint 10 flat config, 52/52 tests.
-- **Modern, coherent stack:** React 19, Tailwind v4, Zod 4, TanStack Form, ESLint 10, pnpm 10 (with `allowBuilds` build-script allow-listing), Turborepo 2, Vite 8 (Rolldown).
-- **Local quality gates:** husky pre-commit (lint-staged/prettier), commit-msg (commitlint conventional), pre-push (typecheck + tests).
-- **Thoughtful hard-problem solutions:** cross-page grid selection surviving block purges (`use-server-grid-selection.ts`), Spring Data `Page<T>` contract with Zod validation (`pagination.ts`), dependency-free XLSX writer (`lib/xlsx.ts`) avoiding a heavyweight spreadsheet dependency.
-- **Realistic dev API:** MSW mock server implementing a real paging/sort/filter query contract shared between client and mock (`apps/web/src/api/users-query.ts`).
+- **Modern, coherent stack:** React 19, Tailwind v4, Zod 4, TanStack Form, ESLint 10, pnpm 10 (with `allowBuilds`
+  build-script allow-listing), Turborepo 2, Vite 8 (Rolldown).
+- **Local quality gates:** husky pre-commit (lint-staged/prettier), commit-msg (commitlint conventional), pre-push (
+  typecheck + tests).
+- **Thoughtful hard-problem solutions:** cross-page grid selection surviving block purges (
+  `use-server-grid-selection.ts`), Spring Data `Page<T>` contract with Zod validation (`pagination.ts`), dependency-free
+  XLSX writer (`lib/xlsx.ts`) avoiding a heavyweight spreadsheet dependency.
+- **Realistic dev API:** MSW mock server implementing a real paging/sort/filter query contract shared between client and
+  mock (`apps/web/src/api/users-query.ts`).
 
 ## Weaknesses
 
 - **No CI/CD whatsoever** — no `.github/`, gates are local-only and bypassable with `--no-verify`.
-- **Single 2.6 MB JS bundle** (`dist/assets/index-*.js`), no `React.lazy`/`Suspense`/dynamic import anywhere; AG Grid (`AllCommunityModule`), Lexical, and all 24 pages load eagerly.
-- **Dead weight:** orphaned primitives (`chart.tsx`→recharts, `data-table.tsx`→@tanstack/react-table, `carousel.tsx`→embla, `resizable.tsx`→react-resizable-panels, `menubar`, `navigation-menu`, `input-otp`, `hover-card`, `aspect-ratio`, `pagination` — zero importers), `@playwright/test` installed with no config or tests, `vitest` misplaced under `dependencies`.
-- **README is template boilerplate** (stock shadcn monorepo text plus garbled `automatic-octo-fiesta` artifact); no consumer-facing docs for the form engine, grid layer, or page system.
-- **Testing is thin relative to surface area:** pure logic is well tested, but zero render tests for the 59 smart components; earlier `SmartServerGrid` tests were deleted (commit `a2f5127`); no E2E.
-- **Small hygiene issues:** leftover `console.log(res)` in `apps/web/src/api/users.ts:35`; duplicated `use-mobile` hook with two divergent implementations; theme switching reachable only via an undocumented global `d` hotkey; suspect `@source` relative globs in `globals.css`.
+- **Single 2.6 MB JS bundle** (`dist/assets/index-*.js`), no `React.lazy`/`Suspense`/dynamic import anywhere; AG Grid (
+  `AllCommunityModule`), Lexical, and all 24 pages load eagerly.
+- **Dead weight:** orphaned primitives (`chart.tsx`→recharts, `data-table.tsx`→@tanstack/react-table, `carousel.tsx`
+  →embla, `resizable.tsx`→react-resizable-panels, `menubar`, `navigation-menu`, `input-otp`, `hover-card`,
+  `aspect-ratio`, `pagination` — zero importers), `@playwright/test` installed with no config or tests, `vitest`
+  misplaced under `dependencies`.
+- **README is template boilerplate** (stock shadcn monorepo text plus garbled `automatic-octo-fiesta` artifact); no
+  consumer-facing docs for the form engine, grid layer, or page system.
+- **Testing is thin relative to surface area:** pure logic is well tested, but zero render tests for the 59 smart
+  components; earlier `SmartServerGrid` tests were deleted (commit `a2f5127`); no E2E.
+- **Small hygiene issues:** leftover `console.log(res)` in `apps/web/src/api/users.ts:35`; duplicated `use-mobile` hook
+  with two divergent implementations; theme switching reachable only via an undocumented global `d` hotkey; suspect
+  `@source` relative globs in `globals.css`.
 
 ---
 
@@ -153,25 +286,50 @@ smart-component/
 
 # React Review
 
-- **Hooks:** Advanced and mostly correct. `useLayoutEffect` mirrors latest props into refs so the AG Grid datasource stays referentially stable ([server-data-grid.tsx:260](packages/ui/src/data-grid/server-data-grid.tsx)); `useServerGridSelection` cleanly separates AG Grid event plumbing from selection state. The form engine's dual sync effects (mirror-out / reconcile-in with `selfUpdateRef` echo guard) solve a real max-update-depth loop and document it ([smart-form.tsx:309-344](packages/ui/src/form-engine/smart-form.tsx)). Two `eslint-disable-line react-hooks/exhaustive-deps` in `smart-form.tsx` are deliberate and explained — acceptable, but each is a contract future editors must know.
-- **Context:** Used sparingly and correctly (`PageContext` for layout defaults, `ThemeProviderContext` with a throwing `useTheme` guard, sidebar context from shadcn). No context-as-global-store abuse.
-- **Rendering & memoization:** `useMemo`/`useCallback` applied where identity matters (datasource, colDefs, handlers passed to AG Grid) rather than cargo-culted. `SmartForm` subscribes via `useSelector(form.store, …)` and `form.Subscribe` to limit re-renders. Reasonable.
-- **Component composition:** Two complementary APIs — flattened props for the 80% case (`SmartDialog` `trigger/header/footer`) with documented escape hatches to primitives, and slot-based composition for pages. This matches the repo's own `vercel-composition-patterns` guidance.
-- **Lazy loading / Suspense:** **Absent.** No `React.lazy`, no `<Suspense>`, no dynamic `import()` in app or library. This is the single biggest React-level gap given AG Grid + Lexical in the tree.
-- **Performance:** Grid virtualizes rows natively; infinite model caps memory. Form engine re-renders the whole field grid on `values` change for `hidden()` evaluation — fine at current form sizes, worth watching past ~50 fields.
-- **React 19 alignment:** `forwardRef` remains in `SmartServerGrid` and shadcn primitives even though React 19 supports `ref` as a prop (and the repo's own composition-patterns skill recommends dropping it). Low priority; the generic cast is correct.
+- **Hooks:** Advanced and mostly correct. `useLayoutEffect` mirrors latest props into refs so the AG Grid datasource
+  stays referentially stable ([server-data-grid.tsx:260](packages/ui/src/data-grid/server-data-grid.tsx));
+  `useServerGridSelection` cleanly separates AG Grid event plumbing from selection state. The form engine's dual sync
+  effects (mirror-out / reconcile-in with `selfUpdateRef` echo guard) solve a real max-update-depth loop and document
+  it ([smart-form.tsx:309-344](packages/ui/src/form-engine/smart-form.tsx)). Two
+  `eslint-disable-line react-hooks/exhaustive-deps` in `smart-form.tsx` are deliberate and explained — acceptable, but
+  each is a contract future editors must know.
+- **Context:** Used sparingly and correctly (`PageContext` for layout defaults, `ThemeProviderContext` with a throwing
+  `useTheme` guard, sidebar context from shadcn). No context-as-global-store abuse.
+- **Rendering & memoization:** `useMemo`/`useCallback` applied where identity matters (datasource, colDefs, handlers
+  passed to AG Grid) rather than cargo-culted. `SmartForm` subscribes via `useSelector(form.store, …)` and
+  `form.Subscribe` to limit re-renders. Reasonable.
+- **Component composition:** Two complementary APIs — flattened props for the 80% case (`SmartDialog`
+  `trigger/header/footer`) with documented escape hatches to primitives, and slot-based composition for pages. This
+  matches the repo's own `vercel-composition-patterns` guidance.
+- **Lazy loading / Suspense:** **Absent.** No `React.lazy`, no `<Suspense>`, no dynamic `import()` in app or library.
+  This is the single biggest React-level gap given AG Grid + Lexical in the tree.
+- **Performance:** Grid virtualizes rows natively; infinite model caps memory. Form engine re-renders the whole field
+  grid on `values` change for `hidden()` evaluation — fine at current form sizes, worth watching past ~50 fields.
+- **React 19 alignment:** `forwardRef` remains in `SmartServerGrid` and shadcn primitives even though React 19 supports
+  `ref` as a prop (and the repo's own composition-patterns skill recommends dropping it). Low priority; the generic cast
+  is correct.
 
 ---
 
 # TypeScript Review
 
-- **Strict mode:** On everywhere; web app additionally enforces unused-locals/params, `verbatimModuleSyntax`, `erasableSyntaxOnly`, `noFallthroughCasesInSwitch`. `packages/ui` lacks those extras — worth aligning.
-- **`any` usage:** **Zero** in production code (verified by grep). Casts are narrow, local, and always commented with the reason (`as never` bridging Zod↔TanStack Standard-Schema typing; the generic `forwardRef` re-assertion).
-- **Generics:** Confidently used: `SmartForm<T extends Record<string, unknown>>`, `SmartServerGrid<TRow>` with generic imperative handle, `pageSchema<TItem extends z.ZodTypeAny>` returning a derived schema type.
-- **Interfaces & utility types:** Public props are `interface`s with JSDoc on every member; `satisfies` used for AG Grid param objects; `keyof T & string` ties field names to the schema type.
-- **Discriminated unions:** The notable gap. `FieldDefinition<T>` is one wide bag where `FieldType` doesn't narrow the valid extras (nothing stops `decimalScale` on a `checkbox`). A per-type discriminated union would move a class of misconfiguration to compile time. Similarly `value: unknown` flows through `FieldRenderer` with per-case casts — safe in practice, but a typed field-registry map could remove the casts.
-- **Duplicated types:** `SPageResponse` deliberately mirrors `pageSchema`'s inferred type (documented); `use-mobile` duplicated across workspaces; `Theme` types local to the app. Minor.
-- **tsconfig hygiene:** Root `tsconfig.json` is minimal and **not referenced** by workspaces (each is standalone) — fine, but a shared `@workspace/typescript-config` base would prevent drift. `packages/ui/tsconfig.json` includes a nonexistent `turbo` directory (leftover from `@turbo/gen` scaffolding).
+- **Strict mode:** On everywhere; web app additionally enforces unused-locals/params, `verbatimModuleSyntax`,
+  `erasableSyntaxOnly`, `noFallthroughCasesInSwitch`. `packages/ui` lacks those extras — worth aligning.
+- **`any` usage:** **Zero** in production code (verified by grep). Casts are narrow, local, and always commented with
+  the reason (`as never` bridging Zod↔TanStack Standard-Schema typing; the generic `forwardRef` re-assertion).
+- **Generics:** Confidently used: `SmartForm<T extends Record<string, unknown>>`, `SmartServerGrid<TRow>` with generic
+  imperative handle, `pageSchema<TItem extends z.ZodTypeAny>` returning a derived schema type.
+- **Interfaces & utility types:** Public props are `interface`s with JSDoc on every member; `satisfies` used for AG Grid
+  param objects; `keyof T & string` ties field names to the schema type.
+- **Discriminated unions:** The notable gap. `FieldDefinition<T>` is one wide bag where `FieldType` doesn't narrow the
+  valid extras (nothing stops `decimalScale` on a `checkbox`). A per-type discriminated union would move a class of
+  misconfiguration to compile time. Similarly `value: unknown` flows through `FieldRenderer` with per-case casts — safe
+  in practice, but a typed field-registry map could remove the casts.
+- **Duplicated types:** `SPageResponse` deliberately mirrors `pageSchema`'s inferred type (documented); `use-mobile`
+  duplicated across workspaces; `Theme` types local to the app. Minor.
+- **tsconfig hygiene:** Root `tsconfig.json` is minimal and **not referenced** by workspaces (each is standalone) —
+  fine, but a shared `@workspace/typescript-config` base would prevent drift. `packages/ui/tsconfig.json` includes a
+  nonexistent `turbo` directory (leftover from `@turbo/gen` scaffolding).
 
 ---
 
@@ -179,19 +337,25 @@ smart-component/
 
 **Duplicated components / logic**
 
-- `use-mobile` exists twice with _different_ implementations (ui: `useState`+`useEffect`; web: subscription-style). Consolidate on the ui version and delete the app copy.
-- `SmartGrid` and `SmartServerGrid` share near-identical toolbar JSX (title, column-visibility dropdown, export button) — extract a `GridToolbar` internal.
-- Theme handling: the app ships a 230-line custom `ThemeProvider` while `next-themes` is a ui dependency (used by `sonner`'s toaster). One approach should win.
+- `use-mobile` exists twice with _different_ implementations (ui: `useState`+`useEffect`; web: subscription-style).
+  Consolidate on the ui version and delete the app copy.
+- `SmartGrid` and `SmartServerGrid` share near-identical toolbar JSX (title, column-visibility dropdown, export
+  button) — extract a `GridToolbar` internal.
+- Theme handling: the app ships a 230-line custom `ThemeProvider` while `next-themes` is a ui dependency (used by
+  `sonner`'s toaster). One approach should win.
 
 **Reusable opportunities**
 
-- The KPI/stat card hand-rolled in `analytics-example-page.tsx` and `dashboard-example-page.tsx` is a natural `SmartStatCard`.
-- The demo pages repeatedly build fake datasets inline — a tiny shared `demo-data` module would shrink several 300–400-line pages.
+- The KPI/stat card hand-rolled in `analytics-example-page.tsx` and `dashboard-example-page.tsx` is a natural
+  `SmartStatCard`.
+- The demo pages repeatedly build fake datasets inline — a tiny shared `demo-data` module would shrink several
+  300–400-line pages.
 - `ErrorPanel` inside `server-data-grid.tsx` overlaps with `SmartPageError` — unify on one error-state primitive.
 
 **Wrapper opportunities**
 
-- `fetchUsersPage` embeds fetch + Zod parse + error mapping; generalize into a `createPageFetcher(schema, url)` helper in the data-grid layer so every consumer gets validated fetching for free.
+- `fetchUsersPage` embeds fetch + Zod parse + error mapping; generalize into a `createPageFetcher(schema, url)` helper
+  in the data-grid layer so every consumer gets validated fetching for free.
 
 **Large / complex components (top offenders by LOC)**
 
@@ -207,58 +371,93 @@ smart-component/
 
 # UI/UX Review
 
-- **Consistency:** Strong. One design-token vocabulary (`globals.css` `@theme inline` variables), one icon set (lucide), consistent density constants for grids (36/44/56 px rows).
-- **Spacing & typography:** Tailwind scale discipline; Inter variable font with `--font-heading`; prettier-plugin-tailwindcss keeps class order canonical.
-- **Responsiveness:** Toolbars collapse (`flex-col sm:flex-row`), sidebar has mobile behavior via `use-mobile`; grid `fill` mode solves full-viewport layouts without `100vh` hacks. Grid-heavy pages remain desktop-first — acceptable for the domain.
-- **Accessibility:** Decent baseline: Base UI primitives bring correct semantics; 63 library files use `aria-*`; the form engine focuses the first errored field after failed submit and gates error display on blur/submit (excellent pattern). Gaps: no automated a11y checks (no `eslint-plugin-jsx-a11y`, no axe tests), no skip-to-content link in the shell, and the global **`d` keyboard shortcut** toggling theme (`theme-provider.tsx:142-180`) is undiscoverable and could collide with user expectations or assistive tech — there is **no visible theme toggle at all** (`useTheme` has zero consumers).
+- **Consistency:** Strong. One design-token vocabulary (`globals.css` `@theme inline` variables), one icon set (lucide),
+  consistent density constants for grids (36/44/56 px rows).
+- **Spacing & typography:** Tailwind scale discipline; Inter variable font with `--font-heading`;
+  prettier-plugin-tailwindcss keeps class order canonical.
+- **Responsiveness:** Toolbars collapse (`flex-col sm:flex-row`), sidebar has mobile behavior via `use-mobile`; grid
+  `fill` mode solves full-viewport layouts without `100vh` hacks. Grid-heavy pages remain desktop-first — acceptable for
+  the domain.
+- **Accessibility:** Decent baseline: Base UI primitives bring correct semantics; 63 library files use `aria-*`; the
+  form engine focuses the first errored field after failed submit and gates error display on blur/submit (excellent
+  pattern). Gaps: no automated a11y checks (no `eslint-plugin-jsx-a11y`, no axe tests), no skip-to-content link in the
+  shell, and the global **`d` keyboard shortcut** toggling theme (`theme-provider.tsx:142-180`) is undiscoverable and
+  could collide with user expectations or assistive tech — there is **no visible theme toggle at all** (`useTheme` has
+  zero consumers).
 - **Dark mode:** Fully tokenized and it works — but see above: unreachable through the UI.
-- **Loading states:** First-class (`SmartLoadingOverlay`, `SmartSpinner`, `SmartPageLoading`, grid initial-load overlay, MSW latency of 450 ms to make them visible).
-- **Error states:** First-class in the grid (error panel with Retry) and page system (`SmartPageError`); inline field errors in forms.
+- **Loading states:** First-class (`SmartLoadingOverlay`, `SmartSpinner`, `SmartPageLoading`, grid initial-load overlay,
+  MSW latency of 450 ms to make them visible).
+- **Error states:** First-class in the grid (error panel with Retry) and page system (`SmartPageError`); inline field
+  errors in forms.
 - **Empty states:** First-class (`SmartEmptyState` via `NoRowsOverlay`, `SmartPageEmpty`).
 
 ---
 
 # Code Quality
 
-- **Naming:** Uniform and predictable (`Smart*` public components, `*-internals` for private helpers, `use-*` hooks, kebab-case files). No abbreviations soup.
+- **Naming:** Uniform and predictable (`Smart*` public components, `*-internals` for private helpers, `use-*` hooks,
+  kebab-case files). No abbreviations soup.
 - **Formatting:** Prettier enforced pre-commit; consistent (no-semicolons, double quotes, 80 cols).
-- **Dead code:** The 10 orphaned primitives + their 4 orphaned dependencies (recharts, @tanstack/react-table, embla-carousel-react, react-resizable-panels — embla/resizable are imported only by orphaned components), unused `@playwright/test`, unused `@turbo/gen`, `hooks/.gitkeep` alongside a real file, and the stray `console.log(res)` in `users.ts:35`.
+- **Dead code:** The 10 orphaned primitives + their 4 orphaned dependencies (recharts, @tanstack/react-table,
+  embla-carousel-react, react-resizable-panels — embla/resizable are imported only by orphaned components), unused
+  `@playwright/test`, unused `@turbo/gen`, `hooks/.gitkeep` alongside a real file, and the stray `console.log(res)` in
+  `users.ts:35`.
 - **Duplicate code:** Limited (grid toolbars, use-mobile, demo datasets) — see Component Review.
 - **Long methods/components:** Only the five files listed above; everything else is small and single-purpose.
-- **Magic values:** Consistently named (`LATENCY`, `MOBILE_BREAKPOINT`, `rowHeightByDensity`, `COLS/SPAN` maps). Grid defaults (page size 20, height 480) are documented props.
-- **Comments:** The best I've seen in a repo this young — they explain constraints and _why_, not narration. `eslint-disable` comments always carry justification.
-- **Maintainability:** High. A new engineer can navigate from `CLAUDE.md` alone. Risk concentration: the form engine's sync-effect dance and the grid's ref-plumbing are subtle — both mitigated by comments and (for the form) a dedicated regression test (`smart-form-sync.test.tsx`).
+- **Magic values:** Consistently named (`LATENCY`, `MOBILE_BREAKPOINT`, `rowHeightByDensity`, `COLS/SPAN` maps). Grid
+  defaults (page size 20, height 480) are documented props.
+- **Comments:** The best I've seen in a repo this young — they explain constraints and _why_, not narration.
+  `eslint-disable` comments always carry justification.
+- **Maintainability:** High. A new engineer can navigate from `CLAUDE.md` alone. Risk concentration: the form engine's
+  sync-effect dance and the grid's ref-plumbing are subtle — both mitigated by comments and (for the form) a dedicated
+  regression test (`smart-form-sync.test.tsx`).
 
 ---
 
 # Security Review
 
-Context: a frontend component library + demo app with **no real backend, no auth, no secrets** — the attack surface is inherently small today. Findings are therefore mostly forward-looking:
+Context: a frontend component library + demo app with **no real backend, no auth, no secrets** — the attack surface is
+inherently small today. Findings are therefore mostly forward-looking:
 
 - **Auth/authorization:** None present, none needed yet. No patterns to migrate away from later — clean slate.
-- **Validation:** Strong habit already: Zod validates _inbound API data_ (`pageSchema(...).parse`), not just forms. Keep this as a standard.
+- **Validation:** Strong habit already: Zod validates _inbound API data_ (`pageSchema(...).parse`), not just forms. Keep
+  this as a standard.
 - **Secrets/env:** No `.env*` files exist; pattern is gitignored; nothing sensitive in the repo. ✔
-- **Supply chain:** pnpm 10 `allowBuilds` explicitly allow-lists build scripts (esbuild yes, msw's postinstall no) — ahead of the curve. Lockfile committed. No dependency audit automation yet (add `pnpm audit` to future CI).
-- **XSS:** Two real areas to watch: (1) `SmartTextEditor` HTML mode round-trips via `$generateNodesFromDOM` and emits raw HTML strings — any app that _renders_ stored editor HTML must sanitize (DOMPurify) at render time; the library should document this contract and/or offer a sanitizing helper. (2) No `dangerouslySetInnerHTML` in app code today. ✔
-- **CSV/XLSX injection:** `lib/xlsx.ts` writes strings as inline strings (not formulas), which mitigates classic `=cmd` formula injection for the XLSX path; the CSV export in `SmartGrid` delegates to AG Grid's exporter — verify/enable its formula-escaping option when data becomes user-generated.
-- **CSRF / injection:** No mutating endpoints exist; the query-string builder uses `URLSearchParams` (proper encoding). Non-issue today.
+- **Supply chain:** pnpm 10 `allowBuilds` explicitly allow-lists build scripts (esbuild yes, msw's postinstall no) —
+  ahead of the curve. Lockfile committed. No dependency audit automation yet (add `pnpm audit` to future CI).
+- **XSS:** Two real areas to watch: (1) `SmartTextEditor` HTML mode round-trips via `$generateNodesFromDOM` and emits
+  raw HTML strings — any app that _renders_ stored editor HTML must sanitize (DOMPurify) at render time; the library
+  should document this contract and/or offer a sanitizing helper. (2) No `dangerouslySetInnerHTML` in app code today. ✔
+- **CSV/XLSX injection:** `lib/xlsx.ts` writes strings as inline strings (not formulas), which mitigates classic `=cmd`
+  formula injection for the XLSX path; the CSV export in `SmartGrid` delegates to AG Grid's exporter — verify/enable its
+  formula-escaping option when data becomes user-generated.
+- **CSRF / injection:** No mutating endpoints exist; the query-string builder uses `URLSearchParams` (proper encoding).
+  Non-issue today.
 - **Headers/CSP:** No deployment config, so no CSP/security headers story yet — belongs in the deployment roadmap.
 
 ---
 
 # Performance Review
 
-- **Bundle size — the headline finding.** Production build emits **one 2.6 MB JS chunk** (~2.5 MiB minified; Vite warns >500 kB) plus 162 kB CSS. Causes:
+- **Bundle size — the headline finding.** Production build emits **one 2.6 MB JS chunk** (~2.5 MiB minified; Vite
+  warns >500 kB) plus 162 kB CSS. Causes:
   1. All 24 pages statically imported in [App.tsx](apps/web/src/App.tsx) — zero route-level splitting.
-  2. `ensureGridModules()` registers `AllCommunityModule` (everything AG Grid Community ships) instead of the specific modules used.
+  2. `ensureGridModules()` registers `AllCommunityModule` (everything AG Grid Community ships) instead of the specific
+     modules used.
   3. Lexical + all its plugins load eagerly even for pages without an editor.
   4. Nine Inter font subsets ship (~230 kB of woff2); most locales unused.
-- **Tree shaking:** Works where it can (orphaned `chart.tsx`/recharts do _not_ end up in the bundle) — the problem is eager imports, not shaking. Rolldown also flags mis-positioned `#__PURE__` annotations in `@lexical/react` (upstream, cosmetic).
-- **Code splitting / lazy loading:** None. `React.lazy` per route + `manualChunks` (vendor split for ag-grid/lexical) would cut initial JS by an estimated 60–75%.
-- **Rendering:** Good — virtualized grids, block cache with abortable fetches (`AbortController` per block, tracked in a `Set`), debounced state persistence (300 ms), memoized identities for grid inputs.
+- **Tree shaking:** Works where it can (orphaned `chart.tsx`/recharts do _not_ end up in the bundle) — the problem is
+  eager imports, not shaking. Rolldown also flags mis-positioned `#__PURE__` annotations in `@lexical/react` (upstream,
+  cosmetic).
+- **Code splitting / lazy loading:** None. `React.lazy` per route + `manualChunks` (vendor split for ag-grid/lexical)
+  would cut initial JS by an estimated 60–75%.
+- **Rendering:** Good — virtualized grids, block cache with abortable fetches (`AbortController` per block, tracked in a
+  `Set`), debounced state persistence (300 ms), memoized identities for grid inputs.
 - **Memoization:** Targeted, not superstitious. ✔
-- **Expensive computations:** XLSX generation is synchronous on the main thread — fine at current export sizes; consider a worker beyond ~50k cells.
-- **Caching:** localStorage grid-state persistence with debounce. No HTTP/data-layer caching (no TanStack Query) — acceptable for a demo, roadmap item for real apps.
+- **Expensive computations:** XLSX generation is synchronous on the main thread — fine at current export sizes; consider
+  a worker beyond ~50k cells.
+- **Caching:** localStorage grid-state persistence with debounce. No HTTP/data-layer caching (no TanStack Query) —
+  acceptable for a demo, roadmap item for real apps.
 
 ---
 
@@ -272,17 +471,24 @@ Context: a frontend component library + demo app with **no real backend, no auth
 | Coverage          | `@vitest/coverage-v8` installed; no thresholds, no reporting, not wired into any gate.                                                                                                                                                                                                                                          |
 | Infra             | Vitest 4 + jsdom + Testing Library configured correctly (`vitest.setup.ts` with jest-dom). Pre-push runs the suite. Test environment startup dominates runtime (89 s environment vs 1.3 s tests) — consider `pool: 'threads'`/project config as suite grows.                                                                    |
 
-**Biggest risks untested:** SmartForm field rendering per type, SmartPage slot/layout detection, grid toolbar behaviors, Lexical toolbar, theme provider hotkey/storage sync.
+**Biggest risks untested:** SmartForm field rendering per type, SmartPage slot/layout detection, grid toolbar behaviors,
+Lexical toolbar, theme provider hotkey/storage sync.
 
 ---
 
 # Documentation Review
 
-- **README.md:** Stock template ("shadcn/ui monorepo template") with a garbled trailing artifact (`# a u t o m a t i c - o c t o - f i e s t a`). Does not mention the form engine, grids, page system, MSW, or scripts. **The single worst doc artifact in the repo.**
-- **CLAUDE.md:** Excellent and accurate — commands, architecture, exports map, placement rules, internals map. Currently the _real_ onboarding doc, though written for an AI assistant.
-- **Inline/JSDoc:** Outstanding (see Code Quality). Public props documented member-by-member with `@example` blocks on major components.
-- **Architecture docs:** None beyond CLAUDE.md; no ADRs (several decisions deserve one: Base UI over Radix, hand-rolled xlsx, source-only package, Spring page contract).
-- **API/usage docs:** None. No Storybook/Ladle; the playground app is the implicit documentation, but nothing maps "component → demo route".
+- **README.md:** Stock template ("shadcn/ui monorepo template") with a garbled trailing artifact (
+  `# a u t o m a t i c - o c t o - f i e s t a`). Does not mention the form engine, grids, page system, MSW, or scripts.
+  **The single worst doc artifact in the repo.**
+- **CLAUDE.md:** Excellent and accurate — commands, architecture, exports map, placement rules, internals map. Currently
+  the _real_ onboarding doc, though written for an AI assistant.
+- **Inline/JSDoc:** Outstanding (see Code Quality). Public props documented member-by-member with `@example` blocks on
+  major components.
+- **Architecture docs:** None beyond CLAUDE.md; no ADRs (several decisions deserve one: Base UI over Radix, hand-rolled
+  xlsx, source-only package, Spring page contract).
+- **API/usage docs:** None. No Storybook/Ladle; the playground app is the implicit documentation, but nothing maps "
+  component → demo route".
 - **Onboarding:** `pnpm install && pnpm dev` works, but only CLAUDE.md says so.
 
 ---
@@ -317,11 +523,15 @@ Context: a frontend component library + demo app with **no real backend, no auth
 
 1. Stand up CI (lint + typecheck + test + build on every PR).
 
-**High** 2. Route-level code splitting + AG Grid module slimming (bundle ↓ 60–75%). 3. Component test strategy + restore grid coverage + Playwright smoke suite. 4. Rewrite README / add real consumer documentation.
+**High** 2. Route-level code splitting + AG Grid module slimming (bundle ↓ 60–75%). 3. Component test strategy + restore
+grid coverage + Playwright smoke suite. 4. Rewrite README / add real consumer documentation.
 
-**Medium** 5. Dependency & dead-code purge (orphans, misplaced `vitest`, unused playwright/recharts/react-table). 6. Visible theme toggle; tame the `d` hotkey. 7. Discriminated-union `FieldDefinition`. 8. Toolbar-plugin and `smart-form.tsx` decomposition (field registry). 9. Coverage thresholds in CI; Changesets for versioning.
+**Medium** 5. Dependency & dead-code purge (orphans, misplaced `vitest`, unused playwright/recharts/react-table). 6.
+Visible theme toggle; tame the `d` hotkey. 7. Discriminated-union `FieldDefinition`. 8. Toolbar-plugin and
+`smart-form.tsx` decomposition (field registry). 9. Coverage thresholds in CI; Changesets for versioning.
 
-**Low** 10. `console.log` removal, `use-mobile` dedupe, `@source` glob fix, tsconfig cleanup, ADRs for the four big decisions.
+**Low** 10. `console.log` removal, `use-mobile` dedupe, `@source` glob fix, tsconfig cleanup, ADRs for the four big
+decisions.
 
 ---
 
@@ -350,11 +560,13 @@ Context: a frontend component library + demo app with **no real backend, no auth
 5. **Component render tests** for the top-10 most-used smart components. (High, 2–3 d)
 6. **Playwright smoke E2E** against the MSW-backed playground (dep already installed). (High, 1–2 d)
 7. **Rewrite README.md** — what/why/quickstart/scripts/architecture links. (High, 0.5 d)
-8. **Purge dead code & deps** — 10 orphan primitives, recharts, react-table, misplaced vitest, unused playwright/turbo-gen. (Medium, 0.5 d)
+8. **Purge dead code & deps** — 10 orphan primitives, recharts, react-table, misplaced vitest, unused
+   playwright/turbo-gen. (Medium, 0.5 d)
 9. **Visible theme toggle** + make the global `d` hotkey opt-in. (Medium, 0.5 d)
 10. **Restore SmartServerGrid test coverage** with an explicit AG Grid mocking boundary. (Medium, 1–2 d)
 11. **Discriminated-union `FieldDefinition`** for compile-time field-config safety. (Medium, 1–2 d)
-12. **Field-registry refactor of `smart-form.tsx`** — kills the 250-line switch, enables custom field types. (Medium, 1 d)
+12. **Field-registry refactor of `smart-form.tsx`** — kills the 250-line switch, enables custom field types. (Medium, 1
+    d)
 13. **Decompose `toolbar-plugin.tsx`** into per-section modules. (Medium, 1–2 d)
 14. **Delete `console.log`, dedupe `use-mobile`, fix `@source` globs, tsconfig cleanup.** (Low, 1 h total)
 15. **Coverage thresholds** wired into CI (`@vitest/coverage-v8` already installed). (Medium, 0.5 d)

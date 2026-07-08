@@ -84,6 +84,17 @@ Tailwind v4 is used. The stylesheet entry is `packages/ui/src/styles/globals.css
 entry point. The `@source` directives in that file scan `apps/**` and `packages/ui/**` so Tailwind finds classes in both
 workspaces.
 
+#### Vendored primitives policy
+
+Some primitives in `packages/ui/src/components/` currently have zero importers (e.g. `chart.tsx`, `data-table.tsx`,
+`carousel.tsx`, `menubar`, `navigation-menu`, `input-otp`, `hover-card`, `aspect-ratio`, `pagination`). They are
+**kept deliberately**: shadcn primitives are regenerable vendor code, and unused ones may be adopted by future
+features. Their runtime deps (`recharts`, `@tanstack/react-table`, `embla-carousel-react`) stay in `dependencies` so
+adopting a primitive never requires a dependency change. This costs nothing at runtime — the app imports only via the
+exports map, so tree-shaking keeps unimported primitives and their deps out of the built bundle (verified in the
+2026-07 audit by checking `apps/web/dist/assets` for recharts/embla signatures). Don't delete these primitives or
+"clean up" their deps as dead code.
+
 ### Data grid layer (`packages/ui/src/data-grid/`)
 
 Two public components backed by AG Grid Community:
