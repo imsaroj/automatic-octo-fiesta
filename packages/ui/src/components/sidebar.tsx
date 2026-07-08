@@ -270,9 +270,9 @@ const SidebarTrigger = ({
       {...props}
     >
       {state === "expanded" ? (
-        <PanelLeftClose size="icon-lg" className="size-4.5" />
+        <PanelLeftClose className="size-4.5" />
       ) : (
-        <PanelRightClose size="icon-lg" className="size-4.5" />
+        <PanelRightClose className="size-4.5" />
       )}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
