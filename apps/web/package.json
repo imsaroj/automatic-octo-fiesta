@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/check-bundle-size.mjs",
+    "size": "node scripts/check-bundle-size.mjs",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview"

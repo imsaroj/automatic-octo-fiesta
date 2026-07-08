@@ -54,6 +54,11 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # Also runs inside `web`'s build script; this named step makes a budget
+      # regression visible as its own CI failure rather than a build error.
+      - name: Bundle budget
+        run: pnpm --filter web size
+
   e2e:
     name: Playwright smoke E2E
     runs-on: ubuntu-latest
