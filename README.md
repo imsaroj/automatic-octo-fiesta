@@ -1,87 +1,82 @@
 # Smart Component
 
-### _A story about all the code you're never going to write again._
+**Copy less UI. Ship more product.**
+
+`@workspace/ui` is a source-first React 19 UI system that turns the product patterns teams rebuild over and over — forms, data grids, search bars, trees, calendars, rich text — into documented, tested, config-driven building blocks.
+
+Most UI libraries hand you primitives and leave the glue to you. This one ships the higher-level pieces on top of them, so a form is a schema, a grid is a fetcher, and a page is a set of named slots.
+
+[Why](#why) &middot; [Features](#features) &middot; [Getting started](#getting-started) &middot; [Usage](#usage) &middot; [Project structure](#project-structure) &middot; [Documentation](#documentation)
 
 ---
 
-## Chapter 1 — The form that ate an afternoon
+## Why
 
-You know this story, because you've lived it.
+| Without Smart Component                                | With Smart Component                  |
+| ------------------------------------------------------ | ------------------------------------- |
+| Recreate form scaffolding field by field               | Drive `SmartForm` from a Zod schema   |
+| Build every dialog, card, and sheet from scratch       | Compose flat `Smart*` wrappers        |
+| Rewrite grid wiring, selection, and pagination         | Drop in `@workspace/ui/data-grid`     |
+| Rebuild search/filter bars for every list page         | Declare `@workspace/ui/search-engine` |
+| Re-implement trees, calendars, transfer lists, editors | Reach for the domain engine           |
 
-The ticket says: **"Add a contact form. Name, email, subject, message. Validate it."**
-Easy, right? Twenty minutes, tops.
+The goal is a public API that stays predictable, less glue code, and a codebase that still reads well after the first week.
 
-So you open a new file and start typing the "proper" way — TanStack Form, shadcn/ui,
-Zod, all the good tools:
+## Features
 
-```tsx
-// The "before" — raw TanStack Form + shadcn/ui, one field at a time
-const form = useForm({
-  defaultValues: { name: "", email: "", subject: "", message: "" },
-  validators: { onChange: contactSchema },
-  onSubmit: async ({ value }) => { /* ... */ },
-})
+- **Smart wrappers** — flat, config-driven versions of shadcn/ui compound components (`SmartCard`, `SmartDialog`, `SmartSheet`, `SmartSelect`, `SmartCombobox`, `SmartStepper`, `SmartToaster`, and more). Each file re-exports the underlying primitives, so you can drop back to the compound form whenever the flat API can't express a layout.
+- **Action buttons** — 27 ready CRUD/toolbar presets (`AddButton`, `SaveButton`, `DeleteButton`, …) driven by one config map, with icon-only mode, tooltips, and optional permission gating.
+- **Form engine** — declarative forms on TanStack Form + Zod v4. One schema is the single source of truth for validation _and_ required-ness; a `FieldDefinition[]` picks the controls.
+- **Data grid** — `SmartGrid` (client-side, quick search + CSV export) and `SmartServerGrid` (infinite/server-side) backed by AG Grid, with a reusable Spring `Page<T>` fetch pipeline and cross-page selection.
+- **Search engine** — a filter bar that composes the form engine, adding manual and debounced auto-search, empty-value pruning, and an active-filter count.
+- **Tree, transfer list, and calendar engines** — generic, Set-backed components for hierarchical navigation, dual-list shuttles, and month/week/day/agenda scheduling with booking and recurrence.
+- **Lexical rich text editor** — a full editor wrapped as a single `SmartTextEditor`, with HTML or JSON value formats.
+- **Page layout system** — page chrome expressed as named slots (`SmartPage`) instead of nested `div`s.
 
-return (
-  <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); form.handleSubmit() }}>
-    <form.Field name="name">
-      {(field) => (
-        <div className="grid gap-2">
-          <Label htmlFor={field.name}>
-            Your name <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id={field.name}
-            value={field.state.value}
-            onBlur={field.handleBlur}
-            onChange={(e) => field.handleChange(e.target.value)}
-            aria-invalid={field.state.meta.errors.length > 0}
-          />
-          {field.state.meta.errors.length > 0 && (
-            <p className="text-sm text-destructive">
-              {field.state.meta.errors[0]?.message}
-            </p>
-          )}
-        </div>
-      )}
-    </form.Field>
+All reusable logic is unit-tested with Vitest, checked with strict TypeScript, and demonstrated live in the playground app.
 
-    <form.Field name="email">
-      {(field) => (
-        /* ...the same 15 lines again... */
-      )}
-    </form.Field>
+## Getting started
 
-    <form.Field name="subject">
-      {(field) => (
-        /* ...the same 15 lines, except now it's a Select,
-           so it's actually 25 lines... */
-      )}
-    </form.Field>
+> [!NOTE]
+> This is a **pnpm + Turborepo monorepo**. It has two workspaces: `apps/web` (the Vite + React 19 playground) and `packages/ui` (the `@workspace/ui` library, exported directly as source with no build step).
 
-    <form.Field name="message">
-      {(field) => (
-        /* ...you get the idea... */
-      )}
-    </form.Field>
+### Prerequisites
 
-    <Button type="submit">Send message</Button>
-  </form>
-)
+- [Node.js](https://nodejs.org) `>= 20`
+- [pnpm](https://pnpm.io) `10.33.4`
+
+### Install and run
+
+```bash
+pnpm install
+pnpm dev
 ```
 
-Four fields. **~120 lines.** Every field re-declares the same Label, the same error
-paragraph, the same `aria-invalid`, the same `handleBlur`/`handleChange` dance. You wrote
-the required asterisk by hand — and it's already lying, because the schema says `email`
-is optional and the JSX says it isn't.
+`pnpm dev` starts every workspace through Turbo. Open the playground app to browse the public API in real UI, backed by an [MSW](https://mswjs.io) mock API.
 
-And tomorrow the ticket says _"add a date picker and a rich-text field"_, and you get to
-do it all again.
+### Common commands
 
-## Chapter 2 — The same form, in this repo
+```bash
+pnpm build          # Build all packages
+pnpm lint           # Lint all workspaces
+pnpm typecheck      # Type-check all workspaces
+pnpm test           # Vitest (packages/ui)
+pnpm test:e2e       # Playwright end-to-end tests
+pnpm format         # Prettier
+pnpm docs:check     # Verify docs stay aligned with the public surface
+pnpm exports:check  # Validate the package exports map
+pnpm api:check      # Type-check the public API surface
+pnpm publint        # Lint the published package
+```
 
-Here's that exact ticket with `@workspace/ui/form-engine`. This is not pseudocode — it's
-lifted from the [live demo page](apps/web/src/pages/form-engine/basic-form-page.tsx):
+> [!IMPORTANT]
+> Commits follow [Conventional Commits](https://www.conventionalcommits.org) and are enforced by commitlint via a Husky hook. Husky also runs `lint-staged` on pre-commit and checks on pre-push — don't bypass them with `--no-verify` unless asked.
+
+## Usage
+
+Import through the explicit subpath exports declared in [`packages/ui/package.json`](packages/ui/package.json) — never reach into internal files.
+
+### Schema-driven form
 
 ```tsx
 import { z } from "zod"
@@ -109,176 +104,68 @@ const fields: FieldDefinition<z.infer<typeof contactSchema>>[] = [
 />
 ```
 
-**~25 lines.** Same TanStack Form underneath, same Zod validation, same shadcn/ui inputs.
-But now:
-
-- The **Zod schema is the single source of truth** — validation _and_ the required
-  asterisk are derived from it. The schema can never disagree with the UI, because the UI
-  is generated from the schema.
-- Labels, inline errors, `aria-invalid`, blur handling, layout columns — all handled once,
-  in one place, instead of copy-pasted per field.
-- Need a currency input, a date range, a multiselect, or a full **rich-text editor** as a
-  field? Change one word: `type: "text-editor"`. That's the whole diff.
-
-The afternoon is yours again.
-
-## Chapter 3 — Death by a thousand `<CardHeader>`s
-
-Forms were the dramatic case. But the paper cuts add up too.
-
-shadcn/ui is wonderful — and it's a _compound-component_ library. A card is five
-components. A dialog is seven. You assemble them like furniture, every single time:
+### Flat compound wrapper
 
 ```tsx
-// Before — 13 lines of scaffolding for one card
-<Card>
-  <CardHeader>
-    <CardTitle>Orders</CardTitle>
-    <CardDescription>Latest orders</CardDescription>
-    <CardAction>
-      <Button>Add</Button>
-    </CardAction>
-  </CardHeader>
-  <CardContent>…</CardContent>
-  <CardFooter>
-    <Pagination />
-  </CardFooter>
-</Card>
-```
+import { SmartCard } from "@workspace/ui/smart-components/smart-card"
 
-```tsx
-// After — the same card, as one component and one prop
-<SmartCard
+;<SmartCard
   header={{
     title: "Orders",
     subtitle: "Latest orders",
-    actions: <Button>Add</Button>,
+    actions: <AddButton />,
   }}
   footer={<Pagination />}
 >
-  …
+  {/* content */}
 </SmartCard>
 ```
 
-Now multiply that by every `Dialog`, `Sheet`, `Drawer`, `Select`, `Combobox`,
-`DatePicker`, `Stepper`, and toast in your app. That's the **`Smart*` wrapper layer**:
-one flat, config-driven component per shadcn compound, with the boilerplate folded in.
-
-And when the flat API genuinely can't express your layout? Every wrapper file
-**re-exports the native primitives**, so you drop back down to compound mode for that one
-card — no lock-in, no fork.
-
-Even buttons got the treatment: 27 action presets (`<AddButton />`, `<DeleteButton />`,
-`<SaveButton loading />`…) share one config map for icon, label, variant, and loading
-text — so your toolbars stop debating which icon "Delete" uses this week.
-
-## Chapter 4 — The big machines
-
-Some things are too big to be a wrapper, so they became **engines** — each one a single
-component with a declarative config, backed by a serious library and a pile of unit
-tests:
-
-| Engine            | Import                                | What it replaces                                                                                                                                                                                                        |
-| ----------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Data grid**     | `@workspace/ui/data-grid`             | Hand-rolled AG Grid setup. `SmartGrid` (client-side, quick search + CSV baked in) and `SmartServerGrid` (infinite row model — you write one `fetchRows` function, it does the rest, Spring `Page<T>` decoding included) |
-| **Form engine**   | `@workspace/ui/form-engine`           | Chapter 1. You were there.                                                                                                                                                                                              |
-| **Search engine** | `@workspace/ui/search-engine`         | The filter bar above every list page — composes the form engine, adds debounced auto-search, empty-value pruning, and an active-filter count                                                                            |
-| **Calendar**      | `@workspace/ui/calendar-engine`       | Month/week/day/agenda views, drag-to-move, edge-resize, recurring events (RRULE subset with "this / this-and-following / all" editing), and slot booking from availability windows                                      |
-| **Tree**          | `@workspace/ui/tree-engine`           | File explorers: tri-state checkboxes, lazy loading, inline rename, drag-and-drop, keyboard nav                                                                                                                          |
-| **Transfer list** | `@workspace/ui/transfer-list-engine`  | The dual-list "shuttle" every admin screen eventually needs                                                                                                                                                             |
-| **Rich text**     | `@workspace/ui/lexical-text-editor`   | A full Lexical editor (toolbar, images, code highlight, HTML/JSON value) as one `<SmartTextEditor />`                                                                                                                   |
-| **Page layout**   | `@workspace/ui/smart-components/page` | The header/toolbar/filters/content/status-bar chrome of a page, as named slots instead of a div pyramid                                                                                                                 |
-
-A full data table — sorting, pagination, quick search, column picker, CSV export — looks
-like this:
-
-```tsx
-<SmartGrid
-  title="Accounts"
-  rows={accounts}
-  columns={columns}
-  selection="single"
-  onSelectionChange={(rows) => setSelected(rows[0] ?? null)}
-/>
-```
-
-That's the whole component. AG Grid Community is doing the heavy lifting; you just never
-have to look at it.
-
-## Chapter 5 — The part where it stays maintainable
-
-A shortcut that rots is worse than no shortcut. So the boring engineering is here too:
-
-- **React 19 + strict TypeScript**, everything generic where it matters
-  (`TreeNode<T>`, `CalendarEvent<T>`, `SmartServerGrid<Row>`).
-- **Tailwind v4 + Base UI** (`@base-ui/react`) under shadcn v4-style components.
-- **Shipped as source** — no build step, no `dist/` mystery. You can read (and step
-  through) every component you use.
-- **Unit-tested cores** — the tree algorithms, calendar date math, recurrence expansion,
-  booking slots, transfer moves, and pagination encoding are pure functions with Vitest
-  suites, and CI enforces coverage thresholds so it can't silently regress.
-- **One convention everywhere:** input-like components are controlled via
-  `data` / `setData` — which is exactly why the form engine can drive any of them.
-- A **playground app** (`apps/web`) with a demo page for every component, backed by an
-  MSW mock API — so every pattern above has a working reference you can copy from.
-
-## Epilogue — Try it
-
-```bash
-pnpm install     # Node >= 20, pnpm 10
-pnpm dev         # opens the playground — browse every component live
-```
-
-```bash
-pnpm build       # build all packages
-pnpm lint        # ESLint (incl. jsx-a11y)
-pnpm typecheck   # tsc --noEmit
-pnpm test        # Vitest (packages/ui)
-pnpm format      # Prettier
-```
-
-### The map
+### Available entrypoints
 
 ```
+@workspace/ui/components/*             shadcn/ui primitives (Base UI under the hood)
+@workspace/ui/hooks/*                  shared hooks
+@workspace/ui/lib/*                    cn(), formatters, xlsx writer
+@workspace/ui/smart-components/*       Smart* wrappers
+@workspace/ui/smart-components/page    page-layout slots
+@workspace/ui/smart-components/buttons action-button presets
+@workspace/ui/form-engine             declarative forms
+@workspace/ui/search-engine           search/filter bar
+@workspace/ui/data-grid               AG Grid wrappers
+@workspace/ui/tree-engine             SmartTree
+@workspace/ui/transfer-list-engine    SmartTransferList
+@workspace/ui/calendar-engine         SmartCalendar
+@workspace/ui/lexical-text-editor     SmartTextEditor
+```
+
+## Project structure
+
+```text
 smart-component/
-├── apps/web/                    # Vite playground — a demo page per component
-└── packages/ui/                 # @workspace/ui — the library (source-only)
-    └── src/
-        ├── components/          # shadcn/ui primitives (Base UI)
-        ├── smart-components/    # Smart* wrappers, buttons, page layout
-        ├── form-engine/         # SmartForm (TanStack Form + Zod)
-        ├── search-engine/       # SmartSearchForm
-        ├── data-grid/           # SmartGrid / SmartServerGrid (AG Grid)
-        ├── calendar-engine/     # SmartCalendar
-        ├── tree-engine/         # SmartTree
-        ├── transfer-list-engine/# SmartTransferList
-        └── lexical-text-editor/ # SmartTextEditor (Lexical)
+├── apps/web/        Vite + React 19 playground and live demos (MSW mock API)
+├── packages/ui/     @workspace/ui — source-only library, exported via subpaths
+├── docs/            Consumer guides, ADRs, and docs checks
+├── e2e/             Playwright end-to-end tests
+├── scripts/         Repo-level verification scripts
+└── tooling/         Type-check and validation helpers
 ```
 
-Import only through the subpaths declared in `packages/ui/package.json` `exports`
-(`@workspace/ui/form-engine`, `@workspace/ui/data-grid`, …) — the engine internals are
-deliberately not importable.
+- **`apps/web`** — the fastest way to understand the intended API. Every public component and engine has a demo page, backed by mock data and a TanStack Query CRUD reference recipe.
+- **`packages/ui`** — a source-only package with no build step. Everything is exposed through the exports map; internal files are not individually importable.
 
-Per-domain consumer guides, the architecture decision records, and a component → demo
-route map live in [`docs/`](./docs/README.md) (form engine, data grid, search, tree,
-transfer list, calendar, smart components, rich-text editor).
+## Documentation
 
-Adding a new shadcn primitive:
+The docs index lives in [`docs/README.md`](docs/README.md), with a guide per engine:
 
-```bash
-pnpm dlx shadcn@latest add <component-name> -c apps/web   # lands in packages/ui/src/components/
-```
+- [Form engine](docs/form-engine.md)
+- [Data grid](docs/data-grid.md)
+- [Search engine](docs/search-engine.md)
+- [Tree engine](docs/tree-engine.md)
+- [Transfer list engine](docs/transfer-list-engine.md)
+- [Calendar engine](docs/calendar-engine.md)
+- [Lexical text editor](docs/lexical-text-editor.md)
+- [Smart component wrappers](docs/smart-components.md)
+- [Component map](docs/component-map.md) &middot; [Security notes](docs/security.md)
 
-### House rules
-
-- **Conventional Commits** (`feat:`, `fix:`, …) enforced by commitlint + Husky;
-  `pre-commit` runs lint-staged, `pre-push` runs the checks. Don't `--no-verify`.
-- App code imports `Smart*` wrappers, not raw primitives (ESLint-enforced).
-- General-purpose components go in `smart-components/`; domain-specific ones live in
-  their engine's folder.
-
-> Deeper internals — every engine's design notes — live in [`CLAUDE.md`](./CLAUDE.md).
-
----
-
-_You came here to build features. The scaffolding is already written._
+Architecture decisions are recorded in [`ARCHITECTURE.md`](ARCHITECTURE.md). If you extend the public surface, keep the docs and the exports map aligned — `pnpm docs:check` enforces it.

@@ -62,8 +62,5 @@ $RECYCLE.BIN/
 # TypeScript
 *.tsbuildinfo
 
-#Promt
-god-promt-*.md
-report.md
 # Library build output (build:lib — proof-of-buildability, not committed)
 packages/ui/dist/
