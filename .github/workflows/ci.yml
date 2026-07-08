@@ -48,6 +48,11 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      # Every public exports subpath must have a docs guide, and the doc code
+      # snippets must type-check.
+      - name: Docs consistency
+        run: pnpm docs:check
+
       - name: Test (with coverage)
         run: pnpm test:coverage
 

@@ -259,6 +259,10 @@ Import only through the subpaths declared in `packages/ui/package.json` `exports
 (`@workspace/ui/form-engine`, `@workspace/ui/data-grid`, …) — the engine internals are
 deliberately not importable.
 
+Per-domain consumer guides, the architecture decision records, and a component → demo
+route map live in [`docs/`](./docs/README.md) (form engine, data grid, search, tree,
+transfer list, calendar, smart components, rich-text editor).
+
 Adding a new shadcn primitive:
 
 ```bash
