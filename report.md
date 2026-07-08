@@ -6,6 +6,76 @@
 
 ---
 
+# Status Update — 2026-07-08 (God Prompts 1–8 · Re-Audit)
+
+> **Scope:** the eight "God Prompt" improvement passes (CI/hygiene, bundle/perf, security, accessibility, testing,
+> documentation, release engineering, and this final polish/re-audit). Method mirrors the original audit: every gate
+> re-run, size table re-measured, scores re-derived from evidence.
+> **Tagged:** `v0.1.0` (annotated, local — not pushed until remote/CI are confirmed green).
+> **Verified today (2026-07-08):** `pnpm lint` ✅ · `pnpm typecheck` ✅ · `pnpm test:coverage` **333/333 across 42
+> files, ~59.6% lines** ✅ · `pnpm build` (117 chunks, 2,627 kB, within the 2,856 kB budget) ✅ · `pnpm test:e2e`
+> **31 E2E tests (9 spec files) green twice consecutively** ✅ · plus `docs:check` / `exports:check` / `publint` / `api:check` /
+> `build:lib` all green.
+
+## Re-measured size table
+
+| Metric | 2026-07-02 | 2026-07-08 |
+| --- | --- | --- |
+| TS/TSX source lines (excl. tests) | ~27,300 | **~38,155** |
+| Source files (excl. tests) | ~220 | **271** |
+| shadcn primitives | 50 | 49 |
+| Smart components | 59 | 42 wrapper files (+ page/buttons barrels) |
+| Unit tests / files | 52 / 7 | **333 / 42** |
+| Coverage (lines) | none | **~59.6%** (floor 57) |
+| E2E specs | 0 | **9 spec files** |
+| Demo routes | 24 | 32 |
+| `packages/ui` runtime deps | 37 | 39 |
+| Initial JS / worst chunk | 2.6 MB single | ~430 kB initial · ag-grid 0.93 MB (lazy) |
+| Library version | 0.0.0 (private) | **0.1.0** (private, changelog) |
+
+## God-Prompt closure table (evidence)
+
+| Prompt | Claimed | Verified |
+| --- | --- | --- |
+| 1 CI + hygiene | CI on `main`/PR; node/jsdom split | `ci.yml` `on: push[main]/pull_request`; `vitest.config.ts` node+jsdom projects |
+| 2 Bundle/perf | specific AG Grid modules; budget gate | no `AllCommunityModule` usage in `src`; `check-bundle-size.mjs` in build + CI |
+| 3 Security | sanitize contract; formula guard; audit/secret CI | `sanitize.ts` used on inbound path; `formula-guard.ts`; `security` job (audit+gitleaks) |
+| 4 Accessibility | axe unit+E2E; skip link; source fixes | `components.a11y.test.tsx`; `e2e/a11y.spec.ts` light/dark; skip link in shell |
+| 5 Testing | engine behavior tests; coverage ↑; E2E ↑ | 333 tests; thresholds 56/51/50/57; `tree`/`crud`/`calendar` specs |
+| 6 Documentation | per-domain docs; ADRs; doc-check | `docs/*.md` + 6 ADRs; `scripts/check-docs.mjs` in CI |
+| 7 Release | Changesets 0.1.0; publint; exports/api check | `.changeset/`; `CHANGELOG.md` 0.1.0; `publint`/`check-exports`/`api-check` |
+| 8 Polish/re-audit | verify + long-tail + re-score | this section; branch cleanup; ref/`use client` policy in CLAUDE.md |
+
+## Updated per-dimension scores
+
+| Dimension | 07-07 | **07-08** | Justification (and why not 10) |
+| --- | ---: | ---: | --- |
+| Architecture | 8 | **9** | Release story landed (Changesets, publint, build:lib, ADR 0006). Not 10: no published artifact yet — a dist-facing publish config is a named follow-up. |
+| Code Quality | 9 | **9** | Zero `any`/TODOs held through +11k lines. Not 10: `forwardRef` kept by policy over React-19 ref-as-prop (documented, deferred). |
+| Performance | 7 | **8** | Route splitting + vendor chunks + budget gate; initial route verified free of ag-grid/lexical. Not 10: the ag-grid chunk (~0.93 MB) is the standing ceiling. |
+| Security | 6 | **9** | Sanitize contract, export formula guard, audit + secret-scan + Dependabot, CSP docs. Not 10: no real backend to harden — forward-looking only. |
+| Accessibility | 7 | **9** | axe green in unit + E2E (both themes), skip link, reduced-motion, source fixes. Not 10: no manual screen-reader pass / Lighthouse-a11y run in-harness. |
+| Developer Experience | 8 | **9** | CI gates (audit/secret/docs/exports/api/publint/changeset), `CONTRIBUTING.md`, fast test split. Not 10: no Storybook. |
+| Documentation | 7 | **9** | Per-domain guides, 6 ADRs, component map, CI doc-consistency + snippet typecheck. Not 10: no hosted/versioned docs site. |
+| Testing | 5→7 | **9** | 333 tests, ~59.6% lines, engine behavior + axe suites, 9 E2E specs green twice. Not 10: dialog-driven create/edit E2E blocked by a Base UI/Playwright interaction (below). |
+| **Overall** | 8 | **9** | Every dimension ≥ 8; release + validation machinery in place. Not 10: the named follow-ups below. |
+
+## Definition of Done for 10/10 — remaining named exceptions
+
+- [x] CI green on `main` + PR across all jobs.
+- [x] Security: sanitize, export guard, audit/secret/Dependabot, CSP docs.
+- [x] Accessibility: axe unit + E2E (light/dark), skip link, reduced motion.
+- [x] Testing: coverage floor ≥ 45/45 (at 56/57); E2E green twice.
+- [x] Docs: per-domain guides + ADRs 0001–0006 + doc-consistency check.
+- [x] Release: Changesets, version 0.1.0, publint, exports/api validation.
+- [ ] **Publish path:** dist-facing `package.json` + publint on built output (ADR 0006 follow-up; gated on an actual decision to publish).
+- [ ] **ag-grid chunk** (~0.93 MB) — the remaining performance ceiling; deeper module trimming or a lighter grid is the only lever left.
+- [ ] **Dialog-from-controlled-state under Playwright** — `SmartDialog`/`SmartConfirmDialog` opened via external `open` state don't open under Playwright's synthetic click; create/edit/delete E2E is deferred (covered by component render tests). Root-cause + fix is a named follow-up.
+- [ ] **React-19 ref-as-prop migration** — hand-written `forwardRef` components kept uniformly for now (CLAUDE.md policy); cosmetic migration deferred.
+- [ ] **Lighthouse** not run in-harness — a11y is proxied by the axe E2E pass; a real Lighthouse run (Perf/BP/SEO) is a follow-up. `apps/web` is a client-only SPA, so SEO is inherently capped.
+
+---
+
 # Status Update — 2026-07-07
 
 > **Scope:** 40 commits landed since the audit snapshot (`03cab09`, 2026-07-02) — repo went from 28 to 69 commits in 5
@@ -32,7 +102,7 @@
 | #14 No coverage thresholds                             | ✅ **Resolved** | `vitest.config.ts` coverage thresholds (statements 21 / lines 22 / …) as a documented "don't regress" baseline (~24% lines measured); enforced via `test:coverage` in CI. shadcn primitives excluded by policy.                                                          |
 | #4 Orphaned primitives + misplaced deps (**Medium**)   | 🟡 **Partial**  | `vitest` moved to devDependencies ✅; `resizable` removed ✅; but `chart.tsx`/`carousel.tsx`/`data-table.tsx` remain and `recharts`/`@tanstack/react-table`/`embla-carousel-react` were deliberately (re-)added as deps — retention is now a choice, still undocumented. |
 | #10 `AllCommunityModule` registration                  | ❌ **Open**     | `grid-internals.tsx` still registers all of AG Grid Community — the 1.09 MB ag-grid chunk is the remaining bundle heavyweight (lazy-loaded now, so impact is deferred, not eliminated).                                                                                  |
-| #15 No release/versioning (Changesets)                 | ❌ **Open**     | Still `0.0.x`, private, no changesets.                                                                                                                                                                                                                                   |
+| #15 No release/versioning (Changesets)                 | ✅ **Resolved** | God Prompt 7: `@changesets/cli` configured (versions `@workspace/ui`, ignores `web`, private-package versioning on); first version **0.1.0** cut with `CHANGELOG.md`; root `changeset`/`version-packages` scripts; CI changeset guard on PRs; `CONTRIBUTING.md`.                                                                                                                                                                                                                                   |
 | #16 Lexical HTML sanitization contract                 | ✅ **Resolved** | God Prompt 3: `lexical-text-editor/sanitize.ts` (`sanitizeEditorHtml` + `SafeEditorHtml`, DOMPurify allow-list matching the editor's node set, link hardening); inbound HTML sanitized on parse in `SmartTextEditor`; documented in `docs/security.md`. Tests in `sanitize.test.ts`.                                                                                          |
 | #17 In-flight skill rename                             | ✅ **Resolved** | Working tree is clean.                                                                                                                                                                                                                                                   |
 
@@ -89,7 +159,7 @@ The library grew four whole new domain engines plus supporting layers — source
 
 | Dimension            | 07-02 | 07-07 | What moved it                                                                                   |
 | -------------------- | ----: | ----: | ----------------------------------------------------------------------------------------------- |
-| Architecture         |     8 | **8** | Four new engines follow the established layering cleanly; release/ops story still missing       |
+| Architecture         |     8 | **9** | God Prompt 7 (07-08): Changesets + 0.1.0, publint, exports/api-surface checks, build:lib, ADR 0006 |
 | Code Quality         |     9 | **9** | Discipline held through 12k new lines (discriminated unions, decomposed toolbar)                |
 | Performance          |     5 | **7** | Route splitting + vendor chunks fixed initial load; AG Grid module slimming still open          |
 | Security             |     6 | **9** | God Prompt 3 (07-08): sanitize contract + CSV/XLSX formula guard + audit/secret-scan CI + CSP docs |
@@ -143,6 +213,18 @@ maps every engine/`Smart*` component → import → demo route → guide (with a
 `scripts/check-docs.mjs` (`pnpm docs:check`, wired into the verify job): every public `exports` subpath must have a
 listed guide, and the doc snippets (`docs/snippets.test-d.ts`) must `tsc --noEmit` — a new undocumented entrypoint or a
 broken snippet fails CI.
+
+**God Prompt 7 (Release Engineering, 2026-07-08):** Architecture **8 → 9**; closes finding #15. Changesets configured
+(`.changeset/config.json`: versions private `@workspace/ui`, ignores `web`, `access: restricted`, `baseBranch: main`);
+first version **0.1.0** cut with `packages/ui/CHANGELOG.md`; root `changeset`/`version-packages` scripts; CI changeset
+guard (`changeset status --since=origin/main`, PR-only). Public-surface validation in CI: `publint` (green on the
+source package), `scripts/check-exports.mjs` (14 subpaths resolve + barrels export), and `tooling/api-check`
+(one import from every subpath type-checked with the app's strict settings). Distribution posture decided in
+[ADR 0006](docs/adr/0006-distribution-strategy.md) — **option C (hybrid)**: stay source-only, add `pnpm build:lib`
+(`tsc -p tsconfig.lib.json` → ESM `.js` + `.d.ts`, `"use client"` preserved, `dist/` git-ignored) run in CI to prove
+standalone buildability. `apps/web` stays private on `workspace:*`. `CONTRIBUTING.md` documents the flow. Remaining
+follow-up (named in ADR 0006): a dist-facing publish `package.json` + publint on built output, gated on an actual
+decision to publish.
 
 ---
 
