@@ -13,10 +13,17 @@
     "test:coverage": "turbo test:coverage",
     "test:e2e": "playwright test",
     "docs:check": "node scripts/check-docs.mjs",
+    "exports:check": "node scripts/check-exports.mjs",
+    "api:check": "pnpm --filter @workspace/ui exec tsc -p ../../tooling/api-check/tsconfig.json --noEmit",
+    "publint": "pnpm --filter @workspace/ui exec publint",
+    "build:lib": "pnpm --filter @workspace/ui build:lib",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
     "prepare": "husky"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
+    "@changesets/cli": "^2.31.0",
     "@commitlint/cli": "^21.2.0",
     "@commitlint/config-conventional": "^21.2.0",
     "@playwright/test": "^1.61.1",
@@ -24,6 +31,7 @@
     "lint-staged": "^17.0.8",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
+    "publint": "^0.3.21",
     "turbo": "^2.10.4",
     "typescript": "~6"
   },

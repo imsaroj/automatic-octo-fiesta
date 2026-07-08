@@ -1,13 +1,14 @@
 {
   "name": "@workspace/ui",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "private": true,
   "scripts": {
     "lint": "eslint",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:lib": "tsc -p tsconfig.lib.json"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

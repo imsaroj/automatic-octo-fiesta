@@ -16,6 +16,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Needed so the changeset guard can diff PRs against origin/main.
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -63,6 +66,25 @@ jobs:
       # regression visible as its own CI failure rather than a build error.
       - name: Bundle budget
         run: pnpm --filter web size
+
+      # Public-surface validation: the exports map resolves, is publish-valid,
+      # type-checks from the outside, and the library compiles standalone.
+      - name: Exports map check
+        run: pnpm exports:check
+
+      - name: publint
+        run: pnpm publint
+
+      - name: Public API type-check
+        run: pnpm api:check
+
+      - name: Library build (ESM + d.ts)
+        run: pnpm build:lib
+
+      # PRs that change packages/ui/src must ship a changeset (skips on main).
+      - name: Changeset check
+        if: github.event_name == 'pull_request'
+        run: pnpm changeset status --since=origin/main
 
   security:
     name: Dependency audit & secret scan
