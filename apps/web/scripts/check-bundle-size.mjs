@@ -28,7 +28,9 @@ let files
 try {
   files = readdirSync(assetsDir).filter((f) => f.endsWith(".js"))
 } catch {
-  console.error(`check-bundle-size: ${assetsDir} not found — run vite build first`)
+  console.error(
+    `check-bundle-size: ${assetsDir} not found — run vite build first`
+  )
   process.exit(1)
 }
 if (files.length === 0) {

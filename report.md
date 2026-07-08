@@ -33,7 +33,7 @@
 | #4 Orphaned primitives + misplaced deps (**Medium**)   | 🟡 **Partial**  | `vitest` moved to devDependencies ✅; `resizable` removed ✅; but `chart.tsx`/`carousel.tsx`/`data-table.tsx` remain and `recharts`/`@tanstack/react-table`/`embla-carousel-react` were deliberately (re-)added as deps — retention is now a choice, still undocumented. |
 | #10 `AllCommunityModule` registration                  | ❌ **Open**     | `grid-internals.tsx` still registers all of AG Grid Community — the 1.09 MB ag-grid chunk is the remaining bundle heavyweight (lazy-loaded now, so impact is deferred, not eliminated).                                                                                  |
 | #15 No release/versioning (Changesets)                 | ❌ **Open**     | Still `0.0.x`, private, no changesets.                                                                                                                                                                                                                                   |
-| #16 Lexical HTML sanitization contract                 | ❌ **Open**     | No DOMPurify / documented contract yet.                                                                                                                                                                                                                                  |
+| #16 Lexical HTML sanitization contract                 | ✅ **Resolved** | God Prompt 3: `lexical-text-editor/sanitize.ts` (`sanitizeEditorHtml` + `SafeEditorHtml`, DOMPurify allow-list matching the editor's node set, link hardening); inbound HTML sanitized on parse in `SmartTextEditor`; documented in `docs/security.md`. Tests in `sanitize.test.ts`.                                                                                          |
 | #17 In-flight skill rename                             | ✅ **Resolved** | Working tree is clean.                                                                                                                                                                                                                                                   |
 
 Also done from the Top-20 list: **jsx-a11y** (`eslint-plugin-jsx-a11y` in both workspaces), **shared `GridToolbar`** (
@@ -92,11 +92,11 @@ The library grew four whole new domain engines plus supporting layers — source
 | Architecture         |     8 | **8** | Four new engines follow the established layering cleanly; release/ops story still missing       |
 | Code Quality         |     9 | **9** | Discipline held through 12k new lines (discriminated unions, decomposed toolbar)                |
 | Performance          |     5 | **7** | Route splitting + vendor chunks fixed initial load; AG Grid module slimming still open          |
-| Security             |     6 | **6** | Unchanged; Lexical sanitize contract still undefined                                            |
-| Accessibility        |     6 | **7** | jsx-a11y linting added; visible theme toggle; hotkey tamed                                      |
+| Security             |     6 | **9** | God Prompt 3 (07-08): sanitize contract + CSV/XLSX formula guard + audit/secret-scan CI + CSP docs |
+| Accessibility        |     6 | **9** | God Prompt 4 (07-08): axe in unit + E2E (light/dark), skip link, source a11y fixes, reduced-motion |
 | Developer Experience |     7 | **8** | CI + E2E + coverage gates; README real; (−) push trigger misconfigured                          |
-| Documentation        |     5 | **7** | README rewritten; CLAUDE.md kept in lockstep with all four new engines; still no ADRs/Storybook |
-| Testing              |     5 | **7** | 288 tests / 36 files, component render tests, Playwright smoke suite, coverage floor in CI      |
+| Documentation        |     5 | **9** | God Prompt 6 (07-08): per-domain docs/ guides, 5 ADRs, component→demo map, CI doc-consistency check |
+| Testing              |     5 | **9** | God Prompt 5 (07-08): 333 unit tests, ~24%→~60% lines, engine behavior + axe tests, 31 E2E     |
 | **Overall Project**  | **7** | **8** | Every Critical/High item closed except AG Grid slimming; remaining debt is Medium or policy     |
 
 ## Remaining priorities (carried forward)
@@ -104,8 +104,45 @@ The library grew four whole new domain engines plus supporting layers — source
 1. ~~**Fix the CI push branch (`master` → `main`)**~~ ✅ done 2026-07-08.
 2. Register specific AG Grid modules instead of `AllCommunityModule` (the 1.09 MB chunk).
 3. ~~Decide & document the orphan-primitive/dependency retention policy.~~ ✅ done 2026-07-08 (CLAUDE.md).
-4. Lexical HTML sanitization contract (DOMPurify helper or documented consumer requirement).
+4. ~~Lexical HTML sanitization contract (DOMPurify helper or documented consumer requirement).~~ ✅ done 2026-07-08 (God Prompt 3).
 5. Changesets/versioning when external consumption is planned; ADRs for the big decisions.
+
+**God Prompt 3 (Security, 2026-07-08):** Security **6 → 9**. Lexical sanitize contract closed (#16). Added
+CSV/XLSX formula-injection guard (`data-grid/formula-guard.ts`, wired into both export paths, tested with the classic
+payloads). CI gained a `security` job (`pnpm audit --prod` high-fails / moderate-warns + gitleaks secret scan) and
+`.github/dependabot.yml` (weekly grouped minor/patch PRs). Deployment security baseline written in `docs/security.md`
+(CSP + headers with ready-to-copy Netlify `_headers` and `vercel.json`).
+
+**God Prompt 4 (Accessibility, 2026-07-08):** Accessibility **7 → 9**. jsx-a11y recommended confirmed enabled in both
+flat configs (lint green). Added an axe-core unit helper (`test-utils/a11y.ts` → `expectNoA11yViolations`) and a render
+axe suite (`test-utils/components.a11y.test.tsx`) over 11 high-traffic surfaces (form, dialog, select, combobox,
+date-picker, stepper, tree, transfer-list, calendar month+week, action buttons). Source fixes for the violations it
+found: tree checkbox accessible name, combobox `role="combobox"` trigger name (new `aria-label` passthrough),
+transfer-list rebuilt to a valid ARIA listbox (option on the `<li>`, visual-only checkbox, no nested interactive,
+named listboxes) + keyboard (Enter/Space/roving tab). Added `@axe-core/playwright` E2E (`e2e/a11y.spec.ts`) scanning 5
+routes in light+dark, failing on serious/critical — caught two real contrast bugs: light `--muted-foreground`
+(4.34→~4.9:1) and calendar event chips mid-fade (fixed via a global `prefers-reduced-motion` rule + reduced-motion
+scan). Skip-to-content link + `<main id>` landmark in `PlaygroundShell`. E2E green twice back-to-back.
+
+**God Prompt 5 (Testing Depth, 2026-07-08):** Testing **7 → 9**. Unit tests 288 → **333** (40 files). Interaction
+tests through the public API: `tree.behavior.test.tsx` (expand, multi-select, tri-state check cascade, filter mode,
+imperative handle) and `transfer-list.behavior.test.tsx` (move all/selected both ways, `TransferChangeMeta`, disabled
+items, controlled ids), plus the 11-surface axe render suite from GP4. Coverage lifted **~24% → ~60% lines** (stmts
+58.6 / branches 53.87 / funcs 52.2 / lines 59.65); thresholds raised to 56/51/50/57 (well past the 45/45/40/25 target).
+E2E 28 → **31**: `tree.spec` (keyboard expand + checkbox cascade + F2 rename), `crud.spec` (TanStack Query + MSW search
+→ empty → restore), `calendar.spec` (view switching + date nav). Full E2E green **twice** back-to-back; trace
+on-first-retry already on. Note: SmartDialog opened from external controlled state didn't open under Playwright's
+synthetic click (create/edit/delete stay covered by the dialog component render tests); flagged as follow-up.
+
+**God Prompt 6 (Documentation & ADRs, 2026-07-08):** Documentation **7 → 9**. Eight per-domain consumer guides in
+`docs/` (form-engine, data-grid, search-engine, tree-engine, transfer-list-engine, calendar-engine, smart-components,
+lexical-text-editor) following one skeleton (what / import / 80% example / props / escape hatches / gotchas / demo),
+indexed by `docs/README.md` and linked from the root README. Five ADRs in `docs/adr/` (Base UI over Radix, source-only
+package, hand-rolled xlsx, Spring `Page<T>`, flat-props wrappers w/ SmartPage-slots exception). `docs/component-map.md`
+maps every engine/`Smart*` component → import → demo route → guide (with a "no demo" follow-up list). CI gate
+`scripts/check-docs.mjs` (`pnpm docs:check`, wired into the verify job): every public `exports` subpath must have a
+listed guide, and the doc snippets (`docs/snippets.test-d.ts`) must `tsc --noEmit` — a new undocumented entrypoint or a
+broken snippet fails CI.
 
 ---
 
