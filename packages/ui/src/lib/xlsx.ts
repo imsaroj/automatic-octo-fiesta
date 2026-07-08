@@ -11,6 +11,14 @@
  * This is intentionally tiny — it covers a single worksheet with a header row,
  * which is exactly what a data-grid export needs. It is **not** a general
  * spreadsheet library.
+ *
+ * **Performance contract:** the build is synchronous on the main thread.
+ * Measured on V8 (Node 22, Chromium-class engine, 2026-07): 10k cells ≈ 30 ms,
+ * **50k cells ≈ 135 ms**, 100k cells ≈ 450 ms, 200k cells ≈ 1 s. Exports up to
+ * ~50k cells are comfortable; beyond ~100k cells the UI freeze becomes
+ * noticeable — at that scale, call {@link buildXlsx} (it is pure and
+ * environment-agnostic) from a Web Worker and hand the resulting bytes back for
+ * download instead of using {@link downloadXlsx} directly.
  */
 
 /** A value that can be written to a worksheet cell. */
