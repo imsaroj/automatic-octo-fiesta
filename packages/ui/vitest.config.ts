@@ -35,14 +35,15 @@ export default defineConfig({
         "src/**/*.test.{ts,tsx}",
         "src/**/index.ts", // re-export barrels
       ],
-      // Baseline captured 2026-07 (~24% lines). Thresholds sit a couple points
-      // below the measured numbers so CI enforces "don't regress", not an
-      // aspirational target — raise these as component test coverage grows.
+      // Thresholds sit a couple points below the measured numbers so CI
+      // enforces "don't regress", not an aspirational target — raise these as
+      // component test coverage grows. God Prompt 5 (2026-07-08) added engine
+      // interaction + axe render tests, lifting lines ~24% → ~60%.
       thresholds: {
-        statements: 21,
-        branches: 8,
-        functions: 16,
-        lines: 22,
+        statements: 56,
+        branches: 51,
+        functions: 50,
+        lines: 57,
       },
     },
     projects: [
