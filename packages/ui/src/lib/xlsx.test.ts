@@ -59,6 +59,7 @@ describe("buildXlsx", () => {
       "_rels/.rels",
       "xl/workbook.xml",
       "xl/_rels/workbook.xml.rels",
+      "xl/styles.xml",
       "xl/worksheets/sheet1.xml",
     ]) {
       expect(entries.has(part)).toBe(true)
@@ -77,6 +78,63 @@ describe("buildXlsx", () => {
   it("names the worksheet tab from the sheet name", () => {
     const workbook = readStoredZip(bytes).get("xl/workbook.xml") ?? ""
     expect(workbook).toContain('name="Users"')
+  })
+})
+
+describe("buildXlsx theming", () => {
+  const sheet = {
+    name: "Users",
+    headers: ["Name", "MRR"],
+    rows: [
+      ["Ada Lovelace", 1200],
+      ["Grace Hopper", 0],
+      ["Margaret Hamilton", 5],
+    ],
+  }
+
+  it("styles the header row and zebra-stripes alternating data rows by default", () => {
+    const entries = readStoredZip(buildXlsx(sheet))
+    const worksheet = entries.get("xl/worksheets/sheet1.xml") ?? ""
+    // Header cells use style 1; the second data row (sheet row 3) is striped.
+    expect(worksheet).toContain('<c r="A1" s="1"')
+    expect(worksheet).toContain('<c r="B1" s="1"')
+    expect(worksheet).toContain('<c r="A3" s="2"')
+    // Un-striped data rows carry no style attribute.
+    expect(worksheet).toContain('<c r="A2" t="inlineStr"')
+    // Frozen header, auto-filter over the full range, auto-fit columns.
+    expect(worksheet).toContain('state="frozen"')
+    expect(worksheet).toContain('<autoFilter ref="A1:B4"/>')
+    expect(worksheet).toContain('customWidth="1"')
+    // The default indigo header fill lands in styles.xml.
+    expect(entries.get("xl/styles.xml")).toContain('rgb="FF4F46E5"')
+  })
+
+  it("honors custom colors (with or without a leading #)", () => {
+    const entries = readStoredZip(
+      buildXlsx({ ...sheet, theme: { headerFill: "#0f766e", stripe: false } })
+    )
+    const styles = entries.get("xl/styles.xml") ?? ""
+    expect(styles).toContain('rgb="FF0F766E"')
+    // stripe: false → no data cell carries the stripe style.
+    expect(entries.get("xl/worksheets/sheet1.xml")).not.toContain('s="2"')
+  })
+
+  it("falls back to the default fill for invalid colors", () => {
+    const entries = readStoredZip(
+      buildXlsx({ ...sheet, theme: { headerFill: "not-a-color" } })
+    )
+    expect(entries.get("xl/styles.xml")).toContain('rgb="FF4F46E5"')
+  })
+
+  it('theme: "plain" emits bare cells with no styling extras', () => {
+    const worksheet =
+      readStoredZip(buildXlsx({ ...sheet, theme: "plain" })).get(
+        "xl/worksheets/sheet1.xml"
+      ) ?? ""
+    expect(worksheet).not.toContain('s="1"')
+    expect(worksheet).not.toContain("autoFilter")
+    expect(worksheet).not.toContain("frozen")
+    expect(worksheet).not.toContain("<cols>")
   })
 })
 

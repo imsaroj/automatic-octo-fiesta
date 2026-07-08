@@ -12,6 +12,12 @@
  * which is exactly what a data-grid export needs. It is **not** a general
  * spreadsheet library.
  *
+ * Exports are styled by default (see {@link XlsxTheme}): a colored header row
+ * with bold text and filter dropdowns, zebra-striped data rows, a frozen
+ * header, and auto-fit column widths — all emitted through a hand-written
+ * `xl/styles.xml`, still with zero dependencies. Pass `theme: "plain"` for
+ * bare cells.
+ *
  * **Performance contract:** the build is synchronous on the main thread.
  * Measured on V8 (Node 22, Chromium-class engine, 2026-07): 10k cells ≈ 30 ms,
  * **50k cells ≈ 135 ms**, 100k cells ≈ 450 ms, 200k cells ≈ 1 s. Exports up to
@@ -24,6 +30,26 @@
 /** A value that can be written to a worksheet cell. */
 export type XlsxCell = string | number | boolean | null | undefined
 
+/**
+ * Visual treatment for the workbook. All fields optional — the defaults give
+ * exports a polished look out of the box (indigo header with bold white text,
+ * zebra-striped rows, frozen header with filter dropdowns, auto-fit columns).
+ */
+export interface XlsxTheme {
+  /** Header row fill, hex RGB (`"4F46E5"` or `"#4F46E5"`). */
+  headerFill?: string
+  /** Header text color, hex RGB. Default white. */
+  headerText?: string
+  /** Fill for every second data row, hex RGB; `false` disables striping. */
+  stripe?: string | false
+  /** Keep the header row visible while scrolling. Default `true`. */
+  freezeHeader?: boolean
+  /** Filter dropdowns on the header row. Default `true`. */
+  autoFilter?: boolean
+  /** Fit column widths to their longest content. Default `true`. */
+  autoWidth?: boolean
+}
+
 /** One worksheet's worth of tabular data. */
 export interface XlsxSheet {
   /** Worksheet tab name. Default `"Sheet1"`. */
@@ -32,6 +58,11 @@ export interface XlsxSheet {
   headers: string[]
   /** Body rows, each aligned to `headers`. */
   rows: XlsxCell[][]
+  /**
+   * Styling. Omit for the themed default look, override individual
+   * {@link XlsxTheme} fields, or pass `"plain"` for bare unstyled cells.
+   */
+  theme?: XlsxTheme | "plain"
 }
 
 /* --------------------------------- CRC-32 --------------------------------- */
@@ -185,29 +216,178 @@ const columnName = (index: number): string => {
   return name
 }
 
-const cellXml = (ref: string, value: XlsxCell): string => {
-  if (value == null || value === "") return `<c r="${ref}"/>`
+/* -------------------------------- Theming --------------------------------- */
+
+interface ResolvedTheme {
+  headerFill: string
+  headerText: string
+  stripe: string | false
+  freezeHeader: boolean
+  autoFilter: boolean
+  autoWidth: boolean
+  /** `false` when the caller asked for `"plain"` — skip the styled parts. */
+  styled: boolean
+}
+
+/** `"#4f46e5"` / `"4F46E5"` → OOXML ARGB `"FF4F46E5"`; invalid input → fallback. */
+const toArgb = (color: string | undefined, fallback: string): string => {
+  const hex = (color ?? "").replace(/^#/, "").toUpperCase()
+  return /^[0-9A-F]{6}$/.test(hex) ? `FF${hex}` : `FF${fallback}`
+}
+
+/** Darken an ARGB color (used for the header's bottom accent border). */
+const darkenArgb = (argb: string, factor = 0.72): string => {
+  let out = "FF"
+  for (let i = 2; i < 8; i += 2) {
+    const channel = Math.round(parseInt(argb.slice(i, i + 2), 16) * factor)
+    out += channel.toString(16).padStart(2, "0").toUpperCase()
+  }
+  return out
+}
+
+const resolveTheme = (theme: XlsxSheet["theme"]): ResolvedTheme => {
+  if (theme === "plain") {
+    return {
+      headerFill: "",
+      headerText: "",
+      stripe: false,
+      freezeHeader: false,
+      autoFilter: false,
+      autoWidth: false,
+      styled: false,
+    }
+  }
+  return {
+    headerFill: toArgb(theme?.headerFill, "4F46E5"), // indigo-600
+    headerText: toArgb(theme?.headerText, "FFFFFF"),
+    stripe: theme?.stripe === false ? false : toArgb(theme?.stripe, "F1F5F9"), // slate-100
+    freezeHeader: theme?.freezeHeader ?? true,
+    autoFilter: theme?.autoFilter ?? true,
+    autoWidth: theme?.autoWidth ?? true,
+    styled: true,
+  }
+}
+
+/**
+ * Cell style indices into `cellXfs` in {@link stylesXml}. Order matters — keep
+ * the two lists in sync.
+ */
+const STYLE_HEADER = 1
+const STYLE_STRIPE = 2
+
+const stylesXml = (theme: ResolvedTheme): string =>
+  XML_DECLARATION +
+  '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+  '<fonts count="2">' +
+  '<font><sz val="11"/><name val="Calibri"/></font>' +
+  `<font><b/><sz val="11"/><color rgb="${theme.headerText}"/><name val="Calibri"/></font>` +
+  "</fonts>" +
+  // Fill indices 0 (none) and 1 (gray125) are reserved by the spec.
+  '<fills count="4">' +
+  '<fill><patternFill patternType="none"/></fill>' +
+  '<fill><patternFill patternType="gray125"/></fill>' +
+  `<fill><patternFill patternType="solid"><fgColor rgb="${theme.headerFill}"/><bgColor indexed="64"/></patternFill></fill>` +
+  `<fill><patternFill patternType="solid"><fgColor rgb="${theme.stripe === false ? "FFF1F5F9" : theme.stripe}"/><bgColor indexed="64"/></patternFill></fill>` +
+  "</fills>" +
+  '<borders count="2">' +
+  "<border><left/><right/><top/><bottom/><diagonal/></border>" +
+  `<border><left/><right/><top/><bottom style="thin"><color rgb="${darkenArgb(theme.headerFill)}"/></bottom><diagonal/></border>` +
+  "</borders>" +
+  '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+  '<cellXfs count="3">' +
+  '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+  // STYLE_HEADER
+  '<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>' +
+  // STYLE_STRIPE
+  '<xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/>' +
+  "</cellXfs>" +
+  "</styleSheet>"
+
+/**
+ * Approximate Excel column widths (in characters) from the longest content in
+ * each column. Scans at most the first 1,000 rows so huge exports don't pay
+ * for a second full pass.
+ */
+const columnWidths = (sheet: XlsxSheet): number[] => {
+  const widths = sheet.headers.map((header) => header.length)
+  const sample = sheet.rows.slice(0, 1000)
+  for (const row of sample) {
+    row.forEach((value, index) => {
+      if (value == null) return
+      const length = String(value).length
+      if (length > (widths[index] ?? 0)) widths[index] = length
+    })
+  }
+  // +3 leaves room for the header's filter dropdown arrow.
+  return widths.map((w) => Math.min(Math.max(w + 3, 10), 60))
+}
+
+const cellXml = (ref: string, value: XlsxCell, styleId: number): string => {
+  const s = styleId > 0 ? ` s="${styleId}"` : ""
+  if (value == null || value === "") return `<c r="${ref}"${s}/>`
   if (typeof value === "number" && Number.isFinite(value))
-    return `<c r="${ref}"><v>${value}</v></c>`
+    return `<c r="${ref}"${s}><v>${value}</v></c>`
   if (typeof value === "boolean")
-    return `<c r="${ref}" t="b"><v>${value ? 1 : 0}</v></c>`
-  return `<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${escapeXml(String(value))}</t></is></c>`
+    return `<c r="${ref}"${s} t="b"><v>${value ? 1 : 0}</v></c>`
+  return `<c r="${ref}"${s} t="inlineStr"><is><t xml:space="preserve">${escapeXml(String(value))}</t></is></c>`
 }
 
-const rowXml = (rowNumber: number, cells: XlsxCell[]): string => {
+const rowXml = (
+  rowNumber: number,
+  cells: XlsxCell[],
+  styleId: number,
+  height?: number
+): string => {
   const body = cells
-    .map((value, col) => cellXml(`${columnName(col)}${rowNumber}`, value))
+    .map((value, col) =>
+      cellXml(`${columnName(col)}${rowNumber}`, value, styleId)
+    )
     .join("")
-  return `<row r="${rowNumber}">${body}</row>`
+  const ht = height != null ? ` ht="${height}" customHeight="1"` : ""
+  return `<row r="${rowNumber}"${ht}>${body}</row>`
 }
 
-const sheetXml = (sheet: XlsxSheet): string => {
-  const rows = [rowXml(1, sheet.headers)]
-  sheet.rows.forEach((row, index) => rows.push(rowXml(index + 2, row)))
+const sheetXml = (sheet: XlsxSheet, theme: ResolvedTheme): string => {
+  const rows = [
+    rowXml(
+      1,
+      sheet.headers,
+      theme.styled ? STYLE_HEADER : 0,
+      theme.styled ? 22 : undefined
+    ),
+  ]
+  sheet.rows.forEach((row, index) => {
+    // Stripe every second data row (data starts on row 2 → stripe 3, 5, 7…).
+    const striped = theme.styled && theme.stripe !== false && index % 2 === 1
+    rows.push(rowXml(index + 2, row, striped ? STYLE_STRIPE : 0))
+  })
+
+  const lastColumn = columnName(Math.max(sheet.headers.length - 1, 0))
+  const lastRow = sheet.rows.length + 1
+
+  const sheetViews = theme.freezeHeader
+    ? '<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'
+    : ""
+  const cols = theme.autoWidth
+    ? `<cols>${columnWidths(sheet)
+        .map(
+          (width, index) =>
+            `<col min="${index + 1}" max="${index + 1}" width="${width}" customWidth="1"/>`
+        )
+        .join("")}</cols>`
+    : ""
+  const autoFilter =
+    theme.autoFilter && sheet.headers.length > 0
+      ? `<autoFilter ref="A1:${lastColumn}${lastRow}"/>`
+      : ""
+
   return (
     XML_DECLARATION +
     '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+    sheetViews +
+    cols +
     `<sheetData>${rows.join("")}</sheetData>` +
+    autoFilter +
     "</worksheet>"
   )
 }
@@ -219,6 +399,7 @@ const contentTypesXml = (): string =>
   '<Default Extension="xml" ContentType="application/xml"/>' +
   '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
   '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
+  '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' +
   "</Types>"
 
 const rootRelsXml = (): string =>
@@ -238,6 +419,7 @@ const workbookRelsXml = (): string =>
   XML_DECLARATION +
   '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
   '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
+  '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
   "</Relationships>"
 
 /** Excel worksheet names cannot exceed 31 chars or contain `\ / ? * [ ] :`. */
@@ -251,6 +433,7 @@ const sanitizeSheetName = (name: string | undefined): string => {
  * environment-agnostic — call {@link downloadXlsx} to also trigger a download.
  */
 export const buildXlsx = (sheet: XlsxSheet): Uint8Array => {
+  const theme = resolveTheme(sheet.theme)
   const encoder = new TextEncoder()
   const entries: ZipEntry[] = [
     { name: "[Content_Types].xml", data: encoder.encode(contentTypesXml()) },
@@ -263,7 +446,11 @@ export const buildXlsx = (sheet: XlsxSheet): Uint8Array => {
       name: "xl/_rels/workbook.xml.rels",
       data: encoder.encode(workbookRelsXml()),
     },
-    { name: "xl/worksheets/sheet1.xml", data: encoder.encode(sheetXml(sheet)) },
+    { name: "xl/styles.xml", data: encoder.encode(stylesXml(theme)) },
+    {
+      name: "xl/worksheets/sheet1.xml",
+      data: encoder.encode(sheetXml(sheet, theme)),
+    },
   ]
   return zipStore(entries)
 }
