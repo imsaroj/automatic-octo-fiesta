@@ -1,6 +1,22 @@
 import {
-  AllCommunityModule,
+  CellApiModule,
+  CellStyleModule,
+  ClientSideRowModelModule,
+  ColumnApiModule,
+  CsvExportModule,
+  DateFilterModule,
+  InfiniteRowModelModule,
   ModuleRegistry,
+  NumberEditorModule,
+  NumberFilterModule,
+  PaginationModule,
+  QuickFilterModule,
+  RowApiModule,
+  RowSelectionModule,
+  SelectEditorModule,
+  TextEditorModule,
+  TextFilterModule,
+  ValidationModule,
   type ColDef,
 } from "ag-grid-community"
 import { SmartEmptyState } from "./empty-state"
@@ -11,14 +27,48 @@ import { SmartEmptyState } from "./empty-state"
  * the data-grid barrel does not re-export this module.
  */
 
-// AG Grid v33+ requires explicit module registration. Community modules are free
-// and `AllCommunityModule` includes both the client-side and infinite row models.
+// AG Grid v33+ requires explicit module registration. Only the modules the two
+// grids actually use are registered (not `AllCommunityModule`, which more than
+// doubles the ag-grid chunk). If a new grid feature throws a "missing module"
+// error in dev, add its module here — ValidationModule (registered outside
+// production only) names the exact module to add.
 let modulesRegistered = false
+
+// Module-scoped ambient type so `process.env.NODE_ENV` type-checks under
+// apps/web's tsconfig too (which loads vite/client types, not @types/node).
+// Vite statically define-replaces the expression in browser builds.
+declare const process: { env: { NODE_ENV?: string } }
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const ensureGridModules = (): void => {
   if (!modulesRegistered) {
-    ModuleRegistry.registerModules([AllCommunityModule])
+    ModuleRegistry.registerModules([
+      // Row models: SmartGrid (client-side) + SmartServerGrid (infinite)
+      ClientSideRowModelModule,
+      InfiniteRowModelModule,
+      // Column header filters (defaultColDef.filter: true) + quick search
+      TextFilterModule,
+      NumberFilterModule,
+      DateFilterModule,
+      QuickFilterModule,
+      // Cell editing (editable columns; select/number editors used by demos)
+      TextEditorModule,
+      NumberEditorModule,
+      SelectEditorModule,
+      // Row selection (incl. cross-page selection in SmartServerGrid)
+      RowSelectionModule,
+      PaginationModule,
+      CsvExportModule,
+      // APIs the wrappers call: column state/visibility, forEachNode,
+      // getCellValue (Excel export), cellClass support
+      ColumnApiModule,
+      RowApiModule,
+      CellApiModule,
+      CellStyleModule,
+      // Dev-only: descriptive errors (e.g. which module a feature needs).
+      // Stripped from production bundles via NODE_ENV define-replacement.
+      ...(process.env.NODE_ENV !== "production" ? [ValidationModule] : []),
+    ])
     modulesRegistered = true
   }
 }
