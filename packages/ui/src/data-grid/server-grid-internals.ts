@@ -191,11 +191,16 @@ export interface GridExportTable {
  * export, using each cell's *displayed* (formatted) value. Respects column
  * visibility and order. Only rows present in the grid's cache are included
  * (the infinite row model never holds every page at once).
+ *
+ * AG Grid's internal utility columns (checkbox selection, auto-group, row
+ * numbers — all prefixed `ag-Grid-`) carry no data and are excluded.
  */
 export const collectGridExport = <TRow>(
   api: GridApi<TRow>
 ): GridExportTable => {
-  const displayed = api.getAllDisplayedColumns()
+  const displayed = api
+    .getAllDisplayedColumns()
+    .filter((column) => !column.getColId().startsWith("ag-Grid-"))
   const headers = displayed.map((column) => {
     const headerName = column.getColDef().headerName
     return typeof headerName === "string" && headerName.length > 0

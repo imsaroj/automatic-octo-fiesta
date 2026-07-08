@@ -102,6 +102,9 @@ interface Row {
 /** A minimal AG Grid API stub exposing just what `collectGridExport` reads. */
 const fakeExportApi = (rows: Row[]): GridApi<Row> => {
   const columns = [
+    // AG Grid's internal checkbox column (present when selection is on) must
+    // never reach the export.
+    { colId: "ag-Grid-SelectionColumn", colDef: {} as { headerName?: string } },
     { colId: "name", colDef: { headerName: "Name" } },
     { colId: "mrr", colDef: {} as { headerName?: string } }, // no headerName → falls back to colId
   ]
