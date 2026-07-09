@@ -1,3 +1,22 @@
+# [0.2.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v0.1.0...v0.2.0) (2026-07-09)
+
+
+### Bug Fixes
+
+* publish under [@iamsaroj](https://github.com/iamsaroj) scope — npm username is iamsaroj, not imsaroj ([b9961d4](https://github.com/imsaroj/automatic-octo-fiesta/commit/b9961d4309f6a93a371252470c5a069fd011c5a6))
+
+
+### Features
+
+* grid action button added ([1260b5e](https://github.com/imsaroj/automatic-octo-fiesta/commit/1260b5eeb918e520e27ced9d1de5ea7215c51350))
+* overlay with async button ([a09f238](https://github.com/imsaroj/automatic-octo-fiesta/commit/a09f238c49e7798a42e58fd68900f83d191484a1))
+* publish @imsaroj/smart-ui to npm via semantic-release ([7944881](https://github.com/imsaroj/automatic-octo-fiesta/commit/7944881796d1b0e3a09a79bbdc9589079e3ff78d))
+
+
+### Reverts
+
+* undo v0.2.0 release commit — tag deleted, npm publish never happened ([558584e](https://github.com/imsaroj/automatic-octo-fiesta/commit/558584ee030e5efe8548a0af31e222e33b484497))
+
 # @iamsaroj/smart-ui
 
 ## 0.1.0
