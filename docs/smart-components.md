@@ -22,6 +22,9 @@ Each wrapper flattens the 80% case into props (`trigger` / `header` / `footer` /
 `children`), **and re-exports the underlying native primitives** so you can drop
 back to the compound form for layouts the flat API can't express:
 
+<!-- prettier-ignore -->
+{% raw %}
+
 ```tsx
 // Flat (80% case):
 ;<SmartDialog trigger={<Button>Edit</Button>} header={{ title: "Edit user" }}>
@@ -35,6 +38,8 @@ import {
   DialogHeader,
 } from "@iamsaroj/smart-ui/smart-components/smart-dialog"
 ```
+
+{% endraw %}
 
 There is a `shadcn-smart-wrappers` skill that converts native compound usage into
 these wrappers — prefer `Smart*` when writing TSX in this repo.

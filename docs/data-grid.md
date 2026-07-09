@@ -66,6 +66,9 @@ Delete** column — no custom cell renderers in app code. Buttons are the shared
 delete) with proper `aria-label`s, tooltips ("Edit row" / "Delete row") and
 native keyboard support.
 
+<!-- prettier-ignore -->
+{% raw %}
+
 ```tsx
 const [deletingId, setDeletingId] = useState<string | null>(null)
 
@@ -96,6 +99,8 @@ const [deletingId, setDeletingId] = useState<string | null>(null)
   }}
 />
 ```
+
+{% endraw %}
 
 Key contracts:
 
