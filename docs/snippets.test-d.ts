@@ -6,20 +6,20 @@
  */
 import { z } from "zod"
 
-import { SmartForm, type FieldDefinition } from "@imsaroj/smart-ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
 import {
   createPageFetcher,
   type DataGridColumn,
   type GridActionColumnOptions,
-} from "@imsaroj/smart-ui/data-grid"
+} from "@iamsaroj/smart-ui/data-grid"
 import {
   buildSearchQuery,
   type SearchFieldDefinition,
-} from "@imsaroj/smart-ui/search-engine"
-import type { TreeNode } from "@imsaroj/smart-ui/tree-engine"
-import type { TransferItem } from "@imsaroj/smart-ui/transfer-list-engine"
-import type { CalendarEvent } from "@imsaroj/smart-ui/calendar-engine"
-import { sanitizeEditorHtml } from "@imsaroj/smart-ui/lexical-text-editor"
+} from "@iamsaroj/smart-ui/search-engine"
+import type { TreeNode } from "@iamsaroj/smart-ui/tree-engine"
+import type { TransferItem } from "@iamsaroj/smart-ui/transfer-list-engine"
+import type { CalendarEvent } from "@iamsaroj/smart-ui/calendar-engine"
+import { sanitizeEditorHtml } from "@iamsaroj/smart-ui/lexical-text-editor"
 
 // ── form-engine.md ──────────────────────────────────────────────────────────
 const schema = z.object({

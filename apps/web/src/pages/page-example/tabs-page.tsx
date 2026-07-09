@@ -13,10 +13,10 @@ import {
   SmartPageTabPanel,
   SmartPageContent,
   SmartPageSection,
-} from "@imsaroj/smart-ui/smart-components/page"
-import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
-import { SmartBadge as Badge } from "@imsaroj/smart-ui/smart-components/smart-badge"
-import { SmartStatCard } from "@imsaroj/smart-ui/smart-components/smart-stat-card"
+} from "@iamsaroj/smart-ui/smart-components/page"
+import { SmartButton as Button } from "@iamsaroj/smart-ui/smart-components/smart-button"
+import { SmartBadge as Badge } from "@iamsaroj/smart-ui/smart-components/smart-badge"
+import { SmartStatCard } from "@iamsaroj/smart-ui/smart-components/smart-stat-card"
 
 const TabsLayoutPage = () => {
   return (

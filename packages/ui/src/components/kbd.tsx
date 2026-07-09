@@ -1,4 +1,4 @@
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import * as React from "react"
 
 const Kbd = ({ className, ...props }: React.ComponentProps<"kbd">) => (

@@ -3,24 +3,24 @@ import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { useIsMobile } from "@imsaroj/smart-ui/hooks/use-mobile"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { Button } from "@imsaroj/smart-ui/components/button"
-import { Input } from "@imsaroj/smart-ui/components/input"
-import { Separator } from "@imsaroj/smart-ui/components/separator"
+import { useIsMobile } from "@iamsaroj/smart-ui/hooks/use-mobile"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { Button } from "@iamsaroj/smart-ui/components/button"
+import { Input } from "@iamsaroj/smart-ui/components/input"
+import { Separator } from "@iamsaroj/smart-ui/components/separator"
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@imsaroj/smart-ui/components/sheet"
-import { Skeleton } from "@imsaroj/smart-ui/components/skeleton"
+} from "@iamsaroj/smart-ui/components/sheet"
+import { Skeleton } from "@iamsaroj/smart-ui/components/skeleton"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@imsaroj/smart-ui/components/tooltip"
+} from "@iamsaroj/smart-ui/components/tooltip"
 import { PanelLeftClose, PanelRightClose } from "lucide-react"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"

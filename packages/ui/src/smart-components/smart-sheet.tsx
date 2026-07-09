@@ -10,8 +10,8 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@imsaroj/smart-ui/components/sheet"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+} from "@iamsaroj/smart-ui/components/sheet"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 
 export { SheetClose }
 

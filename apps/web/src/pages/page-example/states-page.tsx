@@ -15,8 +15,8 @@ import {
   SmartPageSection,
   SmartPageEmpty,
   SmartPageError,
-} from "@imsaroj/smart-ui/smart-components/page"
-import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
+} from "@iamsaroj/smart-ui/smart-components/page"
+import { SmartButton as Button } from "@iamsaroj/smart-ui/smart-components/smart-button"
 
 type State = "ready" | "loading" | "error" | "empty"
 

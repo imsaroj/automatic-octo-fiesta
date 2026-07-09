@@ -1,4 +1,4 @@
-# Search engine — `@imsaroj/smart-ui/search-engine`
+# Search engine — `@iamsaroj/smart-ui/search-engine`
 
 ## What it is
 
@@ -15,7 +15,7 @@ import {
   SmartSearchForm,
   buildSearchQuery,
   type SearchFieldDefinition,
-} from "@imsaroj/smart-ui/search-engine"
+} from "@iamsaroj/smart-ui/search-engine"
 ```
 
 ## 80% example

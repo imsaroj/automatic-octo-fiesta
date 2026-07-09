@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { pageSchema } from "@imsaroj/smart-ui/data-grid"
+import { pageSchema } from "@iamsaroj/smart-ui/data-grid"
 import { userRowSchema, type UserRow } from "@/api/users"
 
 /**

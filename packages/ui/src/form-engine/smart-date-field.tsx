@@ -1,4 +1,4 @@
-import { SmartDatePicker } from "@imsaroj/smart-ui/smart-components/smart-date-picker"
+import { SmartDatePicker } from "@iamsaroj/smart-ui/smart-components/smart-date-picker"
 import type { FieldBaseProps } from "./base"
 
 export type SmartDateFieldProps = FieldBaseProps<string>

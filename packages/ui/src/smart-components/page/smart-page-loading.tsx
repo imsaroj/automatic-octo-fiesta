@@ -1,7 +1,7 @@
 "use client"
 
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { SmartSpinner } from "@imsaroj/smart-ui/smart-components/spinner"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { SmartSpinner } from "@iamsaroj/smart-ui/smart-components/spinner"
 
 export interface SmartPageLoadingProps {
   /** Accessible label announced to screen readers and displayed below the spinner. */

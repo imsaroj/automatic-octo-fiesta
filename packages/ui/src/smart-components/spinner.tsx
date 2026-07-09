@@ -1,4 +1,4 @@
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import type { HTMLAttributes } from "react"
 
 export interface SSpinnerProps extends HTMLAttributes<HTMLSpanElement> {

@@ -16,7 +16,7 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@imsaroj/smart-ui/*": ["../../packages/ui/src/*"]
+      "@iamsaroj/smart-ui/*": ["../../packages/ui/src/*"]
     }
   },
   "include": ["consume.tsx"]

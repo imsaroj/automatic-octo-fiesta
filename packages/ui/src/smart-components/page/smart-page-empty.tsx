@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 
 export interface SmartPageEmptyProps {
   /** Illustrative icon rendered above the title. */

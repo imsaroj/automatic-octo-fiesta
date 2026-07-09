@@ -59,7 +59,7 @@ importers:
       '@fontsource-variable/noto-serif':
         specifier: ^5.2.9
         version: 5.2.9
-      '@imsaroj/smart-ui':
+      '@iamsaroj/smart-ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@tanstack/react-query':

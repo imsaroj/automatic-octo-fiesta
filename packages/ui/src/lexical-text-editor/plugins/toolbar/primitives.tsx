@@ -4,9 +4,9 @@ import * as React from "react"
 import { useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import { ChevronDown } from "lucide-react"
-import { Button } from "@imsaroj/smart-ui/components/button"
-import { Separator } from "@imsaroj/smart-ui/components/separator"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Button } from "@iamsaroj/smart-ui/components/button"
+import { Separator } from "@iamsaroj/smart-ui/components/separator"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 
 // ─── PortalDropdown ───────────────────────────────────────────────────────────
 

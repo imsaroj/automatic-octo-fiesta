@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@imsaroj/smart-ui/components/dropdown-menu"
+} from "@iamsaroj/smart-ui/components/dropdown-menu"
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@imsaroj/smart-ui/components/sidebar"
+} from "@iamsaroj/smart-ui/components/sidebar"
 import {
   MoreHorizontalIcon,
   FolderIcon,

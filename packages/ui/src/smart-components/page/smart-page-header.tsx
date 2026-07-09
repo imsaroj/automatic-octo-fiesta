@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,7 +9,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage as BreadcrumbCurrent,
   BreadcrumbSeparator,
-} from "@imsaroj/smart-ui/components/breadcrumb"
+} from "@iamsaroj/smart-ui/components/breadcrumb"
 import { SMART_PAGE_SLOT } from "./slot"
 
 // ─── SmartPageHeader ───────────────────────────────────────────────────────────

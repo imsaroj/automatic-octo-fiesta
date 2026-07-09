@@ -1,13 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "@imsaroj/smart-ui/components/tabs"
+} from "@iamsaroj/smart-ui/components/tabs"
 import { SMART_PAGE_SLOT } from "./smart-page"
 
 // ─── SmartPageTabs ─────────────────────────────────────────────────────────────

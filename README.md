@@ -2,7 +2,7 @@
 
 **Copy less UI. Ship more product.**
 
-`@imsaroj/smart-ui` is a source-first React 19 UI system that turns the product patterns teams rebuild over and over —
+`@iamsaroj/smart-ui` is a source-first React 19 UI system that turns the product patterns teams rebuild over and over —
 forms, data grids, search bars, trees, calendars, rich text — into documented, tested, config-driven building blocks.
 
 Most UI libraries hand you primitives and leave the glue to you. This one ships the higher-level pieces on top of them,
@@ -15,13 +15,13 @@ so a form is a schema, a grid is a fetcher, and a page is a set of named slots.
 
 ## Why
 
-| Without Smart Component                                | With Smart Component                      |
-| ------------------------------------------------------ | ----------------------------------------- |
-| Recreate form scaffolding field by field               | Drive `SmartForm` from a Zod schema       |
-| Build every dialog, card, and sheet from scratch       | Compose flat `Smart*` wrappers            |
-| Rewrite grid wiring, selection, and pagination         | Drop in `@imsaroj/smart-ui/data-grid`     |
-| Rebuild search/filter bars for every list page         | Declare `@imsaroj/smart-ui/search-engine` |
-| Re-implement trees, calendars, transfer lists, editors | Reach for the domain engine               |
+| Without Smart Component                                | With Smart Component                       |
+| ------------------------------------------------------ | ------------------------------------------ |
+| Recreate form scaffolding field by field               | Drive `SmartForm` from a Zod schema        |
+| Build every dialog, card, and sheet from scratch       | Compose flat `Smart*` wrappers             |
+| Rewrite grid wiring, selection, and pagination         | Drop in `@iamsaroj/smart-ui/data-grid`     |
+| Rebuild search/filter bars for every list page         | Declare `@iamsaroj/smart-ui/search-engine` |
+| Re-implement trees, calendars, transfer lists, editors | Reach for the domain engine                |
 
 The goal is a public API that stays predictable, less glue code, and a codebase that still reads well after the first
 week.
@@ -51,7 +51,7 @@ app.
 
 > [!NOTE]
 > This is a **pnpm + Turborepo monorepo**. It has two workspaces: `apps/web` (the Vite + React 19 playground) and
-> `packages/ui` (the `@imsaroj/smart-ui` library, exported directly as source with no build step).
+> `packages/ui` (the `@iamsaroj/smart-ui` library, exported directly as source with no build step).
 
 ### Prerequisites
 
@@ -97,7 +97,7 @@ reach into internal files.
 
 ```tsx
 import { z } from "zod"
-import { SmartForm, type FieldDefinition } from "@imsaroj/smart-ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
 
 const contactSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -127,7 +127,7 @@ toast.success(`Thanks, ${value.name}!`)
 ### Flat compound wrapper
 
 ```tsx
-import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
+import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
 ;<SmartCard
   header={{
     title: "Orders",
@@ -143,19 +143,19 @@ import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
 ### Available entrypoints
 
 ```
-@imsaroj/smart-ui/components/*             shadcn/ui primitives (Base UI under the hood)
-@imsaroj/smart-ui/hooks/*                  shared hooks
-@imsaroj/smart-ui/lib/*                    cn(), formatters, xlsx writer
-@imsaroj/smart-ui/smart-components/*       Smart* wrappers
-@imsaroj/smart-ui/smart-components/page    page-layout slots
-@imsaroj/smart-ui/smart-components/buttons action-button presets
-@imsaroj/smart-ui/form-engine             declarative forms
-@imsaroj/smart-ui/search-engine           search/filter bar
-@imsaroj/smart-ui/data-grid               AG Grid wrappers
-@imsaroj/smart-ui/tree-engine             SmartTree
-@imsaroj/smart-ui/transfer-list-engine    SmartTransferList
-@imsaroj/smart-ui/calendar-engine         SmartCalendar
-@imsaroj/smart-ui/lexical-text-editor     SmartTextEditor
+@iamsaroj/smart-ui/components/*             shadcn/ui primitives (Base UI under the hood)
+@iamsaroj/smart-ui/hooks/*                  shared hooks
+@iamsaroj/smart-ui/lib/*                    cn(), formatters, xlsx writer
+@iamsaroj/smart-ui/smart-components/*       Smart* wrappers
+@iamsaroj/smart-ui/smart-components/page    page-layout slots
+@iamsaroj/smart-ui/smart-components/buttons action-button presets
+@iamsaroj/smart-ui/form-engine             declarative forms
+@iamsaroj/smart-ui/search-engine           search/filter bar
+@iamsaroj/smart-ui/data-grid               AG Grid wrappers
+@iamsaroj/smart-ui/tree-engine             SmartTree
+@iamsaroj/smart-ui/transfer-list-engine    SmartTransferList
+@iamsaroj/smart-ui/calendar-engine         SmartCalendar
+@iamsaroj/smart-ui/lexical-text-editor     SmartTextEditor
 ```
 
 ## Project structure
@@ -163,7 +163,7 @@ import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
 ```text
 smart-component/
 ├── apps/web/        Vite + React 19 playground and live demos (MSW mock API)
-├── packages/ui/     @imsaroj/smart-ui — source-only library, exported via subpaths
+├── packages/ui/     @iamsaroj/smart-ui — source-only library, exported via subpaths
 ├── docs/            Consumer guides, ADRs, and docs checks
 ├── e2e/             Playwright end-to-end tests
 ├── scripts/         Repo-level verification scripts

@@ -1,7 +1,7 @@
 import {
   SmartCheckboxGroup,
   type SmartCheckboxGroupOption,
-} from "@imsaroj/smart-ui/smart-components/smart-checkbox-group"
+} from "@iamsaroj/smart-ui/smart-components/smart-checkbox-group"
 import type { FieldBaseProps } from "./base"
 
 export type { SmartCheckboxGroupOption }

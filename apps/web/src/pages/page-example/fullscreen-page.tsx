@@ -12,10 +12,10 @@ import { Minus, MousePointer2, Move, Plus, Square, Type } from "lucide-react"
 import {
   SmartPage,
   SmartPageContent,
-} from "@imsaroj/smart-ui/smart-components/page"
-import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
-import { SmartBadge as Badge } from "@imsaroj/smart-ui/smart-components/smart-badge"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+} from "@iamsaroj/smart-ui/smart-components/page"
+import { SmartButton as Button } from "@iamsaroj/smart-ui/smart-components/smart-button"
+import { SmartBadge as Badge } from "@iamsaroj/smart-ui/smart-components/smart-badge"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 
 const TOOLS = [
   { id: "select", icon: <MousePointer2 className="size-4" />, label: "Select" },

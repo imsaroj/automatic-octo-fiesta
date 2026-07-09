@@ -6,7 +6,7 @@ import {
   AlertAction,
   AlertDescription,
   AlertTitle,
-} from "@imsaroj/smart-ui/components/alert"
+} from "@iamsaroj/smart-ui/components/alert"
 
 export interface SmartAlertProps {
   /**

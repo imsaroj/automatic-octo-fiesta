@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { SmartPageLoading } from "@imsaroj/smart-ui/smart-components/page"
+import { SmartPageLoading } from "@iamsaroj/smart-ui/smart-components/page"
 import { PlaygroundShell } from "@/components/dashboard/playground-shell"
 
 const DashboardPage = lazy(() => import("@/pages/dashboard-page"))

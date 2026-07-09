@@ -1,4 +1,4 @@
-# Smart components — `@imsaroj/smart-ui/smart-components/*`
+# Smart components — `@iamsaroj/smart-ui/smart-components/*`
 
 ## What it is
 
@@ -12,8 +12,8 @@ primitives (`SmartSearchInput`, `SmartLoadingOverlay`, `SmartSpinner`,
 ## Import
 
 ```ts
-import { SmartDialog } from "@imsaroj/smart-ui/smart-components/smart-dialog"
-import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
+import { SmartDialog } from "@iamsaroj/smart-ui/smart-components/smart-dialog"
+import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
 ```
 
 ## The flat-props ↔ compound escape-hatch pattern
@@ -33,7 +33,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-} from "@imsaroj/smart-ui/smart-components/smart-dialog"
+} from "@iamsaroj/smart-ui/smart-components/smart-dialog"
 ```
 
 There is a `shadcn-smart-wrappers` skill that converts native compound usage into
@@ -45,7 +45,7 @@ Input-like Smart components are controlled through a `data` / `setData(value)`
 pair (not `value`/`onChange`) — see `FieldBaseProps<T>`. The form engine relies on
 this.
 
-## Buttons preset system — `@imsaroj/smart-ui/smart-components/buttons`
+## Buttons preset system — `@iamsaroj/smart-ui/smart-components/buttons`
 
 One `ACTION_BUTTON_CONFIG` map is the single source of truth for each action's
 icon, label, variant, loading text, and type; `createActionButton` stamps out 27
@@ -53,7 +53,7 @@ named presets (`AddButton`, `DeleteButton`, `SaveButton`, …). Prefer these ove
 hand-configured `SmartButton`s for standard CRUD/toolbar actions.
 
 ```tsx
-import { AddButton, SaveButton } from "@imsaroj/smart-ui/smart-components/buttons"
+import { AddButton, SaveButton } from "@iamsaroj/smart-ui/smart-components/buttons"
 
 <AddButton onClick={openCreate} />
 <SaveButton loading={isSaving} />
@@ -62,7 +62,7 @@ import { AddButton, SaveButton } from "@imsaroj/smart-ui/smart-components/button
 Extend by adding a config entry + one `createActionButton` line. Optional
 permission gating via `ActionPermissionProvider`.
 
-## SmartPage slots — `@imsaroj/smart-ui/smart-components/page`
+## SmartPage slots — `@iamsaroj/smart-ui/smart-components/page`
 
 `SmartPage` is a compound **page-layout system** that arranges named slots
 (header, hero, toolbar, search, filters, tabs, content, sidebar, grid area, status

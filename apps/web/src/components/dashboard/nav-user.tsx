@@ -3,7 +3,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@imsaroj/smart-ui/components/avatar"
+} from "@iamsaroj/smart-ui/components/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,13 +17,13 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@imsaroj/smart-ui/components/dropdown-menu"
+} from "@iamsaroj/smart-ui/components/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@imsaroj/smart-ui/components/sidebar"
+} from "@iamsaroj/smart-ui/components/sidebar"
 import {
   ChevronsUpDownIcon,
   BadgeCheckIcon,

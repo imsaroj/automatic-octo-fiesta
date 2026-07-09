@@ -1,7 +1,7 @@
 import * as React from "react"
 import type { VariantProps } from "class-variance-authority"
-import { Button, buttonVariants } from "@imsaroj/smart-ui/components/button"
-import { SmartSpinner } from "@imsaroj/smart-ui/smart-components/spinner"
+import { Button, buttonVariants } from "@iamsaroj/smart-ui/components/button"
+import { SmartSpinner } from "@iamsaroj/smart-ui/smart-components/spinner"
 import type { Button as ButtonPrimitive } from "@base-ui/react/button"
 
 export interface SmartButtonProps

@@ -1,4 +1,4 @@
-import type { ServerFilter, ServerSort } from "@imsaroj/smart-ui/data-grid"
+import type { ServerFilter, ServerSort } from "@iamsaroj/smart-ui/data-grid"
 
 /**
  * Decoder half of the query contract shared by the MSW mock (the encoder lives

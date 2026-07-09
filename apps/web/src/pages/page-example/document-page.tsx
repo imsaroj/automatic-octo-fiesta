@@ -11,8 +11,8 @@ import {
   SmartPageTitle,
   SmartPageContent,
   SmartPageSection,
-} from "@imsaroj/smart-ui/smart-components/page"
-import { SmartBadge as Badge } from "@imsaroj/smart-ui/smart-components/smart-badge"
+} from "@iamsaroj/smart-ui/smart-components/page"
+import { SmartBadge as Badge } from "@iamsaroj/smart-ui/smart-components/smart-badge"
 
 const DocumentLayoutPage = () => {
   return (

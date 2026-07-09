@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import { Columns3, RefreshCw } from "lucide-react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { Button } from "@imsaroj/smart-ui/components/button"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { Button } from "@iamsaroj/smart-ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@imsaroj/smart-ui/components/dropdown-menu"
+} from "@iamsaroj/smart-ui/components/dropdown-menu"
 
 /** A toggleable column shown in the visibility menu. */
 export interface GridToolbarColumn {

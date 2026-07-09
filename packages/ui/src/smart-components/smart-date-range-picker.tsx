@@ -4,15 +4,15 @@ import * as React from "react"
 import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import type { DateRange } from "react-day-picker"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { Button } from "@imsaroj/smart-ui/components/button"
-import { Calendar } from "@imsaroj/smart-ui/components/calendar"
-import { Label } from "@imsaroj/smart-ui/components/label"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { Button } from "@iamsaroj/smart-ui/components/button"
+import { Calendar } from "@iamsaroj/smart-ui/components/calendar"
+import { Label } from "@iamsaroj/smart-ui/components/label"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@imsaroj/smart-ui/components/popover"
+} from "@iamsaroj/smart-ui/components/popover"
 
 export type { DateRange }
 

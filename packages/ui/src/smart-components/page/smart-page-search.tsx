@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import { SMART_PAGE_SLOT } from "./smart-page"
 
 export interface SmartPageSearchProps extends React.HTMLAttributes<HTMLDivElement> {

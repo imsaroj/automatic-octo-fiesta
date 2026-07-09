@@ -3,18 +3,18 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@imsaroj/smart-ui/smart-components/page"
+} from "@iamsaroj/smart-ui/smart-components/page"
 import {
   SmartCalendar,
   type DateRange,
-} from "@imsaroj/smart-ui/smart-components/smart-calendar"
-import { SmartDatePicker } from "@imsaroj/smart-ui/smart-components/smart-date-picker"
+} from "@iamsaroj/smart-ui/smart-components/smart-calendar"
+import { SmartDatePicker } from "@iamsaroj/smart-ui/smart-components/smart-date-picker"
 import {
   SmartTimePicker,
   SmartDateTimePicker,
-} from "@imsaroj/smart-ui/smart-components/smart-time-picker"
-import { SmartCombobox } from "@imsaroj/smart-ui/smart-components/smart-combobox"
-import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
+} from "@iamsaroj/smart-ui/smart-components/smart-time-picker"
+import { SmartCombobox } from "@iamsaroj/smart-ui/smart-components/smart-combobox"
+import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
 
 const FRAMEWORKS = [
   { value: "next", label: "Next.js" },

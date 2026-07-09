@@ -1,7 +1,7 @@
 import * as React from "react"
 
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { Button } from "@imsaroj/smart-ui/components/button"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { Button } from "@iamsaroj/smart-ui/components/button"
 import {
   ChevronLeftIcon,
   ChevronRightIcon,

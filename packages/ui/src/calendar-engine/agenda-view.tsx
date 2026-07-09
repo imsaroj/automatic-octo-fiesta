@@ -1,6 +1,6 @@
 import * as React from "react"
 import { format, isSameDay } from "date-fns"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import type { CalendarViewProps } from "./shared"
 import { eventColorClasses } from "./event-color"
 import { formatEventTime, groupEventsByDay, viewRange } from "./calendar-utils"

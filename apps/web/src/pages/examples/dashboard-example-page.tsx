@@ -25,15 +25,15 @@ import {
   SmartPageHero,
   SmartPageContent,
   SmartPageSection,
-} from "@imsaroj/smart-ui/smart-components/page"
-import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
-import { SmartStatCard } from "@imsaroj/smart-ui/smart-components/smart-stat-card"
+} from "@iamsaroj/smart-ui/smart-components/page"
+import { SmartButton as Button } from "@iamsaroj/smart-ui/smart-components/smart-button"
+import { SmartStatCard } from "@iamsaroj/smart-ui/smart-components/smart-stat-card"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@imsaroj/smart-ui/smart-components/smart-card"
+} from "@iamsaroj/smart-ui/smart-components/smart-card"
 import { dashboardStats, recentActivity, topSources, series } from "@/demo-data"
 
 // ─── Icon lookup for the shared stat data ─────────────────────────────────────

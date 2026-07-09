@@ -3,10 +3,10 @@
 import * as React from "react"
 import { addDays } from "date-fns"
 import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { Button } from "@imsaroj/smart-ui/components/button"
-import { DatePicker } from "@imsaroj/smart-ui/components/date-picker"
-import { Label } from "@imsaroj/smart-ui/components/label"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { Button } from "@iamsaroj/smart-ui/components/button"
+import { DatePicker } from "@iamsaroj/smart-ui/components/date-picker"
+import { Label } from "@iamsaroj/smart-ui/components/label"
 
 export interface SmartDatePickerProps {
   /** Currently selected date (controlled). */

@@ -11,11 +11,11 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@imsaroj/smart-ui/components",
-    "utils": "@imsaroj/smart-ui/lib/utils",
-    "hooks": "@imsaroj/smart-ui/hooks",
-    "lib": "@imsaroj/smart-ui/lib",
-    "ui": "@imsaroj/smart-ui/components"
+    "components": "@iamsaroj/smart-ui/components",
+    "utils": "@iamsaroj/smart-ui/lib/utils",
+    "hooks": "@iamsaroj/smart-ui/hooks",
+    "lib": "@iamsaroj/smart-ui/lib",
+    "ui": "@iamsaroj/smart-ui/components"
   },
   "rtl": false,
   "menuColor": "default",

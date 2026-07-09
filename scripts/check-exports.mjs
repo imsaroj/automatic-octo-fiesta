@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Validate the `@imsaroj/smart-ui` `exports` map — the public API contract — against
+ * Validate the `@iamsaroj/smart-ui` `exports` map — the public API contract — against
  * the filesystem, so a renamed or deleted file can't silently break a subpath:
  *
  *  - concrete subpaths (barrels) must point at a file that exists **and**

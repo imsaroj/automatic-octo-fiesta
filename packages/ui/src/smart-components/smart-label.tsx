@@ -1,6 +1,6 @@
 import * as React from "react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { Label } from "@imsaroj/smart-ui/components/label"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { Label } from "@iamsaroj/smart-ui/components/label"
 
 export interface SmartLabelProps extends React.ComponentProps<"label"> {
   /** Appends a red asterisk to signal a required field. */

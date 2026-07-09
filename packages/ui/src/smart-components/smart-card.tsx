@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@imsaroj/smart-ui/components/card"
+} from "@iamsaroj/smart-ui/components/card"
 
 export interface SmartCardHeader {
   title?: React.ReactNode

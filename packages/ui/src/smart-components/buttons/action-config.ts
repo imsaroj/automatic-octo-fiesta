@@ -28,7 +28,7 @@ import {
   X,
 } from "lucide-react"
 
-import type { SmartButtonProps } from "@imsaroj/smart-ui/smart-components/smart-button"
+import type { SmartButtonProps } from "@iamsaroj/smart-ui/smart-components/smart-button"
 
 export type ActionButtonVariant = NonNullable<SmartButtonProps["variant"]>
 

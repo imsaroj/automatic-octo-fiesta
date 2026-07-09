@@ -10,7 +10,7 @@ import {
   type ServerFetchResult,
   type ServerFilter,
 } from "./pagination"
-import type { XlsxCell } from "@imsaroj/smart-ui/lib/xlsx"
+import type { XlsxCell } from "@iamsaroj/smart-ui/lib/xlsx"
 import { escapeCsvFormula } from "./formula-guard"
 import { isExportSuppressed } from "./action-column"
 

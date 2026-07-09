@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Check } from "lucide-react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 
 export interface SmartStepperStep {
   label: string

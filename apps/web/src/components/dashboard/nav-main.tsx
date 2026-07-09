@@ -3,7 +3,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@imsaroj/smart-ui/components/collapsible"
+} from "@iamsaroj/smart-ui/components/collapsible"
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -14,7 +14,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "@imsaroj/smart-ui/components/sidebar"
+} from "@iamsaroj/smart-ui/components/sidebar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@imsaroj/smart-ui/components/dropdown-menu"
+} from "@iamsaroj/smart-ui/components/dropdown-menu"
 import { ChevronRightIcon } from "lucide-react"
 
 export const NavMain = ({

@@ -1,4 +1,4 @@
-# Rich text editor — `@imsaroj/smart-ui/lexical-text-editor`
+# Rich text editor — `@iamsaroj/smart-ui/lexical-text-editor`
 
 ## What it is
 
@@ -13,7 +13,7 @@ import {
   SmartTextEditor,
   SafeEditorHtml,
   sanitizeEditorHtml,
-} from "@imsaroj/smart-ui/lexical-text-editor"
+} from "@iamsaroj/smart-ui/lexical-text-editor"
 ```
 
 ## 80% example

@@ -7,7 +7,7 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"],
-      "@imsaroj/smart-ui/*": ["../../packages/ui/src/*"]
+      "@iamsaroj/smart-ui/*": ["../../packages/ui/src/*"]
     }
   }
 }

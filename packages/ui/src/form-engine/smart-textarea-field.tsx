@@ -1,4 +1,4 @@
-import { SmartTextarea } from "@imsaroj/smart-ui/smart-components/smart-textarea"
+import { SmartTextarea } from "@iamsaroj/smart-ui/smart-components/smart-textarea"
 import type { FieldBaseProps } from "./base"
 
 export interface SmartTextareaFieldProps extends FieldBaseProps<string> {

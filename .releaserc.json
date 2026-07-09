@@ -20,7 +20,7 @@
     [
       "@semantic-release/exec",
       {
-        "publishCmd": "pnpm --filter @imsaroj/smart-ui publish --access public --no-git-checks"
+        "publishCmd": "pnpm --filter @iamsaroj/smart-ui publish --access public --no-git-checks"
       }
     ],
     [

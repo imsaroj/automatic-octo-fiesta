@@ -2,10 +2,10 @@ import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import { QueryClientProvider } from "@tanstack/react-query"
 
-import "@imsaroj/smart-ui/globals.css"
+import "@iamsaroj/smart-ui/globals.css"
 import { App } from "./App.tsx"
 import { ThemeProvider } from "@/components/theme-provider.tsx"
-import { SmartToaster } from "@imsaroj/smart-ui/smart-components/smart-toaster"
+import { SmartToaster } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
 import { queryClient } from "@/lib/query-client"
 import { enableMocking } from "@/mocks/enable"
 

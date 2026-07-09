@@ -1,6 +1,6 @@
 "use client"
 
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import type { PageContextValue, ScrollMode } from "../page-context"
 import type { SlotBuckets } from "./slot-buckets"
 

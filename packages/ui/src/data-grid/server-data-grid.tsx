@@ -21,11 +21,11 @@ import {
   type RowSelectionOptions,
 } from "ag-grid-community"
 import { FileSpreadsheet } from "lucide-react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { downloadXlsx, timestampForFilename } from "@imsaroj/smart-ui/lib/xlsx"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { downloadXlsx, timestampForFilename } from "@iamsaroj/smart-ui/lib/xlsx"
 import { GridToolbar } from "./grid-toolbar"
-import { SmartLoadingOverlay } from "@imsaroj/smart-ui/smart-components/loading-overlay"
-import { SmartPageError } from "@imsaroj/smart-ui/smart-components/page/smart-page-error"
+import { SmartLoadingOverlay } from "@iamsaroj/smart-ui/smart-components/loading-overlay"
+import { SmartPageError } from "@iamsaroj/smart-ui/smart-components/page/smart-page-error"
 import {
   type ServerFetchParams,
   type ServerFetchResult,

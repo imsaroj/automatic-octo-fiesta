@@ -4,19 +4,19 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@imsaroj/smart-ui/smart-components/page"
-import { SmartInput } from "@imsaroj/smart-ui/smart-components/smart-input"
-import { SmartTextarea } from "@imsaroj/smart-ui/smart-components/smart-textarea"
-import { SmartCheckbox } from "@imsaroj/smart-ui/smart-components/smart-checkbox"
-import { SmartSwitch } from "@imsaroj/smart-ui/smart-components/smart-switch"
-import { SmartRadioGroup } from "@imsaroj/smart-ui/smart-components/smart-radio-group"
-import { SmartSelect } from "@imsaroj/smart-ui/smart-components/smart-select"
-import { SmartNativeSelect } from "@imsaroj/smart-ui/smart-components/smart-native-select"
-import { SmartInputGroup } from "@imsaroj/smart-ui/smart-components/smart-input-group"
-import { SmartField } from "@imsaroj/smart-ui/smart-components/smart-field"
-import { SmartLabel } from "@imsaroj/smart-ui/smart-components/smart-label"
-import { SmartButton } from "@imsaroj/smart-ui/smart-components/smart-button"
-import { Separator } from "@imsaroj/smart-ui/smart-components/smart-separator"
+} from "@iamsaroj/smart-ui/smart-components/page"
+import { SmartInput } from "@iamsaroj/smart-ui/smart-components/smart-input"
+import { SmartTextarea } from "@iamsaroj/smart-ui/smart-components/smart-textarea"
+import { SmartCheckbox } from "@iamsaroj/smart-ui/smart-components/smart-checkbox"
+import { SmartSwitch } from "@iamsaroj/smart-ui/smart-components/smart-switch"
+import { SmartRadioGroup } from "@iamsaroj/smart-ui/smart-components/smart-radio-group"
+import { SmartSelect } from "@iamsaroj/smart-ui/smart-components/smart-select"
+import { SmartNativeSelect } from "@iamsaroj/smart-ui/smart-components/smart-native-select"
+import { SmartInputGroup } from "@iamsaroj/smart-ui/smart-components/smart-input-group"
+import { SmartField } from "@iamsaroj/smart-ui/smart-components/smart-field"
+import { SmartLabel } from "@iamsaroj/smart-ui/smart-components/smart-label"
+import { SmartButton } from "@iamsaroj/smart-ui/smart-components/smart-button"
+import { Separator } from "@iamsaroj/smart-ui/smart-components/smart-separator"
 
 const COUNTRIES = [
   { value: "kr", label: "South Korea" },

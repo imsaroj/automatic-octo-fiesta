@@ -1,7 +1,7 @@
 import {
   SidebarInset,
   SidebarProvider,
-} from "@imsaroj/smart-ui/components/sidebar"
+} from "@iamsaroj/smart-ui/components/sidebar"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import * as React from "react"
 

@@ -2,8 +2,8 @@
 
 import * as React from "react"
 import { AlertCircle, RefreshCw } from "lucide-react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { Button } from "@imsaroj/smart-ui/components/button"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { Button } from "@iamsaroj/smart-ui/components/button"
 
 export interface SmartPageErrorProps {
   /** Short headline describing the error. @default "Something went wrong" */

@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { Checkbox } from "@imsaroj/smart-ui/components/checkbox"
-import { Label } from "@imsaroj/smart-ui/components/label"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { Checkbox } from "@iamsaroj/smart-ui/components/checkbox"
+import { Label } from "@iamsaroj/smart-ui/components/label"
 
 export interface SmartCheckboxProps extends Omit<
   React.ComponentProps<typeof Checkbox>,

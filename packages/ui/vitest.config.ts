@@ -70,7 +70,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
-      "@imsaroj/smart-ui": resolve(__dirname, "src"),
+      "@iamsaroj/smart-ui": resolve(__dirname, "src"),
     },
   },
 })

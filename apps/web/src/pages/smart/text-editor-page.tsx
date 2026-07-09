@@ -3,9 +3,9 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@imsaroj/smart-ui/smart-components/page"
-import { SmartTextEditor } from "@imsaroj/smart-ui/lexical-text-editor"
-import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
+} from "@iamsaroj/smart-ui/smart-components/page"
+import { SmartTextEditor } from "@iamsaroj/smart-ui/lexical-text-editor"
+import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
 
 const INITIAL_HTML = `<h2>Welcome to SmartTextEditor</h2><p>This is a <strong>rich text editor</strong> built on <em>Lexical</em>. You can:</p><ul><li>Format text with <strong>bold</strong>, <em>italic</em>, <u>underline</u></li><li>Create headings, lists, blockquotes</li><li>Insert <a href="https://lexical.dev">links</a> and inline code</li><li>Use <code>markdown shortcuts</code> like **bold** or # Heading</li></ul>`
 

@@ -1,4 +1,4 @@
-import { SmartYearPicker } from "@imsaroj/smart-ui/smart-components/smart-year-picker"
+import { SmartYearPicker } from "@iamsaroj/smart-ui/smart-components/smart-year-picker"
 import type { FieldBaseProps } from "./base"
 
 export interface SmartYearFieldProps extends Omit<

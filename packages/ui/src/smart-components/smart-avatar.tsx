@@ -7,7 +7,7 @@ import {
   AvatarGroup,
   AvatarGroupCount,
   AvatarBadge,
-} from "@imsaroj/smart-ui/components/avatar"
+} from "@iamsaroj/smart-ui/components/avatar"
 
 export {
   Avatar,

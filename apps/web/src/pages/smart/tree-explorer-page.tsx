@@ -13,10 +13,10 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@imsaroj/smart-ui/smart-components/page"
-import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
-import { SmartButton } from "@imsaroj/smart-ui/smart-components/smart-button"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+} from "@iamsaroj/smart-ui/smart-components/page"
+import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
+import { SmartButton } from "@iamsaroj/smart-ui/smart-components/smart-button"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import {
   SmartTree,
   type TreeNode,
@@ -30,7 +30,7 @@ import {
   isFolderNode,
   removeNode,
   updateNode,
-} from "@imsaroj/smart-ui/tree-engine"
+} from "@iamsaroj/smart-ui/tree-engine"
 
 // ── Seed data ────────────────────────────────────────────────────────────────
 

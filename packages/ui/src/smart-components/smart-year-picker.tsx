@@ -2,14 +2,14 @@
 
 import * as React from "react"
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { Button } from "@imsaroj/smart-ui/components/button"
-import { Label } from "@imsaroj/smart-ui/components/label"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { Button } from "@iamsaroj/smart-ui/components/button"
+import { Label } from "@iamsaroj/smart-ui/components/label"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@imsaroj/smart-ui/components/popover"
+} from "@iamsaroj/smart-ui/components/popover"
 
 const PAGE_SIZE = 12
 

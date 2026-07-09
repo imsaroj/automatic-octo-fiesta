@@ -12,7 +12,7 @@ import {
   AlertDialogMedia,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@imsaroj/smart-ui/components/alert-dialog"
+} from "@iamsaroj/smart-ui/components/alert-dialog"
 
 export interface SmartConfirmDialogProps {
   /** Controls open state (controlled mode). Omit for uncontrolled (trigger-driven). */

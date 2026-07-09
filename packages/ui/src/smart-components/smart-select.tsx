@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import {
   Select,
   SelectContent,
@@ -10,8 +10,8 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@imsaroj/smart-ui/components/select"
-import { Label } from "@imsaroj/smart-ui/components/label"
+} from "@iamsaroj/smart-ui/components/select"
+import { Label } from "@iamsaroj/smart-ui/components/label"
 
 export interface SmartSelectOption {
   value: string

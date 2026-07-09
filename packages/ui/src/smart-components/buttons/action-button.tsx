@@ -5,11 +5,11 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@imsaroj/smart-ui/components/tooltip"
+} from "@iamsaroj/smart-ui/components/tooltip"
 import {
   SmartButton,
   type SmartButtonProps,
-} from "@imsaroj/smart-ui/smart-components/smart-button"
+} from "@iamsaroj/smart-ui/smart-components/smart-button"
 
 import {
   ACTION_BUTTON_CONFIG,

@@ -8,7 +8,7 @@ pnpm dev         # all workspaces via Turbo (app on Vite)
 ```
 
 Workspaces: `apps/web` (Vite playground/demo) and `packages/ui`
-(`@imsaroj/smart-ui`, the source-only component library). See [`CLAUDE.md`](./CLAUDE.md)
+(`@iamsaroj/smart-ui`, the source-only component library). See [`CLAUDE.md`](./CLAUDE.md)
 for the architecture map and [`docs/`](./docs/README.md) for per-domain guides.
 
 ## Quality gates
@@ -49,7 +49,7 @@ Publishing is fully automated by **semantic-release**
 release-worthy, it:
 
 1. bumps `packages/ui/package.json` and prepends `packages/ui/CHANGELOG.md`,
-2. builds (`build:lib`) and publishes `@imsaroj/smart-ui` to npm via
+2. builds (`build:lib`) and publishes `@iamsaroj/smart-ui` to npm via
    `pnpm publish` (which swaps in the dist-facing `publishConfig.exports` —
    the in-repo `exports` map keeps pointing at source, per
    [ADR 0006](./docs/adr/0006-distribution-strategy.md)),

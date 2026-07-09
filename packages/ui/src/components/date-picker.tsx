@@ -4,8 +4,8 @@ import * as React from "react"
 import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { Button } from "@imsaroj/smart-ui/components/button"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { Button } from "@iamsaroj/smart-ui/components/button"
 
 /**
  * Translate the intuitive upper-case tokens people reach for (`YYYY`, `DD`)
@@ -19,12 +19,12 @@ const normalizeDateFormat = (pattern: string) =>
   pattern.replace(/'[^']*'|[A-Za-z]+/g, (token) =>
     token.startsWith("'") ? token : token.replace(/Y/g, "y").replace(/D/g, "d")
   )
-import { Calendar } from "@imsaroj/smart-ui/components/calendar"
+import { Calendar } from "@iamsaroj/smart-ui/components/calendar"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@imsaroj/smart-ui/components/popover"
+} from "@iamsaroj/smart-ui/components/popover"
 
 interface DatePickerProps {
   date?: Date

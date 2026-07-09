@@ -1,4 +1,4 @@
-# Data grid — `@imsaroj/smart-ui/data-grid`
+# Data grid — `@iamsaroj/smart-ui/data-grid`
 
 ## What it is
 
@@ -20,7 +20,7 @@ import {
   SmartServerGrid,
   createPageFetcher,
   type DataGridColumn,
-} from "@imsaroj/smart-ui/data-grid"
+} from "@iamsaroj/smart-ui/data-grid"
 ```
 
 ## 80% example — client grid

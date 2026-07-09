@@ -8,9 +8,9 @@ import {
   type SelectionChangedEvent,
 } from "ag-grid-community"
 import { Download } from "lucide-react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { SmartLoadingOverlay } from "@imsaroj/smart-ui/smart-components/loading-overlay"
-import { SmartSearchInput } from "@imsaroj/smart-ui/smart-components/search-input"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { SmartLoadingOverlay } from "@iamsaroj/smart-ui/smart-components/loading-overlay"
+import { SmartSearchInput } from "@iamsaroj/smart-ui/smart-components/search-input"
 import { GridToolbar } from "./grid-toolbar"
 import { escapeCsvFormula } from "./formula-guard"
 import { dataGridTheme } from "./grid-theme"

@@ -1,11 +1,11 @@
 ---
 name: smart-component
 description: >
-  Expert usage guide for the smart-component library (@imsaroj/smart-ui) — a config-driven,
+  Expert usage guide for the smart-component library (@iamsaroj/smart-ui) — a config-driven,
   shadcn/Base-UI + Tailwind v4 React 19 component system with Smart* wrappers, a Zod-driven
   form engine, a search engine, AG Grid data grids, page layout slots, tree / transfer-list /
   calendar engines, and a Lexical rich-text editor. Load this skill whenever building or
-  editing UI that consumes @imsaroj/smart-ui so generated code matches the library's real APIs,
+  editing UI that consumes @iamsaroj/smart-ui so generated code matches the library's real APIs,
   conventions, and design tokens.
 ---
 
@@ -14,7 +14,7 @@ description: >
 ## Purpose
 
 This skill teaches an AI agent to build application UI with the **smart-component** library
-(`@imsaroj/smart-ui`) exactly as its authors would: reaching for existing `Smart*` components and
+(`@iamsaroj/smart-ui`) exactly as its authors would: reaching for existing `Smart*` components and
 engines first, importing only through the public exports map, styling only with the semantic
 design tokens, and following the repo's controlled-state (`data`/`setData`) and config-driven
 conventions.
@@ -24,7 +24,7 @@ conventions.
 Use this skill whenever a task involves:
 
 - Building pages, forms, dialogs, dashboards, search bars, or data grids in an app that
-  depends on `@imsaroj/smart-ui`.
+  depends on `@iamsaroj/smart-ui`.
 - Adding or modifying components inside `packages/ui`.
 - Reviewing UI code for convention violations (wrong imports, duplicated components,
   bypassed tokens).
@@ -39,7 +39,7 @@ Chakra, Radix), or hand-rolled equivalents of components that already exist here
 - **Monorepo:** pnpm workspaces + Turborepo.
   - `apps/web` — Vite + React 19 demo/playground (routing via `react-router-dom` v7,
     data fetching via TanStack Query, mock API via MSW). Path alias `@` → `apps/web/src`.
-  - `packages/ui` — the library, published as **source** (`@imsaroj/smart-ui`). **There is no
+  - `packages/ui` — the library, published as **source** (`@iamsaroj/smart-ui`). **There is no
     build step**; the `exports` map in `packages/ui/package.json` points straight at `.ts`/`.tsx` files.
 - **Stack:** React 19, TypeScript, Tailwind CSS v4, shadcn/ui v4 style on **Base UI**
   (`@base-ui/react`, _not_ Radix), Zod v4, TanStack Form, AG Grid Community, Lexical,
@@ -68,26 +68,26 @@ pnpm dlx shadcn@latest add <name> -c apps/web   # add a shadcn primitive (lands 
 Consumers may **only** import via these subpaths (from `packages/ui/package.json`):
 
 ```
-@imsaroj/smart-ui/globals.css               → src/styles/globals.css       (import once in app entry)
-@imsaroj/smart-ui/lib/*                     → src/lib/*.ts                 (cn, format, xlsx)
-@imsaroj/smart-ui/components/*              → src/components/*.tsx         (shadcn/Base-UI primitives)
-@imsaroj/smart-ui/hooks/*                   → src/hooks/*.ts               (useIsMobile)
-@imsaroj/smart-ui/smart-components/*        → src/smart-components/*.tsx   (Smart* wrappers)
-@imsaroj/smart-ui/smart-components/page     → page-layout barrel (SmartPage + slots)
-@imsaroj/smart-ui/smart-components/buttons  → action-button presets barrel
-@imsaroj/smart-ui/form-engine               → SmartForm + FieldDefinition + Smart*Field
-@imsaroj/smart-ui/search-engine             → SmartSearchForm / SearchEngine
-@imsaroj/smart-ui/data-grid                 → SmartGrid, SmartServerGrid, pagination, action column
-@imsaroj/smart-ui/tree-engine               → SmartTree
-@imsaroj/smart-ui/transfer-list-engine      → SmartTransferList
-@imsaroj/smart-ui/calendar-engine           → SmartCalendar
-@imsaroj/smart-ui/lexical-text-editor       → SmartTextEditor
+@iamsaroj/smart-ui/globals.css               → src/styles/globals.css       (import once in app entry)
+@iamsaroj/smart-ui/lib/*                     → src/lib/*.ts                 (cn, format, xlsx)
+@iamsaroj/smart-ui/components/*              → src/components/*.tsx         (shadcn/Base-UI primitives)
+@iamsaroj/smart-ui/hooks/*                   → src/hooks/*.ts               (useIsMobile)
+@iamsaroj/smart-ui/smart-components/*        → src/smart-components/*.tsx   (Smart* wrappers)
+@iamsaroj/smart-ui/smart-components/page     → page-layout barrel (SmartPage + slots)
+@iamsaroj/smart-ui/smart-components/buttons  → action-button presets barrel
+@iamsaroj/smart-ui/form-engine               → SmartForm + FieldDefinition + Smart*Field
+@iamsaroj/smart-ui/search-engine             → SmartSearchForm / SearchEngine
+@iamsaroj/smart-ui/data-grid                 → SmartGrid, SmartServerGrid, pagination, action column
+@iamsaroj/smart-ui/tree-engine               → SmartTree
+@iamsaroj/smart-ui/transfer-list-engine      → SmartTransferList
+@iamsaroj/smart-ui/calendar-engine           → SmartCalendar
+@iamsaroj/smart-ui/lexical-text-editor       → SmartTextEditor
 ```
 
 `data-grid`, `form-engine`, `search-engine`, the engines, and `lexical-text-editor` are
 **barrel entrypoints** — their internal files (`grid-internals.tsx`, `smart-form-internals.ts`,
 `field-registry.ts` internals, editor plugins, …) are _not_ individually importable. Never
-deep-import `@imsaroj/smart-ui/src/...` or reach past a barrel.
+deep-import `@iamsaroj/smart-ui/src/...` or reach past a barrel.
 
 ### Placement rule for new components
 
@@ -142,16 +142,16 @@ deep-import `@imsaroj/smart-ui/src/...` or reach past a barrel.
 
 An app consuming the library must:
 
-1. Depend on `@imsaroj/smart-ui` (workspace protocol) — plus `react`, `react-dom`.
+1. Depend on `@iamsaroj/smart-ui` (workspace protocol) — plus `react`, `react-dom`.
 2. Import the stylesheet **once** in the entry point:
    ```tsx
-   import "@imsaroj/smart-ui/globals.css"
+   import "@iamsaroj/smart-ui/globals.css"
    ```
    The CSS's `@source` directives scan `apps/**` and `packages/ui/**` so Tailwind sees
    classes from both workspaces.
 3. Mount `SmartToaster` once at the app root:
    ```tsx
-   import { SmartToaster } from "@imsaroj/smart-ui/smart-components/smart-toaster"
+   import { SmartToaster } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
    // ...
    <App />
    <SmartToaster />
@@ -183,7 +183,7 @@ All theming is CSS variables in `packages/ui/src/styles/globals.css`:
 
 ## Component Catalog
 
-### Primitives (`@imsaroj/smart-ui/components/*`) — shadcn on Base UI
+### Primitives (`@iamsaroj/smart-ui/components/*`) — shadcn on Base UI
 
 accordion, alert, alert-dialog, aspect-ratio, avatar, badge, breadcrumb, button, calendar,
 card, carousel, chart, checkbox, collapsible, combobox, command, context-menu, data-table,
@@ -198,7 +198,7 @@ Use these directly only when no `Smart*` wrapper exists (e.g. `Tabs`, `Tooltip`,
 `aspect-ratio`, `pagination`) — they are **deliberately kept** vendored code; don't delete
 them or prune their deps.
 
-### Smart wrappers (`@imsaroj/smart-ui/smart-components/<file>`)
+### Smart wrappers (`@iamsaroj/smart-ui/smart-components/<file>`)
 
 One component per file; import from the file name:
 
@@ -227,7 +227,7 @@ One component per file; import from the file name:
 
 Each wrapper file also re-exports its underlying compound primitives for escape hatches.
 
-### Action buttons (`@imsaroj/smart-ui/smart-components/buttons`)
+### Action buttons (`@iamsaroj/smart-ui/smart-components/buttons`)
 
 `ACTION_BUTTON_CONFIG` (single source of truth: icon, label, variant, loading text per
 action) + generic `ActionButton` + 27 presets:
@@ -246,7 +246,7 @@ import {
   ActionPermissionProvider,
   EditButton,
   DeleteButton,
-} from "@imsaroj/smart-ui/smart-components/buttons"
+} from "@iamsaroj/smart-ui/smart-components/buttons"
 ;<ActionPermissionProvider
   can={(action) => role === "admin" || action !== "delete"}
 >
@@ -259,7 +259,7 @@ import {
 `SmartButton` with its own Pencil/Trash icon. To add a new action kind, add one entry to
 `ACTION_BUTTON_CONFIG` and one `createActionButton` line — don't fork the pattern.
 
-### Page layout (`@imsaroj/smart-ui/smart-components/page`)
+### Page layout (`@iamsaroj/smart-ui/smart-components/page`)
 
 `SmartPage` orchestrates named slots via `SMART_PAGE_SLOT`; children render into zones:
 
@@ -275,13 +275,13 @@ the viewport — pair with `SmartServerGrid fill`).
 
 ---
 
-## Forms (`@imsaroj/smart-ui/form-engine`)
+## Forms (`@iamsaroj/smart-ui/form-engine`)
 
 `SmartForm` = TanStack Form + Zod, fully declarative:
 
 ```tsx
 import { z } from "zod"
-import { SmartForm, type FieldDefinition } from "@imsaroj/smart-ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -324,19 +324,19 @@ segmented, yesno`).
 - Extend with new field types via the `registry` prop (merged over the built-in
   `defaultFieldRegistry`) — don't fork the engine.
 - Standalone `Smart*Field` components (e.g. `SmartInputField`, `SmartSelectField`) are also
-  exported from `@imsaroj/smart-ui/form-engine`; they all take `FieldBaseProps<T>`:
+  exported from `@iamsaroj/smart-ui/form-engine`; they all take `FieldBaseProps<T>`:
   **`data` / `setData(value)` — not `value` / `onChange`.** This is the library-wide
   controlled-field convention.
 
 ---
 
-## Search Engine (`@imsaroj/smart-ui/search-engine`)
+## Search Engine (`@iamsaroj/smart-ui/search-engine`)
 
 `SmartSearchForm` (alias `SearchEngine`) composes `SmartForm` into a filter bar:
 
 ```tsx
-import { SmartSearchForm, type SearchFieldDefinition } from "@imsaroj/smart-ui/search-engine"
-import type { ServerFilter } from "@imsaroj/smart-ui/data-grid"
+import { SmartSearchForm, type SearchFieldDefinition } from "@iamsaroj/smart-ui/search-engine"
+import type { ServerFilter } from "@iamsaroj/smart-ui/data-grid"
 
 const searchFields: SearchFieldDefinition<Query>[] = [
   { name: "name", type: "text", label: "Name" },
@@ -365,7 +365,7 @@ const searchFields: SearchFieldDefinition<Query>[] = [
 
 ---
 
-## Data Grid (`@imsaroj/smart-ui/data-grid`)
+## Data Grid (`@iamsaroj/smart-ui/data-grid`)
 
 Two components, both taking `columns: DataGridColumn<TRow>[]` (a re-export of AG Grid's
 `ColDef<TRow>` — consumers never import `ag-grid-community` directly):
@@ -373,7 +373,7 @@ Two components, both taking `columns: DataGridColumn<TRow>[]` (a re-export of AG
 ### `SmartGrid` — client-side rows
 
 ```tsx
-import { SmartGrid, type DataGridColumn } from "@imsaroj/smart-ui/data-grid"
+import { SmartGrid, type DataGridColumn } from "@iamsaroj/smart-ui/data-grid"
 
 const columns: DataGridColumn<User>[] = [
   { field: "name", headerName: "Name", flex: 1 },
@@ -399,7 +399,7 @@ Built-ins (all default on): quick search, column visibility menu, CSV export, pa
 ### `SmartServerGrid` — server-side / infinite row model
 
 ```tsx
-import { SmartServerGrid, createPageFetcher } from "@imsaroj/smart-ui/data-grid"
+import { SmartServerGrid, createPageFetcher } from "@iamsaroj/smart-ui/data-grid"
 
 const fetchUsersPage = createPageFetcher({ url: "/api/users", itemSchema: userSchema })
 
@@ -447,24 +447,24 @@ per render.
 
 ## Other Engines
 
-- **Tree (`@imsaroj/smart-ui/tree-engine`):** `SmartTree` — generic `TreeNode<T>`; a node is a
+- **Tree (`@iamsaroj/smart-ui/tree-engine`):** `SmartTree` — generic `TreeNode<T>`; a node is a
   folder if it has `children` (even `[]`) or `isFolder: true` (lazy loading). Selection
   `none|single|multiple`, tri-state checkboxes, keyboard nav, inline rename, drag-and-drop
   (`before|after|inside`), search modes `highlight|filter|none`. Expanded/selected/checked
   each independently controllable (`*Ids`/`default*Ids`/`on*Change`); imperative
   `SmartTreeHandle` via `ref`. Use `tree-utils` exports (`moveNode`, `insertNode`,
   `getDescendantIds`, …) for mutations — never hand-roll recursion.
-- **Transfer list (`@imsaroj/smart-ui/transfer-list-engine`):** `SmartTransferList` — dual-list
+- **Transfer list (`@iamsaroj/smart-ui/transfer-list-engine`):** `SmartTransferList` — dual-list
   shuttle over `TransferItem<T>` keyed by stable `id`; `onChange(items, meta)` with
   `direction` + `moved`; `targetIds`/`defaultTargetIds` controllable;
   `SmartTransferListHandle` for move-all/move-selected.
-- **Calendar (`@imsaroj/smart-ui/calendar-engine`):** `SmartCalendar` — `month|week|day|agenda`
+- **Calendar (`@iamsaroj/smart-ui/calendar-engine`):** `SmartCalendar` — `month|week|day|agenda`
   views; `date` and `view` independently controllable; `CalendarEvent<T>` with 8 preset
   color tokens; `editable` enables drag-to-move/resize emitting `onEventChange`; recurrence
   via `RecurrenceRule` + `expandEvents` and series helpers `detachOccurrence` / `splitSeries`
   / `updateSeries`; booking via `availability` + `generateFreeSlots` + `onSlotBook`.
   Prefer the exported date helpers over hand-rolled date arithmetic.
-- **Rich text (`@imsaroj/smart-ui/lexical-text-editor`):** `SmartTextEditor` — Lexical editor,
+- **Rich text (`@iamsaroj/smart-ui/lexical-text-editor`):** `SmartTextEditor` — Lexical editor,
   value format `"html" | "json"`. In forms, just use field `type: "text-editor"`.
 
 ---
@@ -483,7 +483,7 @@ per render.
 ## Notifications
 
 ```tsx
-import { toast } from "@imsaroj/smart-ui/smart-components/smart-toaster"
+import { toast } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
 
 toast.success("User created")
 toast.error("Delete failed", { description: message })
@@ -498,11 +498,11 @@ Don't add another icon set; don't inline custom SVGs when a lucide icon exists.
 
 ## Hooks
 
-- `@imsaroj/smart-ui/hooks/use-mobile` → `useIsMobile()` (viewport < 768px).
+- `@iamsaroj/smart-ui/hooks/use-mobile` → `useIsMobile()` (viewport < 768px).
 - Engine hooks come through their barrels (e.g. `useGridActionColumn`, `withActionColumn`
   from `data-grid`).
 
-## Utilities (`@imsaroj/smart-ui/lib/*`)
+## Utilities (`@iamsaroj/smart-ui/lib/*`)
 
 - `lib/utils` → `cn(...classes)` — clsx + tailwind-merge. Use for all conditional classes.
 - `lib/format` → `formatCurrency`, `formatCompact`, `formatPercent`, `getInitials`,
@@ -524,24 +524,24 @@ import {
   useQueryClient,
   keepPreviousData,
 } from "@tanstack/react-query"
-import { SmartDialog } from "@imsaroj/smart-ui/smart-components/smart-dialog"
-import { SmartConfirmDialog } from "@imsaroj/smart-ui/smart-components/smart-confirm-dialog"
-import { toast } from "@imsaroj/smart-ui/smart-components/smart-toaster"
+import { SmartDialog } from "@iamsaroj/smart-ui/smart-components/smart-dialog"
+import { SmartConfirmDialog } from "@iamsaroj/smart-ui/smart-components/smart-confirm-dialog"
+import { toast } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
 import {
   AddButton,
   SaveButton,
-} from "@imsaroj/smart-ui/smart-components/buttons"
+} from "@iamsaroj/smart-ui/smart-components/buttons"
 import {
   SmartPage,
   SmartToolbar,
   SmartGridArea,
-} from "@imsaroj/smart-ui/smart-components/page"
-import { SmartForm, type FieldDefinition } from "@imsaroj/smart-ui/form-engine"
+} from "@iamsaroj/smart-ui/smart-components/page"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
 import {
   SmartServerGrid,
   createPageFetcher,
   type DataGridColumn,
-} from "@imsaroj/smart-ui/data-grid"
+} from "@iamsaroj/smart-ui/data-grid"
 
 const userFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -631,8 +631,8 @@ Delete pattern: **optimistic** — `onMutate` snapshot + cache update, rollback 
 
 ```tsx
 import { z } from "zod"
-import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
-import { SmartForm, type FieldDefinition } from "@imsaroj/smart-ui/form-engine"
+import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email"),
@@ -673,9 +673,9 @@ export const LoginPage = () => (
 
 ```tsx
 import { BarChart3, DollarSign, Users } from "lucide-react"
-import { SmartStatCard } from "@imsaroj/smart-ui/smart-components/smart-stat-card"
-import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
-import { formatCurrency } from "@imsaroj/smart-ui/lib/format"
+import { SmartStatCard } from "@iamsaroj/smart-ui/smart-components/smart-stat-card"
+import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
+import { formatCurrency } from "@iamsaroj/smart-ui/lib/format"
 ;<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
   <SmartStatCard
     label="Revenue"
@@ -764,7 +764,7 @@ presets for navigation.
 
 ## Anti-patterns (never do these)
 
-- ❌ Deep-import internals (`@imsaroj/smart-ui/src/...`, `data-grid/grid-internals`,
+- ❌ Deep-import internals (`@iamsaroj/smart-ui/src/...`, `data-grid/grid-internals`,
   `form-engine/field-registry` internals, lexical plugins).
 - ❌ Import `ag-grid-community`/`ag-grid-react` in app code — use `SmartGrid`/`SmartServerGrid`
   and `DataGridColumn`.
@@ -821,7 +821,7 @@ presets for navigation.
 
 ## Checklist (before finishing any UI task)
 
-- [ ] Every import goes through the `@imsaroj/smart-ui` exports map.
+- [ ] Every import goes through the `@iamsaroj/smart-ui` exports map.
 - [ ] No component duplicates an existing `Smart*`, preset, or engine feature.
 - [ ] Forms: Zod schema + `FieldDefinition[]` + `SmartForm`; no duplicated validation.
 - [ ] Buttons: action presets used for standard actions; `loading` wired to async state.

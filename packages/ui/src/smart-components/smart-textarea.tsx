@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
-import { withLeadingSpaceGuard } from "@imsaroj/smart-ui/lib/leading-space"
-import { Textarea } from "@imsaroj/smart-ui/components/textarea"
-import { Label } from "@imsaroj/smart-ui/components/label"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { withLeadingSpaceGuard } from "@iamsaroj/smart-ui/lib/leading-space"
+import { Textarea } from "@iamsaroj/smart-ui/components/textarea"
+import { Label } from "@iamsaroj/smart-ui/components/label"
 
 export interface SmartTextareaProps extends React.ComponentProps<"textarea"> {
   /** Field label rendered above the textarea. */

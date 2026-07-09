@@ -9,7 +9,7 @@ import {
   CheckIcon,
   MinusIcon,
 } from "lucide-react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import type {
   TreeNode,
   TreeNodeState,

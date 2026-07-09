@@ -3,10 +3,10 @@ import { z } from "zod"
 import {
   SmartPage,
   SmartPageContent,
-} from "@imsaroj/smart-ui/smart-components/page"
-import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
-import { toast } from "@imsaroj/smart-ui/smart-components/smart-toaster"
-import { type FieldDefinition, SmartForm } from "@imsaroj/smart-ui/form-engine"
+} from "@iamsaroj/smart-ui/smart-components/page"
+import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
+import { toast } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
+import { type FieldDefinition, SmartForm } from "@iamsaroj/smart-ui/form-engine"
 
 /**
  * Exercises every field type the engine supports. Optional fields use

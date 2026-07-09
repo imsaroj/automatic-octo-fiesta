@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react"
 import { Plus, Trash2 } from "lucide-react"
-import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { SmartButton as Button } from "@iamsaroj/smart-ui/smart-components/smart-button"
 import {
   SmartPage,
   SmartPageContent,
-} from "@imsaroj/smart-ui/smart-components/page"
-import { SmartGrid, type DataGridColumn } from "@imsaroj/smart-ui/data-grid"
-import { formatCurrency } from "@imsaroj/smart-ui/lib/format"
+} from "@iamsaroj/smart-ui/smart-components/page"
+import { SmartGrid, type DataGridColumn } from "@iamsaroj/smart-ui/data-grid"
+import { formatCurrency } from "@iamsaroj/smart-ui/lib/format"
 
 interface EditableRow {
   id: number

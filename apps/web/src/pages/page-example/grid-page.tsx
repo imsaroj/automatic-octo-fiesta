@@ -18,12 +18,12 @@ import {
   SmartGridArea,
   SmartPageStatusBar,
   SmartPageFooter,
-} from "@imsaroj/smart-ui/smart-components/page"
-import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
-import { SmartBadge as Badge } from "@imsaroj/smart-ui/smart-components/smart-badge"
-import { SmartSearchInput as SearchInput } from "@imsaroj/smart-ui/smart-components/search-input"
-import { SmartGrid, type DataGridColumn } from "@imsaroj/smart-ui/data-grid"
-import { formatCurrency } from "@imsaroj/smart-ui/lib/format"
+} from "@iamsaroj/smart-ui/smart-components/page"
+import { SmartButton as Button } from "@iamsaroj/smart-ui/smart-components/smart-button"
+import { SmartBadge as Badge } from "@iamsaroj/smart-ui/smart-components/smart-badge"
+import { SmartSearchInput as SearchInput } from "@iamsaroj/smart-ui/smart-components/search-input"
+import { SmartGrid, type DataGridColumn } from "@iamsaroj/smart-ui/data-grid"
+import { formatCurrency } from "@iamsaroj/smart-ui/lib/format"
 
 interface AccountRow {
   id: number

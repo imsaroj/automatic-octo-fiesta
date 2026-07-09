@@ -14,8 +14,8 @@
     "components": "@/components",
     "hooks": "@/hooks",
     "lib": "@/lib",
-    "utils": "@imsaroj/smart-ui/lib/utils",
-    "ui": "@imsaroj/smart-ui/components"
+    "utils": "@iamsaroj/smart-ui/lib/utils",
+    "ui": "@iamsaroj/smart-ui/components"
   },
   "rtl": false,
   "menuColor": "default",

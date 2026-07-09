@@ -1,12 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import {
   RadioGroup,
   RadioGroupItem,
-} from "@imsaroj/smart-ui/components/radio-group"
-import { Label } from "@imsaroj/smart-ui/components/label"
+} from "@iamsaroj/smart-ui/components/radio-group"
+import { Label } from "@iamsaroj/smart-ui/components/label"
 
 export interface SmartRadioOption {
   value: string

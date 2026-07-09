@@ -1,5 +1,5 @@
 "use client"
 
-import { Separator } from "@imsaroj/smart-ui/components/separator"
+import { Separator } from "@iamsaroj/smart-ui/components/separator"
 
 export { Separator }

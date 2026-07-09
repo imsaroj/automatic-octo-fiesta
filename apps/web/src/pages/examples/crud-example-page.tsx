@@ -21,11 +21,11 @@ import {
   useQueryClient,
 } from "@tanstack/react-query"
 import { Filter, Pencil, Trash2, UserPlus, Users } from "lucide-react"
-import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
-import { SmartConfirmDialog } from "@imsaroj/smart-ui/smart-components/smart-confirm-dialog"
-import { SmartDialog } from "@imsaroj/smart-ui/smart-components/smart-dialog"
-import { toast } from "@imsaroj/smart-ui/smart-components/smart-toaster"
-import { SmartSearchInput } from "@imsaroj/smart-ui/smart-components/search-input"
+import { SmartButton as Button } from "@iamsaroj/smart-ui/smart-components/smart-button"
+import { SmartConfirmDialog } from "@iamsaroj/smart-ui/smart-components/smart-confirm-dialog"
+import { SmartDialog } from "@iamsaroj/smart-ui/smart-components/smart-dialog"
+import { toast } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
+import { SmartSearchInput } from "@iamsaroj/smart-ui/smart-components/search-input"
 import {
   SmartPage,
   SmartToolbar,
@@ -35,8 +35,8 @@ import {
   SmartPageFooter,
   SmartPageEmpty,
   SmartPageError,
-} from "@imsaroj/smart-ui/smart-components/page"
-import { SmartForm, type FieldDefinition } from "@imsaroj/smart-ui/form-engine"
+} from "@iamsaroj/smart-ui/smart-components/page"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
 import { z } from "zod"
 import {
   createUser,
