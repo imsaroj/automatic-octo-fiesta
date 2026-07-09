@@ -52,6 +52,16 @@ jobs:
       - name: publint
         run: pnpm publint
 
+      # Proves the NPM_TOKEN secret authenticates before attempting a release,
+      # and reveals the npm username (must own the package's scope). Reported
+      # as an annotation so it's visible without opening logs.
+      - name: npm auth check
+        run: |
+          result=$(npm whoami 2>&1 | tail -1 | tr -cd '[:print:]')
+          echo "::notice title=npm auth::whoami -> ${result}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       # semantic-release: analyzes conventional commits since the last tag,
       # bumps packages/ui/package.json + CHANGELOG, publishes to npm via
       # `pnpm publish` (pnpm applies the dist-facing publishConfig.exports;
