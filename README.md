@@ -2,6 +2,11 @@
 
 **Copy less UI. Ship more product.**
 
+> [!IMPORTANT]
+> **Project status: learning project, not actively maintained.**
+> I built this to learn and experiment — there is no roadmap, and I don't plan to maintain it long-term. Feel free to
+> read it as a reference, or fork/copy anything useful into your own project. Use in production at your own risk.
+
 `@iamsaroj/smart-ui` is a source-first React 19 UI system that turns the product patterns teams rebuild over and over —
 forms, data grids, search bars, trees, calendars, rich text — into documented, tested, config-driven building blocks.
 
