@@ -15,7 +15,7 @@
     "docs:check": "node scripts/check-docs.mjs",
     "exports:check": "node scripts/check-exports.mjs",
     "api:check": "pnpm --filter @iamsaroj/smart-ui exec tsc -p ../../tooling/api-check/tsconfig.json --noEmit",
-    "publint": "pnpm --filter @iamsaroj/smart-ui exec publint",
+    "publint": "pnpm build:lib && pnpm --filter @iamsaroj/smart-ui exec publint",
     "build:lib": "pnpm --filter @iamsaroj/smart-ui build:lib",
     "release": "semantic-release",
     "prepare": "husky"
