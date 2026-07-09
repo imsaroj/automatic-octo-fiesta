@@ -102,6 +102,12 @@ jobs:
           else
             echo "${name}@${ver} is tagged but missing from npm — publishing"
             pnpm --filter "${name}" publish --access public --no-git-checks 2>&1 | tee pub.log || {
+              # A concurrent/just-finished publish is success, not failure
+              # (npm view can lag right after a publish).
+              if grep -q "cannot publish over the previously published" pub.log; then
+                echo "${name}@${ver} was already published — nothing to do"
+                exit 0
+              fi
               tail -c 3000 pub.log | jq -Rs --arg run "$GITHUB_RUN_ID" \
                 '{title: ("npm publish failure in run " + $run), body: ("```\n" + . + "\n```"), labels: ["release-failure"]}' | \
                 curl -sf -X POST -H "Authorization: Bearer ${GITHUB_TOKEN}" \
