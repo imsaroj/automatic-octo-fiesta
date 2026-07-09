@@ -1,5 +1,5 @@
-import { SmartTextEditor } from "@workspace/ui/lexical-text-editor"
-import type { SmartTextEditorFormat } from "@workspace/ui/lexical-text-editor"
+import { SmartTextEditor } from "@imsaroj/smart-ui/lexical-text-editor"
+import type { SmartTextEditorFormat } from "@imsaroj/smart-ui/lexical-text-editor"
 import type { FieldBaseProps } from "./base"
 
 export interface SmartTextEditorFieldProps extends FieldBaseProps<string> {

@@ -4,12 +4,12 @@ import { CheckCircle2 } from "lucide-react"
 import {
   SmartPage,
   SmartPageContent,
-} from "@workspace/ui/smart-components/page"
-import { SmartCard } from "@workspace/ui/smart-components/smart-card"
-import { SmartButton } from "@workspace/ui/smart-components/smart-button"
-import { SmartStepper } from "@workspace/ui/smart-components/smart-stepper"
-import { SmartForm, type FieldDefinition } from "@workspace/ui/form-engine"
-import { toast } from "@workspace/ui/smart-components/smart-toaster"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
+import { SmartButton } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { SmartStepper } from "@imsaroj/smart-ui/smart-components/smart-stepper"
+import { SmartForm, type FieldDefinition } from "@imsaroj/smart-ui/form-engine"
+import { toast } from "@imsaroj/smart-ui/smart-components/smart-toaster"
 
 // ── Step schemas ──────────────────────────────────────────────────────────────
 

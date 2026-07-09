@@ -3,24 +3,24 @@ import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
-import { cn } from "@workspace/ui/lib/utils"
-import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
-import { Separator } from "@workspace/ui/components/separator"
+import { useIsMobile } from "@imsaroj/smart-ui/hooks/use-mobile"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Button } from "@imsaroj/smart-ui/components/button"
+import { Input } from "@imsaroj/smart-ui/components/input"
+import { Separator } from "@imsaroj/smart-ui/components/separator"
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@workspace/ui/components/sheet"
-import { Skeleton } from "@workspace/ui/components/skeleton"
+} from "@imsaroj/smart-ui/components/sheet"
+import { Skeleton } from "@imsaroj/smart-ui/components/skeleton"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
+} from "@imsaroj/smart-ui/components/tooltip"
 import { PanelLeftClose, PanelRightClose } from "lucide-react"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"

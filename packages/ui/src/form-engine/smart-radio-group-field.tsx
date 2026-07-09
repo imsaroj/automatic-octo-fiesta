@@ -1,7 +1,7 @@
 import {
   SmartRadioGroup,
   type SmartRadioOption,
-} from "@workspace/ui/smart-components/smart-radio-group"
+} from "@imsaroj/smart-ui/smart-components/smart-radio-group"
 import type { FieldBaseProps } from "./base"
 
 export type { SmartRadioOption }

@@ -1,5 +1,5 @@
-import { cn } from "@workspace/ui/lib/utils"
-import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { SmartSwitch } from "@imsaroj/smart-ui/smart-components/smart-switch"
 import type { FieldBaseProps } from "./base"
 
 export type SmartSwitchFieldProps = Omit<FieldBaseProps<boolean>, "placeholder">

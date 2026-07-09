@@ -1,6 +1,6 @@
 # Security
 
-This is a frontend component library (`@workspace/ui`) plus a Vite demo app
+This is a frontend component library (`@imsaroj/smart-ui`) plus a Vite demo app
 (`apps/web`). There is **no backend, no auth, and no secrets** in the repo, so
 the runtime attack surface is small. The concerns that _do_ apply are
 client-side XSS, spreadsheet-injection in exports, dependency supply chain, and
@@ -9,7 +9,7 @@ all four.
 
 ## Rich-text HTML sanitization contract
 
-`SmartTextEditor` (`@workspace/ui/lexical-text-editor`) round-trips **raw HTML**
+`SmartTextEditor` (`@imsaroj/smart-ui/lexical-text-editor`) round-trips **raw HTML**
 in its default `format="html"` mode. That is a stored-XSS vector the moment an
 app persists editor output and later renders it back.
 
@@ -25,7 +25,7 @@ The library handles both directions:
 import {
   SafeEditorHtml,
   sanitizeEditorHtml,
-} from "@workspace/ui/lexical-text-editor"
+} from "@imsaroj/smart-ui/lexical-text-editor"
 
 // Rendering stored editor HTML — the only sanctioned dangerouslySetInnerHTML site:
 ;<SafeEditorHtml html={storedHtml} className="prose" />

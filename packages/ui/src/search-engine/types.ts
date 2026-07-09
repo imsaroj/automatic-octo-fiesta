@@ -8,7 +8,7 @@
  * {@link SmartForm} and reuses the entire field registry unchanged.
  */
 
-import type { FieldDefinition } from "@workspace/ui/form-engine"
+import type { FieldDefinition } from "@imsaroj/smart-ui/form-engine"
 
 /**
  * The subset of {@link FieldType} that makes sense as a search/filter control.

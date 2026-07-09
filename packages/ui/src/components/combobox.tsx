@@ -3,9 +3,9 @@
 import * as React from "react"
 import { Check, ChevronsUpDown, X } from "lucide-react"
 
-import { cn } from "@workspace/ui/lib/utils"
-import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Badge } from "@imsaroj/smart-ui/components/badge"
+import { Button } from "@imsaroj/smart-ui/components/button"
 import {
   Command,
   CommandEmpty,
@@ -13,12 +13,12 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@workspace/ui/components/command"
+} from "@imsaroj/smart-ui/components/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@workspace/ui/components/popover"
+} from "@imsaroj/smart-ui/components/popover"
 
 export interface ComboboxOption {
   value: string

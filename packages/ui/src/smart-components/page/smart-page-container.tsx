@@ -38,7 +38,7 @@ export type { SmartPageProps as SmartPageContainerProps }
  *
  * @example Grid page (single import)
  * ```tsx
- * import { SmartPageContainer as Page } from "@workspace/ui/..."
+ * import { SmartPageContainer as Page } from "@imsaroj/smart-ui/..."
  *
  * <Page>
  *   <Page.Header>

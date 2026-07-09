@@ -13,10 +13,10 @@ dev builds.
 
 The repository contains two workspaces:
 
-| Workspace     | Name            | Role                                                                                                         |
-| ------------- | --------------- | ------------------------------------------------------------------------------------------------------------ |
-| `packages/ui` | `@workspace/ui` | The shared, reusable React 19 UI library. Source-only (no build step). This is the product.                  |
-| `apps/web`    | `web`           | A Vite + React demo/playground that consumes `@workspace/ui` and documents every component with a live page. |
+| Workspace     | Name                | Role                                                                                                             |
+| ------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `packages/ui` | `@imsaroj/smart-ui` | The shared, reusable React 19 UI library. Source-only (no build step). This is the product.                      |
+| `apps/web`    | `web`               | A Vite + React demo/playground that consumes `@imsaroj/smart-ui` and documents every component with a live page. |
 
 ### Purpose
 
@@ -39,7 +39,7 @@ flowchart TD
     MSW["MSW mock API (dev only)<br/>Spring Data Page&lt;T&gt; shape"]
   end
 
-  subgraph ui["packages/ui = @workspace/ui (source-only library)"]
+  subgraph ui["packages/ui = @imsaroj/smart-ui (source-only library)"]
     Smart["smart-components/*<br/>Smart* wrappers + page layout + buttons"]
     Forms["form-engine / search-engine"]
     Grid["data-grid (AG Grid Community)"]
@@ -74,7 +74,7 @@ Verified from `package.json` files across the repo.
 | Fonts                     | `@fontsource-variable/inter`, `@fontsource-variable/noto-serif`                                                                                | `packages/ui/package.json`                   |
 | Data fetching (app only)  | `@tanstack/react-query` `^5`, `react-router-dom` `^7`                                                                                          | `apps/web/package.json`                      |
 | Mock API                  | `msw` `^2`                                                                                                                                     | `apps/web/package.json`                      |
-| Monorepo tooling          | pnpm `10.33.4`, Turborepo `^2.10`, Husky, lint-staged, commitlint, Changesets, publint                                                         | root `package.json`                          |
+| Monorepo tooling          | pnpm `10.33.4`, Turborepo `^2.10`, Husky, lint-staged, commitlint, semantic-release, publint                                                   | root `package.json`                          |
 | Testing                   | Vitest `^4` (node + jsdom projects), `@vitest/coverage-v8`, Testing Library, Playwright `^1.61`, `@axe-core/playwright`, `axe-core`            | configs below                                |
 
 ### Architecture style
@@ -119,7 +119,7 @@ concepts do not apply and are **not found in the current codebase.**
 │     ├─ index.html
 │     └─ vite.config.ts        # manualChunks vendor splitting
 ├─ packages/
-│  └─ ui/  (@workspace/ui)     # The library — source-only, exports map is the public API
+│  └─ ui/  (@imsaroj/smart-ui)     # The library — source-only, exports map is the public API
 │     └─ src/
 │        ├─ components/        # 49 shadcn v4 primitives on Base UI (vendored, regenerable)
 │        ├─ smart-components/  # Smart* wrappers + page/ layout system + buttons/ presets
@@ -138,8 +138,8 @@ concepts do not apply and are **not found in the current codebase.**
 ├─ scripts/                    # check-docs.mjs, check-exports.mjs (CI gates)
 ├─ tooling/api-check/          # consume.tsx + tsconfig: type-check every subpath from outside
 ├─ e2e/                        # 11 Playwright specs
-├─ .changeset/                 # Changesets config + CHANGELOG source
-├─ .github/workflows/ci.yml    # verify / security / e2e jobs
+├─ .releaserc.json             # semantic-release config (version + npm publish from main)
+├─ .github/workflows/          # ci.yml (verify / security / e2e) + release.yml (semantic-release)
 ├─ turbo.json                  # Task graph & caching
 ├─ pnpm-workspace.yaml
 └─ CLAUDE.md / CONTRIBUTING.md / README.md / report.md
@@ -148,7 +148,7 @@ concepts do not apply and are **not found in the current codebase.**
 **Major directory responsibilities:**
 
 - **`apps/web`** — the only runnable artifact; a demo, not a production app. Owns routing, data
-  fetching, and the mock backend. Depends on `@workspace/ui` via `workspace:*`.
+  fetching, and the mock backend. Depends on `@imsaroj/smart-ui` via `workspace:*`.
 - **`packages/ui`** — the product. No build step; every reusable component lives here.
 - **`docs/`** — per-domain usage guides + ADRs; enforced by `scripts/check-docs.mjs` (every export
   subpath must have a guide, and doc snippets must type-check).
@@ -164,22 +164,22 @@ concepts do not apply and are **not found in the current codebase.**
 Public modules correspond one-to-one with the `exports` map in `packages/ui/package.json`. File
 counts are measured (excluding test files).
 
-| Module (export subpath)                  | Responsibility                                 | Key internal components                                                                                                                                                        | Depends on                                    |
-| ---------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
-| `@workspace/ui/lib/*` (4)                | Pure helpers                                   | `cn()` (clsx+tailwind-merge), `format.ts` (currency/compact/percent), `xlsx.ts` (dependency-free OOXML writer)                                                                 | none                                          |
-| `@workspace/ui/hooks/*` (1)              | Shared hooks                                   | `use-mobile`                                                                                                                                                                   | react                                         |
-| `@workspace/ui/components/*` (49)        | shadcn v4 primitives on Base UI                | button, dialog, select, table, … (incl. vendored-unused: chart, carousel, data-table, menubar, …)                                                                              | `@base-ui/react`, cva                         |
-| `@workspace/ui/smart-components/*` (70)  | Flat `Smart*` facades over compound primitives | SmartCard, SmartDialog, SmartSheet, SmartSelect, SmartCombobox, SmartMultiSelect, SmartDatePicker, SmartStepper, SmartToaster, SmartStatCard, …                                | `components/*`                                |
-| `@workspace/ui/smart-components/page`    | Compound page-layout system                    | `SmartPage` + named slots via `PageContext`, `SmartPageContainer`                                                                                                              | smart-components                              |
-| `@workspace/ui/smart-components/buttons` | Action-button presets                          | `ACTION_BUTTON_CONFIG` (SSOT) → `ActionButton` → 27 presets (`AddButton`, `SaveButton`…), `ActionPermissionProvider`                                                           | smart-components                              |
-| `@workspace/ui/form-engine` (29)         | Declarative forms                              | `SmartForm` (TanStack Form + Zod SSOT), `FieldRenderer`, `Smart*Field` controls, `FieldBaseProps<T>`                                                                           | smart-components, `@tanstack/react-form`, zod |
-| `@workspace/ui/search-engine` (4)        | Search/filter bar                              | `SmartSearchForm`/`SearchEngine` — composes SmartForm; `buildSearchQuery`, `countActiveFilters`                                                                                | form-engine                                   |
-| `@workspace/ui/data-grid` (12)           | AG Grid wrappers                               | `SmartGrid` (client), `SmartServerGrid` (infinite/server); `pagination.ts`, `create-page-fetcher.ts`, `formula-guard.ts`, `grid-internals.tsx`, `use-server-grid-selection.ts` | ag-grid-community, zod                        |
-| `@workspace/ui/tree-engine` (5)          | Hierarchical tree/explorer                     | `SmartTree` (generic), `tree-utils.ts` (pure algorithms), `use-tree.ts` (Set-backed state)                                                                                     | smart-components                              |
-| `@workspace/ui/transfer-list-engine` (4) | Dual-list shuttle                              | `SmartTransferList`, `transfer-utils.ts`                                                                                                                                       | smart-components                              |
-| `@workspace/ui/calendar-engine` (12)     | Calendar & booking                             | `SmartCalendar` (month/week/day/agenda), `recurrence.ts` (RRULE subset), `booking.ts`, `event-color.ts`, `layoutDayEvents`                                                     | date-fns, smart-components                    |
-| `@workspace/ui/lexical-text-editor` (19) | Rich-text editor                               | `SmartTextEditor`, `sanitize.ts` (`sanitizeEditorHtml`/`SafeEditorHtml`), `editorNodes`, `editorTheme`, `plugins/`                                                             | `@lexical/*`, dompurify                       |
-| `@workspace/ui/globals.css`              | Tailwind v4 entry (asset)                      | `@source` directives scanning both workspaces                                                                                                                                  | Tailwind v4                                   |
+| Module (export subpath)                      | Responsibility                                 | Key internal components                                                                                                                                                        | Depends on                                    |
+| -------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| `@imsaroj/smart-ui/lib/*` (4)                | Pure helpers                                   | `cn()` (clsx+tailwind-merge), `format.ts` (currency/compact/percent), `xlsx.ts` (dependency-free OOXML writer)                                                                 | none                                          |
+| `@imsaroj/smart-ui/hooks/*` (1)              | Shared hooks                                   | `use-mobile`                                                                                                                                                                   | react                                         |
+| `@imsaroj/smart-ui/components/*` (49)        | shadcn v4 primitives on Base UI                | button, dialog, select, table, … (incl. vendored-unused: chart, carousel, data-table, menubar, …)                                                                              | `@base-ui/react`, cva                         |
+| `@imsaroj/smart-ui/smart-components/*` (70)  | Flat `Smart*` facades over compound primitives | SmartCard, SmartDialog, SmartSheet, SmartSelect, SmartCombobox, SmartMultiSelect, SmartDatePicker, SmartStepper, SmartToaster, SmartStatCard, …                                | `components/*`                                |
+| `@imsaroj/smart-ui/smart-components/page`    | Compound page-layout system                    | `SmartPage` + named slots via `PageContext`, `SmartPageContainer`                                                                                                              | smart-components                              |
+| `@imsaroj/smart-ui/smart-components/buttons` | Action-button presets                          | `ACTION_BUTTON_CONFIG` (SSOT) → `ActionButton` → 27 presets (`AddButton`, `SaveButton`…), `ActionPermissionProvider`                                                           | smart-components                              |
+| `@imsaroj/smart-ui/form-engine` (29)         | Declarative forms                              | `SmartForm` (TanStack Form + Zod SSOT), `FieldRenderer`, `Smart*Field` controls, `FieldBaseProps<T>`                                                                           | smart-components, `@tanstack/react-form`, zod |
+| `@imsaroj/smart-ui/search-engine` (4)        | Search/filter bar                              | `SmartSearchForm`/`SearchEngine` — composes SmartForm; `buildSearchQuery`, `countActiveFilters`                                                                                | form-engine                                   |
+| `@imsaroj/smart-ui/data-grid` (12)           | AG Grid wrappers                               | `SmartGrid` (client), `SmartServerGrid` (infinite/server); `pagination.ts`, `create-page-fetcher.ts`, `formula-guard.ts`, `grid-internals.tsx`, `use-server-grid-selection.ts` | ag-grid-community, zod                        |
+| `@imsaroj/smart-ui/tree-engine` (5)          | Hierarchical tree/explorer                     | `SmartTree` (generic), `tree-utils.ts` (pure algorithms), `use-tree.ts` (Set-backed state)                                                                                     | smart-components                              |
+| `@imsaroj/smart-ui/transfer-list-engine` (4) | Dual-list shuttle                              | `SmartTransferList`, `transfer-utils.ts`                                                                                                                                       | smart-components                              |
+| `@imsaroj/smart-ui/calendar-engine` (12)     | Calendar & booking                             | `SmartCalendar` (month/week/day/agenda), `recurrence.ts` (RRULE subset), `booking.ts`, `event-color.ts`, `layoutDayEvents`                                                     | date-fns, smart-components                    |
+| `@imsaroj/smart-ui/lexical-text-editor` (19) | Rich-text editor                               | `SmartTextEditor`, `sanitize.ts` (`sanitizeEditorHtml`/`SafeEditorHtml`), `editorNodes`, `editorTheme`, `plugins/`                                                             | `@lexical/*`, dompurify                       |
+| `@imsaroj/smart-ui/globals.css`              | Tailwind v4 entry (asset)                      | `@source` directives scanning both workspaces                                                                                                                                  | Tailwind v4                                   |
 
 **Exposed APIs:** consumers import only via the 14 declared subpaths. Barrels (`index.ts`) hide
 internal files — e.g. `data-grid/pagination.ts` is not individually importable. This is verified in
@@ -270,9 +270,9 @@ toast feedback (SmartToaster) + list refetch
 
 ```mermaid
 flowchart TD
-  web["apps/web"] -->|workspace:*| ui["@workspace/ui"]
+  web["apps/web"] -->|workspace:*| ui["@imsaroj/smart-ui"]
 
-  subgraph ui_internal["@workspace/ui internal"]
+  subgraph ui_internal["@imsaroj/smart-ui internal"]
     lib["lib/*"]
     comp["components/*"]
     smart["smart-components/*"]
@@ -441,7 +441,7 @@ the code:
 | **Vite config**            | `apps/web/vite.config.ts`                                        | `@` alias → `src`; `manualChunks` vendor splitting.                                   |
 | **Turbo config**           | `turbo.json`                                                     | Task graph, caching, outputs.                                                         |
 | **TS config**              | root/workspace `tsconfig*.json`; `tsconfig.lib.json` (build:lib) | `moduleResolution: bundler`; strict.                                                  |
-| **Changesets**             | `.changeset/config.json`                                         | Versions private `@workspace/ui` (`privatePackages.version`), ignores `web`.          |
+| **semantic-release**       | `.releaserc.json`                                                | Versions + publishes `@imsaroj/smart-ui` from conventional commits on `main`.         |
 
 - **`.env` files:** referenced as a cache input in `turbo.json` (`".env*"`) but **no committed
   `.env` file exists**. There is no config server and no runtime feature-flag system.
@@ -477,7 +477,7 @@ flowchart LR
     v1[format:check] --> v2[lint] --> v3[typecheck] --> v4[docs:check]
     v4 --> v5[test:coverage] --> v6[build] --> v7[bundle size]
     v7 --> v8[exports:check] --> v9[publint] --> v10[api:check]
-    v10 --> v11[build:lib] --> v12["changeset (PR only)"]
+    v10 --> v11[build:lib]
   end
   subgraph security["security"]
     s1[pnpm audit high] --> s2[pnpm audit moderate*] --> s3[gitleaks]
@@ -487,16 +487,20 @@ flowchart LR
   end
 ```
 
-| Job          | Steps                                                                                                                                                                                                                                                                                                              |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **verify**   | pnpm/Node setup, Turbo cache, `install --frozen-lockfile`, format check, lint, typecheck, `docs:check`, `test:coverage`, `build`, bundle-size budget, `exports:check`, `publint`, `api:check`, `build:lib`, changeset guard (PR-only, `changeset status --since=origin/main`). Needs `fetch-depth: 0` for diffing. |
-| **security** | `pnpm audit --prod` (high fails, moderate non-blocking) + `gitleaks` (full history).                                                                                                                                                                                                                               |
-| **e2e**      | Install Chromium, run Playwright suite against the Vite dev server, upload `playwright-report`.                                                                                                                                                                                                                    |
+| Job          | Steps                                                                                                                                                                                                       |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **verify**   | pnpm/Node setup, Turbo cache, `install --frozen-lockfile`, format check, lint, typecheck, `docs:check`, `test:coverage`, `build`, bundle-size budget, `exports:check`, `publint`, `api:check`, `build:lib`. |
+| **security** | `pnpm audit --prod` (high fails, moderate non-blocking) + `gitleaks` (full history).                                                                                                                        |
+| **e2e**      | Install Chromium, run Playwright suite against the Vite dev server, upload `playwright-report`.                                                                                                             |
 
 - **Build:** `turbo build`; app build is `tsc -b && vite build && check-bundle-size.mjs`.
 - **Test:** `turbo test` / `test:coverage` (Vitest); E2E separate (`playwright test`).
-- **Release:** Changesets — `changeset` / `version-packages` (`changeset version`). First version
-  cut: **0.1.0** with generated `CHANGELOG.md`. A `v0.1.0` tag exists locally.
+- **Release:** semantic-release (`.github/workflows/release.yml`, config `.releaserc.json`) — on
+  push to `main` it derives the next version from conventional commits since the last `v*` tag
+  (`fix:` → patch, `feat:` → minor, breaking → major), updates `packages/ui` version + CHANGELOG,
+  publishes `@imsaroj/smart-ui` to npm via `pnpm publish` (dist-facing `publishConfig.exports`),
+  and pushes the release commit/tag + GitHub release. Requires the `NPM_TOKEN` repo secret.
+  Last manual cut: **0.1.0** (`v0.1.0` tag on origin).
 - **Deploy / Rollback:** **Not found in the current codebase** (no deploy job; static-host guidance
   only).
 
@@ -694,7 +698,7 @@ Known ceiling: `ag-grid` chunk (~0.93 MB). Lighthouse was **not run in-harness**
 
 | Risk                                                           | Type            | Notes                                                                                                                                                                                                                 |
 | -------------------------------------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`@workspace/ui` is `private` and source-only**               | Distribution    | No published artifact exists; a real publish still needs a `dist`-facing `package.json` + `publint` on built output (ADR 0006 named follow-up).                                                                       |
+| **`@imsaroj/smart-ui` is `private` and source-only**           | Distribution    | No published artifact exists; a real publish still needs a `dist`-facing `package.json` + `publint` on built output (ADR 0006 named follow-up).                                                                       |
 | **ag-grid ~0.93 MB chunk**                                     | Performance     | Largest single dependency; the size floor.                                                                                                                                                                            |
 | **Dialog-from-controlled-state not testable under Playwright** | Testing         | `SmartDialog`/`SmartConfirmDialog` opened via external `open` state don't open under Playwright synthetic click, so create/edit/delete E2E is deferred (covered by component render tests). Root cause not yet found. |
 | **Flaky Base UI popup axe tests under load**                   | Testing         | One `test:coverage` run showed 2 flaky failures under concurrent-build resource contention; clean re-runs are 333/333.                                                                                                |
@@ -712,7 +716,7 @@ Single points of failure in a _runtime_ sense do not apply (static frontend).
 ### High Priority
 
 1. **Ship a real publish artifact.**
-   - _Problem:_ `@workspace/ui` is `private`, source-only; ADR 0006's publish path is unfinished.
+   - _Problem:_ `@imsaroj/smart-ui` is `private`, source-only; ADR 0006's publish path is unfinished.
    - _Impact:_ Cannot be consumed outside the monorepo (git dep / registry).
    - _Recommendation:_ Generate a `dist`-facing `package.json` pointing `exports` at built output and run `publint` on the built artifact (already the named follow-up).
    - _Benefit:_ External consumability; validated publish surface.
@@ -758,7 +762,7 @@ flowchart TD
   spa --> router["react-router-dom v7 (lazy routes)"]
   spa --> providers["ThemeProvider · QueryClientProvider · SmartToaster"]
   router --> pages["pages/* (thin leaves)"]
-  pages --> uilib["@workspace/ui (source-only library)"]
+  pages --> uilib["@imsaroj/smart-ui (source-only library)"]
   pages --> query["TanStack Query"]
   query --> msw["MSW mock API (dev only)"]
   msw --> dataset["in-memory users-dataset (seeded)"]
@@ -831,12 +835,10 @@ flowchart TD
   T[push main / PR] --> V[verify job]
   T --> S[security job]
   T --> E[e2e job]
-  V --> V1[format→lint→typecheck→docs:check→test:coverage→build→size→exports:check→publint→api:check→build:lib→changeset*]
+  V --> V1[format→lint→typecheck→docs:check→test:coverage→build→size→exports:check→publint→api:check→build:lib]
   S --> S1[pnpm audit high/moderate + gitleaks]
   E --> E1[playwright chromium → upload report]
 ```
-
-\* changeset guard runs on PRs only.
 
 ### Authentication Flow
 
@@ -905,7 +907,8 @@ sequenceDiagram
 ### Build / dev dependencies
 
 `typescript ~6`, `turbo`, `pnpm`, `eslint` + `typescript-eslint` + a11y/react-hooks/react-refresh
-plugins, `prettier` (+ tailwind plugin), `husky`, `lint-staged`, `@commitlint/*`, `@changesets/cli`,
+plugins, `prettier` (+ tailwind plugin), `husky`, `lint-staged`, `@commitlint/*`, `semantic-release`
+(+ `changelog`/`exec`/`git` plugins),
 `publint`, `vitest` + `@vitest/coverage-v8` + `jsdom` + Testing Library, `@playwright/test` +
 `@axe-core/playwright` + `axe-core`, `@tailwindcss/vite`.
 
@@ -936,7 +939,7 @@ terms.
 
 | Dimension                 | Score (1–10) | Rationale                                                                                                                      |
 | ------------------------- | -----------: | ------------------------------------------------------------------------------------------------------------------------------ |
-| **Architecture maturity** |            9 | Clean vertical-slice modules, enforced `exports` contract, 6 ADRs, changesets/publint/api-check gates.                         |
+| **Architecture maturity** |            9 | Clean vertical-slice modules, enforced `exports` contract, 6 ADRs, semantic-release/publint/api-check gates.                   |
 | **Maintainability**       |            8 | Strong conventions (CLAUDE.md), pure-function cores, uniform idioms; minor CRLF/vendored-code noise.                           |
 | **Scalability**           |            8 | Server row model + code-splitting + vendor chunking; ag-grid chunk is the ceiling. (Backend scaling N/A.)                      |
 | **Security**              |            8 | Real XSS + formula-injection guards, audit + gitleaks CI; but no runtime backend to secure and headers are deploy-time only.   |
@@ -953,13 +956,13 @@ terms.
   library reusable.
 - **Genuine security controls** where they matter for a UI lib (editor sanitization, export
   formula-injection guard) plus CI audit/secret scanning.
-- **Disciplined engineering process** — Conventional Commits, Husky gates, Changesets versioning,
-  three-job CI, honest self-audit in `report.md`.
+- **Disciplined engineering process** — Conventional Commits, Husky gates, semantic-release
+  versioning/publishing, three-job CI, honest self-audit in `report.md`.
 
 ### Weaknesses
 
-- **No published artifact yet** — source-only, `private`; the registry-publish path is designed
-  (ADR 0006) but unfinished.
+- ~~**No published artifact yet**~~ — resolved: `@imsaroj/smart-ui` publishes to npm from `main`
+  via semantic-release (dist-facing `publishConfig.exports`, per ADR 0006's follow-up).
 - **ag-grid bundle weight** is the standing performance ceiling.
 - **Controlled-dialog E2E gap** leaves CRUD flows without full end-to-end coverage.
 - Backend concerns (auth, DB, infra, messaging, monitoring) are **absent by design** — appropriate
@@ -967,7 +970,7 @@ terms.
 
 ### Recommended next steps
 
-1. Finish the publish story (dist-facing `package.json` + `publint` on built output).
+1. ~~Finish the publish story~~ — done: semantic-release + `publishConfig.exports` → npm.
 2. Trim/lazy-tighten the ag-grid path and add Lighthouse-CI.
 3. Root-cause the controlled-dialog Playwright limitation to close the CRUD E2E gap.
 4. Add `.gitattributes` to end CRLF churn; keep the flaky axe tests under watch.

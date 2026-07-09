@@ -4,7 +4,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "paths": {
-      "@workspace/ui/*": ["../packages/ui/src/*"],
+      "@imsaroj/smart-ui/*": ["../packages/ui/src/*"],
       "zod": ["../packages/ui/node_modules/zod"]
     }
   },

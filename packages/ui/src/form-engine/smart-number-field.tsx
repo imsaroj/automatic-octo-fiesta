@@ -1,6 +1,6 @@
 import * as React from "react"
-import { SmartInput } from "@workspace/ui/smart-components/smart-input"
-import { SmartInputGroup } from "@workspace/ui/smart-components/smart-input-group"
+import { SmartInput } from "@imsaroj/smart-ui/smart-components/smart-input"
+import { SmartInputGroup } from "@imsaroj/smart-ui/smart-components/smart-input-group"
 import type { FieldBaseProps } from "./base"
 
 export interface SmartNumberFieldProps extends FieldBaseProps<number | null> {

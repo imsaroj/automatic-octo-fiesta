@@ -1,4 +1,4 @@
-# @workspace/ui
+# @imsaroj/smart-ui
 
 ## 0.1.0
 

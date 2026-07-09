@@ -4,10 +4,10 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@workspace/ui/smart-components/page"
-import { SmartCard } from "@workspace/ui/smart-components/smart-card"
-import { SmartForm, type FieldDefinition } from "@workspace/ui/form-engine"
-import { toast } from "@workspace/ui/smart-components/smart-toaster"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
+import { SmartForm, type FieldDefinition } from "@imsaroj/smart-ui/form-engine"
+import { toast } from "@imsaroj/smart-ui/smart-components/smart-toaster"
 
 const registrationSchema = z
   .object({

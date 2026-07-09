@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-} from "@workspace/ui/components/sidebar"
+} from "@imsaroj/smart-ui/components/sidebar"
 
 export interface SmartNavSidebarItem {
   name: string

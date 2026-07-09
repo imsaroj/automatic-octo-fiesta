@@ -10,18 +10,18 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-import { SmartBreadcrumb } from "@workspace/ui/smart-components/smart-breadcrumb"
-import { SmartButton } from "@workspace/ui/smart-components/smart-button"
-import { SmartInput } from "@workspace/ui/smart-components/smart-input"
-import { SmartSelect } from "@workspace/ui/smart-components/smart-select"
-import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
+import { SmartBreadcrumb } from "@imsaroj/smart-ui/smart-components/smart-breadcrumb"
+import { SmartButton } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { SmartInput } from "@imsaroj/smart-ui/smart-components/smart-input"
+import { SmartSelect } from "@imsaroj/smart-ui/smart-components/smart-select"
+import { SmartSwitch } from "@imsaroj/smart-ui/smart-components/smart-switch"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
   DialogTrigger,
-} from "@workspace/ui/components/dialog"
+} from "@imsaroj/smart-ui/components/dialog"
 import {
   Sidebar,
   SidebarContent,
@@ -31,7 +31,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-} from "@workspace/ui/components/sidebar"
+} from "@imsaroj/smart-ui/components/sidebar"
 
 // ─── Navigation ─────────────────────────────────────────────────────────────
 

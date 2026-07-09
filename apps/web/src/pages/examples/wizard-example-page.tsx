@@ -13,17 +13,17 @@
 
 import { useState } from "react"
 import { Check } from "lucide-react"
-import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
-import { Input } from "@workspace/ui/smart-components/smart-input"
-import { Label } from "@workspace/ui/smart-components/smart-label"
-import { Switch } from "@workspace/ui/smart-components/smart-switch"
+import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { Input } from "@imsaroj/smart-ui/smart-components/smart-input"
+import { Label } from "@imsaroj/smart-ui/smart-components/smart-label"
+import { Switch } from "@imsaroj/smart-ui/smart-components/smart-switch"
 import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
   SmartPageFooter,
-} from "@workspace/ui/smart-components/page"
-import { cn } from "@workspace/ui/lib/utils"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
 
 // ─── Step configuration ───────────────────────────────────────────────────────
 

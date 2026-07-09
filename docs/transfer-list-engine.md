@@ -1,4 +1,4 @@
-# Transfer list engine — `@workspace/ui/transfer-list-engine`
+# Transfer list engine — `@imsaroj/smart-ui/transfer-list-engine`
 
 ## What it is
 
@@ -13,7 +13,7 @@ import {
   SmartTransferList,
   type TransferItem,
   type SmartTransferListHandle,
-} from "@workspace/ui/transfer-list-engine"
+} from "@imsaroj/smart-ui/transfer-list-engine"
 ```
 
 ## 80% example

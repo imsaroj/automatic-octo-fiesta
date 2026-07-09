@@ -3,36 +3,36 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@workspace/ui/smart-components/page"
-import { SmartInput } from "@workspace/ui/smart-components/smart-input"
-import { SmartTextarea } from "@workspace/ui/smart-components/smart-textarea"
-import { SmartPasswordInput } from "@workspace/ui/smart-components/smart-password-input"
-import { SmartSearchInput } from "@workspace/ui/smart-components/search-input"
-import { SmartInputGroup } from "@workspace/ui/smart-components/smart-input-group"
-import { SmartSelect } from "@workspace/ui/smart-components/smart-select"
-import { SmartMultiSelect } from "@workspace/ui/smart-components/smart-multi-select"
-import { SmartCombobox } from "@workspace/ui/smart-components/smart-combobox"
-import { SmartRadioGroup } from "@workspace/ui/smart-components/smart-radio-group"
-import { SmartCheckbox } from "@workspace/ui/smart-components/smart-checkbox"
-import { SmartCheckboxGroup } from "@workspace/ui/smart-components/smart-checkbox-group"
-import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
-import { SmartSegmented } from "@workspace/ui/smart-components/smart-segmented"
-import { SmartDatePicker } from "@workspace/ui/smart-components/smart-date-picker"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartInput } from "@imsaroj/smart-ui/smart-components/smart-input"
+import { SmartTextarea } from "@imsaroj/smart-ui/smart-components/smart-textarea"
+import { SmartPasswordInput } from "@imsaroj/smart-ui/smart-components/smart-password-input"
+import { SmartSearchInput } from "@imsaroj/smart-ui/smart-components/search-input"
+import { SmartInputGroup } from "@imsaroj/smart-ui/smart-components/smart-input-group"
+import { SmartSelect } from "@imsaroj/smart-ui/smart-components/smart-select"
+import { SmartMultiSelect } from "@imsaroj/smart-ui/smart-components/smart-multi-select"
+import { SmartCombobox } from "@imsaroj/smart-ui/smart-components/smart-combobox"
+import { SmartRadioGroup } from "@imsaroj/smart-ui/smart-components/smart-radio-group"
+import { SmartCheckbox } from "@imsaroj/smart-ui/smart-components/smart-checkbox"
+import { SmartCheckboxGroup } from "@imsaroj/smart-ui/smart-components/smart-checkbox-group"
+import { SmartSwitch } from "@imsaroj/smart-ui/smart-components/smart-switch"
+import { SmartSegmented } from "@imsaroj/smart-ui/smart-components/smart-segmented"
+import { SmartDatePicker } from "@imsaroj/smart-ui/smart-components/smart-date-picker"
 import {
   SmartTimePicker,
   SmartDateTimePicker,
-} from "@workspace/ui/smart-components/smart-time-picker"
+} from "@imsaroj/smart-ui/smart-components/smart-time-picker"
 import {
   SmartDateRangePicker,
   type DateRange,
-} from "@workspace/ui/smart-components/smart-date-range-picker"
+} from "@imsaroj/smart-ui/smart-components/smart-date-range-picker"
 import {
   SmartTimeRangePicker,
   type TimeRange,
-} from "@workspace/ui/smart-components/smart-time-range-picker"
-import { SmartMonthPicker } from "@workspace/ui/smart-components/smart-month-picker"
-import { SmartYearPicker } from "@workspace/ui/smart-components/smart-year-picker"
-import { SmartTextEditor } from "@workspace/ui/lexical-text-editor"
+} from "@imsaroj/smart-ui/smart-components/smart-time-range-picker"
+import { SmartMonthPicker } from "@imsaroj/smart-ui/smart-components/smart-month-picker"
+import { SmartYearPicker } from "@imsaroj/smart-ui/smart-components/smart-year-picker"
+import { SmartTextEditor } from "@imsaroj/smart-ui/lexical-text-editor"
 
 const COUNTRIES = [
   { value: "kr", label: "South Korea" },

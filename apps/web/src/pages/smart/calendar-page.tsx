@@ -4,14 +4,14 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@workspace/ui/smart-components/page"
-import { SmartCard } from "@workspace/ui/smart-components/smart-card"
-import { SmartDialog } from "@workspace/ui/smart-components/smart-dialog"
-import { SmartButton } from "@workspace/ui/smart-components/smart-button"
-import { SmartInput } from "@workspace/ui/smart-components/smart-input"
-import { SmartSelect } from "@workspace/ui/smart-components/smart-select"
-import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
-import { toast } from "@workspace/ui/smart-components/smart-toaster"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
+import { SmartDialog } from "@imsaroj/smart-ui/smart-components/smart-dialog"
+import { SmartButton } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { SmartInput } from "@imsaroj/smart-ui/smart-components/smart-input"
+import { SmartSelect } from "@imsaroj/smart-ui/smart-components/smart-select"
+import { SmartSwitch } from "@imsaroj/smart-ui/smart-components/smart-switch"
+import { toast } from "@imsaroj/smart-ui/smart-components/smart-toaster"
 import {
   SmartCalendar,
   detachOccurrence,
@@ -26,7 +26,7 @@ import {
   type EventPatch,
   type FreeSlot,
   type SmartCalendarHandle,
-} from "@workspace/ui/calendar-engine"
+} from "@imsaroj/smart-ui/calendar-engine"
 
 // ── Local date helpers (apps/web doesn't depend on date-fns directly) ─────────
 

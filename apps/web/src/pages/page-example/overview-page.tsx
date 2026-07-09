@@ -25,8 +25,8 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@workspace/ui/smart-components/page"
-import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartBadge as Badge } from "@imsaroj/smart-ui/smart-components/smart-badge"
 
 // ─── Catalog ──────────────────────────────────────────────────────────────────
 

@@ -10,7 +10,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@workspace/ui/components/drawer"
+} from "@imsaroj/smart-ui/components/drawer"
 
 export interface SmartDrawerHeader {
   title: React.ReactNode

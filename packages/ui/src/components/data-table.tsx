@@ -15,14 +15,14 @@ import {
 } from "@tanstack/react-table"
 import { ArrowUpDown, ChevronDown } from "lucide-react"
 
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "@imsaroj/smart-ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
-import { Input } from "@workspace/ui/components/input"
+} from "@imsaroj/smart-ui/components/dropdown-menu"
+import { Input } from "@imsaroj/smart-ui/components/input"
 import {
   Table,
   TableBody,
@@ -30,7 +30,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@workspace/ui/components/table"
+} from "@imsaroj/smart-ui/components/table"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]

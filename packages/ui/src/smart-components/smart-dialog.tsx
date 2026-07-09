@@ -9,8 +9,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@workspace/ui/components/dialog"
-import { cn } from "@workspace/ui/lib/utils"
+} from "@imsaroj/smart-ui/components/dialog"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
 
 export { DialogContent, DialogTitle, DialogDescription }
 

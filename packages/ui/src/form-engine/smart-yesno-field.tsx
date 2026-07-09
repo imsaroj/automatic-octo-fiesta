@@ -1,4 +1,4 @@
-import { SmartRadioGroup } from "@workspace/ui/smart-components/smart-radio-group"
+import { SmartRadioGroup } from "@imsaroj/smart-ui/smart-components/smart-radio-group"
 import type { FieldBaseProps } from "./base"
 
 export interface SmartYesNoFieldProps extends Omit<

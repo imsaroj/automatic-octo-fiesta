@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useRef, useState } from "react"
 import { z } from "zod"
 import { Bug, ListChecks, RotateCw } from "lucide-react"
-import { SmartButton } from "@workspace/ui/smart-components/smart-button"
-import { SmartBadge } from "@workspace/ui/smart-components/smart-badge"
+import { SmartButton } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { SmartBadge } from "@imsaroj/smart-ui/smart-components/smart-badge"
 import {
   SmartPage,
   SmartToolbar,
@@ -10,11 +10,11 @@ import {
   SmartGridArea,
   SmartPageStatusBar,
   SmartPageFooter,
-} from "@workspace/ui/smart-components/page"
+} from "@imsaroj/smart-ui/smart-components/page"
 import {
   SmartSearchForm,
   type SearchFieldDefinition,
-} from "@workspace/ui/search-engine"
+} from "@imsaroj/smart-ui/search-engine"
 import {
   SmartServerGrid,
   type DataGridColumn,
@@ -22,8 +22,8 @@ import {
   type ServerFetchParams,
   type ServerFetchResult,
   type ServerFilter,
-} from "@workspace/ui/data-grid"
-import { formatCurrency } from "@workspace/ui/lib/format"
+} from "@imsaroj/smart-ui/data-grid"
+import { formatCurrency } from "@imsaroj/smart-ui/lib/format"
 import { fetchUsersPage, type UserRow } from "@/api/users"
 
 /* --------------------------------- columns -------------------------------- */

@@ -8,8 +8,8 @@ import {
   type Locale,
 } from "react-day-picker"
 
-import { cn } from "@workspace/ui/lib/utils"
-import { Button, buttonVariants } from "@workspace/ui/components/button"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Button, buttonVariants } from "@imsaroj/smart-ui/components/button"
 import {
   ChevronLeftIcon,
   ChevronRightIcon,

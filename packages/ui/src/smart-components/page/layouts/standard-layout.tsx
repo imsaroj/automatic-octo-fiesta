@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@workspace/ui/lib/utils"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
 import type { PageContextValue, ScrollMode } from "../page-context"
 import type { SlotBuckets } from "./slot-buckets"
 

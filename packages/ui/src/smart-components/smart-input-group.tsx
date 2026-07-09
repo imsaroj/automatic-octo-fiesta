@@ -1,16 +1,16 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@workspace/ui/lib/utils"
-import { withLeadingSpaceGuard } from "@workspace/ui/lib/leading-space"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { withLeadingSpaceGuard } from "@imsaroj/smart-ui/lib/leading-space"
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
   InputGroupText,
-} from "@workspace/ui/components/input-group"
-import { Label } from "@workspace/ui/components/label"
+} from "@imsaroj/smart-ui/components/input-group"
+import { Label } from "@imsaroj/smart-ui/components/label"
 
 export interface SmartInputGroupTrailingButton {
   icon: React.ReactNode

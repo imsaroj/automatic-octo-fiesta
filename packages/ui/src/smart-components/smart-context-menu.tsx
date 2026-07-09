@@ -13,7 +13,7 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
-} from "@workspace/ui/components/context-menu"
+} from "@imsaroj/smart-ui/components/context-menu"
 
 // ---- Item config types ----
 

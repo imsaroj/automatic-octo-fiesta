@@ -1,5 +1,5 @@
-import { cn } from "@workspace/ui/lib/utils"
-import { SmartCheckbox } from "@workspace/ui/smart-components/smart-checkbox"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { SmartCheckbox } from "@imsaroj/smart-ui/smart-components/smart-checkbox"
 import type { FieldBaseProps } from "./base"
 
 export type SmartCheckboxFieldProps = Omit<

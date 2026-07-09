@@ -16,34 +16,34 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@workspace/ui/smart-components/page"
+} from "@imsaroj/smart-ui/smart-components/page"
 import {
   SmartDialog,
   type SmartDialogSize,
-} from "@workspace/ui/smart-components/smart-dialog"
+} from "@imsaroj/smart-ui/smart-components/smart-dialog"
 import {
   SheetClose,
   SmartSheet,
-} from "@workspace/ui/smart-components/smart-sheet"
+} from "@imsaroj/smart-ui/smart-components/smart-sheet"
 import {
   DrawerClose,
   SmartDrawer,
-} from "@workspace/ui/smart-components/smart-drawer"
-import { SmartConfirmDialog } from "@workspace/ui/smart-components/smart-confirm-dialog"
-import { SmartContextMenu } from "@workspace/ui/smart-components/smart-context-menu"
-import { SmartInput } from "@workspace/ui/smart-components/smart-input"
-import { SmartTextarea } from "@workspace/ui/smart-components/smart-textarea"
-import { SmartSelect } from "@workspace/ui/smart-components/smart-select"
-import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
-import { SmartButton } from "@workspace/ui/smart-components/smart-button"
+} from "@imsaroj/smart-ui/smart-components/smart-drawer"
+import { SmartConfirmDialog } from "@imsaroj/smart-ui/smart-components/smart-confirm-dialog"
+import { SmartContextMenu } from "@imsaroj/smart-ui/smart-components/smart-context-menu"
+import { SmartInput } from "@imsaroj/smart-ui/smart-components/smart-input"
+import { SmartTextarea } from "@imsaroj/smart-ui/smart-components/smart-textarea"
+import { SmartSelect } from "@imsaroj/smart-ui/smart-components/smart-select"
+import { SmartSwitch } from "@imsaroj/smart-ui/smart-components/smart-switch"
+import { SmartButton } from "@imsaroj/smart-ui/smart-components/smart-button"
 import {
   AddButton,
   DeleteButton,
   EditButton,
   SaveButton,
-} from "@workspace/ui/smart-components/buttons"
-import { toast } from "@workspace/ui/smart-components/smart-toaster"
-import { type FieldDefinition, SmartForm } from "@workspace/ui/form-engine"
+} from "@imsaroj/smart-ui/smart-components/buttons"
+import { toast } from "@imsaroj/smart-ui/smart-components/smart-toaster"
+import { type FieldDefinition, SmartForm } from "@imsaroj/smart-ui/form-engine"
 
 const ROLE_OPTIONS = [
   { value: "admin", label: "Admin" },

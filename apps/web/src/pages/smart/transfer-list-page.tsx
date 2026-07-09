@@ -13,15 +13,15 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@workspace/ui/smart-components/page"
-import { SmartCard } from "@workspace/ui/smart-components/smart-card"
-import { SmartButton } from "@workspace/ui/smart-components/smart-button"
-import { SmartBadge } from "@workspace/ui/smart-components/smart-badge"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
+import { SmartButton } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { SmartBadge } from "@imsaroj/smart-ui/smart-components/smart-badge"
 import {
   SmartTransferList,
   type SmartTransferListHandle,
   type TransferItem,
-} from "@workspace/ui/transfer-list-engine"
+} from "@imsaroj/smart-ui/transfer-list-engine"
 
 // ── Sample data ────────────────────────────────────────────────────────────
 

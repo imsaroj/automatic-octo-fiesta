@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react"
 import { Plus } from "lucide-react"
-import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
-import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
+import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { SmartBadge as Badge } from "@imsaroj/smart-ui/smart-components/smart-badge"
 import {
   SmartPage,
   SmartPageContent,
-} from "@workspace/ui/smart-components/page"
-import { SmartGrid, type DataGridColumn } from "@workspace/ui/data-grid"
-import { formatCurrency } from "@workspace/ui/lib/format"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartGrid, type DataGridColumn } from "@imsaroj/smart-ui/data-grid"
+import { formatCurrency } from "@imsaroj/smart-ui/lib/format"
 
 interface UserRow {
   id: number

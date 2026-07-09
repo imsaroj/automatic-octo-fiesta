@@ -17,7 +17,7 @@ import {
   SidebarHeader,
   SidebarRail,
   SidebarTrigger,
-} from "@workspace/ui/components/sidebar"
+} from "@imsaroj/smart-ui/components/sidebar"
 import { NavMain } from "@/components/dashboard/nav-main"
 import { NavProjects } from "@/components/dashboard/nav-projects"
 import { NavUser } from "@/components/dashboard/nav-user"

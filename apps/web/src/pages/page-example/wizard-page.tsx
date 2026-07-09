@@ -13,11 +13,11 @@ import {
   SmartPageContent,
   SmartPageSection,
   SmartPageFooter,
-} from "@workspace/ui/smart-components/page"
-import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
-import { SmartInput } from "@workspace/ui/smart-components/smart-input"
-import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
-import { cn } from "@workspace/ui/lib/utils"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { SmartInput } from "@imsaroj/smart-ui/smart-components/smart-input"
+import { SmartSwitch } from "@imsaroj/smart-ui/smart-components/smart-switch"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
 
 const STEPS = [
   { id: "workspace", label: "Workspace", description: "Name your workspace." },

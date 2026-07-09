@@ -4,14 +4,14 @@ import * as React from "react"
 import { z } from "zod"
 import { Loader2, RotateCcw, Search } from "lucide-react"
 
-import { cn } from "@workspace/ui/lib/utils"
-import { Button } from "@workspace/ui/components/button"
-import { Badge } from "@workspace/ui/components/badge"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Button } from "@imsaroj/smart-ui/components/button"
+import { Badge } from "@imsaroj/smart-ui/components/badge"
 import {
   SmartForm,
   defaultFieldRegistry,
   type FieldRegistry,
-} from "@workspace/ui/form-engine"
+} from "@imsaroj/smart-ui/form-engine"
 
 import type { SearchFieldDefinition } from "./types"
 import { buildSearchQuery, countActiveFilters } from "./build-query"

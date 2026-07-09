@@ -1,20 +1,20 @@
 import { useMemo, useState } from "react"
 import { MousePointerClick, Package } from "lucide-react"
-import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
+import { SmartBadge as Badge } from "@imsaroj/smart-ui/smart-components/smart-badge"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/smart-components/smart-card"
+} from "@imsaroj/smart-ui/smart-components/smart-card"
 import {
   SmartPage,
   SmartPageContent,
   SmartPageEmpty,
-} from "@workspace/ui/smart-components/page"
-import { SmartGrid, type DataGridColumn } from "@workspace/ui/data-grid"
-import { formatCurrency } from "@workspace/ui/lib/format"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartGrid, type DataGridColumn } from "@imsaroj/smart-ui/data-grid"
+import { formatCurrency } from "@imsaroj/smart-ui/lib/format"
 
 /* --------------------------------- types ---------------------------------- */
 

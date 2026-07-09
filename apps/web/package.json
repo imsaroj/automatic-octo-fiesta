@@ -14,7 +14,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.101.2",
     "@fontsource-variable/noto-serif": "^5.2.9",
-    "@workspace/ui": "workspace:*",
+    "@imsaroj/smart-ui": "workspace:*",
     "lucide-react": "^1.22.0",
     "msw": "^2.14.6",
     "react": "^19.2.6",

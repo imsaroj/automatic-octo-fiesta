@@ -1,4 +1,4 @@
-# Calendar engine — `@workspace/ui/calendar-engine`
+# Calendar engine — `@imsaroj/smart-ui/calendar-engine`
 
 ## What it is
 
@@ -14,7 +14,7 @@ import {
   SmartCalendar,
   type CalendarEvent,
   type SmartCalendarHandle,
-} from "@workspace/ui/calendar-engine"
+} from "@imsaroj/smart-ui/calendar-engine"
 ```
 
 ## 80% example

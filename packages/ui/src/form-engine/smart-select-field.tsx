@@ -2,7 +2,7 @@ import {
   SmartSelect,
   type SmartSelectOption,
   type SmartSelectGroup,
-} from "@workspace/ui/smart-components/smart-select"
+} from "@imsaroj/smart-ui/smart-components/smart-select"
 import type { FieldBaseProps } from "./base"
 
 export type { SmartSelectOption, SmartSelectGroup }

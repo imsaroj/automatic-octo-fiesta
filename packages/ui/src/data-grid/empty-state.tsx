@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from "react"
-import { cn } from "@workspace/ui/lib/utils"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
 
 export interface SmartEmptyStateProps extends HTMLAttributes<HTMLDivElement> {
   /** Optional illustrative icon. */

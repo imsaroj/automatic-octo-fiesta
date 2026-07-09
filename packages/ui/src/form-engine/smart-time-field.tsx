@@ -1,4 +1,4 @@
-import { SmartTimePicker } from "@workspace/ui/smart-components/smart-time-picker"
+import { SmartTimePicker } from "@imsaroj/smart-ui/smart-components/smart-time-picker"
 import type { FieldBaseProps } from "./base"
 
 export interface SmartTimeFieldProps extends Omit<

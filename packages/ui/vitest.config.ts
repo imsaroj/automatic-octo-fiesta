@@ -70,7 +70,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
-      "@workspace/ui": resolve(__dirname, "src"),
+      "@imsaroj/smart-ui": resolve(__dirname, "src"),
     },
   },
 })

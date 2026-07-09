@@ -1,7 +1,7 @@
 import {
   SmartDateRangePicker,
   type DateRange,
-} from "@workspace/ui/smart-components/smart-date-range-picker"
+} from "@imsaroj/smart-ui/smart-components/smart-date-range-picker"
 import type { FieldBaseProps } from "./base"
 
 /** Stored range value — ISO `"YYYY-MM-DD"` date strings. */

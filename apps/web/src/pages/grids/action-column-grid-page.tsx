@@ -1,17 +1,17 @@
 import { useMemo, useState } from "react"
-import { toast } from "@workspace/ui/smart-components/smart-toaster"
-import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
-import { SmartSegmented } from "@workspace/ui/smart-components/smart-segmented"
-import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
+import { toast } from "@imsaroj/smart-ui/smart-components/smart-toaster"
+import { SmartBadge as Badge } from "@imsaroj/smart-ui/smart-components/smart-badge"
+import { SmartSegmented } from "@imsaroj/smart-ui/smart-components/smart-segmented"
+import { SmartSwitch } from "@imsaroj/smart-ui/smart-components/smart-switch"
 import {
   SmartPage,
   SmartPageContent,
-} from "@workspace/ui/smart-components/page"
+} from "@imsaroj/smart-ui/smart-components/page"
 import {
   SmartGrid,
   type DataGridColumn,
   type GridActionColumnPin,
-} from "@workspace/ui/data-grid"
+} from "@imsaroj/smart-ui/data-grid"
 
 interface UserRow {
   id: number

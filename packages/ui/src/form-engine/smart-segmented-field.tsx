@@ -1,7 +1,7 @@
 import {
   SmartSegmented,
   type SmartSegmentedOption,
-} from "@workspace/ui/smart-components/smart-segmented"
+} from "@imsaroj/smart-ui/smart-components/smart-segmented"
 import type { FieldBaseProps } from "./base"
 
 export type { SmartSegmentedOption }

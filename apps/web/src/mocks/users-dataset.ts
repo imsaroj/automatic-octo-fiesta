@@ -1,4 +1,4 @@
-import type { ServerFilter, ServerSort } from "@workspace/ui/data-grid"
+import type { ServerFilter, ServerSort } from "@imsaroj/smart-ui/data-grid"
 import type { UserRow } from "@/api/users"
 
 const FIRST = [

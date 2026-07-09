@@ -16,7 +16,7 @@ import {
 import { $insertNodeToNearestRoot } from "@lexical/utils"
 import { INSERT_HORIZONTAL_RULE_COMMAND } from "@lexical/react/LexicalHorizontalRuleNode"
 import { Image, Minus, Plus, SeparatorHorizontal, Table } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "@imsaroj/smart-ui/components/button"
 import { INSERT_IMAGE_COMMAND } from "../../nodes/image-node"
 import { INSERT_PAGE_BREAK_COMMAND } from "../../nodes/page-break-node"
 import { DropdownItem, PortalDropdown } from "./primitives"

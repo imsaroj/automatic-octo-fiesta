@@ -4,10 +4,10 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@workspace/ui/smart-components/page"
-import { SmartCard } from "@workspace/ui/smart-components/smart-card"
-import { toast } from "@workspace/ui/smart-components/smart-toaster"
-import { type FieldDefinition, SmartForm } from "@workspace/ui/form-engine"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
+import { toast } from "@imsaroj/smart-ui/smart-components/smart-toaster"
+import { type FieldDefinition, SmartForm } from "@imsaroj/smart-ui/form-engine"
 
 const contactSchema = z.object({
   name: z.string().min(1, "Name is required").trim(),

@@ -1,13 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@workspace/ui/lib/utils"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
 import {
   Combobox,
   type ComboboxOption,
   type ComboboxProps,
-} from "@workspace/ui/components/combobox"
-import { Label } from "@workspace/ui/components/label"
+} from "@imsaroj/smart-ui/components/combobox"
+import { Label } from "@imsaroj/smart-ui/components/label"
 
 export type { ComboboxOption }
 

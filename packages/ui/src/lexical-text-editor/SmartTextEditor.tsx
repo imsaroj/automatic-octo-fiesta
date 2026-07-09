@@ -35,8 +35,8 @@ import { sanitizeEditorHtml } from "./sanitize"
 import { ToolbarPlugin } from "./plugins/toolbar-plugin"
 import { CodeHighlightPlugin } from "./plugins/code-highlight-plugin"
 import { AutoLinkPlugin } from "./plugins/auto-link-plugin"
-import { Label } from "@workspace/ui/components/label"
-import { cn } from "@workspace/ui/lib/utils"
+import { Label } from "@imsaroj/smart-ui/components/label"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

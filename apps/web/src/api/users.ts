@@ -3,7 +3,7 @@ import {
   createPageFetcher,
   type ServerFetchParams,
   type ServerFetchResult,
-} from "@workspace/ui/data-grid"
+} from "@imsaroj/smart-ui/data-grid"
 
 export const userRowSchema = z.object({
   id: z.number(),

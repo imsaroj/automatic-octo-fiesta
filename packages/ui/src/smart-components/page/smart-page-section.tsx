@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@workspace/ui/lib/utils"
-import { Separator } from "@workspace/ui/components/separator"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Separator } from "@imsaroj/smart-ui/components/separator"
 
 export interface SmartPageSectionProps extends React.HTMLAttributes<HTMLElement> {
   /** Optional section heading. */

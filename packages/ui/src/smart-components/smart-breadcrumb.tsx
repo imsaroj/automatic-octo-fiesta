@@ -8,7 +8,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@workspace/ui/components/breadcrumb"
+} from "@imsaroj/smart-ui/components/breadcrumb"
 
 export interface SmartBreadcrumbItem {
   label: string

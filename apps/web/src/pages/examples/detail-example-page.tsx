@@ -23,21 +23,21 @@ import {
   ThumbsUp,
   User,
 } from "lucide-react"
-import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
-import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
+import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { SmartBadge as Badge } from "@imsaroj/smart-ui/smart-components/smart-badge"
 import {
   Avatar,
   AvatarFallback,
-} from "@workspace/ui/smart-components/smart-avatar"
-import { Textarea } from "@workspace/ui/smart-components/smart-textarea"
+} from "@imsaroj/smart-ui/smart-components/smart-avatar"
+import { Textarea } from "@imsaroj/smart-ui/smart-components/smart-textarea"
 import {
   SmartPage,
   SmartPageTitle,
   SmartPageContent,
   SmartPageSection,
   SmartSidebar,
-} from "@workspace/ui/smart-components/page"
-import { Separator } from "@workspace/ui/smart-components/smart-separator"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { Separator } from "@imsaroj/smart-ui/smart-components/smart-separator"
 
 // ─── Fake data ─────────────────────────────────────────────────────────────────
 

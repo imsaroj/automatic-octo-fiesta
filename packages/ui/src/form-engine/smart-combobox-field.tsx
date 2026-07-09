@@ -1,7 +1,7 @@
 import {
   SmartCombobox,
   type ComboboxOption,
-} from "@workspace/ui/smart-components/smart-combobox"
+} from "@imsaroj/smart-ui/smart-components/smart-combobox"
 import type { FieldBaseProps } from "./base"
 
 export type { ComboboxOption }

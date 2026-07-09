@@ -13,16 +13,16 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@workspace/ui/smart-components/page"
-import { SmartCard } from "@workspace/ui/smart-components/smart-card"
-import { SmartButton } from "@workspace/ui/smart-components/smart-button"
-import { SmartSearchInput } from "@workspace/ui/smart-components/search-input"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
+import { SmartButton } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { SmartSearchInput } from "@imsaroj/smart-ui/smart-components/search-input"
 import {
   SmartTree,
   type TreeNode,
   type SmartTreeHandle,
   getAllFolderIds,
-} from "@workspace/ui/tree-engine"
+} from "@imsaroj/smart-ui/tree-engine"
 
 // ── Sample data ──────────────────────────────────────────────────────────
 

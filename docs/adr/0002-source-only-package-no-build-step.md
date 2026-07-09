@@ -4,7 +4,7 @@
 
 ## Context
 
-`@workspace/ui` is consumed inside the monorepo by `apps/web`. It could be
+`@imsaroj/smart-ui` is consumed inside the monorepo by `apps/web`. It could be
 pre-compiled (tsc/tsup) into `dist/`, or exported directly as TypeScript source.
 
 ## Decision

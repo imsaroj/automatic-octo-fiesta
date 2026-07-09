@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import { Check, ChevronsUpDown, X } from "lucide-react"
-import { cn } from "@workspace/ui/lib/utils"
-import { Button } from "@workspace/ui/components/button"
-import { Badge } from "@workspace/ui/components/badge"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Button } from "@imsaroj/smart-ui/components/button"
+import { Badge } from "@imsaroj/smart-ui/components/badge"
 import {
   Command,
   CommandEmpty,
@@ -12,13 +12,13 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@workspace/ui/components/command"
+} from "@imsaroj/smart-ui/components/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@workspace/ui/components/popover"
-import { Label } from "@workspace/ui/components/label"
+} from "@imsaroj/smart-ui/components/popover"
+import { Label } from "@imsaroj/smart-ui/components/label"
 
 export interface SmartMultiSelectOption {
   value: string

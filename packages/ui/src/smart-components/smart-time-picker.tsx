@@ -3,15 +3,15 @@
 import * as React from "react"
 import { ClockIcon, CalendarClockIcon } from "lucide-react"
 
-import { cn } from "@workspace/ui/lib/utils"
-import { Button } from "@workspace/ui/components/button"
-import { Calendar } from "@workspace/ui/components/calendar"
-import { Label } from "@workspace/ui/components/label"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Button } from "@imsaroj/smart-ui/components/button"
+import { Calendar } from "@imsaroj/smart-ui/components/calendar"
+import { Label } from "@imsaroj/smart-ui/components/label"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@workspace/ui/components/popover"
+} from "@imsaroj/smart-ui/components/popover"
 
 /* -------------------------------------------------------------------------- */
 /*  Time helpers (value is always 24-hour, zero-padded)                       */

@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import type { DateRange } from "react-day-picker"
-import { cn } from "@workspace/ui/lib/utils"
-import { Calendar } from "@workspace/ui/components/calendar"
-import { Label } from "@workspace/ui/components/label"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Calendar } from "@imsaroj/smart-ui/components/calendar"
+import { Label } from "@imsaroj/smart-ui/components/label"
 
 /** Props shared by every selection mode. */
 interface SmartCalendarBaseProps {

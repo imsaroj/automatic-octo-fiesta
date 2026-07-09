@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+# One release at a time, never cancelled mid-publish.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write # push the release commit + tag, create the GitHub release
+  issues: write # comment on issues resolved by the release
+  pull-requests: write # comment on PRs included in the release
+
+jobs:
+  release:
+    name: Version & publish to npm
+    runs-on: ubuntu-latest
+    # Skip release commits (belt-and-braces: [skip ci] already prevents this).
+    if: ${{ !startsWith(github.event.head_commit.message, 'chore(release):') }}
+    env:
+      HUSKY: 0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # semantic-release needs the full history + tags to compute the next version.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          # Writes an .npmrc that authenticates pnpm publish via NODE_AUTH_TOKEN.
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build library (ESM + d.ts)
+        run: pnpm build:lib
+
+      - name: publint
+        run: pnpm publint
+
+      # semantic-release: analyzes conventional commits since the last tag,
+      # bumps packages/ui/package.json + CHANGELOG, publishes to npm via
+      # `pnpm publish` (pnpm applies the dist-facing publishConfig.exports;
+      # `npm publish` would not), pushes the release commit + tag, and
+      # creates a GitHub release.
+      - name: Release
+        run: pnpm exec semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

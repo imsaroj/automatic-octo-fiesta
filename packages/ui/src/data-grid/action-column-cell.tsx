@@ -1,8 +1,8 @@
 import { memo, useState, useSyncExternalStore, type ReactElement } from "react"
 import type { ICellRendererParams } from "ag-grid-community"
-import { cn } from "@workspace/ui/lib/utils"
-import { ActionButton } from "@workspace/ui/smart-components/buttons"
-import { SmartConfirmDialog } from "@workspace/ui/smart-components/smart-confirm-dialog"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { ActionButton } from "@imsaroj/smart-ui/smart-components/buttons"
+import { SmartConfirmDialog } from "@imsaroj/smart-ui/smart-components/smart-confirm-dialog"
 import type { DataGridColumn } from "./grid-internals"
 import {
   ACTION_COLUMN_ID,

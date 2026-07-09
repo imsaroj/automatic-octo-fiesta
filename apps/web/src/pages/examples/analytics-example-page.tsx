@@ -26,9 +26,9 @@ import {
   TrendingDown,
   TrendingUp,
 } from "lucide-react"
-import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
-import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
-import { SmartStatCard } from "@workspace/ui/smart-components/smart-stat-card"
+import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { SmartBadge as Badge } from "@imsaroj/smart-ui/smart-components/smart-badge"
+import { SmartStatCard } from "@imsaroj/smart-ui/smart-components/smart-stat-card"
 import {
   SmartPage,
   SmartToolbar,
@@ -37,7 +37,7 @@ import {
   SmartPageTabPanel,
   SmartPageContent,
   SmartPageSection,
-} from "@workspace/ui/smart-components/page"
+} from "@imsaroj/smart-ui/smart-components/page"
 import {
   analyticsKpis,
   conversionFunnel,

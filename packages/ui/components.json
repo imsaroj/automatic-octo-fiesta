@@ -11,11 +11,11 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@workspace/ui/components",
-    "utils": "@workspace/ui/lib/utils",
-    "hooks": "@workspace/ui/hooks",
-    "lib": "@workspace/ui/lib",
-    "ui": "@workspace/ui/components"
+    "components": "@imsaroj/smart-ui/components",
+    "utils": "@imsaroj/smart-ui/lib/utils",
+    "hooks": "@imsaroj/smart-ui/hooks",
+    "lib": "@imsaroj/smart-ui/lib",
+    "ui": "@imsaroj/smart-ui/components"
   },
   "rtl": false,
   "menuColor": "default",

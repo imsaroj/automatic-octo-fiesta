@@ -1,4 +1,4 @@
-# Tree engine — `@workspace/ui/tree-engine`
+# Tree engine — `@imsaroj/smart-ui/tree-engine`
 
 ## What it is
 
@@ -13,7 +13,7 @@ import {
   SmartTree,
   type TreeNode,
   type SmartTreeHandle,
-} from "@workspace/ui/tree-engine"
+} from "@imsaroj/smart-ui/tree-engine"
 ```
 
 ## 80% example

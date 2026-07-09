@@ -22,8 +22,8 @@ export default defineConfig([
     },
   },
   {
-    // Block raw @workspace/ui/components/* imports in app code.
-    // Import from @workspace/ui/smart-components/* instead.
+    // Block raw @imsaroj/smart-ui/components/* imports in app code.
+    // Import from @imsaroj/smart-ui/smart-components/* instead.
     // Exceptions: components/dashboard and components/settings use sidebar/
     // collapsible/dropdown-menu primitives that have no Smart equivalents.
     files: ["src/**/*.{ts,tsx}"],
@@ -34,9 +34,9 @@ export default defineConfig([
         {
           patterns: [
             {
-              group: ["@workspace/ui/components/*"],
+              group: ["@imsaroj/smart-ui/components/*"],
               message:
-                'Import from "@workspace/ui/smart-components/*" instead of "@workspace/ui/components/*".',
+                'Import from "@imsaroj/smart-ui/smart-components/*" instead of "@imsaroj/smart-ui/components/*".',
             },
           ],
         },

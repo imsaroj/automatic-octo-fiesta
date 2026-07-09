@@ -2,8 +2,12 @@
 
 import * as React from "react"
 import { ArrowDownRight, ArrowUpRight } from "lucide-react"
-import { cn } from "@workspace/ui/lib/utils"
-import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from "@imsaroj/smart-ui/components/card"
 
 type Trend = "up" | "down" | "neutral"
 

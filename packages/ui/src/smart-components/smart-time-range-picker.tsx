@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import { ArrowRightIcon } from "lucide-react"
-import { cn } from "@workspace/ui/lib/utils"
-import { Label } from "@workspace/ui/components/label"
-import { SmartTimePicker } from "@workspace/ui/smart-components/smart-time-picker"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Label } from "@imsaroj/smart-ui/components/label"
+import { SmartTimePicker } from "@imsaroj/smart-ui/smart-components/smart-time-picker"
 
 export interface TimeRange {
   /** Start time as 24-hour `"HH:mm"` (or `"HH:mm:ss"` with `withSeconds`). */

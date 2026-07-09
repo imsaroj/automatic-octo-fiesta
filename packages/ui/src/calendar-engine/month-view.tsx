@@ -9,7 +9,7 @@ import {
   startOfDay,
   startOfWeek,
 } from "date-fns"
-import { cn } from "@workspace/ui/lib/utils"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
 import type { CalendarEvent } from "./types"
 import type { CalendarViewProps } from "./shared"
 import { MonthEventPill } from "./shared"

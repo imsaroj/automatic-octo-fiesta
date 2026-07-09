@@ -1,7 +1,7 @@
 import {
   SmartTimeRangePicker,
   type TimeRange,
-} from "@workspace/ui/smart-components/smart-time-range-picker"
+} from "@imsaroj/smart-ui/smart-components/smart-time-range-picker"
 import type { FieldBaseProps } from "./base"
 
 export type { TimeRange }

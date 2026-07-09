@@ -3,8 +3,8 @@
 import * as React from "react"
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
-import { cn } from "@workspace/ui/lib/utils"
-import { Button } from "@workspace/ui/components/button"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Button } from "@imsaroj/smart-ui/components/button"
 
 import { deepEqual, isFieldRequired } from "./smart-form-internals"
 import type { FieldDefinition, ResolvedFieldDefinition } from "./field-types"

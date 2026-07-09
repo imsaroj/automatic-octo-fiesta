@@ -2,15 +2,15 @@
 
 import * as React from "react"
 import { Eye, EyeOff } from "lucide-react"
-import { cn } from "@workspace/ui/lib/utils"
-import { withLeadingSpaceGuard } from "@workspace/ui/lib/leading-space"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { withLeadingSpaceGuard } from "@imsaroj/smart-ui/lib/leading-space"
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
-} from "@workspace/ui/components/input-group"
-import { Label } from "@workspace/ui/components/label"
+} from "@imsaroj/smart-ui/components/input-group"
+import { Label } from "@imsaroj/smart-ui/components/label"
 
 export interface SmartPasswordInputProps extends Omit<
   React.ComponentProps<"input">,

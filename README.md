@@ -2,43 +2,56 @@
 
 **Copy less UI. Ship more product.**
 
-`@workspace/ui` is a source-first React 19 UI system that turns the product patterns teams rebuild over and over — forms, data grids, search bars, trees, calendars, rich text — into documented, tested, config-driven building blocks.
+`@imsaroj/smart-ui` is a source-first React 19 UI system that turns the product patterns teams rebuild over and over —
+forms, data grids, search bars, trees, calendars, rich text — into documented, tested, config-driven building blocks.
 
-Most UI libraries hand you primitives and leave the glue to you. This one ships the higher-level pieces on top of them, so a form is a schema, a grid is a fetcher, and a page is a set of named slots.
+Most UI libraries hand you primitives and leave the glue to you. This one ships the higher-level pieces on top of them,
+so a form is a schema, a grid is a fetcher, and a page is a set of named slots.
 
-[Why](#why) &middot; [Features](#features) &middot; [Getting started](#getting-started) &middot; [Usage](#usage) &middot; [Project structure](#project-structure) &middot; [Documentation](#documentation)
+[Why](#why) &middot; [Features](#features) &middot; [Getting started](#getting-started) &middot; [Usage](#usage)
+&middot; [Project structure](#project-structure) &middot; [Documentation](#documentation)
 
 ---
 
 ## Why
 
-| Without Smart Component                                | With Smart Component                  |
-| ------------------------------------------------------ | ------------------------------------- |
-| Recreate form scaffolding field by field               | Drive `SmartForm` from a Zod schema   |
-| Build every dialog, card, and sheet from scratch       | Compose flat `Smart*` wrappers        |
-| Rewrite grid wiring, selection, and pagination         | Drop in `@workspace/ui/data-grid`     |
-| Rebuild search/filter bars for every list page         | Declare `@workspace/ui/search-engine` |
-| Re-implement trees, calendars, transfer lists, editors | Reach for the domain engine           |
+| Without Smart Component                                | With Smart Component                      |
+| ------------------------------------------------------ | ----------------------------------------- |
+| Recreate form scaffolding field by field               | Drive `SmartForm` from a Zod schema       |
+| Build every dialog, card, and sheet from scratch       | Compose flat `Smart*` wrappers            |
+| Rewrite grid wiring, selection, and pagination         | Drop in `@imsaroj/smart-ui/data-grid`     |
+| Rebuild search/filter bars for every list page         | Declare `@imsaroj/smart-ui/search-engine` |
+| Re-implement trees, calendars, transfer lists, editors | Reach for the domain engine               |
 
-The goal is a public API that stays predictable, less glue code, and a codebase that still reads well after the first week.
+The goal is a public API that stays predictable, less glue code, and a codebase that still reads well after the first
+week.
 
 ## Features
 
-- **Smart wrappers** — flat, config-driven versions of shadcn/ui compound components (`SmartCard`, `SmartDialog`, `SmartSheet`, `SmartSelect`, `SmartCombobox`, `SmartStepper`, `SmartToaster`, and more). Each file re-exports the underlying primitives, so you can drop back to the compound form whenever the flat API can't express a layout.
-- **Action buttons** — 27 ready CRUD/toolbar presets (`AddButton`, `SaveButton`, `DeleteButton`, …) driven by one config map, with icon-only mode, tooltips, and optional permission gating.
-- **Form engine** — declarative forms on TanStack Form + Zod v4. One schema is the single source of truth for validation _and_ required-ness; a `FieldDefinition[]` picks the controls.
-- **Data grid** — `SmartGrid` (client-side, quick search + CSV export) and `SmartServerGrid` (infinite/server-side) backed by AG Grid, with a reusable Spring `Page<T>` fetch pipeline and cross-page selection.
-- **Search engine** — a filter bar that composes the form engine, adding manual and debounced auto-search, empty-value pruning, and an active-filter count.
-- **Tree, transfer list, and calendar engines** — generic, Set-backed components for hierarchical navigation, dual-list shuttles, and month/week/day/agenda scheduling with booking and recurrence.
+- **Smart wrappers** — flat, config-driven versions of shadcn/ui compound components (`SmartCard`, `SmartDialog`,
+  `SmartSheet`, `SmartSelect`, `SmartCombobox`, `SmartStepper`, `SmartToaster`, and more). Each file re-exports the
+  underlying primitives, so you can drop back to the compound form whenever the flat API can't express a layout.
+- **Action buttons** — 27 ready CRUD/toolbar presets (`AddButton`, `SaveButton`, `DeleteButton`, …) driven by one config
+  map, with icon-only mode, tooltips, and optional permission gating.
+- **Form engine** — declarative forms on TanStack Form + Zod v4. One schema is the single source of truth for validation
+  _and_ required-ness; a `FieldDefinition[]` picks the controls.
+- **Data grid** — `SmartGrid` (client-side, quick search + CSV export) and `SmartServerGrid` (infinite/server-side)
+  backed by AG Grid, with a reusable Spring `Page<T>` fetch pipeline and cross-page selection.
+- **Search engine** — a filter bar that composes the form engine, adding manual and debounced auto-search, empty-value
+  pruning, and an active-filter count.
+- **Tree, transfer list, and calendar engines** — generic, Set-backed components for hierarchical navigation, dual-list
+  shuttles, and month/week/day/agenda scheduling with booking and recurrence.
 - **Lexical rich text editor** — a full editor wrapped as a single `SmartTextEditor`, with HTML or JSON value formats.
 - **Page layout system** — page chrome expressed as named slots (`SmartPage`) instead of nested `div`s.
 
-All reusable logic is unit-tested with Vitest, checked with strict TypeScript, and demonstrated live in the playground app.
+All reusable logic is unit-tested with Vitest, checked with strict TypeScript, and demonstrated live in the playground
+app.
 
 ## Getting started
 
 > [!NOTE]
-> This is a **pnpm + Turborepo monorepo**. It has two workspaces: `apps/web` (the Vite + React 19 playground) and `packages/ui` (the `@workspace/ui` library, exported directly as source with no build step).
+> This is a **pnpm + Turborepo monorepo**. It has two workspaces: `apps/web` (the Vite + React 19 playground) and
+> `packages/ui` (the `@imsaroj/smart-ui` library, exported directly as source with no build step).
 
 ### Prerequisites
 
@@ -52,7 +65,8 @@ pnpm install
 pnpm dev
 ```
 
-`pnpm dev` starts every workspace through Turbo. Open the playground app to browse the public API in real UI, backed by an [MSW](https://mswjs.io) mock API.
+`pnpm dev` starts every workspace through Turbo. Open the playground app to browse the public API in real UI, backed by
+an [MSW](https://mswjs.io) mock API.
 
 ### Common commands
 
@@ -70,17 +84,20 @@ pnpm publint        # Lint the published package
 ```
 
 > [!IMPORTANT]
-> Commits follow [Conventional Commits](https://www.conventionalcommits.org) and are enforced by commitlint via a Husky hook. Husky also runs `lint-staged` on pre-commit and checks on pre-push — don't bypass them with `--no-verify` unless asked.
+> Commits follow [Conventional Commits](https://www.conventionalcommits.org) and are enforced by commitlint via a Husky
+> hook. Husky also runs `lint-staged` on pre-commit and checks on pre-push — don't bypass them with `--no-verify` unless
+> asked.
 
 ## Usage
 
-Import through the explicit subpath exports declared in [`packages/ui/package.json`](packages/ui/package.json) — never reach into internal files.
+Import through the explicit subpath exports declared in [`packages/ui/package.json`](packages/ui/package.json) — never
+reach into internal files.
 
 ### Schema-driven form
 
 ```tsx
 import { z } from "zod"
-import { SmartForm, type FieldDefinition } from "@workspace/ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@imsaroj/smart-ui/form-engine"
 
 const contactSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -90,24 +107,27 @@ const contactSchema = z.object({
 })
 
 const fields: FieldDefinition<z.infer<typeof contactSchema>>[] = [
-  { name: "name", type: "text", label: "Your name", placeholder: "Ada Lovelace" },
-  { name: "email", type: "email", label: "Email" },
-  { name: "subject", type: "select", label: "Subject", options: SUBJECT_OPTIONS },
-  { name: "message", type: "textarea", label: "Message", rows: 4 },
-]
+    { name: "name", type: "text", label: "Your name", placeholder: "Ada Lovelace" },
+    { name: "email", type: "email", label: "Email" },
+    { name: "subject", type: "select", label: "Subject", options: SUBJECT_OPTIONS },
+    { name: "message", type: "textarea", label: "Message", rows: 4 },
+  ]
 
-<SmartForm
-  schema={contactSchema}
-  fields={fields}
-  submitLabel="Send message"
-  onSubmit={(value) => toast.success(`Thanks, ${value.name}!`)}
+  < SmartForm
+schema = { contactSchema }
+fields = { fields }
+submitLabel = "Send message"
+onSubmit = {(value)
+=>
+toast.success(`Thanks, ${value.name}!`)
+}
 />
 ```
 
 ### Flat compound wrapper
 
 ```tsx
-import { SmartCard } from "@workspace/ui/smart-components/smart-card"
+import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
 
 ;<SmartCard
   header={{
@@ -124,19 +144,19 @@ import { SmartCard } from "@workspace/ui/smart-components/smart-card"
 ### Available entrypoints
 
 ```
-@workspace/ui/components/*             shadcn/ui primitives (Base UI under the hood)
-@workspace/ui/hooks/*                  shared hooks
-@workspace/ui/lib/*                    cn(), formatters, xlsx writer
-@workspace/ui/smart-components/*       Smart* wrappers
-@workspace/ui/smart-components/page    page-layout slots
-@workspace/ui/smart-components/buttons action-button presets
-@workspace/ui/form-engine             declarative forms
-@workspace/ui/search-engine           search/filter bar
-@workspace/ui/data-grid               AG Grid wrappers
-@workspace/ui/tree-engine             SmartTree
-@workspace/ui/transfer-list-engine    SmartTransferList
-@workspace/ui/calendar-engine         SmartCalendar
-@workspace/ui/lexical-text-editor     SmartTextEditor
+@imsaroj/smart-ui/components/*             shadcn/ui primitives (Base UI under the hood)
+@imsaroj/smart-ui/hooks/*                  shared hooks
+@imsaroj/smart-ui/lib/*                    cn(), formatters, xlsx writer
+@imsaroj/smart-ui/smart-components/*       Smart* wrappers
+@imsaroj/smart-ui/smart-components/page    page-layout slots
+@imsaroj/smart-ui/smart-components/buttons action-button presets
+@imsaroj/smart-ui/form-engine             declarative forms
+@imsaroj/smart-ui/search-engine           search/filter bar
+@imsaroj/smart-ui/data-grid               AG Grid wrappers
+@imsaroj/smart-ui/tree-engine             SmartTree
+@imsaroj/smart-ui/transfer-list-engine    SmartTransferList
+@imsaroj/smart-ui/calendar-engine         SmartCalendar
+@imsaroj/smart-ui/lexical-text-editor     SmartTextEditor
 ```
 
 ## Project structure
@@ -144,15 +164,17 @@ import { SmartCard } from "@workspace/ui/smart-components/smart-card"
 ```text
 smart-component/
 ├── apps/web/        Vite + React 19 playground and live demos (MSW mock API)
-├── packages/ui/     @workspace/ui — source-only library, exported via subpaths
+├── packages/ui/     @imsaroj/smart-ui — source-only library, exported via subpaths
 ├── docs/            Consumer guides, ADRs, and docs checks
 ├── e2e/             Playwright end-to-end tests
 ├── scripts/         Repo-level verification scripts
 └── tooling/         Type-check and validation helpers
 ```
 
-- **`apps/web`** — the fastest way to understand the intended API. Every public component and engine has a demo page, backed by mock data and a TanStack Query CRUD reference recipe.
-- **`packages/ui`** — a source-only package with no build step. Everything is exposed through the exports map; internal files are not individually importable.
+- **`apps/web`** — the fastest way to understand the intended API. Every public component and engine has a demo page,
+  backed by mock data and a TanStack Query CRUD reference recipe.
+- **`packages/ui`** — a source-only package with no build step. Everything is exposed through the exports map; internal
+  files are not individually importable.
 
 ## Documentation
 
@@ -168,4 +190,5 @@ The docs index lives in [`docs/README.md`](docs/README.md), with a guide per eng
 - [Smart component wrappers](docs/smart-components.md)
 - [Component map](docs/component-map.md) &middot; [Security notes](docs/security.md)
 
-Architecture decisions are recorded in [`ARCHITECTURE.md`](ARCHITECTURE.md). If you extend the public surface, keep the docs and the exports map aligned — `pnpm docs:check` enforces it.
+Architecture decisions are recorded in [`ARCHITECTURE.md`](ARCHITECTURE.md). If you extend the public surface, keep the
+docs and the exports map aligned — `pnpm docs:check` enforces it.

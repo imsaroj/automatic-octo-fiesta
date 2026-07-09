@@ -19,14 +19,14 @@ import {
   SlidersHorizontal,
   User,
 } from "lucide-react"
-import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
-import { Input } from "@workspace/ui/smart-components/smart-input"
-import { Label } from "@workspace/ui/smart-components/smart-label"
-import { Switch } from "@workspace/ui/smart-components/smart-switch"
+import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { Input } from "@imsaroj/smart-ui/smart-components/smart-input"
+import { Label } from "@imsaroj/smart-ui/smart-components/smart-label"
+import { Switch } from "@imsaroj/smart-ui/smart-components/smart-switch"
 import {
   Avatar,
   AvatarFallback,
-} from "@workspace/ui/smart-components/smart-avatar"
+} from "@imsaroj/smart-ui/smart-components/smart-avatar"
 import {
   SmartPage,
   SmartPageTabs,
@@ -35,7 +35,7 @@ import {
   SmartPageContent,
   SmartPageSection,
   SmartPageFooter,
-} from "@workspace/ui/smart-components/page"
+} from "@imsaroj/smart-ui/smart-components/page"
 import { SettingsDialog } from "@/components/settings/settings-dialog"
 
 // ─── Profile settings ─────────────────────────────────────────────────────────

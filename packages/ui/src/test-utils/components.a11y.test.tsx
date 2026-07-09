@@ -5,20 +5,20 @@ import { act } from "react"
 import { z } from "zod"
 
 import { expectNoA11yViolations } from "./a11y"
-import { SmartForm } from "@workspace/ui/form-engine"
-import { SmartDialog } from "@workspace/ui/smart-components/smart-dialog"
-import { SmartSelect } from "@workspace/ui/smart-components/smart-select"
-import { SmartCombobox } from "@workspace/ui/smart-components/smart-combobox"
-import { SmartDatePicker } from "@workspace/ui/smart-components/smart-date-picker"
-import { SmartStepper } from "@workspace/ui/smart-components/smart-stepper"
-import { SmartTree } from "@workspace/ui/tree-engine"
-import { SmartTransferList } from "@workspace/ui/transfer-list-engine"
-import { SmartCalendar } from "@workspace/ui/calendar-engine"
+import { SmartForm } from "@imsaroj/smart-ui/form-engine"
+import { SmartDialog } from "@imsaroj/smart-ui/smart-components/smart-dialog"
+import { SmartSelect } from "@imsaroj/smart-ui/smart-components/smart-select"
+import { SmartCombobox } from "@imsaroj/smart-ui/smart-components/smart-combobox"
+import { SmartDatePicker } from "@imsaroj/smart-ui/smart-components/smart-date-picker"
+import { SmartStepper } from "@imsaroj/smart-ui/smart-components/smart-stepper"
+import { SmartTree } from "@imsaroj/smart-ui/tree-engine"
+import { SmartTransferList } from "@imsaroj/smart-ui/transfer-list-engine"
+import { SmartCalendar } from "@imsaroj/smart-ui/calendar-engine"
 import {
   AddButton,
   DeleteButton,
   SaveButton,
-} from "@workspace/ui/smart-components/buttons"
+} from "@imsaroj/smart-ui/smart-components/buttons"
 
 /**
  * Accessibility smoke tests: render each high-traffic surface and assert axe-core

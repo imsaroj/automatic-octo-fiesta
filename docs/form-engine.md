@@ -1,4 +1,4 @@
-# Form engine — `@workspace/ui/form-engine`
+# Form engine — `@imsaroj/smart-ui/form-engine`
 
 ## What it is
 
@@ -10,7 +10,7 @@ manages state — no per-field wiring.
 ## Import
 
 ```ts
-import { SmartForm, type FieldDefinition } from "@workspace/ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@imsaroj/smart-ui/form-engine"
 import { z } from "zod"
 ```
 

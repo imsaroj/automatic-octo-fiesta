@@ -6,8 +6,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
-import { cn } from "@workspace/ui/lib/utils"
+import { Button } from "@imsaroj/smart-ui/components/button"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
 import type {
   AvailabilityWindow,
   CalendarEvent,

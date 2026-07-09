@@ -18,9 +18,9 @@ import {
   SmartPageContent,
   SmartPageSection,
   SmartPageFooter,
-} from "@workspace/ui/smart-components/page"
-import { SmartButton as Button } from "@workspace/ui/smart-components/smart-button"
-import { SmartBadge as Badge } from "@workspace/ui/smart-components/smart-badge"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartButton as Button } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { SmartBadge as Badge } from "@imsaroj/smart-ui/smart-components/smart-badge"
 
 const SLOTS = [
   "SmartPageHeader",

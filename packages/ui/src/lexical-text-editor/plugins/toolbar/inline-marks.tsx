@@ -8,7 +8,7 @@ import {
   type TextFormatType,
 } from "lexical"
 import { $patchStyleText } from "@lexical/selection"
-import { cn } from "@workspace/ui/lib/utils"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
 import {
   Baseline,
   Bold,

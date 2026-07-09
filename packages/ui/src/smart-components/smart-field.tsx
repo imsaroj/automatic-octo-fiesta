@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@workspace/ui/lib/utils"
-import { Label } from "@workspace/ui/components/label"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Label } from "@imsaroj/smart-ui/components/label"
 
 export interface SmartFieldProps {
   /**

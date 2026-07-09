@@ -12,19 +12,19 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@workspace/ui/smart-components/page"
-import { SmartBadge } from "@workspace/ui/smart-components/smart-badge"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartBadge } from "@imsaroj/smart-ui/smart-components/smart-badge"
 import {
   SmartButton,
   SmartButton as Button,
-} from "@workspace/ui/smart-components/smart-button"
-import { SmartAlert } from "@workspace/ui/smart-components/smart-alert"
-import { SmartAccordion } from "@workspace/ui/smart-components/smart-accordion"
-import { SmartCard } from "@workspace/ui/smart-components/smart-card"
-import { SmartSpinner } from "@workspace/ui/smart-components/spinner"
-import { SmartLoadingOverlay } from "@workspace/ui/smart-components/loading-overlay"
-import { toast } from "@workspace/ui/smart-components/smart-toaster"
-import { Separator } from "@workspace/ui/smart-components/smart-separator"
+} from "@imsaroj/smart-ui/smart-components/smart-button"
+import { SmartAlert } from "@imsaroj/smart-ui/smart-components/smart-alert"
+import { SmartAccordion } from "@imsaroj/smart-ui/smart-components/smart-accordion"
+import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
+import { SmartSpinner } from "@imsaroj/smart-ui/smart-components/spinner"
+import { SmartLoadingOverlay } from "@imsaroj/smart-ui/smart-components/loading-overlay"
+import { toast } from "@imsaroj/smart-ui/smart-components/smart-toaster"
+import { Separator } from "@imsaroj/smart-ui/smart-components/smart-separator"
 
 const FAQ_ITEMS = [
   {

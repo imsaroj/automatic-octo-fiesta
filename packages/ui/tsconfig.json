@@ -11,7 +11,7 @@
     "noUnusedParameters": true,
     "noEmit": true,
     "paths": {
-      "@workspace/ui/*": ["./src/*"],
+      "@imsaroj/smart-ui/*": ["./src/*"],
       "@/*": ["./src/*"]
     }
   },

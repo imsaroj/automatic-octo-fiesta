@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@workspace/ui/lib/utils"
-import { Switch } from "@workspace/ui/components/switch"
-import { Label } from "@workspace/ui/components/label"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Switch } from "@imsaroj/smart-ui/components/switch"
+import { Label } from "@imsaroj/smart-ui/components/label"
 
 export interface SmartSwitchProps extends Omit<
   React.ComponentProps<typeof Switch>,

@@ -8,7 +8,7 @@ pnpm dev         # all workspaces via Turbo (app on Vite)
 ```
 
 Workspaces: `apps/web` (Vite playground/demo) and `packages/ui`
-(`@workspace/ui`, the source-only component library). See [`CLAUDE.md`](./CLAUDE.md)
+(`@imsaroj/smart-ui`, the source-only component library). See [`CLAUDE.md`](./CLAUDE.md)
 for the architecture map and [`docs/`](./docs/README.md) for per-domain guides.
 
 ## Quality gates
@@ -37,32 +37,25 @@ runs commitlint, `pre-push` runs typecheck + tests. Don't bypass them with
 **Conventional Commits** (enforced by commitlint): `feat:`, `fix:`, `chore:`,
 `docs:`, `test:`, `refactor:`, … A scope is encouraged (`feat(ui): …`).
 
-## Changesets — one per user-facing change
+Commit types now drive releases (see below), so pick them deliberately:
+`fix:` → patch, `feat:` → minor, a `BREAKING CHANGE:` footer or `!` (`feat!:`) →
+major. `chore:`/`docs:`/`refactor:`/`test:` do not trigger a release.
 
-Any PR that changes `packages/ui/src/**` **must include a changeset** describing
-the change (CI fails otherwise):
+## Releases — automatic on push to `main`
 
-```bash
-pnpm changeset            # pick @workspace/ui, choose semver bump, write a summary
-```
+Publishing is fully automated by **semantic-release**
+(`.github/workflows/release.yml`, config in `.releaserc.json`). On every push to
+`main` it analyzes the conventional commits since the last tag and, if any are
+release-worthy, it:
 
-- Choose `patch` for fixes, `minor` for new components/props, `major` for breaking
-  API changes. `apps/web` is never versioned (ignored in `.changeset/config.json`).
-- If a change genuinely needs no release (internal-only refactor with no API
-  effect), run `pnpm changeset --empty`.
-- Commit the generated `.changeset/*.md` with your change.
+1. bumps `packages/ui/package.json` and prepends `packages/ui/CHANGELOG.md`,
+2. builds (`build:lib`) and publishes `@imsaroj/smart-ui` to npm via
+   `pnpm publish` (which swaps in the dist-facing `publishConfig.exports` —
+   the in-repo `exports` map keeps pointing at source, per
+   [ADR 0006](./docs/adr/0006-distribution-strategy.md)),
+3. pushes a `chore(release): vX.Y.Z [skip ci]` commit + `vX.Y.Z` tag and creates
+   a GitHub release.
 
-## Release steps
-
-The library is **private and source-only** ([ADR 0002](./docs/adr/0002-source-only-package-no-build-step.md),
-[ADR 0006](./docs/adr/0006-distribution-strategy.md)) — "release" means cutting a
-version + changelog, not publishing to a registry (yet).
-
-```bash
-pnpm version-packages   # changeset version → bumps @workspace/ui, updates CHANGELOG.md
-# review the diff, then commit:
-git commit -am "chore(release): version packages"
-```
-
-`pnpm build:lib` proves the package still compiles standalone; when registry
-publishing is adopted, see the follow-up noted in ADR 0006.
+There is nothing to run locally — no changesets, no manual version bumps. The
+workflow needs the `NPM_TOKEN` repository secret (an npm automation/granular
+token with publish rights).

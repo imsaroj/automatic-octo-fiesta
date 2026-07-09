@@ -6,7 +6,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@workspace/ui/components/accordion"
+} from "@imsaroj/smart-ui/components/accordion"
 
 export interface SmartAccordionItem {
   /** Unique identifier. Must match across trigger and content. */

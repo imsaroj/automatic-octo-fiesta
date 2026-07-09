@@ -1,9 +1,9 @@
 import * as React from "react"
 import { X } from "lucide-react"
-import { cn } from "@workspace/ui/lib/utils"
-import { Badge } from "@workspace/ui/components/badge"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Badge } from "@imsaroj/smart-ui/components/badge"
 import type { VariantProps } from "class-variance-authority"
-import { badgeVariants } from "@workspace/ui/components/badge"
+import { badgeVariants } from "@imsaroj/smart-ui/components/badge"
 
 const dotColors: Record<string, string> = {
   gray: "bg-muted-foreground",

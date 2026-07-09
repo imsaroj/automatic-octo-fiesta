@@ -9,12 +9,12 @@ import {
   ChevronsRightIcon,
 } from "lucide-react"
 
-import { cn } from "@workspace/ui/lib/utils"
-import { Button } from "@workspace/ui/components/button"
-import { Checkbox } from "@workspace/ui/components/checkbox"
-import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
-import { ScrollArea } from "@workspace/ui/components/scroll-area"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { Button } from "@imsaroj/smart-ui/components/button"
+import { Checkbox } from "@imsaroj/smart-ui/components/checkbox"
+import { Input } from "@imsaroj/smart-ui/components/input"
+import { Label } from "@imsaroj/smart-ui/components/label"
+import { ScrollArea } from "@imsaroj/smart-ui/components/scroll-area"
 
 import type {
   SmartTransferListHandle,

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { addMinutes, format, isSameDay, startOfDay } from "date-fns"
-import { cn } from "@workspace/ui/lib/utils"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
 import type { CalendarEvent, CalendarSize } from "./types"
 import type { CalendarViewProps } from "./shared"
 import { TimedEventBlock } from "./shared"

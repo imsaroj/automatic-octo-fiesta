@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Launch and drive the Vite playground to verify @workspace/ui changes at the browser surface (AG Grid, Base UI portals, MSW-backed data).
+description: Launch and drive the Vite playground to verify @imsaroj/smart-ui changes at the browser surface (AG Grid, Base UI portals, MSW-backed data).
 ---
 
 # Verify changes in the running playground

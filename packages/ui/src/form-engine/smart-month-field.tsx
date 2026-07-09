@@ -1,4 +1,4 @@
-import { SmartMonthPicker } from "@workspace/ui/smart-components/smart-month-picker"
+import { SmartMonthPicker } from "@imsaroj/smart-ui/smart-components/smart-month-picker"
 import type { FieldBaseProps } from "./base"
 
 export interface SmartMonthFieldProps extends Omit<

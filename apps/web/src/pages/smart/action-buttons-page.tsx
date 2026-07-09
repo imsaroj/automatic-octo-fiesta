@@ -3,10 +3,10 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@workspace/ui/smart-components/page"
-import { SmartCard } from "@workspace/ui/smart-components/smart-card"
-import { SmartSegmented } from "@workspace/ui/smart-components/smart-segmented"
-import { toast } from "@workspace/ui/smart-components/smart-toaster"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
+import { SmartSegmented } from "@imsaroj/smart-ui/smart-components/smart-segmented"
+import { toast } from "@imsaroj/smart-ui/smart-components/smart-toaster"
 import {
   ACTION_BUTTON_CONFIG,
   ActionButton,
@@ -39,7 +39,7 @@ import {
   UploadButton,
   ViewButton,
   type ActionKind,
-} from "@workspace/ui/smart-components/buttons"
+} from "@imsaroj/smart-ui/smart-components/buttons"
 
 const GROUPS: { label: string; buttons: React.ReactNode }[] = [
   {

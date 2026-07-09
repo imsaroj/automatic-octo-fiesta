@@ -1,4 +1,4 @@
-import { SmartInput } from "@workspace/ui/smart-components/smart-input"
+import { SmartInput } from "@imsaroj/smart-ui/smart-components/smart-input"
 import type { FieldBaseProps } from "./base"
 
 export interface SmartInputFieldProps extends FieldBaseProps<string> {

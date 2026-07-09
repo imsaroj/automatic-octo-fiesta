@@ -1,4 +1,4 @@
-import { SmartPasswordInput } from "@workspace/ui/smart-components/smart-password-input"
+import { SmartPasswordInput } from "@imsaroj/smart-ui/smart-components/smart-password-input"
 import type { FieldBaseProps } from "./base"
 
 export interface SmartPasswordFieldProps extends FieldBaseProps<string> {

@@ -5,7 +5,7 @@
 ## Context
 
 [ADR 0002](./0002-source-only-package-no-build-step.md) established that
-`@workspace/ui` ships as **source** through its `exports` map with no build step.
+`@imsaroj/smart-ui` ships as **source** through its `exports` map with no build step.
 That is ideal for monorepo consumption but leaves two questions for the future:
 can the package be consumed outside the monorepo (git dependency, private
 registry), and does the source actually _compile_ as a standalone library?
@@ -41,7 +41,7 @@ A consumer compiling the source must provide:
 
 - **TypeScript ≥ 5.5** (bundler module resolution; the repo uses `~6`).
 - **React 19** (`react` / `react-dom` ≥ 19).
-- **Tailwind CSS v4**, importing `@workspace/ui/globals.css` once at the app
+- **Tailwind CSS v4**, importing `@imsaroj/smart-ui/globals.css` once at the app
   entry, with `@source` directives that scan the package (the shipped
   `globals.css` already does).
 - A **bundler that reads the `exports` map** (Vite/Rolldown, webpack 5, esbuild,

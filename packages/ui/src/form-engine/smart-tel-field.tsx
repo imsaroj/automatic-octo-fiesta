@@ -1,5 +1,5 @@
 import { PhoneIcon } from "lucide-react"
-import { SmartInputGroup } from "@workspace/ui/smart-components/smart-input-group"
+import { SmartInputGroup } from "@imsaroj/smart-ui/smart-components/smart-input-group"
 import type { FieldBaseProps } from "./base"
 
 export interface SmartTelFieldProps extends FieldBaseProps<string> {

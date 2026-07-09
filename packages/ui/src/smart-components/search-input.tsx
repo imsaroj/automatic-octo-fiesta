@@ -1,13 +1,13 @@
 import { Search, X } from "lucide-react"
 
-import { cn } from "@workspace/ui/lib/utils"
-import { withLeadingSpaceGuard } from "@workspace/ui/lib/leading-space"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
+import { withLeadingSpaceGuard } from "@imsaroj/smart-ui/lib/leading-space"
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
-} from "@workspace/ui/components/input-group"
+} from "@imsaroj/smart-ui/components/input-group"
 
 export interface SmartSearchInputProps {
   value: string

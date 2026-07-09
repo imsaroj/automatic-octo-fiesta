@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "@workspace/ui/lib/utils"
+import { cn } from "@imsaroj/smart-ui/lib/utils"
 
 const Label = ({ className, ...props }: React.ComponentProps<"label">) => (
   <label

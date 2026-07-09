@@ -4,19 +4,19 @@ import {
   SmartPage,
   SmartPageContent,
   SmartPageSection,
-} from "@workspace/ui/smart-components/page"
-import { SmartInput } from "@workspace/ui/smart-components/smart-input"
-import { SmartTextarea } from "@workspace/ui/smart-components/smart-textarea"
-import { SmartCheckbox } from "@workspace/ui/smart-components/smart-checkbox"
-import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
-import { SmartRadioGroup } from "@workspace/ui/smart-components/smart-radio-group"
-import { SmartSelect } from "@workspace/ui/smart-components/smart-select"
-import { SmartNativeSelect } from "@workspace/ui/smart-components/smart-native-select"
-import { SmartInputGroup } from "@workspace/ui/smart-components/smart-input-group"
-import { SmartField } from "@workspace/ui/smart-components/smart-field"
-import { SmartLabel } from "@workspace/ui/smart-components/smart-label"
-import { SmartButton } from "@workspace/ui/smart-components/smart-button"
-import { Separator } from "@workspace/ui/smart-components/smart-separator"
+} from "@imsaroj/smart-ui/smart-components/page"
+import { SmartInput } from "@imsaroj/smart-ui/smart-components/smart-input"
+import { SmartTextarea } from "@imsaroj/smart-ui/smart-components/smart-textarea"
+import { SmartCheckbox } from "@imsaroj/smart-ui/smart-components/smart-checkbox"
+import { SmartSwitch } from "@imsaroj/smart-ui/smart-components/smart-switch"
+import { SmartRadioGroup } from "@imsaroj/smart-ui/smart-components/smart-radio-group"
+import { SmartSelect } from "@imsaroj/smart-ui/smart-components/smart-select"
+import { SmartNativeSelect } from "@imsaroj/smart-ui/smart-components/smart-native-select"
+import { SmartInputGroup } from "@imsaroj/smart-ui/smart-components/smart-input-group"
+import { SmartField } from "@imsaroj/smart-ui/smart-components/smart-field"
+import { SmartLabel } from "@imsaroj/smart-ui/smart-components/smart-label"
+import { SmartButton } from "@imsaroj/smart-ui/smart-components/smart-button"
+import { Separator } from "@imsaroj/smart-ui/smart-components/smart-separator"
 
 const COUNTRIES = [
   { value: "kr", label: "South Korea" },
