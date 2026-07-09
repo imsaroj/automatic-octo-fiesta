@@ -7,8 +7,16 @@
       name="description"
       content="Smart Component is a source-first React 19 UI system. One Zod schema drives forms, grids, search, trees, calendars, and rich text through config-driven components."
     />
-    <meta name="theme-color" content="#0a0e14" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#f7f9fb" media="(prefers-color-scheme: light)" />
+    <meta
+      name="theme-color"
+      content="#0a0e14"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="theme-color"
+      content="#f7f9fb"
+      media="(prefers-color-scheme: light)"
+    />
     <meta property="og:title" content="Smart Component" />
     <meta
       property="og:description"
@@ -83,8 +91,8 @@
           system-ui, -apple-system, "Segoe UI Variable Display", "Segoe UI",
           Roboto, "Helvetica Neue", Arial, sans-serif;
         --mono:
-          ui-monospace, "Cascadia Code", "JetBrains Mono", "SF Mono", "Fira Code",
-          Consolas, monospace;
+          ui-monospace, "Cascadia Code", "JetBrains Mono", "SF Mono",
+          "Fira Code", Consolas, monospace;
 
         --ease: cubic-bezier(0.16, 1, 0.3, 1);
       }
@@ -676,13 +684,28 @@
         tab-size: 2;
       }
 
-      .tk-kw { color: var(--tk-kw); }
-      .tk-tag { color: var(--tk-tag); }
-      .tk-prop { color: var(--tk-prop); }
-      .tk-str { color: var(--tk-str); }
-      .tk-num { color: var(--tk-num); }
-      .tk-punc { color: var(--tk-punc); }
-      .tk-cm { color: var(--tk-cm); font-style: italic; }
+      .tk-kw {
+        color: var(--tk-kw);
+      }
+      .tk-tag {
+        color: var(--tk-tag);
+      }
+      .tk-prop {
+        color: var(--tk-prop);
+      }
+      .tk-str {
+        color: var(--tk-str);
+      }
+      .tk-num {
+        color: var(--tk-num);
+      }
+      .tk-punc {
+        color: var(--tk-punc);
+      }
+      .tk-cm {
+        color: var(--tk-cm);
+        font-style: italic;
+      }
 
       .codewin .fade-tail {
         display: block;
@@ -871,9 +894,18 @@
         font-weight: 600;
       }
 
-      .ui-pill.good { color: var(--good); background: var(--good-dim); }
-      .ui-pill.warn { color: var(--warn); background: var(--warn-dim); }
-      .ui-pill.mute { color: var(--text-2); background: var(--surface-3); }
+      .ui-pill.good {
+        color: var(--good);
+        background: var(--good-dim);
+      }
+      .ui-pill.warn {
+        color: var(--warn);
+        background: var(--warn-dim);
+      }
+      .ui-pill.mute {
+        color: var(--text-2);
+        background: var(--surface-3);
+      }
 
       /* mini calendar */
       .ui-cal {
@@ -926,7 +958,10 @@
         border-top: 1px solid var(--line);
       }
 
-      .ui-cal-days > span.dim { color: var(--text-3); opacity: 0.55; }
+      .ui-cal-days > span.dim {
+        color: var(--text-3);
+        opacity: 0.55;
+      }
 
       .ui-cal-days > span.today {
         color: var(--accent);
@@ -955,7 +990,9 @@
         opacity: 0.85;
       }
 
-      .ui-cal-ev.two { background: var(--good); }
+      .ui-cal-ev.two {
+        background: var(--good);
+      }
       .ui-cal-ev.span-start {
         right: -1px;
         border-top-right-radius: 0;
@@ -1000,8 +1037,12 @@
         color: var(--accent);
       }
 
-      .ui-tree-row.d1 { padding-left: 26px; }
-      .ui-tree-row.d2 { padding-left: 42px; }
+      .ui-tree-row.d1 {
+        padding-left: 26px;
+      }
+      .ui-tree-row.d2 {
+        padding-left: 42px;
+      }
 
       /* mini dialog */
       .ui-dialog {
@@ -1478,9 +1519,15 @@
         font-size: 0.8125rem;
       }
 
-      .verdict.bad i { color: var(--bad); }
-      .verdict.good i { color: var(--good); }
-      .verdict.good { color: var(--text); }
+      .verdict.bad i {
+        color: var(--bad);
+      }
+      .verdict.good i {
+        color: var(--good);
+      }
+      .verdict.good {
+        color: var(--text);
+      }
 
       /* ================================================================
          11. WORKFLOW (vertical rail)
@@ -1630,11 +1677,23 @@
         margin-top: auto;
       }
 
-      .cell.c-grid { grid-column: span 2; grid-row: span 2; }
-      .cell.c-cal { grid-column: span 2; grid-row: span 2; }
-      .cell.c-tree { grid-row: span 2; }
-      .cell.c-editor { grid-column: span 2; }
-      .cell.c-transfer { grid-column: span 2; }
+      .cell.c-grid {
+        grid-column: span 2;
+        grid-row: span 2;
+      }
+      .cell.c-cal {
+        grid-column: span 2;
+        grid-row: span 2;
+      }
+      .cell.c-tree {
+        grid-row: span 2;
+      }
+      .cell.c-editor {
+        grid-column: span 2;
+      }
+      .cell.c-transfer {
+        grid-column: span 2;
+      }
 
       /* ================================================================
          13. DX / CONVENTIONS
@@ -1786,9 +1845,16 @@
         color: var(--tk-base);
       }
 
-      .filetree .dir { color: var(--tk-tag); font-weight: 600; }
-      .filetree .note { color: var(--tk-cm); }
-      .filetree .lines { color: var(--tk-punc); }
+      .filetree .dir {
+        color: var(--tk-tag);
+        font-weight: 600;
+      }
+      .filetree .note {
+        color: var(--tk-cm);
+      }
+      .filetree .lines {
+        color: var(--tk-punc);
+      }
 
       /* ================================================================
          15. COMPARISON TABLE
@@ -2070,9 +2136,15 @@
           animation: hero-in 0.7s var(--ease) both;
         }
 
-        .hero-copy > *:nth-child(2) { animation-delay: 0.06s; }
-        .hero-copy > *:nth-child(3) { animation-delay: 0.12s; }
-        .hero-copy > *:nth-child(4) { animation-delay: 0.18s; }
+        .hero-copy > *:nth-child(2) {
+          animation-delay: 0.06s;
+        }
+        .hero-copy > *:nth-child(3) {
+          animation-delay: 0.12s;
+        }
+        .hero-copy > *:nth-child(4) {
+          animation-delay: 0.18s;
+        }
 
         .proof {
           animation: hero-in 0.8s var(--ease) 0.15s both;
@@ -2272,7 +2344,9 @@
     <header class="nav">
       <div class="wrap nav-inner">
         <a class="brand" href="#top" aria-label="Smart Component, back to top">
-          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span class="brand-mark" aria-hidden="true"
+            ><i></i><i></i><i></i><i></i
+          ></span>
           <span>Smart Component</span>
         </a>
 
@@ -2386,7 +2460,10 @@
         <div class="wrap facts-row">
           <div class="fact">
             <strong>7</strong>
-            <span>feature engines: form, grid, search, tree, transfer, calendar, editor</span>
+            <span
+              >feature engines: form, grid, search, tree, transfer, calendar,
+              editor</span
+            >
           </div>
           <div class="fact">
             <strong>27</strong>
@@ -2394,7 +2471,10 @@
           </div>
           <div class="fact">
             <strong>0</strong>
-            <span>build steps. The library ships as readable TypeScript source</span>
+            <span
+              >build steps. The library ships as readable TypeScript
+              source</span
+            >
           </div>
           <div class="fact">
             <strong>React 19</strong>
@@ -2409,8 +2489,8 @@
           <div>
             <h2>The same screens, rebuilt every sprint.</h2>
             <p class="lede">
-              Every product needs a user table, a create form, a search bar,
-              and a date picker. Most codebases rebuild them per feature, with
+              Every product needs a user table, a create form, a search bar, and
+              a date picker. Most codebases rebuild them per feature, with
               slightly different validation, slightly different spacing, and
               entirely different bugs. Smart Component turns those recurring
               patterns into documented, tested building blocks instead of
@@ -2500,7 +2580,10 @@
               <div class="verdicts">
                 <p class="verdict bad">
                   <i aria-hidden="true">&#10005;</i>
-                  <span>Validation rules written twice: once in state, once in markup</span>
+                  <span
+                    >Validation rules written twice: once in state, once in
+                    markup</span
+                  >
                 </p>
                 <p class="verdict bad">
                   <i aria-hidden="true">&#10005;</i>
@@ -2508,7 +2591,9 @@
                 </p>
                 <p class="verdict bad">
                   <i aria-hidden="true">&#10005;</i>
-                  <span>Every form drifts a little further from the last one</span>
+                  <span
+                    >Every form drifts a little further from the last one</span
+                  >
                 </p>
               </div>
             </div>
@@ -2547,11 +2632,17 @@
               <div class="verdicts">
                 <p class="verdict good">
                   <i aria-hidden="true">&#10003;</i>
-                  <span>One Zod schema drives rules, types, and required marks</span>
+                  <span
+                    >One Zod schema drives rules, types, and required
+                    marks</span
+                  >
                 </p>
                 <p class="verdict good">
                   <i aria-hidden="true">&#10003;</i>
-                  <span>Field states, errors, and submit flow handled by the engine</span>
+                  <span
+                    >Field states, errors, and submit flow handled by the
+                    engine</span
+                  >
                 </p>
                 <p class="verdict good">
                   <i aria-hidden="true">&#10003;</i>
@@ -2582,8 +2673,8 @@
               <div class="flow-copy">
                 <h3>Define the schema</h3>
                 <p>
-                  Plain Zod. It already validates your API payloads; now it
-                  also declares your form.
+                  Plain Zod. It already validates your API payloads; now it also
+                  declares your form.
                 </p>
               </div>
               <div class="codewin">
@@ -2729,16 +2820,32 @@
                 <div class="ui-cal">
                   <div class="ui-cal-head">
                     <span>July 2026</span>
-                    <span class="ui-cal-nav"><span>&#8249;</span>&nbsp;&nbsp;<span>&#8250;</span></span>
+                    <span class="ui-cal-nav"
+                      ><span>&#8249;</span>&nbsp;&nbsp;<span
+                        >&#8250;</span
+                      ></span
+                    >
                   </div>
                   <div class="ui-cal-dows">
-                    <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                    <span>M</span><span>T</span><span>W</span><span>T</span
+                    ><span>F</span><span>S</span><span>S</span>
                   </div>
                   <div class="ui-cal-days">
-                    <span class="dim">29</span><span class="dim">30</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
-                    <span>6</span><span>7<span class="ui-cal-ev"></span></span><span class="today">8</span><span>9</span><span>10<span class="ui-cal-ev two span-start"></span></span><span>11<span class="ui-cal-ev two span-end"></span></span><span>12</span>
-                    <span>13</span><span>14</span><span>15<span class="ui-cal-ev"></span></span><span>16</span><span>17</span><span>18</span><span>19</span>
-                    <span>20</span><span>21<span class="ui-cal-ev"></span></span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span>
+                    <span class="dim">29</span><span class="dim">30</span
+                    ><span>1</span><span>2</span><span>3</span><span>4</span
+                    ><span>5</span> <span>6</span
+                    ><span>7<span class="ui-cal-ev"></span></span
+                    ><span class="today">8</span><span>9</span
+                    ><span
+                      >10<span class="ui-cal-ev two span-start"></span></span
+                    ><span>11<span class="ui-cal-ev two span-end"></span></span
+                    ><span>12</span> <span>13</span><span>14</span
+                    ><span>15<span class="ui-cal-ev"></span></span
+                    ><span>16</span><span>17</span><span>18</span
+                    ><span>19</span> <span>20</span
+                    ><span>21<span class="ui-cal-ev"></span></span
+                    ><span>22</span><span>23</span><span>24</span><span>25</span
+                    ><span>26</span>
                   </div>
                 </div>
               </div>
@@ -2755,12 +2862,24 @@
               </p>
               <div class="demo" aria-hidden="true">
                 <div class="ui-tree">
-                  <span class="ui-tree-row folder"><span class="tw">&#9662;</span>workspace</span>
-                  <span class="ui-tree-row folder d1"><span class="tw">&#9662;</span>reports</span>
-                  <span class="ui-tree-row d2"><span class="tw"></span>q2-review.md</span>
-                  <span class="ui-tree-row d2 active"><span class="tw"></span>roadmap.md</span>
-                  <span class="ui-tree-row folder d1"><span class="tw">&#9656;</span>archive</span>
-                  <span class="ui-tree-row d1"><span class="tw"></span>notes.txt</span>
+                  <span class="ui-tree-row folder"
+                    ><span class="tw">&#9662;</span>workspace</span
+                  >
+                  <span class="ui-tree-row folder d1"
+                    ><span class="tw">&#9662;</span>reports</span
+                  >
+                  <span class="ui-tree-row d2"
+                    ><span class="tw"></span>q2-review.md</span
+                  >
+                  <span class="ui-tree-row d2 active"
+                    ><span class="tw"></span>roadmap.md</span
+                  >
+                  <span class="ui-tree-row folder d1"
+                    ><span class="tw">&#9656;</span>archive</span
+                  >
+                  <span class="ui-tree-row d1"
+                    ><span class="tw"></span>notes.txt</span
+                  >
                 </div>
               </div>
             </article>
@@ -2771,13 +2890,20 @@
                 <h3>SmartSearchForm</h3>
                 <a href="search-engine.md">Guide</a>
               </div>
-              <p>Declarative filter bars that prune empty values before they hit the API.</p>
+              <p>
+                Declarative filter bars that prune empty values before they hit
+                the API.
+              </p>
               <div class="demo" aria-hidden="true">
                 <div class="ui-field">
-                  <span class="ui-input is-placeholder">Search users&hellip;</span>
+                  <span class="ui-input is-placeholder"
+                    >Search users&hellip;</span
+                  >
                 </div>
                 <div class="ui-field">
-                  <span class="ui-input">Team: Platform <span class="ui-caret">&#9662;</span></span>
+                  <span class="ui-input"
+                    >Team: Platform <span class="ui-caret">&#9662;</span></span
+                  >
                 </div>
               </div>
             </article>
@@ -2793,7 +2919,7 @@
                   <h4>Delete workspace?</h4>
                   <p>This removes 3 projects and can't be undone.</p>
                   <div class="ui-dialog-foot">
-                    <span class="ui-btn outline sm">Cancel</span>
+                    <span class="ui-btn sm outline">Cancel</span>
                     <span class="ui-btn danger sm">Delete</span>
                   </div>
                 </div>
@@ -2807,13 +2933,14 @@
                 <a href="lexical-text-editor.md">Guide</a>
               </div>
               <p>
-                Lexical rich text with HTML or JSON values, images, code
-                blocks, and page breaks.
+                Lexical rich text with HTML or JSON values, images, code blocks,
+                and page breaks.
               </p>
               <div class="demo" aria-hidden="true">
                 <div class="ui-editor">
                   <div class="ui-editor-bar">
-                    <i class="on"><b>B</b></i><i style="font-style: italic">I</i><i><u>U</u></i>
+                    <i class="on"><b>B</b></i
+                    ><i style="font-style: italic">I</i><i><u>U</u></i>
                     <em></em>
                     <i>H1</i><i>&#8801;</i>
                     <em></em>
@@ -2835,7 +2962,9 @@
                 <a href="smart-components.md">Guide</a>
               </div>
               <div class="demo" aria-hidden="true">
-                <span class="ui-input">Product engineer <span class="ui-caret">&#9652;</span></span>
+                <span class="ui-input"
+                  >Product engineer <span class="ui-caret">&#9652;</span></span
+                >
                 <div class="ui-menu">
                   <span>Design lead</span>
                   <span class="on">Product engineer <b>&#10003;</b></span>
@@ -2850,7 +2979,9 @@
                 <h3>SmartTransferList</h3>
                 <a href="transfer-list-engine.md">Guide</a>
               </div>
-              <p>Dual-list shuttle with typed change metadata for every move.</p>
+              <p>
+                Dual-list shuttle with typed change metadata for every move.
+              </p>
               <div class="demo" aria-hidden="true">
                 <div class="ui-transfer">
                   <div class="ui-transfer-col">
@@ -2878,11 +3009,17 @@
                 <h3>Action buttons</h3>
                 <a href="smart-components.md">Guide</a>
               </div>
-              <p>27 CRUD presets with icons, loading text, and permission gating.</p>
-              <div class="demo" aria-hidden="true" style="display: flex; flex-wrap: wrap; gap: 8px">
+              <p>
+                27 CRUD presets with icons, loading text, and permission gating.
+              </p>
+              <div
+                class="demo"
+                aria-hidden="true"
+                style="display: flex; flex-wrap: wrap; gap: 8px"
+              >
                 <span class="ui-btn primary sm">+ Add</span>
-                <span class="ui-btn outline sm">Edit</span>
-                <span class="ui-btn outline sm">Export</span>
+                <span class="ui-btn sm outline">Edit</span>
+                <span class="ui-btn sm outline">Export</span>
                 <span class="ui-btn danger-outline sm">Delete</span>
               </div>
             </article>
@@ -2893,8 +3030,14 @@
                 <h3>Flow &amp; feedback</h3>
                 <a href="smart-components.md">Guide</a>
               </div>
-              <p>SmartStepper and SmartToaster close the loop on every action.</p>
-              <div class="demo" aria-hidden="true" style="display: grid; gap: 16px">
+              <p>
+                SmartStepper and SmartToaster close the loop on every action.
+              </p>
+              <div
+                class="demo"
+                aria-hidden="true"
+                style="display: grid; gap: 16px"
+              >
                 <div class="ui-steps">
                   <span class="ui-step done"><i>&#10003;</i>Account</span>
                   <span class="ui-step-line done"></span>
@@ -2926,18 +3069,21 @@
 
             <div class="dx-list reveal">
               <div class="dx-item">
-                <strong>One controlled pair: <code>data</code> / <code>setData</code></strong>
+                <strong
+                  >One controlled pair: <code>data</code> /
+                  <code>setData</code></strong
+                >
                 <p>
-                  Every input-like component uses the same value contract,
-                  which is exactly why the form engine can drive any field
-                  type without adapters.
+                  Every input-like component uses the same value contract, which
+                  is exactly why the form engine can drive any field type
+                  without adapters.
                 </p>
               </div>
               <div class="dx-item">
                 <strong>Escape hatches included</strong>
                 <p>
-                  Each wrapper re-exports its native shadcn/ui primitives.
-                  When the flat API can't express a layout, drop down without
+                  Each wrapper re-exports its native shadcn/ui primitives. When
+                  the flat API can't express a layout, drop down without
                   changing imports.
                 </p>
               </div>
@@ -3012,13 +3158,17 @@
                 <div class="arch-join" aria-hidden="true"><i></i></div>
                 <div class="arch-box hl">
                   <strong>Feature engines</strong>
-                  <span>Form, grid, search, tree, transfer, calendar, editor</span>
+                  <span
+                    >Form, grid, search, tree, transfer, calendar, editor</span
+                  >
                   <small>*-engine/</small>
                 </div>
                 <div class="arch-join" aria-hidden="true"><i></i></div>
                 <div class="arch-box">
                   <strong>Design system</strong>
-                  <span>shadcn/ui primitives on Base UI, Tailwind v4 tokens</span>
+                  <span
+                    >shadcn/ui primitives on Base UI, Tailwind v4 tokens</span
+                  >
                   <small>components/</small>
                 </div>
                 <div class="arch-join" aria-hidden="true"><i></i></div>
@@ -3103,7 +3253,9 @@
                   <th scope="row">Reading the source</th>
                   <td>Yours to document</td>
                   <td>Snapshots go stale</td>
-                  <td class="hl">Source-first package, tested and documented</td>
+                  <td class="hl">
+                    Source-first package, tested and documented
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -3205,13 +3357,18 @@
               href="https://github.com/imsaroj/automatic-octo-fiesta"
               target="_blank"
               rel="noreferrer"
-              >Star on GitHub <span class="arr" aria-hidden="true">&rarr;</span></a
+              >Star on GitHub
+              <span class="arr" aria-hidden="true">&rarr;</span></a
             >
             <a class="btn btn-ghost" href="README.md">Read the docs</a>
           </div>
           <p class="cta-cmd">
             <span aria-hidden="true">$</span>
-            <span>git clone <b>https://github.com/imsaroj/automatic-octo-fiesta</b> &amp;&amp; pnpm install &amp;&amp; pnpm dev</span>
+            <span
+              >git clone
+              <b>https://github.com/imsaroj/automatic-octo-fiesta</b> &amp;&amp;
+              pnpm install &amp;&amp; pnpm dev</span
+            >
           </p>
         </div>
       </section>
@@ -3220,7 +3377,9 @@
     <footer>
       <div class="wrap foot-inner">
         <a class="brand" href="#top">
-          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span class="brand-mark" aria-hidden="true"
+            ><i></i><i></i><i></i><i></i
+          ></span>
           <span>Smart Component</span>
         </a>
         <nav class="foot-links" aria-label="Footer">
@@ -3235,8 +3394,8 @@
           <a href="security.md">Security</a>
         </nav>
         <p class="foot-note">
-          A source-first React UI system, built in the open. This page is
-          static HTML and CSS, served from the docs folder.
+          A source-first React UI system, built in the open. This page is static
+          HTML and CSS, served from the docs folder.
         </p>
       </div>
     </footer>

@@ -58,7 +58,15 @@ jobs:
       # `npm publish` would not), pushes the release commit + tag, and
       # creates a GitHub release.
       - name: Release
-        run: pnpm exec semantic-release
+        # On failure, surface the log tail as an annotation so the error is
+        # visible from the run page (and the public checks API) without
+        # digging through logs.
+        run: |
+          set -o pipefail
+          pnpm exec semantic-release 2>&1 | tee sr.log || {
+            tail -c 900 sr.log | tr '\n' ' ' | xargs -0 printf '::error title=semantic-release failed::%s\n'
+            exit 1
+          }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

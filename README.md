@@ -128,7 +128,6 @@ toast.success(`Thanks, ${value.name}!`)
 
 ```tsx
 import { SmartCard } from "@imsaroj/smart-ui/smart-components/smart-card"
-
 ;<SmartCard
   header={{
     title: "Orders",
