@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { z } from "zod"
 import {
   Copy,
   Edit,
@@ -35,6 +36,14 @@ import { SmartTextarea } from "@workspace/ui/smart-components/smart-textarea"
 import { SmartSelect } from "@workspace/ui/smart-components/smart-select"
 import { SmartSwitch } from "@workspace/ui/smart-components/smart-switch"
 import { SmartButton } from "@workspace/ui/smart-components/smart-button"
+import {
+  AddButton,
+  DeleteButton,
+  EditButton,
+  SaveButton,
+} from "@workspace/ui/smart-components/buttons"
+import { toast } from "@workspace/ui/smart-components/smart-toaster"
+import { type FieldDefinition, SmartForm } from "@workspace/ui/form-engine"
 
 const ROLE_OPTIONS = [
   { value: "admin", label: "Admin" },
@@ -98,6 +107,223 @@ const FILE_CONTEXT_ITEMS = [
     onClick: () => alert("Delete"),
   },
 ]
+
+/* ── SmartSheet CRUD demo ──────────────────────────────────── */
+
+const memberSchema = z.object({
+  name: z.string().min(1, "Name is required").trim(),
+  email: z.email("Enter a valid email"),
+  role: z.string().min(1, "Choose a role"),
+  notes: z.string().optional(),
+})
+
+type MemberForm = z.infer<typeof memberSchema>
+type Member = MemberForm & { id: number }
+
+const EMPTY_MEMBER: MemberForm = { name: "", email: "", role: "", notes: "" }
+
+const MEMBER_FIELDS: FieldDefinition<MemberForm>[] = [
+  {
+    name: "name",
+    type: "text",
+    label: "Full name",
+    placeholder: "Ada Lovelace",
+  },
+  {
+    name: "email",
+    type: "email",
+    label: "Email",
+    placeholder: "ada@example.com",
+  },
+  {
+    name: "role",
+    type: "select",
+    label: "Role",
+    options: ROLE_OPTIONS,
+  },
+  {
+    name: "notes",
+    type: "textarea",
+    label: "Notes",
+    placeholder: "Internal notes about this member…",
+    rows: 3,
+  },
+]
+
+const INITIAL_MEMBERS: Member[] = [
+  { id: 1, name: "Ada Lovelace", email: "ada@example.com", role: "admin" },
+  { id: 2, name: "Grace Hopper", email: "grace@example.com", role: "member" },
+  { id: 3, name: "Alan Turing", email: "alan@example.com", role: "viewer" },
+]
+
+const MEMBER_FORM_ID = "sheet-member-form"
+
+/** Fake API latency so the async save/update state is visible in the demo. */
+const fakeApiCall = (ms = 1200) =>
+  new Promise<void>((resolve) => setTimeout(resolve, ms))
+
+const roleLabel = (role: string) =>
+  ROLE_OPTIONS.find((option) => option.value === role)?.label ?? role
+
+/**
+ * CRUD in a right-side SmartSheet: the list stays on the page while
+ * create/edit happen in a SmartForm inside the sheet. The Save button lives
+ * in the sheet footer and drives the form via `form={MEMBER_FORM_ID}`.
+ */
+const SheetCrudDemo = () => {
+  const [members, setMembers] = useState<Member[]>(INITIAL_MEMBERS)
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [editing, setEditing] = useState<Member | null>(null)
+  const [nextId, setNextId] = useState(INITIAL_MEMBERS.length + 1)
+  const [saving, setSaving] = useState(false)
+
+  const openCreate = () => {
+    setEditing(null)
+    setSheetOpen(true)
+  }
+
+  const openEdit = (member: Member) => {
+    setEditing(member)
+    setSheetOpen(true)
+  }
+
+  const handleSubmit = async (value: MemberForm) => {
+    setSaving(true)
+    try {
+      await fakeApiCall() // e.g. POST/PUT to your API
+      if (editing) {
+        setMembers((prev) =>
+          prev.map((member) =>
+            member.id === editing.id ? { ...member, ...value } : member
+          )
+        )
+        toast.success("Member updated", { description: value.name })
+      } else {
+        setMembers((prev) => [...prev, { id: nextId, ...value }])
+        setNextId((id) => id + 1)
+        toast.success("Member added", { description: value.name })
+      }
+      // Only close once the async save has completed.
+      setSheetOpen(false)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDelete = (member: Member) => {
+    setMembers((prev) => prev.filter((m) => m.id !== member.id))
+    toast.success("Member deleted", { description: member.name })
+  }
+
+  return (
+    <div className="rounded-xl border border-border">
+      <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+        <div>
+          <p className="text-sm font-medium">Team members</p>
+          <p className="text-xs text-muted-foreground">
+            Create and edit happen in a right-side sheet with a SmartForm.
+          </p>
+        </div>
+        <AddButton size="sm" onClick={openCreate}>
+          Add member
+        </AddButton>
+      </div>
+
+      <ul className="divide-y divide-border">
+        {members.map((member) => (
+          <li
+            key={member.id}
+            className="flex items-center justify-between gap-3 px-4 py-2.5"
+          >
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium">{member.name}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {member.email}
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                {roleLabel(member.role)}
+              </span>
+              <EditButton
+                iconOnly
+                size="sm"
+                variant="ghost"
+                onClick={() => openEdit(member)}
+              />
+              <SmartConfirmDialog
+                trigger={
+                  <DeleteButton
+                    iconOnly
+                    size="sm"
+                    variant="ghost"
+                    className="text-destructive hover:text-destructive"
+                  />
+                }
+                title={`Delete ${member.name}?`}
+                description="This removes the member from the list. This action cannot be undone."
+                confirmLabel="Delete"
+                variant="destructive"
+                onConfirm={() => handleDelete(member)}
+              />
+            </div>
+          </li>
+        ))}
+        {members.length === 0 && (
+          <li className="px-4 py-6 text-center text-sm text-muted-foreground">
+            No members yet — add one to get started.
+          </li>
+        )}
+      </ul>
+
+      <SmartSheet
+        open={sheetOpen}
+        onOpenChange={(open) => {
+          // Keep the sheet open (Esc / backdrop / ×) while the save is in flight.
+          if (!open && saving) return
+          setSheetOpen(open)
+        }}
+        dividers
+        header={{
+          title: editing ? "Edit member" : "Add member",
+          subtitle: editing
+            ? `Update details for ${editing.name}.`
+            : "Fill in the details for the new member.",
+        }}
+        footer={
+          <>
+            <SheetClose
+              render={
+                <SmartButton variant="outline" size="sm" disabled={saving}>
+                  Cancel
+                </SmartButton>
+              }
+            />
+            <SaveButton
+              size="sm"
+              type="submit"
+              form={MEMBER_FORM_ID}
+              loading={saving}
+              loadingText={editing ? "Updating…" : "Saving…"}
+            >
+              {editing ? "Update" : "Save"}
+            </SaveButton>
+          </>
+        }
+      >
+        <SmartForm
+          key={editing?.id ?? "new"}
+          id={MEMBER_FORM_ID}
+          schema={memberSchema}
+          data={editing ?? EMPTY_MEMBER}
+          fields={MEMBER_FIELDS}
+          submitLabel={null}
+          onSubmit={handleSubmit}
+        />
+      </SmartSheet>
+    </div>
+  )
+}
 
 const OverlaysPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -307,6 +533,11 @@ const OverlaysPage = () => {
                 panels.
               </p>
             </SmartSheet>
+          </div>
+
+          {/* CRUD in a sheet — SmartForm from the form engine */}
+          <div className="mt-5">
+            <SheetCrudDemo />
           </div>
         </SmartPageSection>
 
