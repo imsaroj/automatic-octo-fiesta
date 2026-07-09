@@ -68,20 +68,50 @@ jobs:
       # `npm publish` would not), pushes the release commit + tag, and
       # creates a GitHub release.
       - name: Release
-        # On failure, surface the log tail as an annotation so the error is
-        # visible from the run page (and the public checks API) without
-        # digging through logs. Colors are disabled and control characters
-        # stripped — ANSI escapes break GitHub's annotation parser.
+        # On failure, file a GitHub issue containing the log tail — the
+        # reliable way to surface the real error from a failed run.
         run: |
           set -o pipefail
           pnpm exec semantic-release 2>&1 | tee sr.log || {
-            msg=$(tail -c 1500 sr.log | tr -d '\r' | tr '\n' ' ' | tr -cd '[:print:]' | sed 's/%/%25/g')
-            echo "::error title=semantic-release failed::${msg}"
+            tail -c 3000 sr.log | jq -Rs --arg run "$GITHUB_RUN_ID" \
+              '{title: ("Release failure in run " + $run), body: ("```\n" + . + "\n```"), labels: ["release-failure"]}' | \
+              curl -sf -X POST -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues" -d @- > /dev/null || true
             exit 1
           }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NO_COLOR: "1"
+          FORCE_COLOR: "0"
+
+      # Self-heal: if the version at HEAD is tagged in git but missing from
+      # npm (a previous run published the tag then failed at npm), publish it
+      # now. No-op when the registry already has the version.
+      - name: Ensure tagged version is on npm
+        run: |
+          set -o pipefail
+          name=$(node -p "require('./packages/ui/package.json').name")
+          ver=$(node -p "require('./packages/ui/package.json').version")
+          if ! git rev-parse -q --verify "refs/tags/v${ver}" > /dev/null; then
+            echo "v${ver} is not a released tag; nothing to do"
+          elif npm view "${name}@${ver}" version > /dev/null 2>&1; then
+            echo "${name}@${ver} already on npm"
+          else
+            echo "${name}@${ver} is tagged but missing from npm — publishing"
+            pnpm --filter "${name}" publish --access public --no-git-checks 2>&1 | tee pub.log || {
+              tail -c 3000 pub.log | jq -Rs --arg run "$GITHUB_RUN_ID" \
+                '{title: ("npm publish failure in run " + $run), body: ("```\n" + . + "\n```"), labels: ["release-failure"]}' | \
+                curl -sf -X POST -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                  -H "Accept: application/vnd.github+json" \
+                  "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues" -d @- > /dev/null || true
+              exit 1
+            }
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NO_COLOR: "1"
           FORCE_COLOR: "0"
