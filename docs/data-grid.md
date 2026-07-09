@@ -58,6 +58,68 @@ const fetchUsers = createPageFetcher({
 | `exportCsv`/export | both            | CSV (client) / XLSX (server); both formula-guarded. |
 | `persistStateKey`  | SmartServerGrid | Persist column/filter state to localStorage.        |
 
+## Action column
+
+Both grids take an `actionColumn` prop that injects a config-driven **Edit /
+Delete** column — no custom cell renderers in app code. Buttons are the shared
+`ActionButton` presets (ghost, icon-only by default, destructive treatment for
+delete) with proper `aria-label`s, tooltips ("Edit row" / "Delete row") and
+native keyboard support.
+
+```tsx
+const [deletingId, setDeletingId] = useState<string | null>(null)
+
+<SmartGrid
+  rows={rows}
+  columns={columns}
+  actionColumn={{
+    pinned: "left",          // "left" (default) | "right" | false
+    width: 110,              // omit to auto-size (80–120px icon-only)
+    showLabel: false,        // true renders "Edit"/"Delete" text
+    exportable: false,       // default: excluded from CSV/XLSX export
+    actions: {
+      edit: {
+        visible: permissions.canEdit,          // boolean or (row) => boolean
+        disabled: (row) => row.locked,         // disable instead of hiding
+        onClick: handleEdit,                   // receives the row
+      },
+      delete: {
+        visible: (row) => row.ownerId === me.id,
+        loading: (row) => deletingId === row.id, // per-row spinner + disable
+        confirm: {                             // or just `confirm: true`
+          title: "Delete this user?",
+          description: "This cannot be undone.",
+        },
+        onClick: handleDelete,
+      },
+    },
+  }}
+/>
+```
+
+Key contracts:
+
+- **Auto-hide**: the column disappears when `enabled: false` or when every
+  action is statically hidden (`false`, `enabled: false`, or a literal
+  `visible: false`). Per-row `visible` functions keep the column and decide
+  per row.
+- **Shorthands**: `edit: true` enables an action with defaults; `edit: false`
+  hides it.
+- **Loading** only affects the matching row's Delete button — Edit stays
+  enabled, row height doesn't change (the spinner replaces the icon inside a
+  fixed-size button).
+- **Utility-column lockdown**: not sortable / filterable / editable /
+  resizable (by default) / movable / hidable, no header menu, excluded from
+  grouping, pivot, aggregation and (unless `exportable: true`) from exports.
+- **Performance**: the injected `ColDef` is memoized on structural fields only;
+  per-row callbacks reach the cells through a tiny external store
+  (`useSyncExternalStore`), so only the mounted action cells re-render when
+  the prop changes — safe with thousands of virtualized rows and the infinite
+  row model.
+- Lower-level pieces (`useGridActionColumn`, `buildActionColumnDef`,
+  `GridActionCell`, `ACTION_COLUMN_ID`) are exported for grids that aren't
+  `SmartGrid`/`SmartServerGrid`.
+
 ## Contracts
 
 - **Spring `Page<T>`**: server responses use the Spring Data envelope
@@ -84,4 +146,5 @@ const fetchUsers = createPageFetcher({
 
 ## Demo
 
-`/grids/simple`, `/grids/server`, `/grids/infinite`, `/examples/crud`.
+`/grids/simple`, `/grids/server`, `/grids/infinite`, `/grids/actions`,
+`/examples/crud`.

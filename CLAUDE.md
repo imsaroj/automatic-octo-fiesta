@@ -134,6 +134,13 @@ Two public components backed by AG Grid Community:
 - `use-server-grid-selection.ts` — cross-page selection hook; the selected-id `Set` is the source of truth so selections
   survive block reloads.
 - `grid-theme.ts` — AG Grid theme configuration.
+- **Action column** (`action-column.ts` / `action-column-cell.tsx` / `use-action-column.ts`) — both grids take an
+  `actionColumn` prop that injects a config-driven Edit/Delete column (pinning, per-row visible/disabled/loading,
+  delete confirmation via `SmartConfirmDialog`, auto-hide when all actions are statically hidden, export opt-out via
+  `context.suppressExport`). Pure logic in `action-column.ts` is unit-tested; the ColDef is memoized on a structural
+  signature and per-row callbacks reach the cells via a `useSyncExternalStore` store (AG Grid's `refreshCells` does
+  NOT reliably re-render memoized React cells) — don't "fix" that by recreating the ColDef per render. Buttons reuse
+  the `ActionButton` presets. Demo: `/grids/actions`.
 
 `SmartServerGrid` is a generic `forwardRef` component. Because `forwardRef` erases generics, it is cast after definition
 to restore the generic signature — this is intentional and not a bug.

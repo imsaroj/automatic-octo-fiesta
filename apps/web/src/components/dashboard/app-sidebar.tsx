@@ -39,6 +39,7 @@ const data = {
         { title: "Infinite Scroll Grid", url: "/grids/infinite" },
         { title: "Editable Grid", url: "/grids/editable" },
         { title: "Master Detail Grid", url: "/grids/master-detail" },
+        { title: "Action Column Grid", url: "/grids/actions" },
       ],
     },
     {

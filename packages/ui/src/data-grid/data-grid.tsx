@@ -24,6 +24,11 @@ import {
   type DataGridDensity,
   type NoRowsParams,
 } from "./grid-internals"
+import {
+  isExportSuppressed,
+  type GridActionColumnOptions,
+} from "./action-column"
+import { useGridActionColumn, withActionColumn } from "./use-action-column"
 
 // Re-exported so consumers can import these public types straight from the grid entrypoint.
 export type { DataGridColumn, DataGridDensity } from "./grid-internals"
@@ -33,6 +38,12 @@ export interface SmartGridProps<TRow> {
   rows: TRow[]
   /** Column definitions. */
   columns: DataGridColumn<TRow>[]
+  /**
+   * Config-driven Edit/Delete action column — pinned, permission-aware and
+   * row-aware, with per-row loading and optional delete confirmation. The
+   * column auto-hides when disabled or when every action is statically hidden.
+   */
+  actionColumn?: GridActionColumnOptions<TRow>
   /** Show the branded loading overlay. */
   loading?: boolean
   /** Optional grid title rendered in the toolbar. */
@@ -82,6 +93,7 @@ export interface SmartGridProps<TRow> {
 export const SmartGrid = <TRow,>({
   rows,
   columns,
+  actionColumn,
   loading = false,
   title,
   toolbarActions,
@@ -105,6 +117,12 @@ export const SmartGrid = <TRow,>({
   const gridRef = useRef<AgGridReact<TRow>>(null)
   const [gridApi, setGridApi] = useState<GridApi<TRow> | null>(null)
   const [quickFilter, setQuickFilter] = useState("")
+
+  const actionColumnDef = useGridActionColumn(actionColumn)
+  const effectiveColumns = useMemo(
+    () => withActionColumn(columns, actionColumnDef),
+    [columns, actionColumnDef]
+  )
 
   const [columnVisibility, setColumnVisibility] = useState<
     Record<string, boolean>
@@ -156,8 +174,20 @@ export const SmartGrid = <TRow,>({
   }
 
   const handleExport = (): void => {
-    gridApi?.exportDataAsCsv({
+    if (!gridApi) return
+    // Drop columns flagged non-exportable (e.g. the action column). Only pass
+    // columnKeys when something is actually excluded, so AG Grid's default
+    // column handling stays in effect otherwise.
+    const displayed = gridApi.getAllDisplayedColumns()
+    const exportable = displayed.filter(
+      (column) => !isExportSuppressed(column.getColDef().context)
+    )
+    gridApi.exportDataAsCsv({
       fileName: `${exportFileName}.csv`,
+      columnKeys:
+        exportable.length === displayed.length
+          ? undefined
+          : exportable.map((column) => column.getColId()),
       // Neutralize spreadsheet formula injection (=/+/-/@ leading strings).
       processCellCallback: (params) => escapeCsvFormula(params.value),
     })
@@ -203,7 +233,7 @@ export const SmartGrid = <TRow,>({
             ref={gridRef}
             theme={dataGridTheme}
             rowData={rows}
-            columnDefs={columns}
+            columnDefs={effectiveColumns}
             suppressCellFocus={true}
             defaultColDef={defaultColDef}
             quickFilterText={quickFilter}

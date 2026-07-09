@@ -7,7 +7,11 @@
 import { z } from "zod"
 
 import { SmartForm, type FieldDefinition } from "@workspace/ui/form-engine"
-import { createPageFetcher, type DataGridColumn } from "@workspace/ui/data-grid"
+import {
+  createPageFetcher,
+  type DataGridColumn,
+  type GridActionColumnOptions,
+} from "@workspace/ui/data-grid"
 import {
   buildSearchQuery,
   type SearchFieldDefinition,
@@ -55,6 +59,29 @@ const fetchUsers = createPageFetcher({
   itemSchema: userSchema,
 })
 void fetchUsers
+
+// Action column (docs/data-grid.md § Action column)
+declare const deletingId: string | null
+const actionColumn: GridActionColumnOptions<User> = {
+  pinned: "left",
+  width: 110,
+  showLabel: false,
+  exportable: false,
+  actions: {
+    edit: {
+      visible: true,
+      disabled: (row) => row.id === "root",
+      onClick: (row) => void row,
+    },
+    delete: {
+      visible: (row) => row.id !== "root",
+      loading: (row) => deletingId === row.id,
+      confirm: { title: "Delete this user?" },
+      onClick: (row) => void row,
+    },
+  },
+}
+void actionColumn
 
 // ── search-engine.md ────────────────────────────────────────────────────────
 type Filters = {

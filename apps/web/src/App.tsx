@@ -13,6 +13,9 @@ const EditableGridPage = lazy(() => import("@/pages/grids/editable-grid-page"))
 const MasterDetailGridPage = lazy(
   () => import("@/pages/grids/master-detail-grid-page")
 )
+const ActionColumnGridPage = lazy(
+  () => import("@/pages/grids/action-column-grid-page")
+)
 
 // Examples
 const CrudExamplePage = lazy(() => import("@/pages/examples/crud-example-page"))
@@ -108,6 +111,7 @@ export const App = () => (
             path="/grids/master-detail"
             element={<MasterDetailGridPage />}
           />
+          <Route path="/grids/actions" element={<ActionColumnGridPage />} />
 
           {/* Examples */}
           <Route path="/examples/fields" element={<BasicTextFieldsPage />} />

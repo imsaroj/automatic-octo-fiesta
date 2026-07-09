@@ -53,6 +53,8 @@ import {
   useServerGridSelection,
   type ServerSelection,
 } from "./use-server-grid-selection"
+import type { GridActionColumnOptions } from "./action-column"
+import { useGridActionColumn, withActionColumn } from "./use-action-column"
 
 // Re-exported so `ServerSelection` stays importable from the package even
 // though its definition lives in the selection hook module.
@@ -86,6 +88,12 @@ export interface SmartServerGridProps<TRow> {
   ) => Promise<ServerFetchResult<TRow>>
   /** Stable row id — required for selection and block reconciliation across pages. */
   getRowId: (row: TRow) => string
+  /**
+   * Config-driven Edit/Delete action column — pinned, permission-aware and
+   * row-aware, with per-row loading and optional delete confirmation. The
+   * column auto-hides when disabled or when every action is statically hidden.
+   */
+  actionColumn?: GridActionColumnOptions<TRow>
 
   /**
    * External filters merged into every fetch — e.g. driven by a dedicated search
@@ -188,6 +196,7 @@ const SmartServerGridInner = <TRow,>(
     columns,
     fetchRows,
     getRowId,
+    actionColumn,
     filters,
     pagination = true,
     pageSize = 20,
@@ -252,6 +261,12 @@ const SmartServerGridInner = <TRow,>(
   // Cross-page selection lives in a dedicated hook — the selected-id set is the
   // source of truth, so a selection survives block reloads (see the hook).
   const gridSelection = useServerGridSelection(gridApiRef, onSelectionChange)
+
+  const actionColumnDef = useGridActionColumn(actionColumn)
+  const effectiveColumns = useMemo(
+    () => withActionColumn(columns, actionColumnDef),
+    [columns, actionColumnDef]
+  )
 
   const saveState = useCallback(() => {
     const api = gridApiRef.current
@@ -471,7 +486,7 @@ const SmartServerGridInner = <TRow,>(
           theme={dataGridTheme}
           rowModelType="infinite"
           cacheBlockSize={pageSize}
-          columnDefs={columns}
+          columnDefs={effectiveColumns}
           defaultColDef={defaultColDef}
           suppressCellFocus={true}
           rowSelection={rowSelection}

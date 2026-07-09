@@ -12,6 +12,7 @@ import {
 } from "./pagination"
 import type { XlsxCell } from "@workspace/ui/lib/xlsx"
 import { escapeCsvFormula } from "./formula-guard"
+import { isExportSuppressed } from "./action-column"
 
 /**
  * Pure, stateless helpers extracted from {@link SmartServerGrid} so the
@@ -194,14 +195,19 @@ export interface GridExportTable {
  * (the infinite row model never holds every page at once).
  *
  * AG Grid's internal utility columns (checkbox selection, auto-group, row
- * numbers — all prefixed `ag-Grid-`) carry no data and are excluded.
+ * numbers — all prefixed `ag-Grid-`) carry no data and are excluded, as are
+ * columns flagged non-exportable (the action column, unless `exportable`).
  */
 export const collectGridExport = <TRow>(
   api: GridApi<TRow>
 ): GridExportTable => {
   const displayed = api
     .getAllDisplayedColumns()
-    .filter((column) => !column.getColId().startsWith("ag-Grid-"))
+    .filter(
+      (column) =>
+        !column.getColId().startsWith("ag-Grid-") &&
+        !isExportSuppressed(column.getColDef().context)
+    )
   const headers = displayed.map((column) => {
     const headerName = column.getColDef().headerName
     return typeof headerName === "string" && headerName.length > 0
