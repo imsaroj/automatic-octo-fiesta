@@ -60,14 +60,18 @@ jobs:
       - name: Release
         # On failure, surface the log tail as an annotation so the error is
         # visible from the run page (and the public checks API) without
-        # digging through logs.
+        # digging through logs. Colors are disabled and control characters
+        # stripped — ANSI escapes break GitHub's annotation parser.
         run: |
           set -o pipefail
           pnpm exec semantic-release 2>&1 | tee sr.log || {
-            tail -c 900 sr.log | tr '\n' ' ' | xargs -0 printf '::error title=semantic-release failed::%s\n'
+            msg=$(tail -c 1500 sr.log | tr -d '\r' | tr '\n' ' ' | tr -cd '[:print:]' | sed 's/%/%25/g')
+            echo "::error title=semantic-release failed::${msg}"
             exit 1
           }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NO_COLOR: "1"
+          FORCE_COLOR: "0"
