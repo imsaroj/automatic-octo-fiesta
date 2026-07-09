@@ -64,3 +64,7 @@ $RECYCLE.BIN/
 
 # Library build output (build:lib — proof-of-buildability, not committed)
 packages/ui/dist/
+graphify-out
+
+# Agent skills (local only)
+.agents/
