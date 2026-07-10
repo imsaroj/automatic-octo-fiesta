@@ -15,7 +15,7 @@ test.use({ reducedMotion: "reduce" })
 const ROUTES = [
   { name: "dashboard", path: "/" },
   { name: "simple grid", path: "/grids/simple" },
-  { name: "all-fields form", path: "/form-engine/all-fields" },
+  { name: "all-fields form", path: "/form/all-fields" },
   { name: "calendar", path: "/smart/calendar" },
   { name: "tree explorer", path: "/smart/tree-explorer" },
 ] as const

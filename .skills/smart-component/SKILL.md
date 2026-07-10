@@ -75,16 +75,16 @@ Consumers may **only** import via these subpaths (from `packages/ui/package.json
 @iamsaroj/smart-ui/smart-components/*        → src/smart-components/*.tsx   (Smart* wrappers)
 @iamsaroj/smart-ui/smart-components/page     → page-layout barrel (SmartPage + slots)
 @iamsaroj/smart-ui/smart-components/buttons  → action-button presets barrel
-@iamsaroj/smart-ui/form-engine               → SmartForm + FieldDefinition + Smart*Field
-@iamsaroj/smart-ui/search-engine             → SmartSearchForm / SearchEngine
+@iamsaroj/smart-ui/form               → SmartForm + FieldDefinition + Smart*Field
+@iamsaroj/smart-ui/search             → SmartSearchForm / SearchEngine
 @iamsaroj/smart-ui/data-grid                 → SmartGrid, SmartServerGrid, pagination, action column
-@iamsaroj/smart-ui/tree-engine               → SmartTree
-@iamsaroj/smart-ui/transfer-list-engine      → SmartTransferList
-@iamsaroj/smart-ui/calendar-engine           → SmartCalendar
-@iamsaroj/smart-ui/lexical-text-editor       → SmartTextEditor
+@iamsaroj/smart-ui/tree               → SmartTree
+@iamsaroj/smart-ui/transfer-list      → SmartTransferList
+@iamsaroj/smart-ui/calendar           → SmartCalendar
+@iamsaroj/smart-ui/text-editor       → SmartTextEditor
 ```
 
-`data-grid`, `form-engine`, `search-engine`, the engines, and `lexical-text-editor` are
+`data-grid`, `form`, `search`, the engines, and `text-editor` are
 **barrel entrypoints** — their internal files (`grid-internals.tsx`, `smart-form-internals.ts`,
 `field-registry.ts` internals, editor plugins, …) are _not_ individually importable. Never
 deep-import `@iamsaroj/smart-ui/src/...` or reach past a barrel.
@@ -92,8 +92,8 @@ deep-import `@iamsaroj/smart-ui/src/...` or reach past a barrel.
 ### Placement rule for new components
 
 - General-purpose component / shadcn wrapper → `packages/ui/src/smart-components/`.
-- Domain-scoped helper → its domain folder (`data-grid/`, `form-engine/`,
-  `lexical-text-editor/`, …). Rule of thumb: if it only imports from / only makes sense
+- Domain-scoped helper → its domain folder (`data-grid/`, `form/`,
+  `text-editor/`, …). Rule of thumb: if it only imports from / only makes sense
   inside one domain folder, it lives there.
 
 ### Two intentional repo-wide conventions (do not "fix")
@@ -275,13 +275,13 @@ the viewport — pair with `SmartServerGrid fill`).
 
 ---
 
-## Forms (`@iamsaroj/smart-ui/form-engine`)
+## Forms (`@iamsaroj/smart-ui/form`)
 
 `SmartForm` = TanStack Form + Zod, fully declarative:
 
 ```tsx
 import { z } from "zod"
-import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -324,18 +324,18 @@ segmented, yesno`).
 - Extend with new field types via the `registry` prop (merged over the built-in
   `defaultFieldRegistry`) — don't fork the engine.
 - Standalone `Smart*Field` components (e.g. `SmartInputField`, `SmartSelectField`) are also
-  exported from `@iamsaroj/smart-ui/form-engine`; they all take `FieldBaseProps<T>`:
+  exported from `@iamsaroj/smart-ui/form`; they all take `FieldBaseProps<T>`:
   **`data` / `setData(value)` — not `value` / `onChange`.** This is the library-wide
   controlled-field convention.
 
 ---
 
-## Search Engine (`@iamsaroj/smart-ui/search-engine`)
+## Search Engine (`@iamsaroj/smart-ui/search`)
 
 `SmartSearchForm` (alias `SearchEngine`) composes `SmartForm` into a filter bar:
 
 ```tsx
-import { SmartSearchForm, type SearchFieldDefinition } from "@iamsaroj/smart-ui/search-engine"
+import { SmartSearchForm, type SearchFieldDefinition } from "@iamsaroj/smart-ui/search"
 import type { ServerFilter } from "@iamsaroj/smart-ui/data-grid"
 
 const searchFields: SearchFieldDefinition<Query>[] = [
@@ -447,24 +447,24 @@ per render.
 
 ## Other Engines
 
-- **Tree (`@iamsaroj/smart-ui/tree-engine`):** `SmartTree` — generic `TreeNode<T>`; a node is a
+- **Tree (`@iamsaroj/smart-ui/tree`):** `SmartTree` — generic `TreeNode<T>`; a node is a
   folder if it has `children` (even `[]`) or `isFolder: true` (lazy loading). Selection
   `none|single|multiple`, tri-state checkboxes, keyboard nav, inline rename, drag-and-drop
   (`before|after|inside`), search modes `highlight|filter|none`. Expanded/selected/checked
   each independently controllable (`*Ids`/`default*Ids`/`on*Change`); imperative
   `SmartTreeHandle` via `ref`. Use `tree-utils` exports (`moveNode`, `insertNode`,
   `getDescendantIds`, …) for mutations — never hand-roll recursion.
-- **Transfer list (`@iamsaroj/smart-ui/transfer-list-engine`):** `SmartTransferList` — dual-list
+- **Transfer list (`@iamsaroj/smart-ui/transfer-list`):** `SmartTransferList` — dual-list
   shuttle over `TransferItem<T>` keyed by stable `id`; `onChange(items, meta)` with
   `direction` + `moved`; `targetIds`/`defaultTargetIds` controllable;
   `SmartTransferListHandle` for move-all/move-selected.
-- **Calendar (`@iamsaroj/smart-ui/calendar-engine`):** `SmartCalendar` — `month|week|day|agenda`
+- **Calendar (`@iamsaroj/smart-ui/calendar`):** `SmartCalendar` — `month|week|day|agenda`
   views; `date` and `view` independently controllable; `CalendarEvent<T>` with 8 preset
   color tokens; `editable` enables drag-to-move/resize emitting `onEventChange`; recurrence
   via `RecurrenceRule` + `expandEvents` and series helpers `detachOccurrence` / `splitSeries`
   / `updateSeries`; booking via `availability` + `generateFreeSlots` + `onSlotBook`.
   Prefer the exported date helpers over hand-rolled date arithmetic.
-- **Rich text (`@iamsaroj/smart-ui/lexical-text-editor`):** `SmartTextEditor` — Lexical editor,
+- **Rich text (`@iamsaroj/smart-ui/text-editor`):** `SmartTextEditor` — Lexical editor,
   value format `"html" | "json"`. In forms, just use field `type: "text-editor"`.
 
 ---
@@ -536,7 +536,7 @@ import {
   SmartToolbar,
   SmartGridArea,
 } from "@iamsaroj/smart-ui/smart-components/page"
-import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 import {
   SmartServerGrid,
   createPageFetcher,
@@ -632,7 +632,7 @@ Delete pattern: **optimistic** — `onMutate` snapshot + cache update, rollback 
 ```tsx
 import { z } from "zod"
 import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
-import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email"),
@@ -752,7 +752,7 @@ presets for navigation.
 1. **Smart first:** `Smart*` wrapper → action-button preset → engine → shadcn primitive →
    (last resort) new component placed by the placement rule.
 2. **Barrels only:** import exactly the subpaths in the exports map.
-3. **`data`/`setData`** for form-engine fields; `value`/`onValueChange` for standalone
+3. **`data`/`setData`** for form fields; `value`/`onValueChange` for standalone
    wrappers like `SmartSelect` — match each component's documented API, never invent props.
 4. **Zod first:** validation lives in the schema; payloads are Zod-parsed at the boundary.
 5. **Tokens only:** semantic Tailwind classes; `cn()` for conditionals; light+dark pairs for
@@ -765,7 +765,7 @@ presets for navigation.
 ## Anti-patterns (never do these)
 
 - ❌ Deep-import internals (`@iamsaroj/smart-ui/src/...`, `data-grid/grid-internals`,
-  `form-engine/field-registry` internals, lexical plugins).
+  `form/field-registry` internals, lexical plugins).
 - ❌ Import `ag-grid-community`/`ag-grid-react` in app code — use `SmartGrid`/`SmartServerGrid`
   and `DataGridColumn`.
 - ❌ Recreate an existing component (KPI card, confirm dialog, spinner, search input,
@@ -787,8 +787,8 @@ presets for navigation.
 ## AI Decision Rules
 
 1. Need a UI element? Check, in order: `smart-components/` → `smart-components/buttons` →
-   the engines (`form-engine`, `search-engine`, `data-grid`, `tree-engine`,
-   `transfer-list-engine`, `calendar-engine`, `lexical-text-editor`) → `components/`.
+   the engines (`form`, `search`, `data-grid`, `tree`,
+   `transfer-list`, `calendar`, `text-editor`) → `components/`.
    Only then consider writing something new — in the correct folder.
 2. Building a form? Always `SmartForm` + Zod schema + `FieldDefinition[]`. Never wire
    individual inputs with local state unless it's a one-off control outside a form.

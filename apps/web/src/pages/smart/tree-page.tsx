@@ -22,7 +22,7 @@ import {
   type TreeNode,
   type SmartTreeHandle,
   getAllFolderIds,
-} from "@iamsaroj/smart-ui/tree-engine"
+} from "@iamsaroj/smart-ui/tree"
 
 // ── Sample data ──────────────────────────────────────────────────────────
 

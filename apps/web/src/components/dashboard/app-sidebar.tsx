@@ -93,13 +93,13 @@ const data = {
     },
     {
       title: "Form Engine",
-      url: "/form-engine/basic",
+      url: "/form/basic",
       icon: <NotepadTextIcon />,
       items: [
-        { title: "Basic Form", url: "/form-engine/basic" },
-        { title: "All Field Types", url: "/form-engine/all-fields" },
-        { title: "Dynamic Form", url: "/form-engine/dynamic" },
-        { title: "Multi-Step Wizard", url: "/form-engine/wizard" },
+        { title: "Basic Form", url: "/form/basic" },
+        { title: "All Field Types", url: "/form/all-fields" },
+        { title: "Dynamic Form", url: "/form/dynamic" },
+        { title: "Multi-Step Wizard", url: "/form/wizard" },
       ],
     },
   ],

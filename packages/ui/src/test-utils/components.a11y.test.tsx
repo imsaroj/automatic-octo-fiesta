@@ -5,15 +5,15 @@ import { act } from "react"
 import { z } from "zod"
 
 import { expectNoA11yViolations } from "./a11y"
-import { SmartForm } from "@iamsaroj/smart-ui/form-engine"
+import { SmartForm } from "@iamsaroj/smart-ui/form"
 import { SmartDialog } from "@iamsaroj/smart-ui/smart-components/smart-dialog"
 import { SmartSelect } from "@iamsaroj/smart-ui/smart-components/smart-select"
 import { SmartCombobox } from "@iamsaroj/smart-ui/smart-components/smart-combobox"
 import { SmartDatePicker } from "@iamsaroj/smart-ui/smart-components/smart-date-picker"
 import { SmartStepper } from "@iamsaroj/smart-ui/smart-components/smart-stepper"
-import { SmartTree } from "@iamsaroj/smart-ui/tree-engine"
-import { SmartTransferList } from "@iamsaroj/smart-ui/transfer-list-engine"
-import { SmartCalendar } from "@iamsaroj/smart-ui/calendar-engine"
+import { SmartTree } from "@iamsaroj/smart-ui/tree"
+import { SmartTransferList } from "@iamsaroj/smart-ui/transfer-list"
+import { SmartCalendar } from "@iamsaroj/smart-ui/calendar"
 import {
   AddButton,
   DeleteButton,

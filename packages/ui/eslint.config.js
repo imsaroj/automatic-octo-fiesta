@@ -25,7 +25,7 @@ export default defineConfig([
     // Lexical node modules colocate the decorator React component with the node
     // class, command, and helper exports by design. Fast Refresh's
     // component-only rule doesn't apply to these definition files.
-    files: ["src/lexical-text-editor/nodes/**/*.{ts,tsx}"],
+    files: ["src/text-editor/nodes/**/*.{ts,tsx}"],
     rules: {
       "react-refresh/only-export-components": "off",
     },
@@ -49,7 +49,7 @@ export default defineConfig([
     // Lexical editor internals: the toolbar's inline block-rename field focuses
     // on open by design, and some editor surfaces are wired up imperatively by
     // Lexical rather than as native interactive elements.
-    files: ["src/lexical-text-editor/**/*.{ts,tsx}"],
+    files: ["src/text-editor/**/*.{ts,tsx}"],
     rules: {
       "jsx-a11y/no-autofocus": "off",
       "jsx-a11y/no-static-element-interactions": "off",

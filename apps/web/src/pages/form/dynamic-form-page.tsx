@@ -6,7 +6,7 @@ import {
   SmartPageSection,
 } from "@iamsaroj/smart-ui/smart-components/page"
 import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
-import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 import { toast } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
 
 const registrationSchema = z

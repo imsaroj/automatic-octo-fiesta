@@ -43,7 +43,7 @@ import {
   SaveButton,
 } from "@iamsaroj/smart-ui/smart-components/buttons"
 import { toast } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
-import { type FieldDefinition, SmartForm } from "@iamsaroj/smart-ui/form-engine"
+import { type FieldDefinition, SmartForm } from "@iamsaroj/smart-ui/form"
 
 const ROLE_OPTIONS = [
   { value: "admin", label: "Admin" },

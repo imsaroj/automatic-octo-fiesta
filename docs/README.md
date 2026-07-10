@@ -9,16 +9,16 @@ and a component → demo route map. For the architecture overview see
 Each guide follows the same skeleton: **What it is → Import → 80% example → Key
 props → Escape hatches → Gotchas → Demo route.**
 
-| Guide                                                | Entrypoint                                                          |
-| ---------------------------------------------------- | ------------------------------------------------------------------- |
-| [form-engine.md](./form-engine.md)                   | `@iamsaroj/smart-ui/form-engine`                                    |
-| [data-grid.md](./data-grid.md)                       | `@iamsaroj/smart-ui/data-grid`                                      |
-| [search-engine.md](./search-engine.md)               | `@iamsaroj/smart-ui/search-engine`                                  |
-| [tree-engine.md](./tree-engine.md)                   | `@iamsaroj/smart-ui/tree-engine`                                    |
-| [transfer-list-engine.md](./transfer-list-engine.md) | `@iamsaroj/smart-ui/transfer-list-engine`                           |
-| [calendar-engine.md](./calendar-engine.md)           | `@iamsaroj/smart-ui/calendar-engine`                                |
-| [lexical-text-editor.md](./lexical-text-editor.md)   | `@iamsaroj/smart-ui/lexical-text-editor`                            |
-| [smart-components.md](./smart-components.md)         | `@iamsaroj/smart-ui/smart-components/*` (incl. `/page`, `/buttons`) |
+| Guide                                        | Entrypoint                                                          |
+| -------------------------------------------- | ------------------------------------------------------------------- |
+| [form.md](./form.md)                         | `@iamsaroj/smart-ui/form`                                           |
+| [data-grid.md](./data-grid.md)               | `@iamsaroj/smart-ui/data-grid`                                      |
+| [search.md](./search.md)                     | `@iamsaroj/smart-ui/search`                                         |
+| [tree.md](./tree.md)                         | `@iamsaroj/smart-ui/tree`                                           |
+| [transfer-list.md](./transfer-list.md)       | `@iamsaroj/smart-ui/transfer-list`                                  |
+| [calendar.md](./calendar.md)                 | `@iamsaroj/smart-ui/calendar`                                       |
+| [text-editor.md](./text-editor.md)           | `@iamsaroj/smart-ui/text-editor`                                    |
+| [smart-components.md](./smart-components.md) | `@iamsaroj/smart-ui/smart-components/*` (incl. `/page`, `/buttons`) |
 
 ## Other references
 

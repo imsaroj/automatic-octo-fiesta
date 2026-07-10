@@ -30,7 +30,7 @@ import {
   isFolderNode,
   removeNode,
   updateNode,
-} from "@iamsaroj/smart-ui/tree-engine"
+} from "@iamsaroj/smart-ui/tree"
 
 // ── Seed data ────────────────────────────────────────────────────────────────
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 
 /**
- * Shared props for every controlled field in the form-engine layer.
+ * Shared props for every controlled field in the form layer.
  * All fields are driven by the `data` / `setData` pair.
  */
 export interface FieldBaseProps<T> {

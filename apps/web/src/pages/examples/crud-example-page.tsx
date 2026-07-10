@@ -36,7 +36,7 @@ import {
   SmartPageEmpty,
   SmartPageError,
 } from "@iamsaroj/smart-ui/smart-components/page"
-import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 import { z } from "zod"
 import {
   createUser,

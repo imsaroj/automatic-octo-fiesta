@@ -20,13 +20,13 @@ so a form is a schema, a grid is a fetcher, and a page is a set of named slots.
 
 ## Why
 
-| Without Smart Component                                | With Smart Component                       |
-| ------------------------------------------------------ | ------------------------------------------ |
-| Recreate form scaffolding field by field               | Drive `SmartForm` from a Zod schema        |
-| Build every dialog, card, and sheet from scratch       | Compose flat `Smart*` wrappers             |
-| Rewrite grid wiring, selection, and pagination         | Drop in `@iamsaroj/smart-ui/data-grid`     |
-| Rebuild search/filter bars for every list page         | Declare `@iamsaroj/smart-ui/search-engine` |
-| Re-implement trees, calendars, transfer lists, editors | Reach for the domain engine                |
+| Without Smart Component                                | With Smart Component                   |
+| ------------------------------------------------------ | -------------------------------------- |
+| Recreate form scaffolding field by field               | Drive `SmartForm` from a Zod schema    |
+| Build every dialog, card, and sheet from scratch       | Compose flat `Smart*` wrappers         |
+| Rewrite grid wiring, selection, and pagination         | Drop in `@iamsaroj/smart-ui/data-grid` |
+| Rebuild search/filter bars for every list page         | Declare `@iamsaroj/smart-ui/search`    |
+| Re-implement trees, calendars, transfer lists, editors | Reach for the domain engine            |
 
 The goal is a public API that stays predictable, less glue code, and a codebase that still reads well after the first
 week.
@@ -102,7 +102,7 @@ reach into internal files.
 
 ```tsx
 import { z } from "zod"
-import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 
 const contactSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -154,13 +154,13 @@ import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
 @iamsaroj/smart-ui/smart-components/*       Smart* wrappers
 @iamsaroj/smart-ui/smart-components/page    page-layout slots
 @iamsaroj/smart-ui/smart-components/buttons action-button presets
-@iamsaroj/smart-ui/form-engine             declarative forms
-@iamsaroj/smart-ui/search-engine           search/filter bar
+@iamsaroj/smart-ui/form             declarative forms
+@iamsaroj/smart-ui/search           search/filter bar
 @iamsaroj/smart-ui/data-grid               AG Grid wrappers
-@iamsaroj/smart-ui/tree-engine             SmartTree
-@iamsaroj/smart-ui/transfer-list-engine    SmartTransferList
-@iamsaroj/smart-ui/calendar-engine         SmartCalendar
-@iamsaroj/smart-ui/lexical-text-editor     SmartTextEditor
+@iamsaroj/smart-ui/tree             SmartTree
+@iamsaroj/smart-ui/transfer-list    SmartTransferList
+@iamsaroj/smart-ui/calendar         SmartCalendar
+@iamsaroj/smart-ui/text-editor     SmartTextEditor
 ```
 
 ## Project structure
@@ -184,13 +184,13 @@ smart-component/
 
 The docs index lives in [`docs/README.md`](docs/README.md), with a guide per engine:
 
-- [Form engine](docs/form-engine.md)
+- [Form engine](docs/form.md)
 - [Data grid](docs/data-grid.md)
-- [Search engine](docs/search-engine.md)
-- [Tree engine](docs/tree-engine.md)
-- [Transfer list engine](docs/transfer-list-engine.md)
-- [Calendar engine](docs/calendar-engine.md)
-- [Lexical text editor](docs/lexical-text-editor.md)
+- [Search engine](docs/search.md)
+- [Tree engine](docs/tree.md)
+- [Transfer list engine](docs/transfer-list.md)
+- [Calendar engine](docs/calendar.md)
+- [Lexical text editor](docs/text-editor.md)
 - [Smart component wrappers](docs/smart-components.md)
 - [Component map](docs/component-map.md) &middot; [Security notes](docs/security.md)
 

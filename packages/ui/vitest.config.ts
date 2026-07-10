@@ -7,20 +7,20 @@ import { resolve } from "path"
 // here only if it needs no DOM at all (note: `server-grid-internals.test.ts`
 // stays on jsdom because it round-trips localStorage).
 const NODE_TESTS = [
-  "src/calendar-engine/booking.test.tsx",
-  "src/calendar-engine/calendar-utils.test.tsx",
-  "src/calendar-engine/recurrence.test.tsx",
+  "src/calendar/booking.test.tsx",
+  "src/calendar/calendar-utils.test.tsx",
+  "src/calendar/recurrence.test.tsx",
   "src/data-grid/create-page-fetcher.test.ts",
   "src/data-grid/formula-guard.test.ts",
   "src/data-grid/grid-datasource.test.ts",
   "src/data-grid/pagination.test.ts",
-  "src/form-engine/field-types.test.tsx",
-  "src/form-engine/smart-form-internals.test.ts",
+  "src/form/field-types.test.tsx",
+  "src/form/smart-form-internals.test.ts",
   "src/lib/format.test.ts",
   "src/lib/xlsx.test.ts",
-  "src/search-engine/build-query.test.ts",
-  "src/transfer-list-engine/transfer-utils.test.tsx",
-  "src/tree-engine/tree-utils.test.tsx",
+  "src/search/build-query.test.ts",
+  "src/transfer-list/transfer-utils.test.tsx",
+  "src/tree/tree-utils.test.tsx",
 ]
 
 export default defineConfig({

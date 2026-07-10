@@ -41,10 +41,10 @@ flowchart TD
 
   subgraph ui["packages/ui = @iamsaroj/smart-ui (source-only library)"]
     Smart["smart-components/*<br/>Smart* wrappers + page layout + buttons"]
-    Forms["form-engine / search-engine"]
+    Forms["form / search"]
     Grid["data-grid (AG Grid Community)"]
     Engines["tree / transfer-list / calendar engines"]
-    Editor["lexical-text-editor"]
+    Editor["text-editor"]
     Prim["components/* (shadcn v4 on Base UI)"]
     Lib["lib/* (cn, format, hand-rolled xlsx)"]
   end
@@ -83,7 +83,7 @@ This is a **modular, layered component library** organized by **feature domain (
 consumed by a **route-split single-page application**. It is best described as:
 
 - **Modular monolith (frontend):** one deployable app, internally partitioned into independent
-  domain modules (`data-grid`, `form-engine`, `calendar-engine`, …) that are individually
+  domain modules (`data-grid`, `form`, `calendar`, …) that are individually
   importable through an `exports` map and have their own tests.
 - **Layered within each module:** pure utilities → hooks/state → presentational components →
   flat `Smart*` wrapper (Facade). E.g. `tree-utils.ts` (pure) → `use-tree.ts` (state) →
@@ -123,13 +123,13 @@ concepts do not apply and are **not found in the current codebase.**
 │     └─ src/
 │        ├─ components/        # 49 shadcn v4 primitives on Base UI (vendored, regenerable)
 │        ├─ smart-components/  # Smart* wrappers + page/ layout system + buttons/ presets
-│        ├─ form-engine/       # SmartForm (TanStack Form + Zod), Smart*Field controls
-│        ├─ search-engine/     # SmartSearchForm — composes form-engine
+│        ├─ form/       # SmartForm (TanStack Form + Zod), Smart*Field controls
+│        ├─ search/     # SmartSearchForm — composes form
 │        ├─ data-grid/         # SmartGrid / SmartServerGrid (AG Grid Community)
-│        ├─ tree-engine/       # SmartTree
-│        ├─ transfer-list-engine/  # SmartTransferList
-│        ├─ calendar-engine/   # SmartCalendar (+ recurrence, booking)
-│        ├─ lexical-text-editor/   # SmartTextEditor (+ sanitize contract)
+│        ├─ tree/       # SmartTree
+│        ├─ transfer-list/  # SmartTransferList
+│        ├─ calendar/   # SmartCalendar (+ recurrence, booking)
+│        ├─ text-editor/   # SmartTextEditor (+ sanitize contract)
 │        ├─ hooks/             # use-mobile
 │        ├─ lib/               # cn (utils), format, hand-rolled xlsx writer
 │        ├─ styles/            # globals.css (Tailwind v4 entry), fonts.css
@@ -172,13 +172,13 @@ counts are measured (excluding test files).
 | `@iamsaroj/smart-ui/smart-components/*` (70)  | Flat `Smart*` facades over compound primitives | SmartCard, SmartDialog, SmartSheet, SmartSelect, SmartCombobox, SmartMultiSelect, SmartDatePicker, SmartStepper, SmartToaster, SmartStatCard, …                                | `components/*`                                |
 | `@iamsaroj/smart-ui/smart-components/page`    | Compound page-layout system                    | `SmartPage` + named slots via `PageContext`, `SmartPageContainer`                                                                                                              | smart-components                              |
 | `@iamsaroj/smart-ui/smart-components/buttons` | Action-button presets                          | `ACTION_BUTTON_CONFIG` (SSOT) → `ActionButton` → 27 presets (`AddButton`, `SaveButton`…), `ActionPermissionProvider`                                                           | smart-components                              |
-| `@iamsaroj/smart-ui/form-engine` (29)         | Declarative forms                              | `SmartForm` (TanStack Form + Zod SSOT), `FieldRenderer`, `Smart*Field` controls, `FieldBaseProps<T>`                                                                           | smart-components, `@tanstack/react-form`, zod |
-| `@iamsaroj/smart-ui/search-engine` (4)        | Search/filter bar                              | `SmartSearchForm`/`SearchEngine` — composes SmartForm; `buildSearchQuery`, `countActiveFilters`                                                                                | form-engine                                   |
+| `@iamsaroj/smart-ui/form` (29)                | Declarative forms                              | `SmartForm` (TanStack Form + Zod SSOT), `FieldRenderer`, `Smart*Field` controls, `FieldBaseProps<T>`                                                                           | smart-components, `@tanstack/react-form`, zod |
+| `@iamsaroj/smart-ui/search` (4)               | Search/filter bar                              | `SmartSearchForm`/`SearchEngine` — composes SmartForm; `buildSearchQuery`, `countActiveFilters`                                                                                | form                                          |
 | `@iamsaroj/smart-ui/data-grid` (12)           | AG Grid wrappers                               | `SmartGrid` (client), `SmartServerGrid` (infinite/server); `pagination.ts`, `create-page-fetcher.ts`, `formula-guard.ts`, `grid-internals.tsx`, `use-server-grid-selection.ts` | ag-grid-community, zod                        |
-| `@iamsaroj/smart-ui/tree-engine` (5)          | Hierarchical tree/explorer                     | `SmartTree` (generic), `tree-utils.ts` (pure algorithms), `use-tree.ts` (Set-backed state)                                                                                     | smart-components                              |
-| `@iamsaroj/smart-ui/transfer-list-engine` (4) | Dual-list shuttle                              | `SmartTransferList`, `transfer-utils.ts`                                                                                                                                       | smart-components                              |
-| `@iamsaroj/smart-ui/calendar-engine` (12)     | Calendar & booking                             | `SmartCalendar` (month/week/day/agenda), `recurrence.ts` (RRULE subset), `booking.ts`, `event-color.ts`, `layoutDayEvents`                                                     | date-fns, smart-components                    |
-| `@iamsaroj/smart-ui/lexical-text-editor` (19) | Rich-text editor                               | `SmartTextEditor`, `sanitize.ts` (`sanitizeEditorHtml`/`SafeEditorHtml`), `editorNodes`, `editorTheme`, `plugins/`                                                             | `@lexical/*`, dompurify                       |
+| `@iamsaroj/smart-ui/tree` (5)                 | Hierarchical tree/explorer                     | `SmartTree` (generic), `tree-utils.ts` (pure algorithms), `use-tree.ts` (Set-backed state)                                                                                     | smart-components                              |
+| `@iamsaroj/smart-ui/transfer-list` (4)        | Dual-list shuttle                              | `SmartTransferList`, `transfer-utils.ts`                                                                                                                                       | smart-components                              |
+| `@iamsaroj/smart-ui/calendar` (12)            | Calendar & booking                             | `SmartCalendar` (month/week/day/agenda), `recurrence.ts` (RRULE subset), `booking.ts`, `event-color.ts`, `layoutDayEvents`                                                     | date-fns, smart-components                    |
+| `@iamsaroj/smart-ui/text-editor` (19)         | Rich-text editor                               | `SmartTextEditor`, `sanitize.ts` (`sanitizeEditorHtml`/`SafeEditorHtml`), `editorNodes`, `editorTheme`, `plugins/`                                                             | `@lexical/*`, dompurify                       |
 | `@iamsaroj/smart-ui/globals.css`              | Tailwind v4 entry (asset)                      | `@source` directives scanning both workspaces                                                                                                                                  | Tailwind v4                                   |
 
 **Exposed APIs:** consumers import only via the 14 declared subpaths. Barrels (`index.ts`) hide
@@ -276,13 +276,13 @@ flowchart TD
     lib["lib/*"]
     comp["components/*"]
     smart["smart-components/*"]
-    form["form-engine"]
-    search["search-engine"]
+    form["form"]
+    search["search"]
     grid["data-grid"]
-    tree["tree-engine"]
-    transfer["transfer-list-engine"]
-    cal["calendar-engine"]
-    editor["lexical-text-editor"]
+    tree["tree"]
+    transfer["transfer-list"]
+    cal["calendar"]
+    editor["text-editor"]
   end
 
   smart --> comp
@@ -298,13 +298,13 @@ flowchart TD
 
 **Coupling analysis:**
 
-- **`search-engine → form-engine`** is the strongest intentional coupling: `SmartSearchForm`
+- **`search → form`** is the strongest intentional coupling: `SmartSearchForm`
   _composes_ (does not fork) `SmartForm`, reusing its fields, Zod validation, and layout. This is a
   deliberate low-duplication choice (`SearchFieldDefinition` is derived, not copied).
-- **`form-engine → smart-components`** — the form renders `Smart*Field` controls.
+- **`form → smart-components`** — the form renders `Smart*Field` controls.
 - Everything UI-facing depends on **`components/*`** (Base UI primitives) and **`lib/*`** (`cn`).
-- The **engines are otherwise mutually independent** — `data-grid`, `tree-engine`,
-  `calendar-engine`, etc. do not import each other. Low inter-module coupling is the design goal and
+- The **engines are otherwise mutually independent** — `data-grid`, `tree`,
+  `calendar`, etc. do not import each other. Low inter-module coupling is the design goal and
   is largely achieved.
 - **`apps/web` is the only consumer** and depends on the library through the `exports` map only
   (never reaching into arbitrary files) — enforced by `check-exports.mjs`.
@@ -416,18 +416,18 @@ The **only auth-adjacent concept** is a client-side **permission gate for UI**, 
 Security work is documented in `docs/security.md` and ADR-adjacent notes; the concrete controls in
 the code:
 
-| Concern                           | Status in repo                                                                                                                                                                                                                                                                                                                                                                        |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **XSS (stored)**                  | Handled. `lexical-text-editor/sanitize.ts`: `sanitizeEditorHtml` runs DOMPurify with an allow-list scoped to exactly the editor's node set; inbound HTML is sanitized on parse; `SafeEditorHtml` is the **only** sanctioned `dangerouslySetInnerHTML` site. Links hardened to `rel="noopener noreferrer nofollow"` + `target="_blank"`; `javascript:`/non-image `data:` URLs dropped. |
-| **CSV/XLSX formula injection**    | Handled. `data-grid/formula-guard.ts` neutralizes leading `= + - @` in CSV `processCellCallback` and `collectGridExport` (Excel export).                                                                                                                                                                                                                                              |
-| **Dependency vulnerabilities**    | CI `security` job: `pnpm audit --prod --audit-level high` (fails build) + moderate (non-blocking); `.github/dependabot.yml`.                                                                                                                                                                                                                                                          |
-| **Secret scanning**               | CI: `gitleaks/gitleaks-action@v2` over full history (`fetch-depth: 0`).                                                                                                                                                                                                                                                                                                               |
-| **CSP / security headers**        | Documented (not enforced in-app): `docs/security.md` provides CSP/header guidance + Netlify/Vercel snippets. It is host/deploy config, not app code.                                                                                                                                                                                                                                  |
-| **CSRF**                          | Not applicable — no cookie-authenticated backend in this repo. **Not found in the current codebase.**                                                                                                                                                                                                                                                                                 |
-| **SQL injection**                 | Not applicable — no SQL/database. **Not found in the current codebase.**                                                                                                                                                                                                                                                                                                              |
-| **CORS**                          | Not applicable — MSW intercepts in-browser. **Not found in the current codebase.**                                                                                                                                                                                                                                                                                                    |
-| **Encryption / password storage** | Not applicable — no auth or persistence. **Not found in the current codebase.**                                                                                                                                                                                                                                                                                                       |
-| **Secrets management**            | No secrets in code (verified by gitleaks gate). Only CI secret used is the default `GITHUB_TOKEN`.                                                                                                                                                                                                                                                                                    |
+| Concern                           | Status in repo                                                                                                                                                                                                                                                                                                                                                                |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **XSS (stored)**                  | Handled. `text-editor/sanitize.ts`: `sanitizeEditorHtml` runs DOMPurify with an allow-list scoped to exactly the editor's node set; inbound HTML is sanitized on parse; `SafeEditorHtml` is the **only** sanctioned `dangerouslySetInnerHTML` site. Links hardened to `rel="noopener noreferrer nofollow"` + `target="_blank"`; `javascript:`/non-image `data:` URLs dropped. |
+| **CSV/XLSX formula injection**    | Handled. `data-grid/formula-guard.ts` neutralizes leading `= + - @` in CSV `processCellCallback` and `collectGridExport` (Excel export).                                                                                                                                                                                                                                      |
+| **Dependency vulnerabilities**    | CI `security` job: `pnpm audit --prod --audit-level high` (fails build) + moderate (non-blocking); `.github/dependabot.yml`.                                                                                                                                                                                                                                                  |
+| **Secret scanning**               | CI: `gitleaks/gitleaks-action@v2` over full history (`fetch-depth: 0`).                                                                                                                                                                                                                                                                                                       |
+| **CSP / security headers**        | Documented (not enforced in-app): `docs/security.md` provides CSP/header guidance + Netlify/Vercel snippets. It is host/deploy config, not app code.                                                                                                                                                                                                                          |
+| **CSRF**                          | Not applicable — no cookie-authenticated backend in this repo. **Not found in the current codebase.**                                                                                                                                                                                                                                                                         |
+| **SQL injection**                 | Not applicable — no SQL/database. **Not found in the current codebase.**                                                                                                                                                                                                                                                                                                      |
+| **CORS**                          | Not applicable — MSW intercepts in-browser. **Not found in the current codebase.**                                                                                                                                                                                                                                                                                            |
+| **Encryption / password storage** | Not applicable — no auth or persistence. **Not found in the current codebase.**                                                                                                                                                                                                                                                                                               |
+| **Secrets management**            | No secrets in code (verified by gitleaks gate). Only CI secret used is the default `GITHUB_TOKEN`.                                                                                                                                                                                                                                                                            |
 
 ---
 
@@ -535,7 +535,7 @@ custom TTL layer exists.
 # Background Jobs
 
 **Not found in the current codebase.** There are no schedulers, cron jobs, workers, or async job
-queues. The only "scheduling" concept is domain data: `calendar-engine`'s booking/recurrence
+queues. The only "scheduling" concept is domain data: `calendar`'s booking/recurrence
 (`generateFreeSlots`, `expandEvents`) — feature logic, not a background-job system. MSW handlers use
 `delay()` purely to simulate latency in the demo.
 
@@ -605,7 +605,7 @@ Identified from the actual code:
 | **Factory**                     | `smart-components/buttons/action-buttons.tsx`                                                                               | `createActionButton` stamps out 27 named presets from `ACTION_BUTTON_CONFIG`; `createPageFetcher` factory produces `fetchRows`. |
 | **Strategy**                    | `createPageFetcher` `buildQuery` / `mapError` / `fetchImpl`; tree `TreeFilterMode`; calendar views                          | Pluggable behaviors injected as functions.                                                                                      |
 | **Adapter**                     | `buildServerFetchParams`, `normalizeFilterModel`                                                                            | Translate AG Grid's model → normalized transport-agnostic shape.                                                                |
-| **Composite**                   | `tree-engine` (`TreeNode<T>`), `calendar-engine` events, `SmartPage` slots                                                  | Recursive/nested structures with uniform operations.                                                                            |
+| **Composite**                   | `tree` (`TreeNode<T>`), `calendar` events, `SmartPage` slots                                                                | Recursive/nested structures with uniform operations.                                                                            |
 | **Compound Components**         | `smart-components/page` (`SmartPage` + `PageSlot` via `PageContext`); re-exported native primitives                         | Slot-based composition.                                                                                                         |
 | **Provider / Context**          | `PageContext`, `ActionPermissionProvider`, `ThemeProvider`, `QueryClientProvider`                                           | Cross-cutting config via React context.                                                                                         |
 | **Single Source of Truth**      | `ACTION_BUTTON_CONFIG`; Zod schema drives both validation and required-ness in `SmartForm`; the `exports` map as public API | —                                                                                                                               |

@@ -85,13 +85,11 @@ const ContainerLayoutPage = lazy(
 )
 
 // Form engine demos
-const BasicFormPage = lazy(() => import("@/pages/form-engine/basic-form-page"))
-const AllFieldsPage = lazy(() => import("@/pages/form-engine/all-fields-page"))
-const DynamicFormPage = lazy(
-  () => import("@/pages/form-engine/dynamic-form-page")
-)
+const BasicFormPage = lazy(() => import("@/pages/form/basic-form-page"))
+const AllFieldsPage = lazy(() => import("@/pages/form/all-fields-page"))
+const DynamicFormPage = lazy(() => import("@/pages/form/dynamic-form-page"))
 const MultiStepFormPage = lazy(
-  () => import("@/pages/form-engine/multi-step-form-page")
+  () => import("@/pages/form/multi-step-form-page")
 )
 
 export const App = () => (
@@ -177,10 +175,10 @@ export const App = () => (
           />
 
           {/* Form engine */}
-          <Route path="/form-engine/basic" element={<BasicFormPage />} />
-          <Route path="/form-engine/all-fields" element={<AllFieldsPage />} />
-          <Route path="/form-engine/dynamic" element={<DynamicFormPage />} />
-          <Route path="/form-engine/wizard" element={<MultiStepFormPage />} />
+          <Route path="/form/basic" element={<BasicFormPage />} />
+          <Route path="/form/all-fields" element={<AllFieldsPage />} />
+          <Route path="/form/dynamic" element={<DynamicFormPage />} />
+          <Route path="/form/wizard" element={<MultiStepFormPage />} />
         </Routes>
       </Suspense>
     </PlaygroundShell>

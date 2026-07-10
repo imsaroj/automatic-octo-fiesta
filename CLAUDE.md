@@ -75,16 +75,16 @@ into arbitrary files:
 @iamsaroj/smart-ui/smart-components/*     → src/smart-components/*.tsx       (Smart* wrappers)
 @iamsaroj/smart-ui/smart-components/page  → src/smart-components/page/index.ts   (page composition barrel)
 @iamsaroj/smart-ui/smart-components/buttons → src/smart-components/buttons/index.ts (action-button presets barrel)
-@iamsaroj/smart-ui/form-engine            → src/form-engine/index.ts        (declarative form engine)
-@iamsaroj/smart-ui/search-engine          → src/search-engine/index.ts      (search/filter bar on the form engine)
+@iamsaroj/smart-ui/form            → src/form/index.ts        (declarative form engine)
+@iamsaroj/smart-ui/search          → src/search/index.ts      (search/filter bar on the form engine)
 @iamsaroj/smart-ui/data-grid              → src/data-grid/index.ts          (AG Grid wrappers)
-@iamsaroj/smart-ui/tree-engine            → src/tree-engine/index.ts        (SmartTree)
-@iamsaroj/smart-ui/transfer-list-engine   → src/transfer-list-engine/index.ts (SmartTransferList)
-@iamsaroj/smart-ui/calendar-engine        → src/calendar-engine/index.ts    (SmartCalendar)
-@iamsaroj/smart-ui/lexical-text-editor    → src/lexical-text-editor/index.ts
+@iamsaroj/smart-ui/tree            → src/tree/index.ts        (SmartTree)
+@iamsaroj/smart-ui/transfer-list   → src/transfer-list/index.ts (SmartTransferList)
+@iamsaroj/smart-ui/calendar        → src/calendar/index.ts    (SmartCalendar)
+@iamsaroj/smart-ui/text-editor    → src/text-editor/index.ts
 ```
 
-Note there is no build step: everything is exported as source. `data-grid`, `form-engine`, and `lexical-text-editor`
+Note there is no build step: everything is exported as source. `data-grid`, `form`, and `text-editor`
 are barrel entrypoints (`index.ts`); their internal files are not individually importable.
 
 ### Shadcn/ui setup
@@ -165,7 +165,7 @@ permission gating (`ActionPermissionProvider`); `createActionButton` stamps out 
 standard CRUD/toolbar actions; extend by adding a config entry plus one `createActionButton` line.
 
 **Field/value convention:** input-like Smart components are controlled through a `data` / `setData(value)` pair (not
-`value`/`onChange`) — see `FieldBaseProps<T>` in `form-engine/base.ts`. The form engine relies on this convention.
+`value`/`onChange`) — see `FieldBaseProps<T>` in `form/base.ts`. The form engine relies on this convention.
 
 **`smart-components/page/`** — a compound **page-layout system** (barrel: `@iamsaroj/smart-ui/smart-components/page`). `SmartPage`
 is the orchestrator that arranges named slots (`SMART_PAGE_SLOT` / `PageSlot`) — header, hero, toolbar, search, filters,
@@ -178,13 +178,13 @@ tabs, content, sidebar, grid area, status bar, footer, and empty/loading/error s
 - Any new component or shadcn/ui wrapper that is **general-purpose** (usable across features) goes in `packages/ui/src/smart-components/`.
 - Components that are **scoped to a specific feature domain** go inside that domain's folder instead:
   - Grid-only helpers → `packages/ui/src/data-grid/`
-  - Form-engine field wrappers → `packages/ui/src/form-engine/`
-  - Rich-text-editor internals → `packages/ui/src/lexical-text-editor/`
+  - Form-engine field wrappers → `packages/ui/src/form/`
+  - Rich-text-editor internals → `packages/ui/src/text-editor/`
 - The rule of thumb: if the component imports from or is only meaningful within a single domain folder, it belongs there. If it could be reused across domains, it belongs in `smart-components/`.
 
-### Form engine (`packages/ui/src/form-engine/`)
+### Form engine (`packages/ui/src/form/`)
 
-Declarative forms built on **TanStack Form (`@tanstack/react-form`) + Zod v4**, exported as `@iamsaroj/smart-ui/form-engine`.
+Declarative forms built on **TanStack Form (`@tanstack/react-form`) + Zod v4**, exported as `@iamsaroj/smart-ui/form`.
 `SmartForm` takes a Zod `schema` plus a `FieldDefinition[]` and renders the right `Smart*Field` control per entry —
 no per-field wiring. Key design points (see `smart-form.tsx`):
 
@@ -200,10 +200,10 @@ no per-field wiring. Key design points (see `smart-form.tsx`):
 Individual `Smart*Field` files (`smart-input-field.tsx`, etc.) all take `FieldBaseProps<T>` (from `base.ts`) and are
 also exported for standalone use.
 
-### Search engine (`packages/ui/src/search-engine/`)
+### Search engine (`packages/ui/src/search/`)
 
 `SmartSearchForm` (aliased `SearchEngine`) — a declarative **search/filter bar** exported as
-`@iamsaroj/smart-ui/search-engine`. It **composes** `SmartForm` (not a fork): it reuses the same fields, Zod validation,
+`@iamsaroj/smart-ui/search`. It **composes** `SmartForm` (not a fork): it reuses the same fields, Zod validation,
 required derivation, layout, and field registry, and adds only search concerns on top. Key design points:
 
 - `SearchFieldDefinition<T>` is derived, not duplicated: `FieldDefinition<T> & { type: SearchFieldType }` —
@@ -217,16 +217,16 @@ required derivation, layout, and field registry, and adds only search concerns o
 - Layout delegates to `SmartForm`, but `columns` (1–4) is made responsive by passing a `grid-cols-*` override as
   `SmartForm`'s `className` (tailwind-merge wins over the fixed grid). `SmartForm` gained additive 4-column support.
 
-### Rich text editor (`packages/ui/src/lexical-text-editor/`)
+### Rich text editor (`packages/ui/src/text-editor/`)
 
-`SmartTextEditor` — a **Lexical**-based rich-text editor exported as `@iamsaroj/smart-ui/lexical-text-editor`. `editorNodes`
+`SmartTextEditor` — a **Lexical**-based rich-text editor exported as `@iamsaroj/smart-ui/text-editor`. `editorNodes`
 registers the node set (including custom `image-node` and `page-break-node`), `editorTheme` styles them, and
 `plugins/` holds the toolbar, auto-link, and code-highlight plugins. Value format is HTML or JSON
 (`SmartTextEditorFormat`). See the memory note on Lexical gotchas for known pitfalls.
 
-### Tree engine (`packages/ui/src/tree-engine/`)
+### Tree engine (`packages/ui/src/tree/`)
 
-`SmartTree` — a generic, hierarchical tree/file-explorer exported as `@iamsaroj/smart-ui/tree-engine`. Generic over a per-node
+`SmartTree` — a generic, hierarchical tree/file-explorer exported as `@iamsaroj/smart-ui/tree`. Generic over a per-node
 `data` payload (`TreeNode<T>`). Key design points:
 
 - **Node shape:** a node is a folder when it has `children` (even `[]`) **or** `isFolder: true` — the latter enables lazy
@@ -244,18 +244,18 @@ registers the node set (including custom `image-node` and `page-break-node`), `e
   `insertNode`/`removeNode`/`updateNode`/`moveNode`, `flattenVisible`, `computeMatches`, `walkTree`); unit-tested in
   `tree-utils.test.tsx`. Prefer these for tree mutations rather than hand-rolling recursion.
 
-### Transfer list engine (`packages/ui/src/transfer-list-engine/`)
+### Transfer list engine (`packages/ui/src/transfer-list/`)
 
 `SmartTransferList` — a dual-list "shuttle" (move items between a source and target list) exported as
-`@iamsaroj/smart-ui/transfer-list-engine`. Generic over a per-item `data` payload (`TransferItem<T>`). Each item lives in
+`@iamsaroj/smart-ui/transfer-list`. Generic over a per-item `data` payload (`TransferItem<T>`). Each item lives in
 exactly one side at a time, keyed by stable `id`. `onChange` receives a `TransferChangeMeta` describing the
 `direction` and which items `moved`. Target ids are controllable (`targetIds`/`defaultTargetIds`); imperative
 move-all/move-selected/`getTargetIds` actions come through `SmartTransferListHandle` via `ref`. Pure move/partition/filter
 helpers live in `transfer-utils.ts` (unit-tested in `transfer-utils.test.tsx`).
 
-### Calendar engine (`packages/ui/src/calendar-engine/`)
+### Calendar engine (`packages/ui/src/calendar/`)
 
-`SmartCalendar` — a calendar & booking surface exported as `@iamsaroj/smart-ui/calendar-engine`. Generic over a per-event
+`SmartCalendar` — a calendar & booking surface exported as `@iamsaroj/smart-ui/calendar`. Generic over a per-event
 `data` payload (`CalendarEvent<T>`). Key design points:
 
 - **Views:** `month` / `week` / `day` / `agenda`. Week & day share the time-grid (`time-grid-view.tsx`); month is
@@ -290,7 +290,7 @@ helpers live in `transfer-utils.ts` (unit-tested in `transfer-utils.test.tsx`).
 ### `apps/web` routing & mock API
 
 All routes (`react-router-dom` v7, defined in `App.tsx`) are nested under `PlaygroundShell` (sidebar + breadcrumb
-layout). Routes follow the pattern `/section/page` (`grids/*`, `examples/*`, `projects/*`, `smart/*`, `form-engine/*`) —
+layout). Routes follow the pattern `/section/page` (`grids/*`, `examples/*`, `projects/*`, `smart/*`, `form/*`) —
 the shell derives breadcrumb labels from the URL path segments automatically. Page components under `src/pages/` are
 thin leaf components with no shared state.
 

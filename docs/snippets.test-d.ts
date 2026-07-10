@@ -6,7 +6,7 @@
  */
 import { z } from "zod"
 
-import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 import {
   createPageFetcher,
   type DataGridColumn,
@@ -15,13 +15,13 @@ import {
 import {
   buildSearchQuery,
   type SearchFieldDefinition,
-} from "@iamsaroj/smart-ui/search-engine"
-import type { TreeNode } from "@iamsaroj/smart-ui/tree-engine"
-import type { TransferItem } from "@iamsaroj/smart-ui/transfer-list-engine"
-import type { CalendarEvent } from "@iamsaroj/smart-ui/calendar-engine"
-import { sanitizeEditorHtml } from "@iamsaroj/smart-ui/lexical-text-editor"
+} from "@iamsaroj/smart-ui/search"
+import type { TreeNode } from "@iamsaroj/smart-ui/tree"
+import type { TransferItem } from "@iamsaroj/smart-ui/transfer-list"
+import type { CalendarEvent } from "@iamsaroj/smart-ui/calendar"
+import { sanitizeEditorHtml } from "@iamsaroj/smart-ui/text-editor"
 
-// ── form-engine.md ──────────────────────────────────────────────────────────
+// ── form.md ──────────────────────────────────────────────────────────
 const schema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
@@ -83,7 +83,7 @@ const actionColumn: GridActionColumnOptions<User> = {
 }
 void actionColumn
 
-// ── search-engine.md ────────────────────────────────────────────────────────
+// ── search.md ────────────────────────────────────────────────────────
 type Filters = {
   q: string
   active: boolean
@@ -110,6 +110,6 @@ const events: CalendarEvent[] = [
 ]
 void events
 
-// ── lexical-text-editor.md ──────────────────────────────────────────────────
+// ── text-editor.md ──────────────────────────────────────────────────
 const clean: string = sanitizeEditorHtml("<p>hi</p>")
 void clean

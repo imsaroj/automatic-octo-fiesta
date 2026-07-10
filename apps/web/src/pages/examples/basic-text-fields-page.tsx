@@ -32,7 +32,7 @@ import {
 } from "@iamsaroj/smart-ui/smart-components/smart-time-range-picker"
 import { SmartMonthPicker } from "@iamsaroj/smart-ui/smart-components/smart-month-picker"
 import { SmartYearPicker } from "@iamsaroj/smart-ui/smart-components/smart-year-picker"
-import { SmartTextEditor } from "@iamsaroj/smart-ui/lexical-text-editor"
+import { SmartTextEditor } from "@iamsaroj/smart-ui/text-editor"
 
 const COUNTRIES = [
   { value: "kr", label: "South Korea" },

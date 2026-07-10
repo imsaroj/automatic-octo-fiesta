@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest"
-import type { CalendarEvent } from "@/calendar-engine/types"
-import type { DateRange } from "@/calendar-engine/calendar-utils"
+import type { CalendarEvent } from "@/calendar/types"
+import type { DateRange } from "@/calendar/calendar-utils"
 import {
   detachOccurrence,
   expandEvents,
   expandRecurring,
   splitSeries,
   updateSeries,
-} from "@/calendar-engine/recurrence"
+} from "@/calendar/recurrence"
 
 const at = (y: number, m: number, d: number, h = 0, min = 0) =>
   new Date(y, m - 1, d, h, min)

@@ -14,7 +14,7 @@ import {
 import {
   SmartSearchForm,
   type SearchFieldDefinition,
-} from "@iamsaroj/smart-ui/search-engine"
+} from "@iamsaroj/smart-ui/search"
 import {
   SmartServerGrid,
   type DataGridColumn,

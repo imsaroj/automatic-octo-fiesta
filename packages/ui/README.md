@@ -34,11 +34,11 @@ Import via the export subpaths — internal files are not individually importabl
 ```tsx
 import { Button } from "@iamsaroj/smart-ui/components/button"
 import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
-import { SmartForm } from "@iamsaroj/smart-ui/form-engine"
+import { SmartForm } from "@iamsaroj/smart-ui/form"
 import { SmartGrid, SmartServerGrid } from "@iamsaroj/smart-ui/data-grid"
-import { SmartTree } from "@iamsaroj/smart-ui/tree-engine"
-import { SmartCalendar } from "@iamsaroj/smart-ui/calendar-engine"
-import { SmartTextEditor } from "@iamsaroj/smart-ui/lexical-text-editor"
+import { SmartTree } from "@iamsaroj/smart-ui/tree"
+import { SmartCalendar } from "@iamsaroj/smart-ui/calendar"
+import { SmartTextEditor } from "@iamsaroj/smart-ui/text-editor"
 ```
 
 See the [docs folder](https://github.com/imsaroj/automatic-octo-fiesta/tree/main/docs) for a guide

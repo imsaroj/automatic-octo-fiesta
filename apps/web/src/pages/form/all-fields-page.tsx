@@ -6,7 +6,7 @@ import {
 } from "@iamsaroj/smart-ui/smart-components/page"
 import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
 import { toast } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
-import { type FieldDefinition, SmartForm } from "@iamsaroj/smart-ui/form-engine"
+import { type FieldDefinition, SmartForm } from "@iamsaroj/smart-ui/form"
 
 /**
  * Exercises every field type the engine supports. Optional fields use

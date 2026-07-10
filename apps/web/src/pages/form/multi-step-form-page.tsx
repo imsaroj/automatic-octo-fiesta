@@ -8,7 +8,7 @@ import {
 import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
 import { SmartButton } from "@iamsaroj/smart-ui/smart-components/smart-button"
 import { SmartStepper } from "@iamsaroj/smart-ui/smart-components/smart-stepper"
-import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 import { toast } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
 
 // ── Step schemas ──────────────────────────────────────────────────────────────

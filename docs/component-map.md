@@ -6,16 +6,16 @@ route that demos it, and its guide. Derived from the `exports` map in
 
 ## Engines
 
-| Component           | Import                                    | Demo route                                      | Doc                                               |
-| ------------------- | ----------------------------------------- | ----------------------------------------------- | ------------------------------------------------- |
-| `SmartForm`         | `@iamsaroj/smart-ui/form-engine`          | `/form-engine/basic`, `/form-engine/all-fields` | [form-engine](./form-engine.md)                   |
-| `SmartSearchForm`   | `@iamsaroj/smart-ui/search-engine`        | `/grids/server`                                 | [search-engine](./search-engine.md)               |
-| `SmartGrid`         | `@iamsaroj/smart-ui/data-grid`            | `/grids/simple`                                 | [data-grid](./data-grid.md)                       |
-| `SmartServerGrid`   | `@iamsaroj/smart-ui/data-grid`            | `/grids/server`, `/grids/infinite`              | [data-grid](./data-grid.md)                       |
-| `SmartTree`         | `@iamsaroj/smart-ui/tree-engine`          | `/smart/tree`, `/smart/tree-explorer`           | [tree-engine](./tree-engine.md)                   |
-| `SmartTransferList` | `@iamsaroj/smart-ui/transfer-list-engine` | `/smart/transfer-list`                          | [transfer-list-engine](./transfer-list-engine.md) |
-| `SmartCalendar`     | `@iamsaroj/smart-ui/calendar-engine`      | `/smart/calendar`                               | [calendar-engine](./calendar-engine.md)           |
-| `SmartTextEditor`   | `@iamsaroj/smart-ui/lexical-text-editor`  | `/smart/text-editor`                            | [lexical-text-editor](./lexical-text-editor.md)   |
+| Component           | Import                             | Demo route                            | Doc                                 |
+| ------------------- | ---------------------------------- | ------------------------------------- | ----------------------------------- |
+| `SmartForm`         | `@iamsaroj/smart-ui/form`          | `/form/basic`, `/form/all-fields`     | [form](./form.md)                   |
+| `SmartSearchForm`   | `@iamsaroj/smart-ui/search`        | `/grids/server`                       | [search](./search.md)               |
+| `SmartGrid`         | `@iamsaroj/smart-ui/data-grid`     | `/grids/simple`                       | [data-grid](./data-grid.md)         |
+| `SmartServerGrid`   | `@iamsaroj/smart-ui/data-grid`     | `/grids/server`, `/grids/infinite`    | [data-grid](./data-grid.md)         |
+| `SmartTree`         | `@iamsaroj/smart-ui/tree`          | `/smart/tree`, `/smart/tree-explorer` | [tree](./tree.md)                   |
+| `SmartTransferList` | `@iamsaroj/smart-ui/transfer-list` | `/smart/transfer-list`                | [transfer-list](./transfer-list.md) |
+| `SmartCalendar`     | `@iamsaroj/smart-ui/calendar`      | `/smart/calendar`                     | [calendar](./calendar.md)           |
+| `SmartTextEditor`   | `@iamsaroj/smart-ui/text-editor`   | `/smart/text-editor`                  | [text-editor](./text-editor.md)     |
 
 ## Smart components
 

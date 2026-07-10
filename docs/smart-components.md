@@ -78,7 +78,7 @@ bar, footer, and empty/loading/error states) through `PageContext`. This is the
 ## Placement rule
 
 General-purpose components go in `smart-components/`; feature-scoped ones go in
-their domain folder (`data-grid/`, `form-engine/`, `lexical-text-editor/`).
+their domain folder (`data-grid/`, `form/`, `text-editor/`).
 
 ## Demo
 

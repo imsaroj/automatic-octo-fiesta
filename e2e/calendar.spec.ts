@@ -4,7 +4,7 @@ import { test, expect } from "@playwright/test"
  * SmartCalendar navigation: switch across the month/week/day view segmented
  * control and step the date with prev/today/next, asserting the view actually
  * changes. (Event create/edit runs through SmartDialog — covered by component
- * tests; pointer drag-move/resize is covered by the calendar-engine unit +
+ * tests; pointer drag-move/resize is covered by the calendar unit +
  * behavior suites, which exercise the pure layout/date math deterministically.)
  */
 

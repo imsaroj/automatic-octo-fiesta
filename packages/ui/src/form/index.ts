@@ -1,11 +1,11 @@
 /**
- * `@iamsaroj/smart-ui/form-engine` — declarative form engine built on Smart Components.
+ * `@iamsaroj/smart-ui/form` — declarative form engine built on Smart Components.
  *
  * Core usage:
- *   import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
+ *   import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
  *
  * For standalone field components:
- *   import { SmartInputField, SmartSelectField, ... } from "@iamsaroj/smart-ui/form-engine"
+ *   import { SmartInputField, SmartSelectField, ... } from "@iamsaroj/smart-ui/form"
  *
  * New Smart* wrappers added for the engine:
  *   import { SmartMultiSelect }    from "@iamsaroj/smart-ui/smart-components/smart-multi-select"

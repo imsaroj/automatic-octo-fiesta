@@ -105,13 +105,13 @@
     "./smart-components/page": "./src/smart-components/page/index.ts",
     "./smart-components/buttons": "./src/smart-components/buttons/index.ts",
     "./smart-components/*": "./src/smart-components/*.tsx",
-    "./form-engine": "./src/form-engine/index.ts",
-    "./search-engine": "./src/search-engine/index.ts",
+    "./form": "./src/form/index.ts",
+    "./search": "./src/search/index.ts",
     "./data-grid": "./src/data-grid/index.ts",
-    "./tree-engine": "./src/tree-engine/index.ts",
-    "./transfer-list-engine": "./src/transfer-list-engine/index.ts",
-    "./calendar-engine": "./src/calendar-engine/index.ts",
-    "./lexical-text-editor": "./src/lexical-text-editor/index.ts"
+    "./tree": "./src/tree/index.ts",
+    "./transfer-list": "./src/transfer-list/index.ts",
+    "./calendar": "./src/calendar/index.ts",
+    "./text-editor": "./src/text-editor/index.ts"
   },
   "publishConfig": {
     "access": "public",
@@ -141,33 +141,33 @@
         "types": "./dist/smart-components/*.d.ts",
         "default": "./dist/smart-components/*.js"
       },
-      "./form-engine": {
-        "types": "./dist/form-engine/index.d.ts",
-        "default": "./dist/form-engine/index.js"
+      "./form": {
+        "types": "./dist/form/index.d.ts",
+        "default": "./dist/form/index.js"
       },
-      "./search-engine": {
-        "types": "./dist/search-engine/index.d.ts",
-        "default": "./dist/search-engine/index.js"
+      "./search": {
+        "types": "./dist/search/index.d.ts",
+        "default": "./dist/search/index.js"
       },
       "./data-grid": {
         "types": "./dist/data-grid/index.d.ts",
         "default": "./dist/data-grid/index.js"
       },
-      "./tree-engine": {
-        "types": "./dist/tree-engine/index.d.ts",
-        "default": "./dist/tree-engine/index.js"
+      "./tree": {
+        "types": "./dist/tree/index.d.ts",
+        "default": "./dist/tree/index.js"
       },
-      "./transfer-list-engine": {
-        "types": "./dist/transfer-list-engine/index.d.ts",
-        "default": "./dist/transfer-list-engine/index.js"
+      "./transfer-list": {
+        "types": "./dist/transfer-list/index.d.ts",
+        "default": "./dist/transfer-list/index.js"
       },
-      "./calendar-engine": {
-        "types": "./dist/calendar-engine/index.d.ts",
-        "default": "./dist/calendar-engine/index.js"
+      "./calendar": {
+        "types": "./dist/calendar/index.d.ts",
+        "default": "./dist/calendar/index.js"
       },
-      "./lexical-text-editor": {
-        "types": "./dist/lexical-text-editor/index.d.ts",
-        "default": "./dist/lexical-text-editor/index.js"
+      "./text-editor": {
+        "types": "./dist/text-editor/index.d.ts",
+        "default": "./dist/text-editor/index.js"
       }
     }
   }

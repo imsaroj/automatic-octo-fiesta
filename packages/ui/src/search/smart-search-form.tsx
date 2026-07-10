@@ -11,7 +11,7 @@ import {
   SmartForm,
   defaultFieldRegistry,
   type FieldRegistry,
-} from "@iamsaroj/smart-ui/form-engine"
+} from "@iamsaroj/smart-ui/form"
 
 import type { SearchFieldDefinition } from "./types"
 import { buildSearchQuery, countActiveFilters } from "./build-query"
@@ -33,7 +33,7 @@ const RESPONSIVE_COLS = {
 } as const
 
 export interface SmartSearchFormProps<T extends Record<string, unknown>> {
-  /** Search fields — same shape as form-engine fields, narrowed to search controls. */
+  /** Search fields — same shape as form fields, narrowed to search controls. */
   fields: SearchFieldDefinition<T>[]
   /**
    * Zod schema — validated before a search fires. Optional: with no schema every

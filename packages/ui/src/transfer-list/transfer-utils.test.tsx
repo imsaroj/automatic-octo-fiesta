@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { TransferItem } from "@/transfer-list-engine/types"
+import type { TransferItem } from "@/transfer-list/types"
 import {
   addToTarget,
   filterItems,
@@ -8,7 +8,7 @@ import {
   movableIds,
   partitionItems,
   removeFromTarget,
-} from "@/transfer-list-engine/transfer-utils"
+} from "@/transfer-list/transfer-utils"
 
 const items: TransferItem[] = [
   { id: "a", label: "Apple" },

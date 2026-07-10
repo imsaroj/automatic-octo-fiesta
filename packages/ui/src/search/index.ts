@@ -1,8 +1,8 @@
 /**
- * `@iamsaroj/smart-ui/search-engine` — a reusable search / filter bar built on top of
+ * `@iamsaroj/smart-ui/search` — a reusable search / filter bar built on top of
  * the form engine.
  *
- *   import { SmartSearchForm, type SearchFieldDefinition } from "@iamsaroj/smart-ui/search-engine"
+ *   import { SmartSearchForm, type SearchFieldDefinition } from "@iamsaroj/smart-ui/search"
  *
  * `SmartSearchForm` composes `SmartForm`: same declarative fields and Zod
  * validation, plus manual/auto search, empty-value pruning, and an action bar.

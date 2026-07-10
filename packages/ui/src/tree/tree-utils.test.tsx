@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { TreeNode } from "@/tree-engine/types"
+import type { TreeNode } from "@/tree/types"
 import {
   buildNodeMap,
   buildParentMap,
@@ -20,7 +20,7 @@ import {
   toggleChecked,
   updateNode,
   walkTree,
-} from "@/tree-engine/tree-utils"
+} from "@/tree/tree-utils"
 
 // A small fixture reused across the suite:
 //

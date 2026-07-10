@@ -32,13 +32,13 @@ const EXEMPT = ["./globals.css", "./lib/*", "./components/*", "./hooks/*"]
 
 // Public domain entrypoint → the guide that documents it.
 const DOC_FOR = {
-  "./form-engine": "form-engine.md",
-  "./search-engine": "search-engine.md",
+  "./form": "form.md",
+  "./search": "search.md",
   "./data-grid": "data-grid.md",
-  "./tree-engine": "tree-engine.md",
-  "./transfer-list-engine": "transfer-list-engine.md",
-  "./calendar-engine": "calendar-engine.md",
-  "./lexical-text-editor": "lexical-text-editor.md",
+  "./tree": "tree.md",
+  "./transfer-list": "transfer-list.md",
+  "./calendar": "calendar.md",
+  "./text-editor": "text-editor.md",
   "./smart-components/page": "smart-components.md",
   "./smart-components/buttons": "smart-components.md",
   "./smart-components/*": "smart-components.md",

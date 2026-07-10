@@ -9,7 +9,7 @@ all four.
 
 ## Rich-text HTML sanitization contract
 
-`SmartTextEditor` (`@iamsaroj/smart-ui/lexical-text-editor`) round-trips **raw HTML**
+`SmartTextEditor` (`@iamsaroj/smart-ui/text-editor`) round-trips **raw HTML**
 in its default `format="html"` mode. That is a stored-XSS vector the moment an
 app persists editor output and later renders it back.
 
@@ -25,7 +25,7 @@ The library handles both directions:
 import {
   SafeEditorHtml,
   sanitizeEditorHtml,
-} from "@iamsaroj/smart-ui/lexical-text-editor"
+} from "@iamsaroj/smart-ui/text-editor"
 
 // Rendering stored editor HTML — the only sanctioned dangerouslySetInnerHTML site:
 ;<SafeEditorHtml html={storedHtml} className="prose" />

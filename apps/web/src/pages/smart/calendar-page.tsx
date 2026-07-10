@@ -26,7 +26,7 @@ import {
   type EventPatch,
   type FreeSlot,
   type SmartCalendarHandle,
-} from "@iamsaroj/smart-ui/calendar-engine"
+} from "@iamsaroj/smart-ui/calendar"
 
 // ── Local date helpers (apps/web doesn't depend on date-fns directly) ─────────
 

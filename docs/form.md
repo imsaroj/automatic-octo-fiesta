@@ -1,4 +1,4 @@
-# Form engine — `@iamsaroj/smart-ui/form-engine`
+# Form engine — `@iamsaroj/smart-ui/form`
 
 ## What it is
 
@@ -10,7 +10,7 @@ manages state — no per-field wiring.
 ## Import
 
 ```ts
-import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form-engine"
+import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 import { z } from "zod"
 ```
 
@@ -78,4 +78,4 @@ const fields: FieldDefinition<Values>[] = [
 
 ## Demo
 
-`/form-engine/basic`, `/form-engine/all-fields`, `/form-engine/dynamic`.
+`/form/basic`, `/form/all-fields`, `/form/dynamic`.

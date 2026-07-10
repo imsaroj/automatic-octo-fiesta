@@ -21,7 +21,7 @@ import {
   SmartTransferList,
   type SmartTransferListHandle,
   type TransferItem,
-} from "@iamsaroj/smart-ui/transfer-list-engine"
+} from "@iamsaroj/smart-ui/transfer-list"
 
 // ── Sample data ────────────────────────────────────────────────────────────
 

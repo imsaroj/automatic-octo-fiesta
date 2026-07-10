@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { CalendarEvent } from "@/calendar-engine/types"
+import type { CalendarEvent } from "@/calendar/types"
 import {
   buildMonthGrid,
   buildWeekDays,
@@ -11,7 +11,7 @@ import {
   sortEvents,
   stepDate,
   viewRange,
-} from "@/calendar-engine/calendar-utils"
+} from "@/calendar/calendar-utils"
 
 // A fixed reference: Tue 2026-07-07, 09:00.
 const at = (y: number, m: number, d: number, h = 0, min = 0) =>

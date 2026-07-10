@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
-import type { AvailabilityWindow, CalendarEvent } from "@/calendar-engine/types"
-import { generateFreeSlots, windowsForDay } from "@/calendar-engine/booking"
+import type { AvailabilityWindow, CalendarEvent } from "@/calendar/types"
+import { generateFreeSlots, windowsForDay } from "@/calendar/booking"
 
 const at = (y: number, m: number, d: number, h = 0, min = 0) =>
   new Date(y, m - 1, d, h, min)
