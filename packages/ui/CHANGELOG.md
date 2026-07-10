@@ -1,3 +1,18 @@
+# [1.0.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v0.2.0...v1.0.0) (2026-07-10)
+
+
+* refactor!: drop -engine suffix from subpaths, rename lexical-text-editor to text-editor ([413f7a1](https://github.com/imsaroj/automatic-octo-fiesta/commit/413f7a187e043b56ed8ea2e36874e831ad359ed0))
+
+
+### BREAKING CHANGES
+
+* all six import subpaths above are renamed; consumers
+must update imports, e.g. @iamsaroj/smart-ui/tree-engine ->
+@iamsaroj/smart-ui/tree and @iamsaroj/smart-ui/lexical-text-editor ->
+@iamsaroj/smart-ui/text-editor.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
 # [0.2.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v0.1.0...v0.2.0) (2026-07-09)
 
 
