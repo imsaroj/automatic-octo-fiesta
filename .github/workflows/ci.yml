@@ -1,9 +1,20 @@
 name: CI
 
+# Docs-only changes (markdown, docs/, LICENSE) skip CI entirely. Caveat: this
+# also skips `docs:check`, so a docs-only PR with a broken doc snippet lands
+# unchecked — it will surface on the next code push.
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
   pull_request:
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}

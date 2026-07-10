@@ -1,8 +1,16 @@
 name: Release
 
+# Docs-only pushes skip the workflow: docs/chore commits never trigger a
+# version bump, and semantic-release analyzes all commits since the last tag,
+# so skipped commits are still picked up by the next code push. Trade-off: the
+# self-heal publish step also waits for the next code push (or a manual run).
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
 
 # One release at a time, never cancelled mid-publish.
 concurrency:

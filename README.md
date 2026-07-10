@@ -29,7 +29,8 @@ so a form is a schema, a grid is a fetcher, and a page is a set of named slots.
 | Re-implement trees, calendars, transfer lists, editors | Reach for the domain engine            |
 
 The goal is a public API that stays predictable, less glue code, and a codebase that still reads well after the first
-week.
+week. For a concrete before/after, see [Same form, two ways](#same-form-two-ways) below — the identical contact form
+at ~150 hand-written lines versus ~45.
 
 ## Features
 
@@ -98,10 +99,182 @@ pnpm publint        # Lint the published package
 Import through the explicit subpath exports declared in [`packages/ui/package.json`](packages/ui/package.json) — never
 reach into internal files.
 
-### Schema-driven form
+### Same form, two ways
+
+The clearest way to see what this library buys you: here is the **same four-field contact form** built twice. Both
+versions use the same Zod schema, validate the same way, show the same required asterisks and error messages, and
+disable the submit button while submitting.
+
+**By hand — shadcn/ui + TanStack Form (~150 lines).** You wire every field yourself: label, control, value/onChange,
+blur, error message, aria attributes — four times over, plus the submit plumbing.
+
+<details>
+<summary>Expand the ~150 lines you'd write by hand</summary>
 
 ```tsx
+import { useForm } from "@tanstack/react-form"
+import { toast } from "sonner"
 import { z } from "zod"
+
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+
+const contactSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.email().optional().or(z.literal("")),
+  subject: z.string().min(1, "Choose a subject"),
+  message: z.string().min(10, "Minimum 10 characters"),
+})
+
+const SUBJECTS = ["Support", "Sales", "Feedback"]
+
+export function ContactForm() {
+  const form = useForm({
+    defaultValues: { name: "", email: "", subject: "", message: "" },
+    validators: { onSubmit: contactSchema },
+    onSubmit: ({ value }) => toast.success(`Thanks, ${value.name}!`),
+  })
+
+  return (
+    <form
+      className="space-y-4"
+      onSubmit={(event) => {
+        event.preventDefault()
+        form.handleSubmit()
+      }}
+    >
+      <form.Field name="name">
+        {(field) => (
+          <div className="space-y-2">
+            <Label htmlFor={field.name}>
+              Your name <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id={field.name}
+              placeholder="Ada Lovelace"
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(event) => field.handleChange(event.target.value)}
+              aria-invalid={field.state.meta.errors.length > 0}
+            />
+            {field.state.meta.errors[0] && (
+              <p className="text-sm text-destructive">
+                {field.state.meta.errors[0]?.message}
+              </p>
+            )}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field name="email">
+        {(field) => (
+          <div className="space-y-2">
+            <Label htmlFor={field.name}>Email</Label>
+            <Input
+              id={field.name}
+              type="email"
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(event) => field.handleChange(event.target.value)}
+              aria-invalid={field.state.meta.errors.length > 0}
+            />
+            {field.state.meta.errors[0] && (
+              <p className="text-sm text-destructive">
+                {field.state.meta.errors[0]?.message}
+              </p>
+            )}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field name="subject">
+        {(field) => (
+          <div className="space-y-2">
+            <Label htmlFor={field.name}>
+              Subject <span className="text-destructive">*</span>
+            </Label>
+            <Select
+              value={field.state.value}
+              onValueChange={field.handleChange}
+            >
+              <SelectTrigger
+                id={field.name}
+                aria-invalid={field.state.meta.errors.length > 0}
+              >
+                <SelectValue placeholder="Choose a subject" />
+              </SelectTrigger>
+              <SelectContent>
+                {SUBJECTS.map((subject) => (
+                  <SelectItem key={subject} value={subject}>
+                    {subject}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {field.state.meta.errors[0] && (
+              <p className="text-sm text-destructive">
+                {field.state.meta.errors[0]?.message}
+              </p>
+            )}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field name="message">
+        {(field) => (
+          <div className="space-y-2">
+            <Label htmlFor={field.name}>
+              Message <span className="text-destructive">*</span>
+            </Label>
+            <Textarea
+              id={field.name}
+              rows={4}
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(event) => field.handleChange(event.target.value)}
+              aria-invalid={field.state.meta.errors.length > 0}
+            />
+            {field.state.meta.errors[0] && (
+              <p className="text-sm text-destructive">
+                {field.state.meta.errors[0]?.message}
+              </p>
+            )}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Subscribe selector={(state) => state.isSubmitting}>
+        {(isSubmitting) => (
+          <div className="flex justify-end">
+            <Button type="submit" disabled={isSubmitting}>
+              Send message
+            </Button>
+          </div>
+        )}
+      </form.Subscribe>
+    </form>
+  )
+}
+```
+
+</details>
+
+**With `SmartForm` (~45 lines).** The schema stays the single source of truth — validation _and_ the required
+asterisks are derived from it — and each field is one config entry instead of a JSX block:
+
+```tsx
+import { toast } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
+import { z } from "zod"
+
 import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 
 const contactSchema = z.object({
@@ -112,22 +285,40 @@ const contactSchema = z.object({
 })
 
 const fields: FieldDefinition<z.infer<typeof contactSchema>>[] = [
-    { name: "name", type: "text", label: "Your name", placeholder: "Ada Lovelace" },
-    { name: "email", type: "email", label: "Email" },
-    { name: "subject", type: "select", label: "Subject", options: SUBJECT_OPTIONS },
-    { name: "message", type: "textarea", label: "Message", rows: 4 },
-  ]
+  {
+    name: "name",
+    type: "text",
+    label: "Your name",
+    placeholder: "Ada Lovelace",
+  },
+  { name: "email", type: "email", label: "Email" },
+  {
+    name: "subject",
+    type: "select",
+    label: "Subject",
+    options: [
+      { value: "support", label: "Support" },
+      { value: "sales", label: "Sales" },
+      { value: "feedback", label: "Feedback" },
+    ],
+  },
+  { name: "message", type: "textarea", label: "Message", rows: 4 },
+]
 
-  < SmartForm
-schema = { contactSchema }
-fields = { fields }
-submitLabel = "Send message"
-onSubmit = {(value)
-=>
-toast.success(`Thanks, ${value.name}!`)
+export function ContactForm() {
+  return (
+    <SmartForm
+      schema={contactSchema}
+      fields={fields}
+      submitLabel="Send message"
+      onSubmit={(value) => toast.success(`Thanks, ${value.name}!`)}
+    />
+  )
 }
-/>
 ```
+
+Adding a fifth field is one schema line plus one config entry — not another 20-line JSX block. And when a layout
+outgrows the flat API, every wrapper re-exports the underlying primitives, so you can always drop back down.
 
 ### Flat compound wrapper
 
