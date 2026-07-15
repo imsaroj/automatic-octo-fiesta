@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.0.0...v1.1.0) (2026-07-15)
+
+
+### Features
+
+* **ui:** add Pretendard, Nanum Gothic, and SUIT font families ([6874939](https://github.com/imsaroj/automatic-octo-fiesta/commit/687493926271d1199f5211342be227523b4a4c09))
+
 # [1.0.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v0.2.0...v1.0.0) (2026-07-10)
 
 
