@@ -46,7 +46,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
           # Writes an .npmrc that authenticates pnpm publish via NODE_AUTH_TOKEN.
           registry-url: https://registry.npmjs.org
