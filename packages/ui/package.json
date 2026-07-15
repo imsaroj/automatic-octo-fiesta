@@ -21,6 +21,7 @@
   "files": [
     "dist",
     "src/styles/globals.css",
+    "src/styles/fonts.css",
     "CHANGELOG.md"
   ],
   "scripts": {
