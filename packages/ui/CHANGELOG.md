@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.1.0...v1.1.1) (2026-07-15)
+
+
+### Bug Fixes
+
+* **ui:** publish fonts.css so consumers get all font families ([6b90dae](https://github.com/imsaroj/automatic-octo-fiesta/commit/6b90daea313b4aca532c91b375290108c0e9dcd6))
+
 # [1.1.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.0.0...v1.1.0) (2026-07-15)
 
 
