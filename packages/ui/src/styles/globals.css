@@ -49,7 +49,7 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
   --font-sans: "Inter Variable", sans-serif;
-  --font-serif: "Noto Serif Variable", serif;
+  --font-serif: "Pretendard Variable", "Noto Serif Variable", serif;
 }
 :root {
   --background: oklch(1 0 0);
@@ -125,19 +125,23 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+
   html {
     @apply font-serif;
   }
+
   /* Honor prefers-reduced-motion: collapse animations/transitions to instant
-     for users who ask for reduced motion (and stabilizes automated a11y scans,
-     which must not sample mid-transition colors). */
+       for users who ask for reduced motion (and stabilizes automated a11y scans,
+       which must not sample mid-transition colors). */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
