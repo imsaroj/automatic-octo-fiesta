@@ -17,6 +17,7 @@ import {
   type GetRowIdParams,
   type GridApi,
   type GridReadyEvent,
+  type IDatasource,
   type RowDoubleClickedEvent,
   type RowSelectionOptions,
 } from "ag-grid-community"
@@ -240,6 +241,18 @@ const SmartServerGridInner = <TRow,>(
 
   const controllersRef = useRef<Set<AbortController>>(new Set())
 
+  // The live page size. Seeded from the `pageSize` prop but owned here so the
+  // pager's selector can drive it: it feeds BOTH `cacheBlockSize` (the fetch
+  // block size) and `paginationPageSize` (the displayed page size). Passing
+  // either as a static prop would make the grid snap the selector back on the
+  // next render, so both read this one piece of state. The ref mirror lets the
+  // stable `onPaginationChanged` callback compare against the latest value.
+  const [effectivePageSize, setEffectivePageSize] = useState(pageSize)
+  const effectivePageSizeRef = useRef(pageSize)
+  // The datasource created in `handleGridReady`, kept so a page-size change can
+  // re-set it — that's what rebuilds the row cache at the new `cacheBlockSize`.
+  const datasourceRef = useRef<IDatasource | null>(null)
+
   const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -355,25 +368,24 @@ const SmartServerGridInner = <TRow,>(
       // would purge the cache. It reads the latest `fetchRows` / `filters`
       // through ref getters; the translation/abort/error flow lives in
       // `createGridDatasource` (server-grid-internals), where it is unit-tested.
-      event.api.setGridOption(
-        "datasource",
-        createGridDatasource<TRow>({
-          getFetchRows: () => fetchRowsRef.current,
-          getExternalFilters: () => filtersRef.current,
-          controllers: controllersRef.current,
-          onFetchStart: () => {
-            inFlightRef.current += 1
-            setLoadingMore(true)
-          },
-          onSuccess: () => setError(null),
-          onError: setError,
-          onSettled: () => {
-            setInitialLoading(false)
-            inFlightRef.current = Math.max(0, inFlightRef.current - 1)
-            if (inFlightRef.current === 0) setLoadingMore(false)
-          },
-        })
-      )
+      const datasource = createGridDatasource<TRow>({
+        getFetchRows: () => fetchRowsRef.current,
+        getExternalFilters: () => filtersRef.current,
+        controllers: controllersRef.current,
+        onFetchStart: () => {
+          inFlightRef.current += 1
+          setLoadingMore(true)
+        },
+        onSuccess: () => setError(null),
+        onError: setError,
+        onSettled: () => {
+          setInitialLoading(false)
+          inFlightRef.current = Math.max(0, inFlightRef.current - 1)
+          if (inFlightRef.current === 0) setLoadingMore(false)
+        },
+      })
+      datasourceRef.current = datasource
+      event.api.setGridOption("datasource", datasource)
     },
     [restoreState]
   )
@@ -385,18 +397,24 @@ const SmartServerGridInner = <TRow,>(
     []
   )
 
-  // The pager's page-size selector only re-slices already-fetched blocks; in the
-  // infinite row model the fetch size is `cacheBlockSize`, fixed at init. Keep them
-  // in sync so picking a new page size actually re-fetches blocks at that size
-  // (otherwise `fetchRows` keeps receiving the initial `pageSize`).
+  // The pager's page-size selector only changes how many already-fetched rows are
+  // *displayed*; in the infinite row model the fetch size is `cacheBlockSize`, which
+  // AG Grid reads only when the row cache is built. So when the selector changes we
+  // (1) sync `effectivePageSize` so the managed `cacheBlockSize`/`paginationPageSize`
+  // props don't snap back on the next render, (2) bump the `cacheBlockSize` option,
+  // and (3) re-set the datasource — that rebuilds the cache at the new block size, so
+  // `fetchRows` finally receives the size the user picked. (Purging alone keeps the
+  // old block size, which is why the selector appeared to do nothing.)
   const handlePaginationChanged = useCallback(() => {
     const api = gridApiRef.current
     if (!api || !pagination) return
     const next = api.paginationGetPageSize()
-    if (next && next !== api.getGridOption("cacheBlockSize")) {
-      api.setGridOption("cacheBlockSize", next)
-      api.purgeInfiniteCache()
-    }
+    if (!next || next === effectivePageSizeRef.current) return
+    effectivePageSizeRef.current = next
+    setEffectivePageSize(next)
+    api.setGridOption("cacheBlockSize", next)
+    if (datasourceRef.current)
+      api.setGridOption("datasource", datasourceRef.current)
   }, [pagination])
 
   const handleRetry = useCallback(() => {
@@ -499,7 +517,7 @@ const SmartServerGridInner = <TRow,>(
           className="h-full w-full"
           theme={dataGridTheme}
           rowModelType="infinite"
-          cacheBlockSize={pageSize}
+          cacheBlockSize={effectivePageSize}
           columnDefs={effectiveColumns}
           defaultColDef={defaultColDef}
           suppressCellFocus={true}
@@ -508,7 +526,7 @@ const SmartServerGridInner = <TRow,>(
           // Page-size props only apply to the pager; passing them in infinite
           // scroll mode trips AG Grid warning #94 when `pageSize` isn't one of
           // the selector options (`cacheBlockSize` already carries the size).
-          paginationPageSize={pagination ? pageSize : undefined}
+          paginationPageSize={pagination ? effectivePageSize : undefined}
           paginationPageSizeSelector={pagination ? pageSizeOptions : undefined}
           rowHeight={rowHeightByDensity[density]}
           getRowId={getRowIdCb}
