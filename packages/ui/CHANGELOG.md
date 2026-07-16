@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.1.2...v1.2.0) (2026-07-16)
+
+
+### Features
+
+* **ui:** improve server data grid pagination with dynamic page size sync ([a4dd9b8](https://github.com/imsaroj/automatic-octo-fiesta/commit/a4dd9b8911cedad216fc90ac68d7703f1bfef7de))
+
 ## [1.1.2](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.1.1...v1.1.2) (2026-07-16)
 
 
