@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.1.1...v1.1.2) (2026-07-16)
+
+
+### Bug Fixes
+
+* **ui:** sync page size with cacheBlockSize in server data grid pagination ([2677143](https://github.com/imsaroj/automatic-octo-fiesta/commit/26771435a30a544f6ad793729e28e8283bca0073))
+
 ## [1.1.1](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.1.0...v1.1.1) (2026-07-15)
 
 
