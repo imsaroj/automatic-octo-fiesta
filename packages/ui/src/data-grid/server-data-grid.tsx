@@ -399,6 +399,7 @@ const SmartServerGridInner = <TRow,>(
 
   // The pager's page-size selector only changes how many already-fetched rows are
   // *displayed*; in the infinite row model the fetch size is `cacheBlockSize`, which
+  // Update by Saroj Khanal to re-released
   // AG Grid reads only when the row cache is built. So when the selector changes we
   // (1) sync `effectivePageSize` so the managed `cacheBlockSize`/`paginationPageSize`
   // props don't snap back on the next render, (2) bump the `cacheBlockSize` option,
