@@ -385,6 +385,20 @@ const SmartServerGridInner = <TRow,>(
     []
   )
 
+  // The pager's page-size selector only re-slices already-fetched blocks; in the
+  // infinite row model the fetch size is `cacheBlockSize`, fixed at init. Keep them
+  // in sync so picking a new page size actually re-fetches blocks at that size
+  // (otherwise `fetchRows` keeps receiving the initial `pageSize`).
+  const handlePaginationChanged = useCallback(() => {
+    const api = gridApiRef.current
+    if (!api || !pagination) return
+    const next = api.paginationGetPageSize()
+    if (next && next !== api.getGridOption("cacheBlockSize")) {
+      api.setGridOption("cacheBlockSize", next)
+      api.purgeInfiniteCache()
+    }
+  }, [pagination])
+
   const handleRetry = useCallback(() => {
     setError(null)
     setInitialLoading(true)
@@ -507,6 +521,7 @@ const SmartServerGridInner = <TRow,>(
             } satisfies NoRowsParams
           }
           onGridReady={handleGridReady}
+          onPaginationChanged={handlePaginationChanged}
           onModelUpdated={gridSelection.reapplySelection}
           onRowSelected={gridSelection.handleRowSelected}
           onRowDoubleClicked={handleRowDoubleClicked}
