@@ -89,6 +89,14 @@ jobs:
       - name: Library build (ESM + d.ts)
         run: pnpm build:lib
 
+      # Install the packed tarball into a bare Vite app and build it — the
+      # only gate that exercises the *published artifact* (files list,
+      # publishConfig exports, transitive deps, dist-relative @source glob)
+      # instead of the workspace source. Guards against a repeat of the
+      # fonts.css incident, where a broken tarball shipped invisibly.
+      - name: Tarball install smoke test
+        run: pnpm check:tarball
+
   security:
     name: Dependency audit & secret scan
     runs-on: ubuntu-latest

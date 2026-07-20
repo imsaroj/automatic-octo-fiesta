@@ -17,6 +17,7 @@
     "api:check": "pnpm --filter @iamsaroj/smart-ui exec tsc -p ../../tooling/api-check/tsconfig.json --noEmit",
     "publint": "pnpm build:lib && pnpm --filter @iamsaroj/smart-ui exec publint",
     "build:lib": "pnpm --filter @iamsaroj/smart-ui build:lib",
+    "check:tarball": "node scripts/check-tarball.mjs",
     "release": "semantic-release",
     "prepare": "husky"
   },

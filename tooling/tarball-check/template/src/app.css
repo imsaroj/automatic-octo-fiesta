@@ -1,0 +1,8 @@
+/*
+ * The consumer styling contract under test: import the library stylesheet
+ * (which self-scans its own dist inside node_modules) and declare exactly one
+ * glob for the app's own files.
+ */
+@import "@iamsaroj/smart-ui/globals.css";
+
+@source "./**/*.{ts,tsx}";
