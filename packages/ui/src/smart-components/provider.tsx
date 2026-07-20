@@ -53,6 +53,8 @@ export interface SmartUILabels {
   form: {
     /** Default submit button. */
     submit: string
+    /** Placeholder shown in a select/combobox while async options load. */
+    loadingOptions: string
   }
 }
 
@@ -120,7 +122,7 @@ export const DEFAULT_LABELS: SmartUILabels = {
   },
   search: { search: "Search", reset: "Reset" },
   confirm: { title: "Are you sure?", confirm: "Confirm", cancel: "Cancel" },
-  form: { submit: "Submit" },
+  form: { submit: "Submit", loadingOptions: "Loading…" },
 }
 
 /** Built-in canonical defaults — match each component's own literal fallback. */

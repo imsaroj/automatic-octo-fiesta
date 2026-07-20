@@ -56,6 +56,39 @@ const fields: FieldDefinition<Values>[] = [
 `multiselect`/`date`/`daterange`/`checkbox`/`switch`/`radio`/`slider`/`rating`/
 `textarea`/`text-editor`/…). Each field keeps only the extras valid for its type.
 
+## Typed & async options
+
+Option-based fields (`select` / `combobox` / `multiselect` / `radio` /
+`segmented` / `checkbox-group`) accept **typed** option values and **async**
+resolvers:
+
+```tsx
+// Typed values — the schema stays honest, no String()/Number() at the boundary:
+const schema = z.object({ roleId: z.number({ error: "Choose a role" }) })
+
+// Async options — a resolver receives an AbortSignal; the control shows a
+// loading placeholder until it settles, then filters the loaded set:
+const fields: FieldDefinition<z.infer<typeof schema>>[] = [
+  {
+    name: "roleId",
+    type: "select",
+    label: "Role",
+    options: ({ signal }) =>
+      fetchRoles(signal).then(
+        (rs) => rs.map((r) => ({ value: r.id, label: r.name })) // value: number
+      ),
+  },
+]
+```
+
+The form store keeps the **real** value (`roleId` is a `number`); the option's
+value is serialized to a string key only for the DOM control. `options` is either
+a `FieldOption<V>[]` (`V extends string | number | boolean`) or an async
+`(ctx: { search?; signal }) => Promise<FieldOption<V>[]>`. The library never
+imports a fetch client — the resolver is yours. (Live server-side search wiring is
+a forward-compatible extension; today the resolver runs once and the control
+filters client-side.)
+
 ## Escape hatches
 
 - **Required asterisk** is derived from the schema (`isFieldRequired`) — don't set

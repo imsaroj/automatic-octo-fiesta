@@ -29,6 +29,7 @@ import {
 import { SmartTimeRangeField, type TimeRange } from "./smart-time-range-field"
 import { SmartCheckboxGroupField } from "./smart-checkbox-group-field"
 import { SmartYesNoField } from "./smart-yesno-field"
+import { OptionField } from "./option-field"
 
 /**
  * Props shared by every rendered field, derived once by {@link SmartForm} from
@@ -75,7 +76,6 @@ export type FieldRegistry = Record<string, FieldEntry>
 
 // --- coercion helpers: the store value is untyped, so each entry narrows it ---
 const asString = (value: unknown) => (value as string) ?? ""
-const asStringArray = (value: unknown) => (value as string[]) ?? []
 const asBool = (value: unknown) => (value as boolean) ?? false
 
 /** Shared builder for the string-valued controls (input, textarea, date, …). */
@@ -193,61 +193,77 @@ export const defaultFieldRegistry = {
   })),
 
   // --- Selection ---
+  // Option-based fields route through OptionField, which resolves options
+  // (sync array or async resolver), maps typed store values ↔ string DOM keys,
+  // and renders the underlying string-based control. `defaultValue` keeps the
+  // empty string / empty array the store starts at when `data` omits the field.
   select: {
-    component: SmartSelectField as never,
+    component: OptionField as never,
     defaultValue: "",
     mapProps: (ctx) => ({
-      ...ctx.common,
-      data: asString(ctx.value),
-      setData: ctx.setValue,
+      control: SmartSelectField,
       options: ctx.field.options,
+      value: ctx.value,
+      setValue: ctx.setValue,
+      common: ctx.common,
     }),
   },
   combobox: {
-    component: SmartComboboxField as never,
+    component: OptionField as never,
     defaultValue: "",
     mapProps: (ctx) => ({
-      ...ctx.common,
-      data: asString(ctx.value),
-      setData: ctx.setValue,
-      options: ctx.field.options ?? [],
-      searchPlaceholder: ctx.field.searchPlaceholder,
-      emptyText: ctx.field.emptyText,
+      control: SmartComboboxField,
+      options: ctx.field.options,
+      value: ctx.value,
+      setValue: ctx.setValue,
+      common: ctx.common,
+      extra: {
+        searchPlaceholder: ctx.field.searchPlaceholder,
+        emptyText: ctx.field.emptyText,
+      },
     }),
   },
   autocomplete: {
-    component: SmartComboboxField as never,
+    component: OptionField as never,
     defaultValue: "",
     mapProps: (ctx) => ({
-      ...ctx.common,
-      data: asString(ctx.value),
-      setData: ctx.setValue,
-      options: ctx.field.options ?? [],
-      searchPlaceholder: ctx.field.searchPlaceholder,
-      emptyText: ctx.field.emptyText,
+      control: SmartComboboxField,
+      options: ctx.field.options,
+      value: ctx.value,
+      setValue: ctx.setValue,
+      common: ctx.common,
+      extra: {
+        searchPlaceholder: ctx.field.searchPlaceholder,
+        emptyText: ctx.field.emptyText,
+      },
     }),
   },
   multiselect: {
-    component: SmartMultiSelectField as never,
+    component: OptionField as never,
     defaultValue: [],
     mapProps: (ctx) => ({
-      ...ctx.common,
-      data: asStringArray(ctx.value),
-      setData: ctx.setValue,
+      control: SmartMultiSelectField,
       options: ctx.field.options,
-      maxSelected: ctx.field.maxSelected,
-      searchPlaceholder: ctx.field.searchPlaceholder,
+      multiple: true,
+      value: ctx.value,
+      setValue: ctx.setValue,
+      common: ctx.common,
+      extra: {
+        maxSelected: ctx.field.maxSelected,
+        searchPlaceholder: ctx.field.searchPlaceholder,
+      },
     }),
   },
   radio: {
-    component: SmartRadioGroupField as never,
+    component: OptionField as never,
     defaultValue: "",
     mapProps: (ctx) => ({
-      ...ctx.common,
-      data: asString(ctx.value),
-      setData: ctx.setValue,
+      control: SmartRadioGroupField,
       options: ctx.field.options,
-      orientation: ctx.field.orientation,
+      value: ctx.value,
+      setValue: ctx.setValue,
+      common: ctx.common,
+      extra: { orientation: ctx.field.orientation },
     }),
   },
   checkbox: {
@@ -260,14 +276,16 @@ export const defaultFieldRegistry = {
     }),
   },
   "checkbox-group": {
-    component: SmartCheckboxGroupField as never,
+    component: OptionField as never,
     defaultValue: [],
     mapProps: (ctx) => ({
-      ...ctx.common,
-      data: asStringArray(ctx.value),
-      setData: ctx.setValue,
+      control: SmartCheckboxGroupField,
       options: ctx.field.options,
-      orientation: ctx.field.orientation,
+      multiple: true,
+      value: ctx.value,
+      setValue: ctx.setValue,
+      common: ctx.common,
+      extra: { orientation: ctx.field.orientation },
     }),
   },
   switch: {
@@ -280,13 +298,14 @@ export const defaultFieldRegistry = {
     }),
   },
   segmented: {
-    component: SmartSegmentedField as never,
+    component: OptionField as never,
     defaultValue: "",
     mapProps: (ctx) => ({
-      ...ctx.common,
-      data: asString(ctx.value),
-      setData: ctx.setValue,
+      control: SmartSegmentedField,
       options: ctx.field.options,
+      value: ctx.value,
+      setValue: ctx.setValue,
+      common: ctx.common,
     }),
   },
   yesno: {

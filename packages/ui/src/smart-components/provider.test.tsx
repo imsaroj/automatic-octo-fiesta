@@ -108,19 +108,26 @@ test("defaults override merges over canonical defaults", () => {
 })
 
 test("useSmartUI exposes labels, defaults and formats together", () => {
-  let snapshot: ReturnType<typeof useSmartUI> | undefined
+  // Render the combined config into the DOM (pure) rather than capturing it
+  // into an outer variable during render.
   const Grab = () => {
-    snapshot = useSmartUI()
-    return null
+    const { labels, defaults, formats } = useSmartUI()
+    return (
+      <div>
+        <span data-testid="all-confirm">{labels.confirm.confirm}</span>
+        <span data-testid="all-pageSize">{defaults.grid.pageSize}</span>
+        <span data-testid="all-formats">{JSON.stringify(formats)}</span>
+      </div>
+    )
   }
   mount(
     <SmartUIProvider defaults={{ grid: { pageSize: 30 } }}>
       <Grab />
     </SmartUIProvider>
   )
-  expect(snapshot?.labels.confirm.confirm).toBe("Confirm")
-  expect(snapshot?.defaults.grid.pageSize).toBe(30)
-  expect(snapshot?.formats).toEqual({})
+  expect(text("all-confirm")).toBe("Confirm")
+  expect(text("all-pageSize")).toBe("30")
+  expect(text("all-formats")).toBe("{}")
 })
 
 test("formats hooks flow through the context", () => {

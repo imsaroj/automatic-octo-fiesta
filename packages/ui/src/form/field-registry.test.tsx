@@ -113,14 +113,20 @@ test("mapProps coerces the store value and forwards type-specific props", () => 
   })
   expect(text.data).toBe("")
 
-  // multiselect coerces a null value to an empty array.
+  // Option-based fields (select/combobox/multiselect/…) route through
+  // OptionField: mapProps forwards the raw store value + the underlying control
+  // rather than coercing here. The typed value ↔ string-key mapping and the
+  // sync/async option resolution live in OptionField / option-utils (tested
+  // there), so mapProps just wires them together.
   const multi = defaultFieldRegistry.multiselect.mapProps({
-    field: { name: "tags", type: "multiselect" },
+    field: { name: "tags", type: "multiselect", options: [] },
     common,
     value: undefined,
     setValue: () => {},
   })
-  expect(multi.data).toEqual([])
+  expect(multi.multiple).toBe(true)
+  expect(multi.value).toBeUndefined()
+  expect(typeof multi.control).not.toBe("undefined")
 })
 
 test("registerField merges immutably without mutating the base registry", () => {

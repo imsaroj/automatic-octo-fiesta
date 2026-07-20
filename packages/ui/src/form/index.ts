@@ -19,3 +19,13 @@ export * from "./smart-form"
 export * from "./field-types"
 export * from "./field-registry"
 export * from "./base"
+
+// Option resolution helpers — reusable when building custom option-based field
+// types (async selects, typed values) via the `registry` prop.
+export { useFieldOptions, type FieldOptionsState } from "./use-field-options"
+export {
+  buildOptionCodec,
+  serializeOptionValue,
+  type OptionValueCodec,
+  type StringOption,
+} from "./option-utils"

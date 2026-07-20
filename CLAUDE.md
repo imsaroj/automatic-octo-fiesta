@@ -212,6 +212,14 @@ no per-field wiring. Key design points (see `smart-form.tsx`):
   `selfUpdateRef` guard to avoid an echo loop between the mirror-out and reconcile-in effects; read those comments
   before touching state logic.
 - Empty optional strings are normalized to `undefined` before validation so blank optional fields don't error.
+- **Typed & async options** (option-based fields — select/combobox/multiselect/radio/segmented/checkbox-group):
+  `FieldOption<V extends string | number | boolean>` keeps the real value in the store (an honest `roleId: z.number()`
+  schema, no `String()`/`Number()`), and `options` may be an async resolver `(ctx: { search?; signal }) =>
+Promise<FieldOption<V>[]>`. Both flow through one adapter, `OptionField` (`option-field.tsx`), wired in as the registry
+  `component` for those types: it resolves options via `useFieldOptions` (`use-field-options.ts` — array passthrough vs
+  aborted async fetch with loading/error state), maps typed store values ↔ string DOM keys via a codec
+  (`option-utils.ts` — `buildOptionCodec`/`serializeOptionValue`), and renders the underlying string-based `Smart*Field`
+  (which stay string-only for standalone use). Loading shows the `form.loadingOptions` provider label as a placeholder.
 
 Individual `Smart*Field` files (`smart-input-field.tsx`, etc.) all take `FieldBaseProps<T>` (from `base.ts`) and are
 also exported for standalone use.

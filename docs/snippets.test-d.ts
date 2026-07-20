@@ -43,6 +43,25 @@ const fields: FieldDefinition<Values>[] = [
 void fields
 void SmartForm
 
+// form.md § Typed & async options
+const roleSchema = z.object({ roleId: z.number({ error: "Choose a role" }) })
+type RoleForm = z.infer<typeof roleSchema>
+declare function fetchRoles(
+  signal: AbortSignal
+): Promise<{ id: number; name: string }[]>
+const roleFields: FieldDefinition<RoleForm>[] = [
+  {
+    name: "roleId",
+    type: "select",
+    label: "Role",
+    options: ({ signal }) =>
+      fetchRoles(signal).then((rs) =>
+        rs.map((r) => ({ value: r.id, label: r.name }))
+      ),
+  },
+]
+void roleFields
+
 // ── data-grid.md ────────────────────────────────────────────────────────────
 interface User {
   id: string
