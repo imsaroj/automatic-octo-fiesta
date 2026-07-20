@@ -1,3 +1,17 @@
+# [3.0.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v2.0.0...v3.0.0) (2026-07-20)
+
+
+* refactor!: remove columnFilters and the AG Grid column-filter pipeline ([3071e49](https://github.com/imsaroj/automatic-octo-fiesta/commit/3071e4921520fda6732b7f45265e6b9e786cac20))
+
+
+### BREAKING CHANGES
+
+* `SmartServerGrid` no longer accepts `columnFilters` or
+`floatingFilters`; the grid never renders column header filters. Drive
+filtering through the `filters`/`query` props instead.
+
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
 # [2.0.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.6.0...v2.0.0) (2026-07-20)
 
 
