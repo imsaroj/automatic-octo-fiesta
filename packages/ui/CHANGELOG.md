@@ -1,3 +1,18 @@
+# [1.4.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.3.0...v1.4.0) (2026-07-20)
+
+
+### Bug Fixes
+
+* **page:** never drop loose SmartPage children; add explicit slot prop ([f776c99](https://github.com/imsaroj/automatic-octo-fiesta/commit/f776c995dc4994078d51ee26e4fb093c27d85b8a))
+* **smart-components:** absorb the overlay open race in Smart overlays ([024cacf](https://github.com/imsaroj/automatic-octo-fiesta/commit/024cacf33407538dab98e5a8d0a82a52e878b34d))
+* **ui:** make globals.css consumer-correct and declare sideEffects ([efe5807](https://github.com/imsaroj/automatic-octo-fiesta/commit/efe5807e8c7177fd367840444f107acb3fc21298))
+* **web:** resolve bare font url() specifiers from the app CSS entry ([4898740](https://github.com/imsaroj/automatic-octo-fiesta/commit/48987403844755c2ce380c884cf9f02be10800a1))
+
+
+### Features
+
+* **ui:** accept plain search queries on SmartServerGrid via query prop ([54d3c6f](https://github.com/imsaroj/automatic-octo-fiesta/commit/54d3c6fcf5ce7a13af47656ffd6062e85af58548))
+
 # [1.3.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.2.0...v1.3.0) (2026-07-16)
 
 
