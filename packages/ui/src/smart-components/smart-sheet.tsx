@@ -12,10 +12,133 @@ import {
   SheetTrigger,
 } from "@iamsaroj/smart-ui/components/sheet"
 import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { ActionButton } from "@iamsaroj/smart-ui/smart-components/buttons"
+import type { SmartButtonProps } from "@iamsaroj/smart-ui/smart-components/smart-button"
 
 import { useDeferredOpen } from "../internal/use-deferred-open"
 
 export { SheetClose }
+
+/* ------------------------------ footer actions ----------------------------- */
+
+/** Shared config for a config-driven footer button. */
+export interface SmartSheetFooterAction {
+  /** Button label. Falls back to the action's default ("Cancel" / "Save"). */
+  label?: React.ReactNode
+  /** Override the default variant (cancel → `outline`, save → `default`). */
+  variant?: SmartButtonProps["variant"]
+  /** Button size. Falls back to the `footerActions.size` default (`sm`). */
+  size?: SmartButtonProps["size"]
+  /** Leading icon; `null` keeps the button text-only (the default). */
+  icon?: React.ReactNode
+  /** Disable the button while keeping it visible. */
+  disabled?: boolean
+  /** Show a spinner and disable the button (e.g. while a save is in flight). */
+  loading?: boolean
+  /** Label swapped in while `loading`. */
+  loadingText?: string
+  /** Fired on click. */
+  onClick?: () => void
+  /** Hide this action. @default true */
+  visible?: boolean
+}
+
+/** The confirm/save action; can drive a `<SmartForm id>` via `form`. */
+export interface SmartSheetSaveAction extends SmartSheetFooterAction {
+  /**
+   * Associate the button with a form's `id` so a click submits that form.
+   * Sets `type="submit"` unless `type` overrides it.
+   */
+  form?: string
+  /** Native button type. @default `"submit"` when `form` is set, else `"button"`. */
+  type?: "button" | "submit" | "reset"
+}
+
+/** The dismiss/cancel action. */
+export interface SmartSheetCancelAction extends SmartSheetFooterAction {
+  /**
+   * Wrap the button in `SheetClose` so clicking it dismisses the sheet
+   * (honoring `onOpenChange`). @default true
+   */
+  closeOnClick?: boolean
+}
+
+/**
+ * Config-driven footer: renders the standard Cancel + Save buttons without
+ * hand-writing the footer JSX — the sheet counterpart to the grids' `actions`
+ * prop. Both actions show by default when `footerActions` is set; pass `false`
+ * (or `visible: false`) to drop one. The raw {@link SmartSheetProps.footer}
+ * escape hatch still wins when both are supplied.
+ */
+export interface SmartSheetFooterActions {
+  /** The dismiss button (wrapped in `SheetClose`). @default shown as "Cancel" */
+  cancel?: boolean | SmartSheetCancelAction
+  /** The confirm button. @default shown as "Save" */
+  save?: boolean | SmartSheetSaveAction
+  /** Default size for both buttons. @default "sm" */
+  size?: SmartButtonProps["size"]
+}
+
+/** `false` / `visible:false` → null; `true` / undefined → defaults ({}). */
+const normalizeFooterAction = <T extends SmartSheetFooterAction>(
+  input: boolean | T | undefined
+): T | Record<string, never> | null => {
+  if (input === false) return null
+  if (input === undefined || input === true) return {}
+  if (input.visible === false) return null
+  return input
+}
+
+const renderFooterActions = (
+  actions: SmartSheetFooterActions
+): React.ReactNode => {
+  const defaultSize = actions.size ?? "sm"
+
+  const cancel = normalizeFooterAction<SmartSheetCancelAction>(actions.cancel)
+  const save = normalizeFooterAction<SmartSheetSaveAction>(actions.save)
+
+  const cancelButton = cancel && (
+    <ActionButton
+      action="cancel"
+      variant={cancel.variant ?? "outline"}
+      size={cancel.size ?? defaultSize}
+      icon={cancel.icon ?? null}
+      disabled={cancel.disabled}
+      loading={cancel.loading}
+      loadingText={cancel.loadingText}
+      onClick={cancel.onClick}
+    >
+      {cancel.label ?? "Cancel"}
+    </ActionButton>
+  )
+
+  return (
+    <>
+      {cancelButton &&
+        (cancel.closeOnClick === false ? (
+          cancelButton
+        ) : (
+          <SheetClose render={cancelButton} />
+        ))}
+      {save && (
+        <ActionButton
+          action="save"
+          variant={save.variant}
+          size={save.size ?? defaultSize}
+          icon={save.icon ?? null}
+          type={save.type ?? (save.form ? "submit" : undefined)}
+          form={save.form}
+          disabled={save.disabled}
+          loading={save.loading}
+          loadingText={save.loadingText}
+          onClick={save.onClick}
+        >
+          {save.label ?? "Save"}
+        </ActionButton>
+      )}
+    </>
+  )
+}
 
 export interface SmartSheetHeader {
   title: React.ReactNode
@@ -39,8 +162,23 @@ export interface SmartSheetProps {
    * Footer pinned at the bottom of the sheet.
    * Common pattern: Cancel + Save buttons.
    * Use `SheetClose render={<Button variant="outline">Cancel</Button>}` for the cancel button.
+   *
+   * Escape hatch: prefer {@link footerActions} for the standard Cancel + Save
+   * footer. A raw `footer` wins when both are supplied.
    */
   footer?: React.ReactNode
+  /**
+   * Config-driven footer — renders the standard Cancel + Save buttons without
+   * hand-writing the JSX (the sheet counterpart to the grids' `actions` prop).
+   *
+   * ```tsx
+   * footerActions={{
+   *   save: { label: "Save changes", form: "user-form", loading: saving },
+   *   cancel: { disabled: saving },
+   * }}
+   * ```
+   */
+  footerActions?: SmartSheetFooterActions
   /** Show the × close button. @default true */
   showCloseButton?: boolean
   /**
@@ -100,6 +238,7 @@ export const SmartSheet = ({
   side = "right",
   header,
   footer,
+  footerActions,
   showCloseButton = true,
   dividers = false,
   className,
@@ -109,6 +248,9 @@ export const SmartSheet = ({
   // inside another interaction (a grid row's Edit button) can't read that
   // same interaction as its own outside-press and self-close before painting.
   const deferredOpen = useDeferredOpen(open)
+  // A raw `footer` wins as the escape hatch; otherwise build it from config.
+  const footerContent =
+    footer ?? (footerActions ? renderFooterActions(footerActions) : null)
   return (
     <Sheet open={deferredOpen} onOpenChange={onOpenChange}>
       {trigger && <SheetTrigger render={trigger} />}
@@ -126,9 +268,9 @@ export const SmartSheet = ({
           </SheetHeader>
         )}
         <div className="flex-1 overflow-y-auto px-6 py-2">{children}</div>
-        {footer && (
+        {footerContent && (
           <SheetFooter className={cn(dividers && "border-t")}>
-            {footer}
+            {footerContent}
           </SheetFooter>
         )}
       </SheetContent>
