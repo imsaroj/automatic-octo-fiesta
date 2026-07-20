@@ -1,3 +1,11 @@
+# [4.1.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v4.0.0...v4.1.0) (2026-07-20)
+
+
+### Features
+
+* **smart-components:** introduce standardized config-driven footer actions for overlays ([47aa10a](https://github.com/imsaroj/automatic-octo-fiesta/commit/47aa10a8fcf9d9236bc5088ea643c84092d9c837))
+* **smart-sheet:** add config-driven footer actions for Cancel and Save buttons ([29279da](https://github.com/imsaroj/automatic-octo-fiesta/commit/29279dababd835f1666b4ec34c4ca35f5972309a))
+
 # [4.0.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v3.0.0...v4.0.0) (2026-07-20)
 
 
