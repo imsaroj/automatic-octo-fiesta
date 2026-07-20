@@ -1,3 +1,13 @@
+# [1.5.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.4.0...v1.5.0) (2026-07-20)
+
+
+### Features
+
+* **data-grid:** generalize createPageFetcher into a transport-agnostic adapter ([84a4fbd](https://github.com/imsaroj/automatic-octo-fiesta/commit/84a4fbdf29103772401d697764a95612529fec2e))
+* **form:** create/edit modes, initialData seed, and a reset/submit handle ([47583f6](https://github.com/imsaroj/automatic-octo-fiesta/commit/47583f68bf4516c2a31d8a2fef44b231a80af6f4))
+* **form:** typed option values + async options for selection fields ([ff8b857](https://github.com/imsaroj/automatic-octo-fiesta/commit/ff8b857144d6c72cca6b2bc5fd4c4999c386dc4a))
+* **smart-components:** add optional SmartUIProvider for labels, defaults & formats ([7df5862](https://github.com/imsaroj/automatic-octo-fiesta/commit/7df586278d47af88e287713326a6e7e268c86b23))
+
 # [1.4.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.3.0...v1.4.0) (2026-07-20)
 
 
