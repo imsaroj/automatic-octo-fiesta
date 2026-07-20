@@ -7,24 +7,25 @@ import {
   type RowSelectionOptions,
   type SelectionChangedEvent,
 } from "ag-grid-community"
-import { Download } from "lucide-react"
-import { cn } from "@iamsaroj/smart-ui/lib/utils"
+import { Download, FileSpreadsheet } from "lucide-react"
+import { downloadXlsx, timestampForFilename } from "@iamsaroj/smart-ui/lib/xlsx"
 import { SmartLoadingOverlay } from "@iamsaroj/smart-ui/smart-components/loading-overlay"
 import { SmartSearchInput } from "@iamsaroj/smart-ui/smart-components/search-input"
 import { useSmartUILabels } from "@iamsaroj/smart-ui/smart-components/provider"
 import { GridToolbar } from "./grid-toolbar"
+import { GridShell } from "./grid-shell"
+import { useGridColumnVisibility } from "./grid-column-visibility"
 import { escapeCsvFormula } from "./formula-guard"
 import { dataGridTheme } from "./grid-theme"
 import {
   ensureGridModules,
   NoRowsOverlay,
-  resolveColumnId,
-  resolveColumnLabel,
   rowHeightByDensity,
   type DataGridColumn,
   type DataGridDensity,
   type NoRowsParams,
 } from "./grid-internals"
+import { collectGridExport } from "./server-grid-internals"
 import {
   isExportSuppressed,
   type GridActionColumnOptions,
@@ -57,7 +58,13 @@ export interface SmartGridProps<TRow> {
   columnSelector?: boolean
   /** Export-to-CSV button. Default `true`. */
   exportCsv?: boolean
-  /** CSV file name (without extension). Default `"export"`. */
+  /**
+   * Export to Excel (`.xlsx`) instead of CSV — the export button downloads the
+   * displayed columns and rows via the same writer `SmartServerGrid` uses. When
+   * `true` it supersedes `exportCsv`. @default false
+   */
+  exportExcel?: boolean
+  /** Export file name (without extension). Default `"export"`. */
   exportFileName?: string
   /** Enable client-side pagination. Default `true`. */
   pagination?: boolean
@@ -73,7 +80,13 @@ export interface SmartGridProps<TRow> {
   getRowId?: (row: TRow) => string
   /** Row density. Default `"normal"`. */
   density?: DataGridDensity
-  /** Grid height. Default `480`. */
+  /**
+   * Fill the parent instead of using a fixed `height` — the grid becomes a flex
+   * column whose body grows to consume the remaining space. Use inside a
+   * `flex-1 min-h-0` parent for a full-viewport layout. @default false
+   */
+  fill?: boolean
+  /** Grid height when `fill` is `false`. Default `480`. */
   height?: number | string
   /** Empty-state content shown when there are no rows. */
   emptyState?: { title?: string; description?: string }
@@ -101,6 +114,7 @@ export const SmartGrid = <TRow,>({
   quickSearch = true,
   columnSelector = true,
   exportCsv = true,
+  exportExcel = false,
   exportFileName = "export",
   pagination = true,
   pageSize = 10,
@@ -109,6 +123,7 @@ export const SmartGrid = <TRow,>({
   onSelectionChange,
   getRowId,
   density = "normal",
+  fill = false,
   height = 480,
   emptyState,
   className,
@@ -130,15 +145,7 @@ export const SmartGrid = <TRow,>({
     [columns, actionColumnDef]
   )
 
-  const [columnVisibility, setColumnVisibility] = useState<
-    Record<string, boolean>
-  >(() => {
-    const initial: Record<string, boolean> = {}
-    columns.forEach((column, index) => {
-      initial[resolveColumnId(column, index)] = column.hide !== true
-    })
-    return initial
-  })
+  const { menuColumns, setColumnVisible } = useGridColumnVisibility(columns)
 
   const defaultColDef = useMemo<ColDef<TRow>>(
     () => ({
@@ -157,15 +164,6 @@ export const SmartGrid = <TRow,>({
     return undefined
   }, [selection])
 
-  const toggleableColumns = useMemo(
-    () =>
-      columns.map((column, index) => {
-        const id = resolveColumnId(column, index)
-        return { id, label: resolveColumnLabel(column, id) }
-      }),
-    [columns]
-  )
-
   const handleGridReady = (event: GridReadyEvent<TRow>): void => {
     setGridApi(event.api)
   }
@@ -175,11 +173,11 @@ export const SmartGrid = <TRow,>({
   }
 
   const handleToggleColumn = (id: string, visible: boolean): void => {
-    setColumnVisibility((prev) => ({ ...prev, [id]: visible }))
+    setColumnVisible(id, visible)
     gridApi?.setColumnsVisible([id], visible)
   }
 
-  const handleExport = (): void => {
+  const handleExportCsv = (): void => {
     if (!gridApi) return
     // Drop columns flagged non-exportable (e.g. the action column). Only pass
     // columnKeys when something is actually excluded, so AG Grid's default
@@ -199,70 +197,101 @@ export const SmartGrid = <TRow,>({
     })
   }
 
+  const handleExportExcel = (): void => {
+    if (!gridApi) return
+    // Same `.xlsx` writer + column/row shaping as SmartServerGrid (respects
+    // visibility, order and the action column's export opt-out).
+    const { headers, rows: exportRows } = collectGridExport(gridApi)
+    const sheetName =
+      typeof title === "string" && title.length > 0 ? title : "Export"
+    downloadXlsx(`${exportFileName}-${timestampForFilename()}`, {
+      name: sheetName,
+      headers,
+      rows: exportRows,
+    })
+  }
+
+  // Excel supersedes CSV when both are enabled; otherwise the single export
+  // button follows whichever format is on.
+  const onExport = exportExcel
+    ? handleExportExcel
+    : exportCsv
+      ? handleExportCsv
+      : undefined
+
   const showToolbar =
-    title || quickSearch || columnSelector || exportCsv || toolbarActions
+    title ||
+    quickSearch ||
+    columnSelector ||
+    exportCsv ||
+    exportExcel ||
+    toolbarActions
 
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
-      {showToolbar ? (
-        <GridToolbar
-          title={title}
-          leadingContent={
-            quickSearch ? (
-              <SmartSearchInput
-                value={quickFilter}
-                onValueChange={setQuickFilter}
-                placeholder={uiLabels.grid.searchPlaceholder}
-                className="h-9 w-full sm:w-64"
-                aria-label="Search table"
-              />
-            ) : null
-          }
-          toolbarActions={toolbarActions}
-          columns={
-            columnSelector
-              ? toggleableColumns.map((column) => ({
-                  ...column,
-                  visible: columnVisibility[column.id] ?? true,
-                }))
-              : undefined
-          }
-          onToggleColumn={handleToggleColumn}
-          onExport={exportCsv ? handleExport : undefined}
-          exportIcon={<Download className="h-4 w-4" />}
-        />
-      ) : null}
-
-      <SmartLoadingOverlay loading={loading} label={uiLabels.grid.loading}>
-        <div style={{ height, width: "100%" }}>
-          <AgGridReact<TRow>
-            ref={gridRef}
-            theme={dataGridTheme}
-            rowData={rows}
-            columnDefs={effectiveColumns}
-            suppressCellFocus={true}
-            defaultColDef={defaultColDef}
-            quickFilterText={quickFilter}
-            rowSelection={rowSelection}
-            pagination={pagination}
-            paginationPageSize={pageSize}
-            paginationPageSizeSelector={pageSizeOptions}
-            rowHeight={rowHeightByDensity[density]}
-            getRowId={getRowId ? (params) => getRowId(params.data) : undefined}
-            animateRows
-            noRowsOverlayComponent={NoRowsOverlay}
-            noRowsOverlayComponentParams={
-              {
-                title: emptyState?.title ?? uiLabels.grid.empty.title,
-                description:
-                  emptyState?.description ?? uiLabels.grid.empty.description,
-              } satisfies NoRowsParams
+    <GridShell
+      fill={fill}
+      height={height}
+      className={className}
+      toolbar={
+        showToolbar ? (
+          <GridToolbar
+            title={title}
+            leadingContent={
+              quickSearch ? (
+                <SmartSearchInput
+                  value={quickFilter}
+                  onValueChange={setQuickFilter}
+                  placeholder={uiLabels.grid.searchPlaceholder}
+                  className="h-9 w-full sm:w-64"
+                  aria-label="Search table"
+                />
+              ) : null
             }
-            onGridReady={handleGridReady}
-            onSelectionChanged={handleSelectionChanged}
+            toolbarActions={toolbarActions}
+            columns={columnSelector ? menuColumns : undefined}
+            onToggleColumn={handleToggleColumn}
+            onExport={onExport}
+            exportIcon={
+              exportExcel ? (
+                <FileSpreadsheet className="h-4 w-4" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )
+            }
           />
-        </div>
-      </SmartLoadingOverlay>
-    </div>
+        ) : null
+      }
+    >
+      <AgGridReact<TRow>
+        ref={gridRef}
+        className="h-full w-full"
+        theme={dataGridTheme}
+        rowData={rows}
+        columnDefs={effectiveColumns}
+        suppressCellFocus={true}
+        defaultColDef={defaultColDef}
+        quickFilterText={quickFilter}
+        rowSelection={rowSelection}
+        pagination={pagination}
+        paginationPageSize={pageSize}
+        paginationPageSizeSelector={pageSizeOptions}
+        rowHeight={rowHeightByDensity[density]}
+        getRowId={getRowId ? (params) => getRowId(params.data) : undefined}
+        animateRows
+        noRowsOverlayComponent={NoRowsOverlay}
+        noRowsOverlayComponentParams={
+          {
+            title: emptyState?.title ?? uiLabels.grid.empty.title,
+            description:
+              emptyState?.description ?? uiLabels.grid.empty.description,
+          } satisfies NoRowsParams
+        }
+        onGridReady={handleGridReady}
+        onSelectionChanged={handleSelectionChanged}
+      />
+      {loading ? (
+        <SmartLoadingOverlay loading label={uiLabels.grid.loading} />
+      ) : null}
+    </GridShell>
   )
 }

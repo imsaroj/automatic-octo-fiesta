@@ -144,3 +144,12 @@ export const SmartCalendar = ({
     </div>
   )
 }
+
+/**
+ * Canonical, disambiguated name for the inline date-picker calendar above —
+ * distinct from the **event** calendar also exported as `SmartCalendar` from
+ * `@iamsaroj/smart-ui/calendar`. Prefer this in new code; `SmartCalendar` (this
+ * module) stays a deprecated alias.
+ */
+export const SmartDatePickerCalendar = SmartCalendar
+export type SmartDatePickerCalendarProps = SmartCalendarProps

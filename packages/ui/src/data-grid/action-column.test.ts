@@ -71,6 +71,51 @@ test("resolveActiveActions keeps display order edit → delete and drops hidden 
   expect(deleteOnly.map((action) => action.kind)).toEqual(["delete"])
 })
 
+test("custom actions render after edit/delete, in order, and honor static hiding", () => {
+  const active = resolveActiveActions<Row>({
+    actions: {
+      edit: true,
+      delete: true,
+      custom: [
+        { action: "view", onClick: () => {} },
+        { action: "restore", visible: false }, // statically hidden → dropped
+        { action: "duplicate", onClick: () => {} },
+      ],
+    },
+  })
+  expect(active.map((a) => a.kind)).toEqual([
+    "edit",
+    "delete",
+    "view",
+    "duplicate",
+  ])
+})
+
+test("custom-only order: edit/delete off, everything listed in custom", () => {
+  const active = resolveActiveActions<Row>({
+    actions: {
+      edit: false,
+      delete: false,
+      custom: [
+        { action: "view", onClick: () => {} },
+        { action: "edit", onClick: () => {} },
+      ],
+    },
+  })
+  expect(active.map((a) => a.kind)).toEqual(["view", "edit"])
+})
+
+test("isActionColumnEnabled counts custom actions", () => {
+  expect(
+    isActionColumnEnabled<Row>({ actions: { custom: [{ action: "view" }] } })
+  ).toBe(true)
+  expect(
+    isActionColumnEnabled<Row>({
+      actions: { custom: [{ action: "view", visible: false }] },
+    })
+  ).toBe(false)
+})
+
 /* ------------------------------ row resolution ------------------------------ */
 
 test("resolveRowValue: static, per-row function, and fallback", () => {
@@ -113,6 +158,20 @@ test("confirm: false → null, true → delete defaults, object merges over defa
   expect(custom?.confirmLabel).toBe("Delete")
 })
 
+test("custom actions derive tooltip/confirm defaults from the config label", () => {
+  // No built-in tooltip for "view" → falls back to the supplied label.
+  expect(resolveActionTooltip("view", undefined, "View")).toBe("View")
+  expect(resolveActionAriaLabel("view", false, "View")).toBe("View")
+
+  const confirm = resolveConfirmOptions("duplicate", true, "Duplicate")
+  expect(confirm).toEqual({
+    title: "Duplicate this row?",
+    description: null,
+    confirmLabel: "Duplicate",
+    cancelLabel: "Cancel",
+  })
+})
+
 /* ---------------------------------- width ---------------------------------- */
 
 test("width: explicit wins; icon-only auto-sizes clamped to 80–120", () => {
@@ -149,6 +208,12 @@ test("signature is stable across callback identity changes but tracks structure"
   )
   expect(actionColumnSignature<Row>({ actions: { edit: true } })).not.toBe(
     actionColumnSignature<Row>({ actions: { delete: true } })
+  )
+  // Adding a custom action is a structural change.
+  expect(actionColumnSignature<Row>({ actions: { edit: true } })).not.toBe(
+    actionColumnSignature<Row>({
+      actions: { edit: true, custom: [{ action: "view" }] },
+    })
   )
   expect(actionColumnSignature<Row>(undefined)).toBe("off")
   expect(

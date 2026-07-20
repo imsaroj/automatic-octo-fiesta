@@ -1,7 +1,12 @@
 import { memo, useState, useSyncExternalStore, type ReactElement } from "react"
 import type { ICellRendererParams } from "ag-grid-community"
 import { cn } from "@iamsaroj/smart-ui/lib/utils"
-import { ActionButton } from "@iamsaroj/smart-ui/smart-components/buttons"
+import {
+  ACTION_BUTTON_CONFIG,
+  ActionButton,
+  useActionPermission,
+  type ActionKind,
+} from "@iamsaroj/smart-ui/smart-components/buttons"
 import { SmartConfirmDialog } from "@iamsaroj/smart-ui/smart-components/smart-confirm-dialog"
 import type { DataGridColumn } from "./grid-internals"
 import {
@@ -13,7 +18,6 @@ import {
   resolveConfirmOptions,
   resolveRowValue,
   type GridActionColumnOptions,
-  type GridActionKind,
   type GridRowActionConfig,
 } from "./action-column"
 
@@ -27,32 +31,49 @@ import {
  */
 
 interface GridActionButtonProps<TRow> {
-  kind: GridActionKind
+  kind: ActionKind
   config: GridRowActionConfig<TRow>
   row: TRow
   showLabel: boolean
+  /** Consult the permission provider for actions without explicit `visible`. */
+  permissionAware: boolean
 }
 
 /**
- * One Edit/Delete button for one row: resolves the per-row visible / disabled /
- * loading flags, applies the destructive treatment for delete, and routes the
- * click through an optional {@link SmartConfirmDialog}.
+ * One action button for one row (edit, delete, or a custom action): resolves the
+ * per-row visible / disabled / loading flags, applies the destructive treatment
+ * for destructive actions, and routes the click through an optional
+ * {@link SmartConfirmDialog}. Icon, label and variant come from
+ * `ACTION_BUTTON_CONFIG[kind]`.
  */
 const GridActionButton = <TRow,>({
   kind,
   config,
   row,
   showLabel,
+  permissionAware,
 }: GridActionButtonProps<TRow>): ReactElement | null => {
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const can = useActionPermission()
 
-  const visible = resolveRowValue(config.visible, row, true)
+  // Explicit `visible` (boolean or per-row predicate) always wins; otherwise
+  // fall back to the permission provider — `edit` shows only where
+  // `can("edit", row)` passes. No provider (or opted out) → visible.
+  const visible =
+    config.visible !== undefined
+      ? resolveRowValue(config.visible, row, true)
+      : permissionAware
+        ? (can?.(kind, row) ?? true)
+        : true
   if (!visible) return null
+
+  const { label, variant: kindVariant } = ACTION_BUTTON_CONFIG[kind]
+  const destructive = kindVariant === "destructive"
 
   const disabled = resolveRowValue(config.disabled, row, false)
   const loading = resolveRowValue(config.loading, row, false)
-  const confirm = resolveConfirmOptions(kind, config.confirm)
-  const tooltip = resolveActionTooltip(kind, config.tooltip)
+  const confirm = resolveConfirmOptions(kind, config.confirm, label)
+  const tooltip = resolveActionTooltip(kind, config.tooltip, label)
 
   const fire = (): void => config.onClick?.(row)
 
@@ -68,11 +89,15 @@ const GridActionButton = <TRow,>({
     <>
       <ActionButton
         action={kind}
+        // The column already decided visibility above (explicit `visible` or
+        // the permission provider); tell the button not to re-gate itself, or
+        // it would double-apply `can(kind)` and undo an explicit override.
+        permission
         iconOnly={!showLabel}
         size="sm"
         variant="ghost"
         className={cn(
-          kind === "delete" &&
+          destructive &&
             "text-destructive hover:bg-destructive/10 hover:text-destructive"
         )}
         loading={loading}
@@ -81,7 +106,7 @@ const GridActionButton = <TRow,>({
         loadingText={showLabel ? undefined : ""}
         disabled={disabled}
         tooltip={tooltip === false ? false : tooltip}
-        aria-label={resolveActionAriaLabel(kind, config.tooltip)}
+        aria-label={resolveActionAriaLabel(kind, config.tooltip, label)}
         onClick={handleClick}
       />
       {confirm ? (
@@ -92,7 +117,7 @@ const GridActionButton = <TRow,>({
           description={confirm.description}
           confirmLabel={confirm.confirmLabel}
           cancelLabel={confirm.cancelLabel}
-          variant={kind === "delete" ? "destructive" : "default"}
+          variant={destructive ? "destructive" : "default"}
           onConfirm={fire}
         />
       ) : null}
@@ -140,16 +165,18 @@ const GridActionCellInner = <TRow,>(
   const actions = resolveActiveActions(options)
   if (actions.length === 0) return null
   const showLabel = options.showLabel ?? false
+  const permissionAware = options.permissionAware ?? true
 
   return (
     <div className="flex h-full items-center gap-1">
-      {actions.map(({ kind, config }) => (
+      {actions.map(({ kind, config }, index) => (
         <GridActionButton<TRow>
-          key={kind}
+          key={`${kind}:${index}`}
           kind={kind}
           config={config}
           row={row}
           showLabel={showLabel}
+          permissionAware={permissionAware}
         />
       ))}
     </div>

@@ -13,6 +13,11 @@ import { useIsMobile } from "@iamsaroj/smart-ui/hooks/use-mobile"
 import { SmartPage } from "@iamsaroj/smart-ui/smart-components/page"
 import { AddButton } from "@iamsaroj/smart-ui/smart-components/buttons"
 import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
+// Aggregate barrel (I12c): one import spanning the flat facades.
+import {
+  SmartDialog,
+  SmartDatePickerCalendar,
+} from "@iamsaroj/smart-ui/smart-components"
 import { SmartUIProvider } from "@iamsaroj/smart-ui/smart-components/provider"
 import { SmartForm } from "@iamsaroj/smart-ui/form"
 import { SmartSearchForm } from "@iamsaroj/smart-ui/search"
@@ -29,6 +34,8 @@ void useIsMobile
 void SmartPage
 void AddButton
 void SmartCard
+void SmartDialog
+void SmartDatePickerCalendar
 void SmartUIProvider
 void SmartForm
 void SmartSearchForm

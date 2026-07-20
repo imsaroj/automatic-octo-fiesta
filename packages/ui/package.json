@@ -109,6 +109,7 @@
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
+    "./smart-components": "./src/smart-components/index.ts",
     "./smart-components/page": "./src/smart-components/page/index.ts",
     "./smart-components/buttons": "./src/smart-components/buttons/index.ts",
     "./smart-components/*": "./src/smart-components/*.tsx",
@@ -135,6 +136,10 @@
       "./hooks/*": {
         "types": "./dist/hooks/*.d.ts",
         "default": "./dist/hooks/*.js"
+      },
+      "./smart-components": {
+        "types": "./dist/smart-components/index.d.ts",
+        "default": "./dist/smart-components/index.js"
       },
       "./smart-components/page": {
         "types": "./dist/smart-components/page/index.d.ts",

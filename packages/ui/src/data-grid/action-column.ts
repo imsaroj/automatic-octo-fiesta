@@ -1,9 +1,12 @@
 import type { ReactNode } from "react"
 
+import type { ActionKind } from "@iamsaroj/smart-ui/smart-components/buttons"
+
 /**
  * Types and pure logic behind the grids' `actionColumn` prop — the config-driven
- * Edit/Delete column shared by {@link SmartGrid} and {@link SmartServerGrid}.
- * Everything here is renderer-free and unit-tested in `action-column.test.ts`;
+ * Edit/Delete (+ custom) action column shared by {@link SmartGrid} and
+ * {@link SmartServerGrid}. Everything here is renderer-free and unit-tested in
+ * `action-column.test.ts` (the `ActionKind` import is a type, erased at runtime);
  * the cell renderer and ColDef builder live in `action-column-cell.tsx`, the
  * React wiring in `use-action-column.ts`.
  */
@@ -11,7 +14,7 @@ import type { ReactNode } from "react"
 /** Stable `colId` of the injected action column. */
 export const ACTION_COLUMN_ID = "smart-actions"
 
-/** The built-in row actions, rendered in this order. */
+/** The built-in sugar row actions (`actions.edit` / `actions.delete`). */
 export type GridActionKind = "edit" | "delete"
 
 export const GRID_ACTION_KINDS: readonly GridActionKind[] = ["edit", "delete"]
@@ -66,9 +69,24 @@ export interface GridRowActionConfig<TRow> {
  */
 export type GridRowActionProp<TRow> = boolean | GridRowActionConfig<TRow>
 
+/**
+ * A row action beyond the built-in Edit/Delete. `action` names an
+ * `ACTION_BUTTON_CONFIG` entry (`"view"`, `"duplicate"`, `"restore"`, …) that
+ * supplies the icon, label and variant; everything else is the same per-row
+ * config (visible/disabled/loading/tooltip/confirm/onClick) the built-ins use.
+ */
+export interface GridCustomRowAction<TRow> extends GridRowActionConfig<TRow> {
+  action: ActionKind
+}
+
 export interface GridActionColumnActions<TRow> {
   edit?: GridRowActionProp<TRow>
   delete?: GridRowActionProp<TRow>
+  /**
+   * Additional actions, rendered in order **after** edit/delete. Set `edit` /
+   * `delete` to `false` and list everything here to control the full order.
+   */
+  custom?: GridCustomRowAction<TRow>[]
 }
 
 /** Where the action column is pinned. `false` = a regular scrolling column. */
@@ -90,13 +108,24 @@ export interface GridActionColumnOptions<TRow> {
   resizable?: boolean
   /** Header text. @default "Actions" */
   headerName?: string
+  /**
+   * Consult the nearest `ActionPermissionProvider` for actions that don't set
+   * an explicit `visible` — `edit` shows only where `can("edit", row)` passes,
+   * and likewise per action `kind`. Set `false` to opt a grid out even when a
+   * provider is mounted above it. Explicit `visible` always wins. @default true
+   */
+  permissionAware?: boolean
   /** The row actions. Omitting both (or hiding both) removes the column. */
   actions?: GridActionColumnActions<TRow>
 }
 
 /** An action that survived static filtering, ready for the cell renderer. */
 export interface ResolvedGridAction<TRow> {
-  kind: GridActionKind
+  /**
+   * The `ACTION_BUTTON_CONFIG` key driving the button's icon/label/variant.
+   * `"edit"`/`"delete"` for the sugar keys, or the custom action's `action`.
+   */
+  kind: ActionKind
   config: GridRowActionConfig<TRow>
 }
 
@@ -118,9 +147,9 @@ export const normalizeRowAction = <TRow>(
 }
 
 /**
- * The actions that can render for at least one row, in display order
- * (edit, delete). An empty result means the column should not render at all
- * (see the auto-hide contract in {@link isActionColumnEnabled}).
+ * The actions that can render for at least one row, in display order (edit,
+ * delete, then each `custom` action). An empty result means the column should
+ * not render at all (see the auto-hide contract in {@link isActionColumnEnabled}).
  */
 export const resolveActiveActions = <TRow>(
   options: GridActionColumnOptions<TRow>
@@ -129,6 +158,10 @@ export const resolveActiveActions = <TRow>(
   for (const kind of GRID_ACTION_KINDS) {
     const config = normalizeRowAction(options.actions?.[kind])
     if (config) active.push({ kind, config })
+  }
+  for (const { action, ...rest } of options.actions?.custom ?? []) {
+    const config = normalizeRowAction(rest)
+    if (config) active.push({ kind: action, config })
   }
   return active
 }
@@ -160,32 +193,35 @@ export const resolveRowValue = <TRow, V>(
 
 /* --------------------------------- defaults -------------------------------- */
 
-const ACTION_TOOLTIPS: Record<GridActionKind, string> = {
+const BUILTIN_TOOLTIPS: Partial<Record<ActionKind, string>> = {
   edit: "Edit row",
   delete: "Delete row",
 }
 
 /**
  * Tooltip/aria-label for an action: `false` disables it, a string overrides it,
- * anything else falls back to "Edit row" / "Delete row".
+ * anything else falls back to the built-in "Edit row" / "Delete row" or, for a
+ * custom action, its `ACTION_BUTTON_CONFIG` label (passed as `defaultLabel`).
  */
 export const resolveActionTooltip = (
-  kind: GridActionKind,
-  tooltip: boolean | string | undefined
+  kind: ActionKind,
+  tooltip: boolean | string | undefined,
+  defaultLabel?: string
 ): string | false => {
   if (tooltip === false) return false
   if (typeof tooltip === "string") return tooltip
-  return ACTION_TOOLTIPS[kind]
+  return BUILTIN_TOOLTIPS[kind] ?? defaultLabel ?? kind
 }
 
 /** Accessible name for the button — never disabled, even when tooltip is. */
 export const resolveActionAriaLabel = (
-  kind: GridActionKind,
-  tooltip: boolean | string | undefined
+  kind: ActionKind,
+  tooltip: boolean | string | undefined,
+  defaultLabel?: string
 ): string =>
   typeof tooltip === "string" && tooltip.length > 0
     ? tooltip
-    : ACTION_TOOLTIPS[kind]
+    : (BUILTIN_TOOLTIPS[kind] ?? defaultLabel ?? kind)
 
 export interface ResolvedConfirmOptions {
   title: string
@@ -194,7 +230,7 @@ export interface ResolvedConfirmOptions {
   cancelLabel: string
 }
 
-const CONFIRM_DEFAULTS: Record<GridActionKind, ResolvedConfirmOptions> = {
+const BUILTIN_CONFIRM: Partial<Record<ActionKind, ResolvedConfirmOptions>> = {
   edit: {
     title: "Edit this row?",
     description: "You are about to edit this row.",
@@ -209,14 +245,24 @@ const CONFIRM_DEFAULTS: Record<GridActionKind, ResolvedConfirmOptions> = {
   },
 }
 
-/** Merge user confirm options over the per-action defaults; `null` = no confirm. */
+/**
+ * Merge user confirm options over the per-action defaults; `null` = no confirm.
+ * Custom actions with no built-in defaults derive them from `defaultLabel` (the
+ * action's `ACTION_BUTTON_CONFIG` label).
+ */
 export const resolveConfirmOptions = (
-  kind: GridActionKind,
-  confirm: boolean | GridActionConfirmOptions | undefined
+  kind: ActionKind,
+  confirm: boolean | GridActionConfirmOptions | undefined,
+  defaultLabel?: string
 ): ResolvedConfirmOptions | null => {
   if (confirm === undefined || confirm === false) return null
   const overrides = confirm === true ? {} : confirm
-  const defaults = CONFIRM_DEFAULTS[kind]
+  const defaults: ResolvedConfirmOptions = BUILTIN_CONFIRM[kind] ?? {
+    title: defaultLabel ? `${defaultLabel} this row?` : "Are you sure?",
+    description: null,
+    confirmLabel: defaultLabel ?? "Confirm",
+    cancelLabel: "Cancel",
+  }
   return {
     title: overrides.title ?? defaults.title,
     description: overrides.description ?? defaults.description,

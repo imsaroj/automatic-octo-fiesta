@@ -63,7 +63,8 @@ fetcher (e.g. inject per-call params). `fetchRows` wins if both are supplied.
 | `columns`          | both            | `DataGridColumn<TRow>` (AG Grid `ColDef` alias).                                                                                          |
 | `selection`        | both            | `"single" \| "multiple" \| "none"`.                                                                                                       |
 | `getRowId`         | both            | Stable id — recommended for selection + updates.                                                                                          |
-| `exportCsv`/export | both            | CSV (client) / XLSX (server); both formula-guarded.                                                                                       |
+| `exportCsv`/export | both            | Client: CSV, or `.xlsx` via `exportExcel`. Server: `.xlsx`. All formula-guarded.                                                          |
+| `fill`             | both            | Fill a `flex-1 min-h-0` parent instead of a fixed `height` (full-viewport layouts).                                                       |
 | `persistStateKey`  | SmartServerGrid | Persist column/filter state to localStorage.                                                                                              |
 | `filters`          | SmartServerGrid | External `ServerFilter[]`; identity change = reset to page 1 + refetch.                                                                   |
 | `query`            | SmartServerGrid | External filters as a plain object (the `SmartSearchForm` `onSearch` shape); normalized via `toServerFilters` and merged after `filters`. |
@@ -144,6 +145,10 @@ Key contracts:
   per row.
 - **Shorthands**: `edit: true` enables an action with defaults; `edit: false`
   hides it.
+- **Permission-aware**: an action without an explicit `visible` consults the
+  nearest `ActionPermissionProvider` — `edit` shows only where `can("edit", row)`
+  passes (the row is the permission context). Explicit `visible` always wins;
+  `permissionAware: false` opts the column out of an ambient provider.
 - **Loading** only affects the matching row's Delete button — Edit stays
   enabled, row height doesn't change (the spinner replaces the icon inside a
   fixed-size button).
@@ -158,6 +163,38 @@ Key contracts:
 - Lower-level pieces (`useGridActionColumn`, `buildActionColumnDef`,
   `GridActionCell`, `ACTION_COLUMN_ID`) are exported for grids that aren't
   `SmartGrid`/`SmartServerGrid`.
+
+### Custom actions
+
+Beyond `edit`/`delete`, `actions.custom` takes an ordered list of any
+`ActionKind` (`"view"`, `"duplicate"`, `"restore"`, `"approve"`, …). Each reuses
+the **same machinery** — icon/label/variant from `ACTION_BUTTON_CONFIG`, plus the
+same per-row `visible`/`disabled`/`loading`/`tooltip`/`confirm`/`onClick`,
+permission-awareness, and destructive treatment (any action whose config variant
+is `destructive`). No custom `cellRenderer` needed.
+
+<!-- prettier-ignore -->
+{% raw %}
+
+```tsx
+actionColumn={{
+  actions: {
+    edit: { onClick: handleEdit },
+    delete: { onClick: handleDelete, confirm: true },
+    custom: [
+      { action: "view", tooltip: "View log detail", onClick: openDetail },
+      { action: "duplicate", loading: (r) => cloningId === r.id, onClick: clone },
+    ],
+  },
+}}
+```
+
+{% endraw %}
+
+Custom actions render **after** edit/delete in list order; set `edit`/`delete`
+to `false` and list everything in `custom` to control the full order. Their
+confirm/tooltip defaults derive from the action's label (e.g. `confirm: true` on
+`duplicate` → "Duplicate this row?").
 
 ## Adapting to a real backend
 

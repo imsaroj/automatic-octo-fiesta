@@ -72,6 +72,7 @@ into arbitrary files:
 @iamsaroj/smart-ui/components/*           → src/components/*.tsx             (shadcn/ui primitives)
 @iamsaroj/smart-ui/hooks/*                → src/hooks/*.ts
 @iamsaroj/smart-ui/lib/*                  → src/lib/*.ts
+@iamsaroj/smart-ui/smart-components       → src/smart-components/index.ts     (aggregate barrel: flat facades + page/buttons/provider)
 @iamsaroj/smart-ui/smart-components/*     → src/smart-components/*.tsx       (Smart* wrappers)
 @iamsaroj/smart-ui/smart-components/page  → src/smart-components/page/index.ts   (page composition barrel)
 @iamsaroj/smart-ui/smart-components/buttons → src/smart-components/buttons/index.ts (action-button presets barrel)
@@ -85,7 +86,12 @@ into arbitrary files:
 ```
 
 Note there is no build step: everything is exported as source. `data-grid`, `form`, and `text-editor`
-are barrel entrypoints (`index.ts`); their internal files are not individually importable.
+are barrel entrypoints (`index.ts`); their internal files are not individually importable. The
+`smart-components` aggregate barrel (`src/smart-components/index.ts`) re-exports every flat facade plus the
+page/buttons/provider sub-barrels — safe to tree-shake thanks to `sideEffects: ["**/*.css"]`; the per-component
+deep paths stay valid. **Naming aliases:** `SmartDatePickerCalendar` is the canonical name for the inline
+date-picker calendar (disambiguated from the event `SmartCalendar` in `@iamsaroj/smart-ui/calendar`); `SmartCalendar`
+(smart-components) and `SearchEngine` (= `SmartSearchForm`) are kept as deprecated aliases.
 
 ### Shadcn/ui setup
 
@@ -119,8 +125,20 @@ Two public components backed by AG Grid Community:
 
 **Key internals:**
 
+- `grid-shell.tsx` — `GridShell`, the shared outer chrome for both grids (flex-column root, toolbar slot, and the
+  **positioned** body container behind both the fixed-`height` and full-viewport `fill` layouts). Each grid drops its
+  own `<AgGridReact>` + overlays into it; because the body is `relative`, a standalone `SmartLoadingOverlay` /
+  `SmartPageError` covers exactly the grid area. Extracting it gave the client grid the `fill` layout for free. Internal.
+- `grid-column-visibility.ts` — `useGridColumnVisibility(columns)`: the shared visibility map init + toolbar-shaped
+  `menuColumns` + `setColumnVisible`, previously duplicated in both grids (each still owns the `api.setColumnsVisible`
+  side effect + persistence). Internal.
+- `grid-toolbar.tsx` — `GridToolbar`, the shared toolbar (title, leading slot, refresh, column menu, export). Internal.
 - `grid-internals.tsx` — shared AG Grid module registration (`ensureGridModules`), column type aliases, density
   constants, `NoRowsOverlay`.
+- The client `SmartGrid` reuses the server grid's `collectGridExport` + `downloadXlsx` for its opt-in `exportExcel`
+  (`.xlsx`) path; `exportExcel` supersedes `exportCsv`. Client pagination defaults (`pageSize` 10, options
+  `[10,25,50,100]`) stay component-local by design — they're in-memory page sizes, distinct from the server grid's
+  block-sized defaults; only the server grid reads pagination defaults from `SmartUIProvider`.
 - `pagination.ts` — `ServerFetchParams` / `ServerFetchResult` types, `buildServerFetchParams` (translates AG Grid's
   `IGetRowsParams` → normalized params), `pageSchema` (Zod schema for Spring Data `Page<T>` responses), `toSpringSort`
   helper, and the Spring **query encoder** (`buildSpringQuery` / `encodeSpringFilter`) — the matching decoder stays
@@ -142,9 +160,14 @@ mapError?, fetchImpl? }) → fetchRows`: the reusable encode → request → unw
 - **Action column** (`action-column.ts` / `action-column-cell.tsx` / `use-action-column.ts`) — both grids take an
   `actionColumn` prop that injects a config-driven Edit/Delete column (pinning, per-row visible/disabled/loading,
   delete confirmation via `SmartConfirmDialog`, auto-hide when all actions are statically hidden, export opt-out via
-  `context.suppressExport`). Pure logic in `action-column.ts` is unit-tested; the ColDef is memoized on a structural
-  signature and per-row callbacks reach the cells via a `useSyncExternalStore` store (AG Grid's `refreshCells` does
-  NOT reliably re-render memoized React cells) — don't "fix" that by recreating the ColDef per render. Buttons reuse
+  `context.suppressExport`). Beyond the `edit`/`delete` sugar keys, `actions.custom` takes an ordered list of any
+  `ActionKind` (`{ action, onClick, visible?, disabled?, loading?, tooltip?, confirm? }`) rendered with the same
+  machinery — icon/label/variant come from `ACTION_BUTTON_CONFIG[action]`, destructive treatment from its `variant`.
+  A resolved action's `kind` is an `ActionKind` (not just edit/delete); tooltip/confirm defaults fall back to the config
+  label for custom kinds. Actions without an explicit `visible` consult the `ActionPermissionProvider` (`can(kind, row)`;
+  opt out with `permissionAware: false`). Pure logic in `action-column.ts` is unit-tested; the ColDef is memoized on a
+  structural signature and per-row callbacks reach the cells via a `useSyncExternalStore` store (AG Grid's `refreshCells`
+  does NOT reliably re-render memoized React cells) — don't "fix" that by recreating the ColDef per render. Buttons reuse
   the `ActionButton` presets. Demo: `/grids/actions`.
 
 `SmartServerGrid` is a generic `forwardRef` component. Because `forwardRef` erases generics, it is cast after definition
@@ -176,9 +199,13 @@ converge under I8), `SmartConfirmDialog` (title/confirm/cancel), `SmartSearchFor
 **`smart-components/buttons/`** — action-button presets (barrel: `@iamsaroj/smart-ui/smart-components/buttons`). One
 `ACTION_BUTTON_CONFIG` map (`action-config.ts`) is the single source of truth for each action's icon, label, variant,
 loading text, and button type; the generic `ActionButton` resolves it and adds icon-only mode, tooltip, and optional
-permission gating (`ActionPermissionProvider`); `createActionButton` stamps out the 27 named presets (`AddButton`,
+permission gating; `createActionButton` stamps out the 27 named presets (`AddButton`,
 `DeleteButton`, `SaveButton`, …) in `action-buttons.tsx`. Prefer these presets over hand-configured `SmartButton`s for
-standard CRUD/toolbar actions; extend by adding a config entry plus one `createActionButton` line.
+standard CRUD/toolbar actions; extend by adding a config entry plus one `createActionButton` line. **Permission gating**
+lives in `action-permission.tsx` (shared by the buttons _and_ the grid action column): `ActionPermissionProvider` supplies
+one `can(action, context?) => boolean` checker; `useActionPermission()` reads it, `<Can action context? fallback?>` gates
+declaratively. The grid action column consults `can(kind, row)` for any action without an explicit `visible` (opt out per
+column with `permissionAware: false`).
 
 **Field/value convention:** input-like Smart components are controlled through a `data` / `setData(value)` pair (not
 `value`/`onChange`) — see `FieldBaseProps<T>` in `form/base.ts`. The form engine relies on this convention.

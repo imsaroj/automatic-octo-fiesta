@@ -11,10 +11,28 @@ primitives (`SmartSearchInput`, `SmartLoadingOverlay`, `SmartSpinner`,
 
 ## Import
 
+Two equivalent styles — use whichever reads better:
+
 ```ts
+// Aggregate barrel — one import for many facades (tree-shaken, so unused
+// components add nothing to the bundle):
+import { SmartDialog, SmartCard } from "@iamsaroj/smart-ui/smart-components"
+
+// Per-component deep path — unchanged, still valid:
 import { SmartDialog } from "@iamsaroj/smart-ui/smart-components/smart-dialog"
-import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
 ```
+
+The `page`, `buttons` and `provider` entrypoints are re-exported from the barrel
+too, so a screen can pull `SmartPage`, `AddButton` and `SmartCard` from one line.
+
+### Naming notes
+
+- **`SmartDatePickerCalendar`** is the canonical, disambiguated name for the
+  inline date-picker calendar — distinct from the **event** calendar exported as
+  `SmartCalendar` from `@iamsaroj/smart-ui/calendar`. The old `SmartCalendar`
+  (this module) stays as a deprecated alias.
+- **`SearchEngine`** is a deprecated alias of `SmartSearchForm`
+  (`@iamsaroj/smart-ui/search`); prefer `SmartSearchForm`.
 
 ## The flat-props ↔ compound escape-hatch pattern
 
@@ -64,8 +82,39 @@ import { AddButton, SaveButton } from "@iamsaroj/smart-ui/smart-components/butto
 <SaveButton loading={isSaving} />
 ```
 
-Extend by adding a config entry + one `createActionButton` line. Optional
-permission gating via `ActionPermissionProvider`.
+Extend by adding a config entry + one `createActionButton` line.
+
+### Permission gating
+
+One optional `ActionPermissionProvider` gates everything underneath from a single
+checker — `ActionButton`s, the grid action column, and the `<Can>` gate all read
+it. The checker is `(action, context?) => boolean`; the `context` is whatever the
+call site scopes to (the grid passes the **row**), and it's typed `unknown` so the
+library never couples to an RBAC model. No provider → nothing is gated.
+
+```tsx
+import {
+  ActionPermissionProvider,
+  Can,
+} from "@iamsaroj/smart-ui/smart-components/buttons"
+
+<ActionPermissionProvider can={(action, row) => menuFlags[action] ?? false}>
+  {/* Hidden unless can("add") passes: */}
+  <Can action="add">
+    <AddButton onClick={openCreate} />
+  </Can>
+  {/* The grid action column consults can("edit"/"delete", row) automatically. */}
+  <SmartServerGrid … actionColumn={{ actions: { edit: {…}, delete: {…} } }} />
+</ActionPermissionProvider>
+```
+
+- **`<Can action context? fallback?>`** renders its children only when the check
+  passes (the gate the front used to hand-roll).
+- **`useActionPermission()`** returns the nearest checker (or `null`) for custom
+  gating.
+- A per-`ActionButton` `permission` prop still overrides the provider; on the grid
+  an explicit `visible` still wins, and `actionColumn.permissionAware: false` opts
+  one grid out entirely.
 
 ## SmartPage slots — `@iamsaroj/smart-ui/smart-components/page`
 
