@@ -95,6 +95,13 @@ export interface FieldBase<T extends Record<string, unknown>> {
   colSpan?: 1 | 2 | 3
   /** Return `true` to hide the field (and skip validation for it). */
   hidden?: (data: T) => boolean
+  /**
+   * Modes this field appears in (e.g. `["create"]`). Omit to show in every mode.
+   * With {@link SmartForm}'s `mode` prop set, a field is rendered **and validated**
+   * only when its `modes` include the active mode — so one schema serves create,
+   * edit, and any other mode without a `pick`/`extend` hack.
+   */
+  modes?: string[]
 }
 
 // ── Text ──────────────────────────────────────────────────────────────────

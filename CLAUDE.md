@@ -211,6 +211,12 @@ no per-field wiring. Key design points (see `smart-form.tsx`):
 - `data`/`setData` are optional — the form owns its state internally and mirrors edits out. The two sync effects use a
   `selfUpdateRef` guard to avoid an echo loop between the mirror-out and reconcile-in effects; read those comments
   before touching state logic.
+- **Create/edit modes** (one schema, no `key` remount): `initialData` seeds an uncontrolled form once (distinct from the
+  mirrored `data`); the `ref` handle (`SmartFormHandle`) exposes `reset(values?)` (re-initialize to a record or the
+  seed, clearing state) and `submit()`. Per-field `modes?: string[]` + the `mode` prop drop a field from render **and**
+  validation **and** the submitted value: `modeExcludedKeys` → `scopedSchema` (base `ZodObject.omit(mask)`; a
+  `.refine`/`.superRefine`-wrapped schema can't be scoped and validates as-is) + `stripExcluded` on submit. `SmartForm`
+  is a generic `forwardRef` cast after definition (same idiom as `SmartServerGrid`).
 - Empty optional strings are normalized to `undefined` before validation so blank optional fields don't error.
 - **Typed & async options** (option-based fields — select/combobox/multiselect/radio/segmented/checkbox-group):
   `FieldOption<V extends string | number | boolean>` keeps the real value in the store (an honest `roleId: z.number()`

@@ -89,6 +89,47 @@ imports a fetch client — the resolver is yours. (Live server-side search wirin
 a forward-compatible extension; today the resolver runs once and the control
 filters client-side.)
 
+## Create / edit modes
+
+One schema and one field list serve both create and edit — no `pick`/`extend`
+schema hack, no `key={id}` remount:
+
+```tsx
+const schema = z.object({
+  username: z.string().min(1),
+  password: z.string().min(8), // create-only
+})
+
+const fields: FieldDefinition<z.infer<typeof schema>>[] = [
+  { name: "username", type: "text", label: "Username" },
+  { name: "password", type: "password", label: "Password", modes: ["create"] },
+]
+
+const ref = useRef<SmartFormHandle<Form>>(null)
+
+<SmartForm
+  ref={ref}
+  schema={schema}
+  fields={fields}
+  mode={editing ? "edit" : "create"}
+  initialData={editing ?? undefined}
+/>
+
+// Load a different record without remounting:
+ref.current?.reset(nextRow)
+```
+
+- **`modes`** on a field limits it to the listed modes. In any other mode it's
+  dropped from **render and validation** (and from the submitted value), so the
+  base schema can keep `password` required and edit mode simply won't enforce it.
+- **`initialData`** seeds an uncontrolled form once (unlike `data`, it isn't
+  mirrored). **`ref.reset(values?)`** re-initializes to `values` (or the seed),
+  clearing errors/touched — the explicit alternative to `key={id}`.
+- Mode scoping needs a plain `ZodObject` schema (uses `.omit`). A schema wrapped
+  in `.refine`/`.superRefine` can't be scoped — make mode-only fields
+  `.optional()` there, and note cross-field refinements see the excluded fields'
+  raw store values.
+
 ## Escape hatches
 
 - **Required asterisk** is derived from the schema (`isFieldRequired`) — don't set

@@ -6,7 +6,11 @@
  */
 import { z } from "zod"
 
-import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
+import {
+  SmartForm,
+  type FieldDefinition,
+  type SmartFormHandle,
+} from "@iamsaroj/smart-ui/form"
 import {
   buildFlatQuery,
   createPageFetcher,
@@ -61,6 +65,21 @@ const roleFields: FieldDefinition<RoleForm>[] = [
   },
 ]
 void roleFields
+
+// form.md § Create / edit modes
+const accountSchema = z.object({
+  username: z.string().min(1),
+  password: z.string().min(8),
+})
+type Account = z.infer<typeof accountSchema>
+const accountFields: FieldDefinition<Account>[] = [
+  { name: "username", type: "text", label: "Username" },
+  { name: "password", type: "password", label: "Password", modes: ["create"] },
+]
+void accountFields
+declare const accountRef: { current: SmartFormHandle<Account> | null }
+const loadRecord = (row: Account) => accountRef.current?.reset(row)
+void loadRecord
 
 // ── data-grid.md ────────────────────────────────────────────────────────────
 interface User {
