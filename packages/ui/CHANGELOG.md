@@ -1,3 +1,17 @@
+# [2.0.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.6.0...v2.0.0) (2026-07-20)
+
+
+* refactor!: remove v1 compat aliases and normalize file naming ([77f8c78](https://github.com/imsaroj/automatic-octo-fiesta/commit/77f8c78b50eae22c46181bf0ecee26cc1b0425cd))
+
+
+### BREAKING CHANGES
+
+* `SearchEngine`, the `buildQuery` fetcher option, the
+smart-components `SmartCalendar` alias, and the `loading-overlay`/`search-input`/
+`spinner` deep-import paths are removed.
+
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
 # [1.6.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.5.0...v1.6.0) (2026-07-20)
 
 
