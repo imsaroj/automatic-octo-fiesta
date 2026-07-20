@@ -188,9 +188,10 @@ test("slots render in layout order regardless of JSX order", () => {
   const order = Array.from(container.querySelectorAll("[data-testid]")).map(
     (el) => el.getAttribute("data-testid")
   )
-  // The loose <p> is absent: with a content slot present, `body` children are
-  // superseded (main region priority: grid-area → content → body).
-  expect(order).toEqual(["hdr", "cnt", "ftr"])
+  // With a content slot present the loose <p> is not the main region, but it
+  // still renders — after the main region, before the bottom bars. (Children
+  // are never silently dropped.)
+  expect(order).toEqual(["hdr", "cnt", "loose", "ftr"])
 })
 
 test("without a content slot, loose children become the main region", () => {
@@ -200,6 +201,72 @@ test("without a content slot, loose children become the main region", () => {
     </SmartPage>
   )
   expect(container.querySelector('[data-testid="loose"]')).not.toBeNull()
+})
+
+test("loose children render alongside a grid area (e.g. an overlay sheet)", () => {
+  const Grid = slot("grid-area", "grid-content")
+  mount(
+    <SmartPage>
+      <Grid />
+      <div data-testid="sheet">Create/edit sheet</div>
+    </SmartPage>
+  )
+
+  // The reference CRUD pattern: the page keeps its sheet inside <SmartPage>.
+  expect(container.querySelector('[data-testid="grid-content"]')).not.toBeNull()
+  expect(container.querySelector('[data-testid="sheet"]')).not.toBeNull()
+})
+
+test("loose children render alongside content in the split layout", () => {
+  const Content = slot("content", "main-content")
+  const Sidebar = slot("sidebar", "sidebar-content")
+  mount(
+    <SmartPage>
+      <Content />
+      <Sidebar />
+      <div data-testid="sheet">Overlay</div>
+    </SmartPage>
+  )
+
+  expect(container.querySelector('[data-testid="sheet"]')).not.toBeNull()
+})
+
+test("an explicit slot prop buckets a wrapper component like the tagged slot", () => {
+  // An app component wrapping a slot component: the symbol on the inner type
+  // is invisible to SmartPage, so the wrapper declares its slot explicitly.
+  const MyToolbar = (props: { slot?: string }) => {
+    void props
+    return <div data-testid="my-toolbar" />
+  }
+  const Grid = slot("grid-area", "grid-content")
+
+  mount(
+    <SmartPage>
+      <Grid />
+      <MyToolbar slot="toolbar" />
+    </SmartPage>
+  )
+
+  const order = Array.from(container.querySelectorAll("[data-testid]")).map(
+    (el) => el.getAttribute("data-testid")
+  )
+  // Bucketed as toolbar → renders before the grid area, not after it.
+  expect(order).toEqual(["my-toolbar", "grid-content"])
+})
+
+test("an unknown slot prop value falls back to the loose-children bucket", () => {
+  const Grid = slot("grid-area", "grid-content")
+  mount(
+    <SmartPage>
+      <Grid />
+      <div data-testid="odd" slot="not-a-slot" />
+    </SmartPage>
+  )
+
+  const order = Array.from(container.querySelectorAll("[data-testid]")).map(
+    (el) => el.getAttribute("data-testid")
+  )
+  expect(order).toEqual(["grid-content", "odd"])
 })
 
 // ─── flat header props ───────────────────────────────────────────────────────────

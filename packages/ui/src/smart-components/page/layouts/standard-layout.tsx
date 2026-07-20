@@ -67,6 +67,11 @@ export const StandardLayout = ({
       : b.content.length > 0
         ? b.content
         : b.body
+  // Loose (non-slot) children always render — as the main region when no
+  // grid-area/content slot claims it, otherwise *after* the main region.
+  // Overlays (sheets, dialogs) portal away regardless, so a page can keep its
+  // create/edit sheet inside <SmartPage> instead of hoisting it out.
+  const looseChildren = mainContent === b.body ? [] : b.body
 
   const mainClasses = cn(
     "flex-1",
@@ -81,6 +86,7 @@ export const StandardLayout = ({
       )}
       {flowTopItems}
       <div className={mainClasses}>{mainContent}</div>
+      {looseChildren}
       {flowBottomItems}
       {stickyBottomItems.length > 0 && (
         <div className="sticky bottom-0 z-10 bg-background">

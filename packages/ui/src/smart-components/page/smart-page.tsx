@@ -31,6 +31,37 @@ import {
 // can import a slot component (SmartPageHeader) without a circular import.
 export { SMART_PAGE_SLOT, type PageSlot }
 
+const SLOT_NAMES: ReadonlySet<string> = new Set<PageSlot>([
+  "header",
+  "hero",
+  "toolbar",
+  "search",
+  "filters",
+  "tabs",
+  "content",
+  "sidebar",
+  "grid-area",
+  "status-bar",
+  "footer",
+])
+
+/**
+ * A child's slot: the symbol stamped on its component type (how the built-in
+ * slot components are tagged), or an explicit `slot` prop — the escape hatch
+ * for app components that *wrap* a slot component, where the symbol on the
+ * inner type is invisible to this walk.
+ */
+const slotOf = (child: React.ReactElement): PageSlot | undefined => {
+  const fromType = (child.type as unknown as Record<symbol, unknown>)[
+    SMART_PAGE_SLOT
+  ] as PageSlot | undefined
+  if (fromType) return fromType
+  const explicit = (child.props as { slot?: unknown } | null)?.slot
+  return typeof explicit === "string" && SLOT_NAMES.has(explicit)
+    ? (explicit as PageSlot)
+    : undefined
+}
+
 const collectSlots = (children: React.ReactNode): SlotBuckets => {
   const b: SlotBuckets = {
     header: [],
@@ -51,9 +82,7 @@ const collectSlots = (children: React.ReactNode): SlotBuckets => {
       b.body.push(child)
       return
     }
-    const slot = (child.type as unknown as Record<symbol, unknown>)[
-      SMART_PAGE_SLOT
-    ] as PageSlot | undefined
+    const slot = slotOf(child)
     switch (slot) {
       case "header":
         b.header.push(child)
@@ -299,6 +328,15 @@ export interface SmartPageProps {
  * ## Scroll philosophy
  * Only one element scrolls at a time. The `scroll` prop (or its layout default)
  * decides which element that is. Nested scrollbars never appear.
+ *
+ * ## Loose children & the `slot` prop
+ * Children that aren't slot components are never dropped: they form the main
+ * region when no `SmartGridArea`/`SmartPageContent` claims it, and otherwise
+ * render right after the main region — so overlays (a create/edit
+ * `SmartSheet`, dialogs) can live inside the page. An app component that
+ * *wraps* a slot component can declare its placement explicitly with a
+ * `slot` prop (e.g. `<MyToolbar slot="toolbar" />`), since the wrapper hides
+ * the inner component's slot tag from SmartPage.
  *
  * ## States
  * Pass `loading`, `error`, or `empty` to replace children with the appropriate
