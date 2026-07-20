@@ -199,20 +199,20 @@ confirm/tooltip defaults derive from the action's label (e.g. `confirm: true` on
 ## Adapting to a real backend
 
 `createPageFetcher` (and the `source` prop) defaults to a plain `fetch` against a
-0-indexed, un-enveloped Spring endpoint. Four knobs adapt it to any backend —
-each defaults to today's behavior, so you set only what differs:
+0-indexed, un-enveloped endpoint returning `PageResponse<T>`. Four knobs adapt it
+to any backend — each defaults to today's behavior, so you set only what differs:
 
 | Knob            | Default                | Use for                                                                                                   |
 | --------------- | ---------------------- | --------------------------------------------------------------------------------------------------------- |
 | `request`       | `fetch` + status check | Any transport — axios/ky with auth headers, base URL, its own error handling. Return the **parsed body**. |
 | `pageIndexBase` | `0`                    | 1-indexed APIs (`1` sends `page + 1`).                                                                    |
-| `unwrap`        | identity               | Peeling a response envelope down to the `Page<T>` (`body.data`).                                          |
-| `encodeQuery`   | `buildSpringQuery`     | A different query dialect — `buildFlatQuery` (bare `field=value`) or custom.                              |
+| `unwrap`        | identity               | Peeling a response envelope down to the `PageResponse<T>` (`body.data`).                                  |
+| `encodeQuery`   | `buildPageQuery`       | A different query dialect — `buildFlatQuery` (bare `field=value`) or custom.                              |
 
 `itemSchema` is optional: omit it to skip Zod validation for a trusted source.
 
 ```ts
-// axios transport, { data: Page<T> } envelope, 1-indexed, flat query params:
+// axios transport, { data: PageResponse<T> } envelope, 1-indexed, flat query params:
 const fetchUsers = createPageFetcher({
   url: "/users",
   request: (url, { signal }) => http.get(url, { signal }).then((r) => r.data),
@@ -228,9 +228,10 @@ it per endpoint, so a new grid is just `{ ...adapter, url, itemSchema }`.
 
 ## Contracts
 
-- **Spring `Page<T>`**: server responses use the Spring Data envelope
-  (`content`, `totalElements`, …), validated by `pageSchema` in `pagination.ts`.
-  `buildSpringQuery`/`toSpringSort` encode the request; the decoder is app-side.
+- **`PageResponse<T>`**: server responses use the stable envelope
+  (`content`, `page`, `size`, `totalElements`, `totalPages`), validated by
+  `pageResponseSchema` in `pagination.ts`. `buildPageQuery`/`toSortParams` encode
+  the request; the decoder is app-side.
 - **Cross-page selection** (`SmartServerGrid`): the selected-id `Set` is the
   source of truth, so selections survive block reloads (`useServerGridSelection`).
 - **Export safety**: string cells starting with `= + - @` / tab / CR are prefixed

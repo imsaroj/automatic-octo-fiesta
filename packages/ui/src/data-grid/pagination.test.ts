@@ -2,12 +2,12 @@ import { describe, expect, it } from "vitest"
 import { z } from "zod"
 import {
   buildFlatQuery,
+  buildPageQuery,
   buildServerFetchParams,
-  buildSpringQuery,
-  encodeSpringFilter,
-  pageSchema,
+  encodePageFilter,
+  pageResponseSchema,
   toServerFilters,
-  toSpringSort,
+  toSortParams,
 } from "@/data-grid/pagination"
 import type { ServerFetchParams } from "@/data-grid/pagination"
 
@@ -17,49 +17,44 @@ const userRowSchema = z.object({
   mrr: z.number(),
 })
 
-describe("pageSchema", () => {
-  it("parses a Spring `Page<T>` envelope", () => {
-    const schema = pageSchema(userRowSchema)
+describe("pageResponseSchema", () => {
+  it("parses a `PageResponse<T>` envelope", () => {
+    const schema = pageResponseSchema(userRowSchema)
     const page = schema.parse({
       content: [{ id: 1, name: "John Doe", mrr: 2500 }],
-      pageable: { pageNumber: 0, pageSize: 5 },
+      page: 1,
+      size: 5,
       totalElements: 20,
       totalPages: 4,
-      number: 0,
-      size: 5,
-      first: true,
-      last: false,
-      numberOfElements: 1,
-      empty: false,
     })
 
     expect(page.content).toHaveLength(1)
     expect(page.totalElements).toBe(20)
-    expect(page.number).toBe(0)
+    expect(page.page).toBe(1)
   })
 
-  it("works with only the required fields present", () => {
-    const schema = pageSchema(userRowSchema)
+  it("rejects a response missing a required field", () => {
+    const schema = pageResponseSchema(userRowSchema)
     expect(() =>
       schema.parse({
         content: [],
-        totalElements: 0,
-        totalPages: 0,
-        number: 0,
+        page: 1,
         size: 10,
+        totalElements: 0,
+        // totalPages missing
       })
-    ).not.toThrow()
+    ).toThrow()
   })
 
   it("rejects rows that fail the item schema", () => {
-    const schema = pageSchema(userRowSchema)
+    const schema = pageResponseSchema(userRowSchema)
     expect(() =>
       schema.parse({
         content: [{ id: "not-a-number", name: "X", mrr: 1 }],
+        page: 1,
+        size: 10,
         totalElements: 1,
         totalPages: 1,
-        number: 0,
-        size: 10,
       })
     ).toThrow()
   })
@@ -106,10 +101,10 @@ describe("buildServerFetchParams", () => {
   })
 })
 
-describe("toSpringSort", () => {
+describe("toSortParams", () => {
   it("encodes sort instructions as `field,dir` strings", () => {
     expect(
-      toSpringSort([
+      toSortParams([
         { field: "name", dir: "asc" },
         { field: "mrr", dir: "desc" },
       ])
@@ -117,14 +112,14 @@ describe("toSpringSort", () => {
   })
 
   it("returns an empty array when nothing is sorted", () => {
-    expect(toSpringSort([])).toEqual([])
+    expect(toSortParams([])).toEqual([])
   })
 })
 
-describe("encodeSpringFilter", () => {
+describe("encodePageFilter", () => {
   it("encodes a scalar operator as `<op>:<value>`", () => {
     expect(
-      encodeSpringFilter({
+      encodePageFilter({
         field: "name",
         filterType: "text",
         type: "contains",
@@ -135,7 +130,7 @@ describe("encodeSpringFilter", () => {
 
   it("encodes an `inRange` filter with both bounds", () => {
     expect(
-      encodeSpringFilter({
+      encodePageFilter({
         field: "mrr",
         filterType: "number",
         type: "inRange",
@@ -147,7 +142,7 @@ describe("encodeSpringFilter", () => {
 
   it("encodes an array (set) value as a comma-joined `set:` list", () => {
     expect(
-      encodeSpringFilter({
+      encodePageFilter({
         field: "status",
         filterType: "set",
         type: "set",
@@ -159,7 +154,7 @@ describe("encodeSpringFilter", () => {
   it("prefers the range branch over the array branch when both could apply", () => {
     // inRange is checked first, so an array `value` is still stringified as a scalar.
     expect(
-      encodeSpringFilter({
+      encodePageFilter({
         field: "mrr",
         filterType: "number",
         type: "inRange",
@@ -170,7 +165,7 @@ describe("encodeSpringFilter", () => {
   })
 })
 
-describe("buildSpringQuery", () => {
+describe("buildPageQuery", () => {
   const base: ServerFetchParams = {
     startRow: 0,
     endRow: 20,
@@ -181,25 +176,25 @@ describe("buildSpringQuery", () => {
   }
 
   it("always emits page + size, even with no sort or filters", () => {
-    expect(buildSpringQuery(base)).toBe("page=0&size=20")
+    expect(buildPageQuery(base)).toBe("page=0&size=20")
   })
 
   it("appends one repeated `sort` param per sorted column, in order", () => {
-    const query = buildSpringQuery({
+    const query = buildPageQuery({
       ...base,
       sort: [
         { field: "name", dir: "asc" },
         { field: "mrr", dir: "desc" },
       ],
     })
-    // URLSearchParams encodes the comma, so decode before asserting Spring shape.
+    // URLSearchParams encodes the comma, so decode before asserting the shape.
     expect(decodeURIComponent(query)).toBe(
       "page=0&size=20&sort=name,asc&sort=mrr,desc"
     )
   })
 
   it("serializes each filter as `<field>=<op>:<value>`", () => {
-    const query = buildSpringQuery({
+    const query = buildPageQuery({
       ...base,
       filters: [
         { field: "name", filterType: "text", type: "contains", value: "ada" },
@@ -224,7 +219,7 @@ describe("buildSpringQuery", () => {
   })
 
   it("percent-encodes values that contain reserved characters", () => {
-    const query = buildSpringQuery({
+    const query = buildPageQuery({
       ...base,
       filters: [
         { field: "name", filterType: "text", type: "contains", value: "a b&c" },
@@ -232,7 +227,7 @@ describe("buildSpringQuery", () => {
     })
     // Raw output stays URL-safe…
     expect(query).toContain("name=contains%3Aa+b%26c")
-    // …and round-trips back to the intended Spring value.
+    // …and round-trips back to the intended operator value.
     expect(new URLSearchParams(query).get("name")).toBe("contains:a b&c")
   })
 })

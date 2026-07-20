@@ -1,66 +1,50 @@
 import { z } from "zod"
 
 /* -------------------------------------------------------------------------- */
-/*                          Spring Data `Page<T>` shape                        */
+/*                          `PageResponse<T>` shape                            */
 /* -------------------------------------------------------------------------- */
 
 /**
- * Wrap an item schema in the Spring Data `Page<T>` envelope, the response shape
- * produced by a Spring `Page`/`Pageable` controller (and a common pagination
- * contract generally):
+ * Wrap an item schema in the `PageResponse<T>` envelope — the stable, backend-
+ * framework-agnostic pagination contract this library speaks:
  *
  * ```jsonc
- * { "content": [...], "totalElements": 20, "totalPages": 4, "number": 0, "size": 5, ... }
+ * { "content": [...], "page": 1, "size": 20, "totalElements": 20, "totalPages": 4 }
  * ```
  *
- * Validate a paged response with `pageSchema(itemSchema).parse(data)`, mirroring
- * the `schema.parse` convention used by every other hook in this layer.
+ * Validate a paged response with `pageResponseSchema(itemSchema).parse(data)`,
+ * mirroring the `schema.parse` convention used by every other hook in this layer.
  *
  * @example
  * ```ts
- * const usersPageSchema = pageSchema(userRowSchema);
+ * const usersPageSchema = pageResponseSchema(userRowSchema);
  * const page = usersPageSchema.parse(await api.get("/users", { params }));
  * ```
  */
-export const pageSchema = <TItem extends z.ZodTypeAny>(item: TItem) =>
+export const pageResponseSchema = <TItem extends z.ZodTypeAny>(item: TItem) =>
   z.object({
     /** The rows for this page. */
     content: z.array(item),
+    /** One-based index of the current page. */
+    page: z.number(),
+    /** Page size used for this response. */
+    size: z.number(),
     /** Total rows across every page (drives the infinite-scroll row count). */
     totalElements: z.number(),
     /** Total number of pages. */
     totalPages: z.number(),
-    /** Zero-based index of the current page. */
-    number: z.number(),
-    /** Page size used for this response. */
-    size: z.number(),
-    /** Whether this is the first page. */
-    first: z.boolean().optional(),
-    /** Whether this is the last page. */
-    last: z.boolean().optional(),
-    /** Number of rows actually present in `content`. */
-    numberOfElements: z.number().optional(),
-    /** Whether the page is empty. */
-    empty: z.boolean().optional(),
   })
 
 /**
- * Convenience type mirroring what {@link pageSchema} parses into — the Spring
- * Data `Page<T>` response envelope.
- *
- * (Named `SPageResponse` rather than `SPage` so it doesn't collide with the
- * `SPage` page-layout component.)
+ * Convenience type mirroring what {@link pageResponseSchema} parses into — the
+ * `PageResponse<T>` response envelope returned by the backend.
  */
-export interface SPageResponse<TItem> {
+export interface PageResponse<TItem> {
   content: TItem[]
+  page: number
+  size: number
   totalElements: number
   totalPages: number
-  number: number
-  size: number
-  first?: boolean
-  last?: boolean
-  numberOfElements?: number
-  empty?: boolean
 }
 
 /* -------------------------------------------------------------------------- */
@@ -115,7 +99,7 @@ export interface ServerFetchParams {
 /** What `fetchRows` resolves to: the block of rows plus the total row count. */
 export interface ServerFetchResult<TRow> {
   rows: TRow[]
-  /** Total rows on the server for the current filters (e.g. `Page.totalElements`). */
+  /** Total rows on the server for the current filters (`PageResponse.totalElements`). */
   total: number
 }
 
@@ -246,25 +230,25 @@ export const buildServerFetchParams = (input: {
 }
 
 /**
- * Serialize sort instructions into Spring's `sort=field,dir` strings (one per
- * sorted column, in priority order). The page (`page`/`size`) and filter dialect
- * vary per backend, so those stay app-owned — only the unambiguous sort encoding
- * is provided here.
+ * Serialize sort instructions into `sort=field,dir` strings (one per sorted
+ * column, in priority order). The page (`page`/`size`) and filter dialect vary
+ * per backend, so those stay app-owned — only the unambiguous sort encoding is
+ * provided here.
  *
- * @example `toSpringSort([{ field: "mrr", dir: "desc" }])` → `["mrr,desc"]`
+ * @example `toSortParams([{ field: "mrr", dir: "desc" }])` → `["mrr,desc"]`
  */
-export const toSpringSort = (sort: ReadonlyArray<ServerSort>): string[] =>
+export const toSortParams = (sort: ReadonlyArray<ServerSort>): string[] =>
   sort.map((s) => `${s.field},${s.dir}`)
 
 /**
  * Serialize a single {@link ServerFilter} into the `<op>:<value>` value used by
- * the Spring query dialect below:
+ * the operator query dialect below:
  *
  * - `inRange` → `inRange:<from>:<to>`
  * - set (array value) → `set:<a>,<b>,<c>`
  * - everything else → `<op>:<value>`
  */
-export const encodeSpringFilter = (filter: ServerFilter): string => {
+export const encodePageFilter = (filter: ServerFilter): string => {
   if (filter.type === "inRange") {
     return `inRange:${String(filter.value)}:${String(filter.valueTo)}`
   }
@@ -275,11 +259,11 @@ export const encodeSpringFilter = (filter: ServerFilter): string => {
 }
 
 /**
- * Serialize normalized {@link ServerFetchParams} into a Spring Data query string
- * (without the leading `?`) — the encoder half of the query contract:
+ * Serialize normalized {@link ServerFetchParams} into an operator-dialect query
+ * string (without the leading `?`) — the encoder half of the query contract:
  *
  * - paging  → `page=0&size=20`
- * - sorting → `sort=name,asc&sort=mrr,desc`  (repeatable, Spring style)
+ * - sorting → `sort=name,asc&sort=mrr,desc`  (repeatable)
  * - filters → `<field>=<op>:<value>`, e.g. `name=contains:ada`,
  *             `mrr=inRange:1000:2000`, `status=set:Active,Pending`
  *
@@ -287,13 +271,13 @@ export const encodeSpringFilter = (filter: ServerFilter): string => {
  * *decoder* stays server/app-side (backends parse however they like), so it is
  * intentionally not shipped here.
  */
-export const buildSpringQuery = (params: ServerFetchParams): string => {
+export const buildPageQuery = (params: ServerFetchParams): string => {
   const sp = new URLSearchParams()
   sp.set("page", String(params.page))
   sp.set("size", String(params.pageSize))
-  for (const sort of toSpringSort(params.sort)) sp.append("sort", sort)
+  for (const sort of toSortParams(params.sort)) sp.append("sort", sort)
   for (const filter of params.filters)
-    sp.append(filter.field, encodeSpringFilter(filter))
+    sp.append(filter.field, encodePageFilter(filter))
   return sp.toString()
 }
 
@@ -316,7 +300,7 @@ export const buildFlatQuery = (params: ServerFetchParams): string => {
   const sp = new URLSearchParams()
   sp.set("page", String(params.page))
   sp.set("size", String(params.pageSize))
-  for (const sort of toSpringSort(params.sort)) sp.append("sort", sort)
+  for (const sort of toSortParams(params.sort)) sp.append("sort", sort)
   for (const filter of params.filters) {
     if (filter.type === "inRange") {
       sp.append(`${filter.field}From`, String(filter.value))

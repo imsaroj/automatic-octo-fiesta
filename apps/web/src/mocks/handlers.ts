@@ -30,23 +30,14 @@ export const handlers = [
     await delay(LATENCY)
 
     const totalPages = size > 0 ? Math.ceil(total / size) : 0
+    // The stable `PageResponse<T>` contract the library speaks: `page` is
+    // one-based (the request page is zero-based here, hence `page + 1`).
     return HttpResponse.json({
       content,
-      pageable: {
-        pageNumber: page,
-        pageSize: size,
-        offset: page * size,
-        paged: true,
-        unpaged: false,
-      },
+      page: page + 1,
+      size,
       totalElements: total,
       totalPages,
-      number: page,
-      size,
-      first: page === 0,
-      last: page >= totalPages - 1,
-      numberOfElements: content.length,
-      empty: content.length === 0,
     })
   }),
 

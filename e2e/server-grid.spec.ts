@@ -2,7 +2,7 @@ import { test, expect, type Page } from "@playwright/test"
 
 /**
  * SmartServerGrid against the real MSW `/api/users` endpoint (300 seeded
- * users, Spring `Page<T>` shape): rows load through the service worker,
+ * users, `PageResponse<T>` shape): rows load through the service worker,
  * sorting round-trips to the query string, the search form filters
  * server-side, and the error overlay's Retry recovers.
  */
@@ -12,7 +12,7 @@ const pagingPanel = (page: Page) => page.locator(".ag-paging-panel")
 const gotoServerGrid = async (page: Page) => {
   await page.goto("/grids/server")
   // First block fetched through MSW (450 ms simulated latency) — the pager
-  // knowing the exact total proves a real `Page<T>` response was parsed.
+  // knowing the exact total proves a real `PageResponse<T>` response was parsed.
   // Generous budget: on a cold dev server the AG Grid chunk compiles on
   // demand, and parallel workers all hit that transform at once.
   await expect(pagingPanel(page)).toContainText("300", { timeout: 45_000 })
@@ -33,7 +33,7 @@ test("sorting a column round-trips to the request query string", async ({
   await gotoServerGrid(page)
 
   // Clicking the Name header must trigger a server re-query with the sort
-  // encoded Spring-style (`sort=name,asc`).
+  // encoded as `sort=name,asc`.
   const [request] = await Promise.all([
     page.waitForRequest((req) =>
       decodeURIComponent(req.url()).includes("sort=name,asc")

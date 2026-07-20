@@ -1,10 +1,10 @@
 import { z } from "zod"
 import {
-  pageSchema,
-  buildSpringQuery,
+  pageResponseSchema,
+  buildPageQuery,
   type ServerFetchParams,
   type ServerFetchResult,
-  type SPageResponse,
+  type PageResponse,
 } from "./pagination"
 
 /**
@@ -42,15 +42,15 @@ export interface CreatePageFetcherOptions<TItem> {
   url: string
   /**
    * Zod schema for a single row. When provided, the (unwrapped) response is
-   * validated against `pageSchema(itemSchema)` — the Spring Data `Page<T>`
+   * validated against `pageResponseSchema(itemSchema)` — the `PageResponse<T>`
    * envelope — so malformed responses fail loudly instead of silently rendering
    * garbage. **Optional**: omit it to skip validation when the source is trusted
-   * (the response is then read structurally as a `Page<T>`).
+   * (the response is then read structurally as a `PageResponse<T>`).
    */
   itemSchema?: z.ZodType<TItem>
   /**
    * Serialize grid params into a query string (without the leading `?`).
-   * Defaults to {@link buildSpringQuery} (the Spring Data dialect); pass
+   * Defaults to {@link buildPageQuery} (the operator dialect); pass
    * {@link buildFlatQuery} for bare `field=value` params, or a custom encoder for
    * any other backend contract.
    */
@@ -62,9 +62,9 @@ export interface CreatePageFetcherOptions<TItem> {
    */
   pageIndexBase?: 0 | 1
   /**
-   * Peel a response envelope down to the `Page<T>` shape before it is validated /
-   * read. Default is identity. For a global `{ data: Page<T> }` wrapper:
-   * `unwrap: (body) => (body as { data: unknown }).data`.
+   * Peel a response envelope down to the `PageResponse<T>` shape before it is
+   * validated / read. Default is identity. For a global `{ data: PageResponse<T> }`
+   * wrapper: `unwrap: (body) => (body as { data: unknown }).data`.
    */
   unwrap?: (body: unknown) => unknown
   /**
@@ -112,21 +112,21 @@ const fetchRequest =
  * Build a `fetchRows` adapter for {@link SmartServerGrid}: it serializes
  * normalized grid params to a query string, requests `url` through the
  * (pluggable) transport, optionally peels a response envelope, and returns
- * `{ rows, total }` — validating against the Spring Data `Page<T>` envelope when
+ * `{ rows, total }` — validating against the `PageResponse<T>` envelope when
  * an `itemSchema` is given.
  *
  * Every server-grid page shares this encode → request → unwrap → parse pipeline,
  * so it lives here once instead of being re-hand-rolled per page. The four
  * transport knobs (`request`, `pageIndexBase`, `unwrap`, `encodeQuery`) all
  * default to today's behavior — a plain `fetch` against a 0-indexed, un-enveloped
- * Spring endpoint — so existing callers are unaffected.
+ * endpoint — so existing callers are unaffected.
  *
- * @example Spring default
+ * @example default
  * ```ts
  * const fetchUsers = createPageFetcher({ url: "/api/users", itemSchema: userRowSchema })
  * ```
  *
- * @example axios + `{ data: Page<T> }` envelope, 1-indexed, flat params
+ * @example axios + `{ data: PageResponse<T> }` envelope, 1-indexed, flat params
  * ```ts
  * const fetchUsers = createPageFetcher({
  *   url: "/users",
@@ -148,9 +148,9 @@ export const createPageFetcher = <TItem>({
   mapError = (response) => new Error(`Server error: ${response.status}`),
   fetchImpl,
 }: CreatePageFetcherOptions<TItem>): PageFetcher<TItem> => {
-  const encode = encodeQuery ?? buildSpringQuery
+  const encode = encodeQuery ?? buildPageQuery
   const doRequest = request ?? fetchRequest(mapError, fetchImpl)
-  const envelope = itemSchema ? pageSchema(itemSchema) : undefined
+  const envelope = itemSchema ? pageResponseSchema(itemSchema) : undefined
 
   return async (params, signal, extraParams) => {
     // Shift only the page index for 1-indexed backends; the rest of the params
@@ -164,7 +164,7 @@ export const createPageFetcher = <TItem>({
     const unwrapped = unwrap ? unwrap(body) : body
     const page = envelope
       ? envelope.parse(unwrapped)
-      : (unwrapped as SPageResponse<TItem>)
+      : (unwrapped as PageResponse<TItem>)
     return { rows: page.content, total: page.totalElements }
   }
 }

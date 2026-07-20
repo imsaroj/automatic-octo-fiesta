@@ -6,16 +6,16 @@ export type {
   ServerFilter,
   ServerFetchParams,
   ServerFetchResult,
-  SPageResponse,
+  PageResponse,
   ToServerFiltersOverrides,
 } from "./pagination"
 export {
-  pageSchema,
+  pageResponseSchema,
   buildServerFetchParams,
   toServerFilters,
-  toSpringSort,
-  encodeSpringFilter,
-  buildSpringQuery,
+  toSortParams,
+  encodePageFilter,
+  buildPageQuery,
   buildFlatQuery,
 } from "./pagination"
 export {

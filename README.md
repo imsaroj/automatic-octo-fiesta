@@ -42,7 +42,7 @@ at ~150 hand-written lines versus ~45.
 - **Form engine** — declarative forms on TanStack Form + Zod v4. One schema is the single source of truth for validation
   _and_ required-ness; a `FieldDefinition[]` picks the controls.
 - **Data grid** — `SmartGrid` (client-side, quick search + CSV export) and `SmartServerGrid` (infinite/server-side)
-  backed by AG Grid, with a reusable Spring `Page<T>` fetch pipeline and cross-page selection.
+  backed by AG Grid, with a reusable `PageResponse<T>` fetch pipeline and cross-page selection.
 - **Search engine** — a filter bar that composes the form engine, adding manual and debounced auto-search, empty-value
   pruning, and an active-filter count.
 - **Tree, transfer list, and calendar engines** — generic, Set-backed components for hierarchical navigation, dual-list
