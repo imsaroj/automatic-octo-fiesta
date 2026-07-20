@@ -326,7 +326,7 @@ export const encodeSpringFilter = (filter: ServerFilter): string => {
  * - filters → `<field>=<op>:<value>`, e.g. `name=contains:ada`,
  *             `mrr=inRange:1000:2000`, `status=set:Active,Pending`
  *
- * This is the default `buildQuery` for {@link createPageFetcher}. The matching
+ * This is the default `encodeQuery` for {@link createPageFetcher}. The matching
  * *decoder* stays server/app-side (backends parse however they like), so it is
  * intentionally not shipped here.
  */
@@ -337,5 +337,38 @@ export const buildSpringQuery = (params: ServerFetchParams): string => {
   for (const sort of toSpringSort(params.sort)) sp.append("sort", sort)
   for (const filter of params.filters)
     sp.append(filter.field, encodeSpringFilter(filter))
+  return sp.toString()
+}
+
+/**
+ * Serialize normalized {@link ServerFetchParams} into a **flat** query string
+ * (without the leading `?`) — for backends that expect bare `field=value` params
+ * with no operator dialect (the shape many REST APIs accept):
+ *
+ * - paging  → `page=0&size=20`
+ * - sorting → `sort=name,asc&sort=mrr,desc`  (repeatable)
+ * - filters → `<field>=<value>`, e.g. `name=ada`; a set repeats the key
+ *             (`status=Active&status=Pending`); an `inRange` splits into
+ *             `<field>From` / `<field>To` (`mrr From=1000`, `mrrTo=2000`)
+ *
+ * Pass as {@link createPageFetcher}'s `encodeQuery` for a flat-param backend.
+ * Paging is 0-based here too — set `pageIndexBase: 1` on the fetcher for
+ * 1-indexed servers rather than re-encoding.
+ */
+export const buildFlatQuery = (params: ServerFetchParams): string => {
+  const sp = new URLSearchParams()
+  sp.set("page", String(params.page))
+  sp.set("size", String(params.pageSize))
+  for (const sort of toSpringSort(params.sort)) sp.append("sort", sort)
+  for (const filter of params.filters) {
+    if (filter.type === "inRange") {
+      sp.append(`${filter.field}From`, String(filter.value))
+      sp.append(`${filter.field}To`, String(filter.valueTo))
+    } else if (Array.isArray(filter.value)) {
+      for (const value of filter.value) sp.append(filter.field, String(value))
+    } else {
+      sp.append(filter.field, String(filter.value))
+    }
+  }
   return sp.toString()
 }

@@ -8,6 +8,7 @@ import { z } from "zod"
 
 import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 import {
+  buildFlatQuery,
   createPageFetcher,
   toServerFilters,
   type DataGridColumn,
@@ -60,6 +61,20 @@ const fetchUsers = createPageFetcher({
   itemSchema: userSchema,
 })
 void fetchUsers
+
+// Adapting to a real backend (docs/data-grid.md § Adapting to a real backend)
+declare const http: {
+  get: (url: string, cfg: { signal: AbortSignal }) => Promise<{ data: unknown }>
+}
+const fetchUsersAdapted = createPageFetcher({
+  url: "/users",
+  request: (url, { signal }) => http.get(url, { signal }).then((r) => r.data),
+  unwrap: (body) => (body as { data: unknown }).data,
+  pageIndexBase: 1,
+  encodeQuery: buildFlatQuery,
+  itemSchema: userSchema,
+})
+void fetchUsersAdapted
 
 // External filters from a search form (docs/data-grid.md § External filters)
 const externalFilters = toServerFilters(

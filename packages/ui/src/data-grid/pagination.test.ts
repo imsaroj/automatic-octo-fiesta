@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 import {
+  buildFlatQuery,
   buildServerFetchParams,
   buildSpringQuery,
   encodeSpringFilter,
@@ -305,6 +306,79 @@ describe("buildSpringQuery", () => {
     expect(query).toContain("name=contains%3Aa+b%26c")
     // …and round-trips back to the intended Spring value.
     expect(new URLSearchParams(query).get("name")).toBe("contains:a b&c")
+  })
+})
+
+describe("buildFlatQuery", () => {
+  const base: ServerFetchParams = {
+    startRow: 0,
+    endRow: 20,
+    page: 0,
+    pageSize: 20,
+    sort: [],
+    filters: [],
+  }
+
+  it("always emits page + size", () => {
+    expect(buildFlatQuery(base)).toBe("page=0&size=20")
+  })
+
+  it("emits bare `field=value` filters with no operator prefix", () => {
+    const query = buildFlatQuery({
+      ...base,
+      filters: [
+        { field: "name", filterType: "text", type: "contains", value: "ada" },
+      ],
+    })
+    expect(decodeURIComponent(query)).toBe("page=0&size=20&name=ada")
+  })
+
+  it("splits an inRange filter into `<field>From` / `<field>To`", () => {
+    const query = buildFlatQuery({
+      ...base,
+      filters: [
+        {
+          field: "mrr",
+          filterType: "number",
+          type: "inRange",
+          value: 1000,
+          valueTo: 2000,
+        },
+      ],
+    })
+    expect(decodeURIComponent(query)).toBe(
+      "page=0&size=20&mrrFrom=1000&mrrTo=2000"
+    )
+  })
+
+  it("repeats the key for each value of a set filter", () => {
+    const query = buildFlatQuery({
+      ...base,
+      filters: [
+        {
+          field: "status",
+          filterType: "set",
+          type: "set",
+          value: ["Active", "Pending"],
+        },
+      ],
+    })
+    expect(decodeURIComponent(query)).toBe(
+      "page=0&size=20&status=Active&status=Pending"
+    )
+  })
+
+  it("appends one repeated `sort` param per sorted column, in order", () => {
+    const query = buildFlatQuery({
+      ...base,
+      sort: [
+        { field: "name", dir: "asc" },
+        { field: "mrr", dir: "desc" },
+      ],
+    })
+    expect(decodeURIComponent(query)).toBe(
+      "page=0&size=20&sort=name,asc&sort=mrr,desc"
+    )
   })
 })
 

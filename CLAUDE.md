@@ -125,10 +125,15 @@ Two public components backed by AG Grid Community:
   `IGetRowsParams` → normalized params), `pageSchema` (Zod schema for Spring Data `Page<T>` responses), `toSpringSort`
   helper, and the Spring **query encoder** (`buildSpringQuery` / `encodeSpringFilter`) — the matching decoder stays
   app/mock-side.
-- `create-page-fetcher.ts` — `createPageFetcher({ url, itemSchema, buildQuery?, mapError?, fetchImpl? }) → fetchRows`:
-  the reusable fetch → status-check → Zod-`pageSchema`-parse → `{rows,total}` pipeline for `SmartServerGrid`. Transport
-  is injectable (`fetchImpl`) for testability/SSR. Returned fetcher takes an optional 3rd `extraParams` arg for per-call
-  query params. `apps/web/src/api/users.ts` is built on it.
+- `create-page-fetcher.ts` — `createPageFetcher({ url, itemSchema?, encodeQuery?, pageIndexBase?, unwrap?, request?,
+mapError?, fetchImpl? }) → fetchRows`: the reusable encode → request → unwrap → Zod-`pageSchema`-parse → `{rows,total}`
+  pipeline for `SmartServerGrid`. Four transport knobs adapt it to any backend, all defaulting to today's behavior:
+  `request` (any transport — axios/ky/fetch; returns the parsed body), `pageIndexBase` (`0` default | `1` for 1-indexed
+  APIs), `unwrap` (peel a response envelope to `Page<T>`), `encodeQuery` (`buildSpringQuery` default | `buildFlatQuery` |
+  custom; `buildQuery` is a deprecated alias). `itemSchema` is optional (omit to skip Zod for a trusted source). The
+  default transport still takes an injectable `fetchImpl` (testability/SSR) + `mapError`. Returned fetcher takes an
+  optional 3rd `extraParams` arg for per-call query params. `SmartServerGrid` also accepts this config directly via its
+  `source` prop (builds `fetchRows` for you). `apps/web/src/api/users.ts` is built on it.
 - `server-grid-internals.ts` — pure helpers for state persistence (`readPersistedGridState`/`writePersistedGridState`),
   Excel export shaping (`collectGridExport`), filter merging, debounce.
 - `use-server-grid-selection.ts` — cross-page selection hook; the selected-id `Set` is the source of truth so selections

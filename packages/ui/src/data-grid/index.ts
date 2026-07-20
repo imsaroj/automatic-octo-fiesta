@@ -16,10 +16,12 @@ export {
   toSpringSort,
   encodeSpringFilter,
   buildSpringQuery,
+  buildFlatQuery,
 } from "./pagination"
 export {
   createPageFetcher,
   type PageFetcher,
+  type ServerRequest,
   type CreatePageFetcherOptions,
 } from "./create-page-fetcher"
 export {

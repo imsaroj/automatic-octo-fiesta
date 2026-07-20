@@ -32,6 +32,10 @@ import {
   type ServerFetchResult,
   type ServerFilter,
 } from "./pagination"
+import {
+  createPageFetcher,
+  type CreatePageFetcherOptions,
+} from "./create-page-fetcher"
 import { dataGridTheme } from "./grid-theme"
 import {
   ensureGridModules,
@@ -83,11 +87,27 @@ export interface SmartServerGridProps<TRow> {
    * Fetch one block of rows from the server. Receives normalized paging, sort
    * and filter params plus an `AbortSignal`, and resolves to `{ rows, total }`.
    * Rejecting (or throwing) surfaces the error overlay with a **Retry** button.
+   *
+   * Provide **either** `fetchRows` (full control) **or** {@link source} (a
+   * `createPageFetcher` config for the common case) — `fetchRows` wins if both
+   * are set.
    */
-  fetchRows: (
+  fetchRows?: (
     params: ServerFetchParams,
     signal: AbortSignal
   ) => Promise<ServerFetchResult<TRow>>
+  /**
+   * Declarative fetch config — the {@link createPageFetcher} options object. The
+   * grid builds the `fetchRows` adapter for you, so simple server pages never
+   * define a fetch function at all:
+   *
+   * ```tsx
+   * <SmartServerGrid source={{ url: "/api/users", itemSchema: userRowSchema }} … />
+   * ```
+   *
+   * Ignored when {@link fetchRows} is provided.
+   */
+  source?: CreatePageFetcherOptions<TRow>
   /** Stable row id — required for selection and block reconciliation across pages. */
   getRowId: (row: TRow) => string
   /**
@@ -210,6 +230,7 @@ const SmartServerGridInner = <TRow,>(
   const {
     columns,
     fetchRows,
+    source,
     getRowId,
     actionColumn,
     filters,
@@ -238,6 +259,29 @@ const SmartServerGridInner = <TRow,>(
 
   ensureGridModules()
 
+  // Resolve the fetch adapter: an explicit `fetchRows` wins; otherwise build one
+  // from the declarative `source` config. If neither is given, fall back to a
+  // rejecting fetcher so the misconfiguration surfaces in the error overlay
+  // (with a clear message) rather than as a blank grid.
+  const resolvedFetchRows = useMemo<
+    (
+      params: ServerFetchParams,
+      signal: AbortSignal
+    ) => Promise<ServerFetchResult<TRow>>
+  >(
+    () =>
+      fetchRows ??
+      (source
+        ? createPageFetcher<TRow>(source)
+        : () =>
+            Promise.reject(
+              new Error(
+                "SmartServerGrid: provide a `fetchRows` function or a `source` config."
+              )
+            )),
+    [fetchRows, source]
+  )
+
   // `filters` (already-normalized) and `query` (plain search-form object) are
   // merged into one external-filter list; both participate in the reset-on-change
   // contract through this memo's identity.
@@ -249,13 +293,13 @@ const SmartServerGridInner = <TRow,>(
   // Latest props read by the (stable) datasource + grid callbacks, without
   // re-creating them — recreating the datasource would reset the grid.
   const gridApiRef = useRef<GridApi<TRow> | null>(null)
-  const fetchRowsRef = useRef(fetchRows)
+  const fetchRowsRef = useRef(resolvedFetchRows)
   const getRowIdRef = useRef(getRowId)
   const onRowDoubleClickRef = useRef(onRowDoubleClick)
   const filtersRef = useRef(externalFilters)
   const persistKeyRef = useRef(persistStateKey)
   useLayoutEffect(() => {
-    fetchRowsRef.current = fetchRows
+    fetchRowsRef.current = resolvedFetchRows
     getRowIdRef.current = getRowId
     onRowDoubleClickRef.current = onRowDoubleClick
     filtersRef.current = externalFilters
