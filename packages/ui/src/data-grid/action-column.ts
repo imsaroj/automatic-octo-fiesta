@@ -90,6 +90,13 @@ export interface GridActionColumnOptions<TRow> {
   resizable?: boolean
   /** Header text. @default "Actions" */
   headerName?: string
+  /**
+   * Consult the nearest `ActionPermissionProvider` for actions that don't set
+   * an explicit `visible` — `edit` shows only where `can("edit", row)` passes,
+   * and likewise per action `kind`. Set `false` to opt a grid out even when a
+   * provider is mounted above it. Explicit `visible` always wins. @default true
+   */
+  permissionAware?: boolean
   /** The row actions. Omitting both (or hiding both) removes the column. */
   actions?: GridActionColumnActions<TRow>
 }

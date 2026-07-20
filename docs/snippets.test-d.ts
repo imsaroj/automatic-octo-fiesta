@@ -30,6 +30,12 @@ import {
   SmartUIProvider,
   type SmartUIProviderProps,
 } from "@iamsaroj/smart-ui/smart-components/provider"
+import {
+  ActionPermissionProvider,
+  Can,
+  useActionPermission,
+  type ActionPermissionChecker,
+} from "@iamsaroj/smart-ui/smart-components/buttons"
 
 // ── form.md ──────────────────────────────────────────────────────────
 const schema = z.object({
@@ -125,6 +131,14 @@ const externalFilters = toServerFilters(
 )
 void externalFilters
 
+// Permission gating (docs/smart-components.md § Permission gating)
+const canDo: ActionPermissionChecker = (action, context) =>
+  action !== "delete" || context != null
+void canDo
+void ActionPermissionProvider
+void Can
+void useActionPermission
+
 // Action column (docs/data-grid.md § Action column)
 declare const deletingId: string | null
 const actionColumn: GridActionColumnOptions<User> = {
@@ -132,6 +146,7 @@ const actionColumn: GridActionColumnOptions<User> = {
   width: 110,
   showLabel: false,
   exportable: false,
+  permissionAware: true,
   actions: {
     edit: {
       visible: true,

@@ -3,7 +3,8 @@ import * as React from "react"
 import { createRoot, type Root } from "react-dom/client"
 import { act } from "react"
 
-import { ActionButton, ActionPermissionProvider } from "./action-button"
+import { ActionButton } from "./action-button"
+import { ActionPermissionProvider, Can } from "./action-permission"
 import {
   AddButton,
   DeleteButton,
@@ -100,4 +101,38 @@ test("ActionPermissionProvider gates by action; explicit permission wins", () =>
   expect(buttons).toHaveLength(2)
   expect(buttons[0]?.textContent).toBe("Add")
   expect(buttons[1]?.textContent).toBe("Force delete")
+})
+
+test("Can gate renders children when allowed, fallback when denied, passing context", () => {
+  const seen: unknown[] = []
+  mount(
+    <ActionPermissionProvider
+      can={(action, context) => {
+        seen.push(context)
+        return action !== "delete"
+      }}
+    >
+      <Can action="edit" context={{ id: 7 }}>
+        <span>editable</span>
+      </Can>
+      <Can action="delete" fallback={<span>locked</span>}>
+        <span>deletable</span>
+      </Can>
+    </ActionPermissionProvider>
+  )
+
+  expect(container.textContent).toContain("editable")
+  expect(container.textContent).toContain("locked")
+  expect(container.textContent).not.toContain("deletable")
+  // The resource context reaches the checker.
+  expect(seen).toContainEqual({ id: 7 })
+})
+
+test("Can gate allows everything when no provider is mounted", () => {
+  mount(
+    <Can action="delete">
+      <span>ungated</span>
+    </Can>
+  )
+  expect(container.textContent).toContain("ungated")
 })

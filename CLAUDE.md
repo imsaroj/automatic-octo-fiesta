@@ -176,9 +176,13 @@ converge under I8), `SmartConfirmDialog` (title/confirm/cancel), `SmartSearchFor
 **`smart-components/buttons/`** — action-button presets (barrel: `@iamsaroj/smart-ui/smart-components/buttons`). One
 `ACTION_BUTTON_CONFIG` map (`action-config.ts`) is the single source of truth for each action's icon, label, variant,
 loading text, and button type; the generic `ActionButton` resolves it and adds icon-only mode, tooltip, and optional
-permission gating (`ActionPermissionProvider`); `createActionButton` stamps out the 27 named presets (`AddButton`,
+permission gating; `createActionButton` stamps out the 27 named presets (`AddButton`,
 `DeleteButton`, `SaveButton`, …) in `action-buttons.tsx`. Prefer these presets over hand-configured `SmartButton`s for
-standard CRUD/toolbar actions; extend by adding a config entry plus one `createActionButton` line.
+standard CRUD/toolbar actions; extend by adding a config entry plus one `createActionButton` line. **Permission gating**
+lives in `action-permission.tsx` (shared by the buttons _and_ the grid action column): `ActionPermissionProvider` supplies
+one `can(action, context?) => boolean` checker; `useActionPermission()` reads it, `<Can action context? fallback?>` gates
+declaratively. The grid action column consults `can(kind, row)` for any action without an explicit `visible` (opt out per
+column with `permissionAware: false`).
 
 **Field/value convention:** input-like Smart components are controlled through a `data` / `setData(value)` pair (not
 `value`/`onChange`) — see `FieldBaseProps<T>` in `form/base.ts`. The form engine relies on this convention.

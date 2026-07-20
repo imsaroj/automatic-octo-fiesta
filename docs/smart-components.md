@@ -64,8 +64,39 @@ import { AddButton, SaveButton } from "@iamsaroj/smart-ui/smart-components/butto
 <SaveButton loading={isSaving} />
 ```
 
-Extend by adding a config entry + one `createActionButton` line. Optional
-permission gating via `ActionPermissionProvider`.
+Extend by adding a config entry + one `createActionButton` line.
+
+### Permission gating
+
+One optional `ActionPermissionProvider` gates everything underneath from a single
+checker — `ActionButton`s, the grid action column, and the `<Can>` gate all read
+it. The checker is `(action, context?) => boolean`; the `context` is whatever the
+call site scopes to (the grid passes the **row**), and it's typed `unknown` so the
+library never couples to an RBAC model. No provider → nothing is gated.
+
+```tsx
+import {
+  ActionPermissionProvider,
+  Can,
+} from "@iamsaroj/smart-ui/smart-components/buttons"
+
+<ActionPermissionProvider can={(action, row) => menuFlags[action] ?? false}>
+  {/* Hidden unless can("add") passes: */}
+  <Can action="add">
+    <AddButton onClick={openCreate} />
+  </Can>
+  {/* The grid action column consults can("edit"/"delete", row) automatically. */}
+  <SmartServerGrid … actionColumn={{ actions: { edit: {…}, delete: {…} } }} />
+</ActionPermissionProvider>
+```
+
+- **`<Can action context? fallback?>`** renders its children only when the check
+  passes (the gate the front used to hand-roll).
+- **`useActionPermission()`** returns the nearest checker (or `null`) for custom
+  gating.
+- A per-`ActionButton` `permission` prop still overrides the provider; on the grid
+  an explicit `visible` still wins, and `actionColumn.permissionAware: false` opts
+  one grid out entirely.
 
 ## SmartPage slots — `@iamsaroj/smart-ui/smart-components/page`
 

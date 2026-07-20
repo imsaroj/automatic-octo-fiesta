@@ -16,35 +16,7 @@ import {
   type ActionDefaults,
   type ActionKind,
 } from "./action-config"
-
-export type ActionPermissionChecker = (action: ActionKind) => boolean
-
-const ActionPermissionContext =
-  React.createContext<ActionPermissionChecker | null>(null)
-
-/**
- * Optional role/permission gate for all `ActionButton`s underneath. Buttons
- * whose action `can(action)` rejects are hidden (or disabled, per their
- * `deniedBehavior`). A per-button `permission` prop overrides the checker.
- *
- * ```tsx
- * <ActionPermissionProvider can={(action) => role === "admin" || action !== "delete"}>
- *   <EditButton onClick={edit} />
- *   <DeleteButton onClick={remove} />
- * </ActionPermissionProvider>
- * ```
- */
-export const ActionPermissionProvider = ({
-  can,
-  children,
-}: {
-  can: ActionPermissionChecker
-  children: React.ReactNode
-}) => (
-  <ActionPermissionContext.Provider value={can}>
-    {children}
-  </ActionPermissionContext.Provider>
-)
+import { useActionPermission } from "./action-permission"
 
 export interface ActionButtonProps extends SmartButtonProps {
   /** Which entry of `ACTION_BUTTON_CONFIG` supplies the defaults. */
@@ -116,7 +88,7 @@ export const ActionButton = ({
   "aria-label": ariaLabel,
   ...props
 }: ActionButtonProps) => {
-  const can = React.useContext(ActionPermissionContext)
+  const can = useActionPermission()
   const allowed = permission ?? can?.(action) ?? true
   if (!allowed && deniedBehavior === "hide") return null
 

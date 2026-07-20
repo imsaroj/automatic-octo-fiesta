@@ -1,8 +1,13 @@
 import { afterEach, expect, test } from "vitest"
+import type { ReactElement } from "react"
 import { createRoot, type Root } from "react-dom/client"
 import { act } from "react"
 import type { ICellRendererParams } from "ag-grid-community"
 
+import {
+  ActionPermissionProvider,
+  type ActionPermissionChecker,
+} from "@iamsaroj/smart-ui/smart-components/buttons"
 import {
   buildActionColumnDef,
   GridActionCell,
@@ -42,6 +47,17 @@ const staticStore = (
   subscribe: () => () => {},
 })
 
+const cellElement = (
+  options: GridActionColumnOptions<Row>,
+  data: Row | null
+): ReactElement => {
+  const params = {
+    data: data ?? undefined,
+    actionColumnStore: staticStore(options),
+  } as ICellRendererParams<Row> & GridActionCellParams<Row>
+  return <GridActionCell<Row> {...params} />
+}
+
 const mountCell = (
   options: GridActionColumnOptions<Row>,
   data: Row | null = row // null = placeholder row (no data loaded yet)
@@ -49,11 +65,24 @@ const mountCell = (
   container = document.createElement("div")
   document.body.appendChild(container)
   root = createRoot(container)
-  const params = {
-    data: data ?? undefined,
-    actionColumnStore: staticStore(options),
-  } as ICellRendererParams<Row> & GridActionCellParams<Row>
-  act(() => root.render(<GridActionCell<Row> {...params} />))
+  act(() => root.render(cellElement(options, data)))
+}
+
+const mountCellWithPermission = (
+  can: ActionPermissionChecker,
+  options: GridActionColumnOptions<Row>,
+  data: Row | null = row
+) => {
+  container = document.createElement("div")
+  document.body.appendChild(container)
+  root = createRoot(container)
+  act(() =>
+    root.render(
+      <ActionPermissionProvider can={can}>
+        {cellElement(options, data)}
+      </ActionPermissionProvider>
+    )
+  )
 }
 
 const buttonByLabel = (label: string): HTMLButtonElement | null =>
@@ -151,6 +180,50 @@ test("confirm gates onClick behind the dialog", async () => {
 test("renders nothing for placeholder rows (infinite model) ", () => {
   mountCell({ actions: { edit: true, delete: true } }, null)
   expect(container.querySelector("button")).toBeNull()
+})
+
+test("consults the permission provider by default for actions without explicit visible", () => {
+  // can("edit") allowed, can("delete") denied → only Edit renders.
+  mountCellWithPermission((action) => action !== "delete", {
+    actions: { edit: true, delete: true },
+  })
+
+  expect(buttonByLabel("Edit row")).not.toBeNull()
+  expect(buttonByLabel("Delete row")).toBeNull()
+})
+
+test("passes the row as the permission context", () => {
+  const seen: Array<[string | number, unknown]> = []
+  mountCellWithPermission(
+    (action, context) => {
+      seen.push([action, context])
+      return true
+    },
+    { actions: { edit: true } }
+  )
+
+  expect(seen).toContainEqual(["edit", row])
+})
+
+test("explicit visible wins over the permission provider", () => {
+  // Provider denies delete, but an explicit `visible: true` overrides it.
+  mountCellWithPermission((action) => action !== "delete", {
+    actions: { delete: { visible: true } },
+  })
+
+  expect(buttonByLabel("Delete row")).not.toBeNull()
+})
+
+test("permissionAware: false opts a grid out of an ambient provider", () => {
+  // Provider would deny both, but the column ignores it entirely.
+  const denyAll: ActionPermissionChecker = () => false
+  mountCellWithPermission(denyAll, {
+    permissionAware: false,
+    actions: { edit: true, delete: true },
+  })
+
+  expect(buttonByLabel("Edit row")).not.toBeNull()
+  expect(buttonByLabel("Delete row")).not.toBeNull()
 })
 
 test("buildActionColumnDef locks the column down as a utility column", () => {

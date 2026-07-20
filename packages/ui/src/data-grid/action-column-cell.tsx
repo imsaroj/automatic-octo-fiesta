@@ -1,7 +1,10 @@
 import { memo, useState, useSyncExternalStore, type ReactElement } from "react"
 import type { ICellRendererParams } from "ag-grid-community"
 import { cn } from "@iamsaroj/smart-ui/lib/utils"
-import { ActionButton } from "@iamsaroj/smart-ui/smart-components/buttons"
+import {
+  ActionButton,
+  useActionPermission,
+} from "@iamsaroj/smart-ui/smart-components/buttons"
 import { SmartConfirmDialog } from "@iamsaroj/smart-ui/smart-components/smart-confirm-dialog"
 import type { DataGridColumn } from "./grid-internals"
 import {
@@ -31,6 +34,8 @@ interface GridActionButtonProps<TRow> {
   config: GridRowActionConfig<TRow>
   row: TRow
   showLabel: boolean
+  /** Consult the permission provider for actions without explicit `visible`. */
+  permissionAware: boolean
 }
 
 /**
@@ -43,10 +48,20 @@ const GridActionButton = <TRow,>({
   config,
   row,
   showLabel,
+  permissionAware,
 }: GridActionButtonProps<TRow>): ReactElement | null => {
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const can = useActionPermission()
 
-  const visible = resolveRowValue(config.visible, row, true)
+  // Explicit `visible` (boolean or per-row predicate) always wins; otherwise
+  // fall back to the permission provider — `edit` shows only where
+  // `can("edit", row)` passes. No provider (or opted out) → visible.
+  const visible =
+    config.visible !== undefined
+      ? resolveRowValue(config.visible, row, true)
+      : permissionAware
+        ? (can?.(kind, row) ?? true)
+        : true
   if (!visible) return null
 
   const disabled = resolveRowValue(config.disabled, row, false)
@@ -68,6 +83,10 @@ const GridActionButton = <TRow,>({
     <>
       <ActionButton
         action={kind}
+        // The column already decided visibility above (explicit `visible` or
+        // the permission provider); tell the button not to re-gate itself, or
+        // it would double-apply `can(kind)` and undo an explicit override.
+        permission
         iconOnly={!showLabel}
         size="sm"
         variant="ghost"
@@ -140,16 +159,18 @@ const GridActionCellInner = <TRow,>(
   const actions = resolveActiveActions(options)
   if (actions.length === 0) return null
   const showLabel = options.showLabel ?? false
+  const permissionAware = options.permissionAware ?? true
 
   return (
     <div className="flex h-full items-center gap-1">
-      {actions.map(({ kind, config }) => (
+      {actions.map(({ kind, config }, index) => (
         <GridActionButton<TRow>
-          key={kind}
+          key={`${kind}:${index}`}
           kind={kind}
           config={config}
           row={row}
           showLabel={showLabel}
+          permissionAware={permissionAware}
         />
       ))}
     </div>

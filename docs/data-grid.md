@@ -144,6 +144,10 @@ Key contracts:
   per row.
 - **Shorthands**: `edit: true` enables an action with defaults; `edit: false`
   hides it.
+- **Permission-aware**: an action without an explicit `visible` consults the
+  nearest `ActionPermissionProvider` — `edit` shows only where `can("edit", row)`
+  passes (the row is the permission context). Explicit `visible` always wins;
+  `permissionAware: false` opts the column out of an ambient provider.
 - **Loading** only affects the matching row's Delete button — Edit stays
   enabled, row height doesn't change (the spinner replaces the icon inside a
   fixed-size button).

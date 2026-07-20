@@ -6,15 +6,21 @@ export {
   type ActionButtonVariant,
 } from "./action-config"
 
-// ─── Generic action button + permission gate + preset factory ────────────────
+// ─── Generic action button + preset factory ──────────────────────────────────
 export {
   ActionButton,
-  ActionPermissionProvider,
   createActionButton,
   type ActionButtonProps,
   type ActionButtonPresetProps,
-  type ActionPermissionChecker,
 } from "./action-button"
+
+// ─── Permission gate (shared by buttons + the grid action column) ─────────────
+export {
+  ActionPermissionProvider,
+  useActionPermission,
+  Can,
+  type ActionPermissionChecker,
+} from "./action-permission"
 
 // ─── Named presets ────────────────────────────────────────────────────────────
 export {
