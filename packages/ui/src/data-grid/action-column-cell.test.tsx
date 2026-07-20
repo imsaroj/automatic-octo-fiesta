@@ -121,7 +121,7 @@ test("loading delete leaves edit enabled", () => {
   expect(buttonByLabel("Delete row")?.disabled).toBe(true)
 })
 
-test("confirm gates onClick behind the dialog", () => {
+test("confirm gates onClick behind the dialog", async () => {
   let fired = 0
   mountCell({
     actions: {
@@ -130,6 +130,11 @@ test("confirm gates onClick behind the dialog", () => {
   })
 
   act(() => buttonByLabel("Delete row")?.click())
+  // The confirm dialog opens one macrotask later (the outside-press race fix
+  // in internal/use-deferred-open.ts) — flush that tick before asserting.
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0))
+  })
   // Click opened the dialog instead of firing the action.
   expect(fired).toBe(0)
   expect(document.body.textContent).toContain("Delete this row?")

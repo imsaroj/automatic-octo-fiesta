@@ -12,6 +12,8 @@ import {
   DrawerTrigger,
 } from "@iamsaroj/smart-ui/components/drawer"
 
+import { useDeferredOpen } from "../internal/use-deferred-open"
+
 export interface SmartDrawerHeader {
   title: React.ReactNode
   subtitle?: React.ReactNode
@@ -66,22 +68,32 @@ export const SmartDrawer = ({
   footer,
   className,
   children,
-}: SmartDrawerProps) => (
-  <Drawer open={open} onOpenChange={onOpenChange} direction={direction}>
-    {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
-    <DrawerContent className={className}>
-      {header && (
-        <DrawerHeader>
-          <DrawerTitle>{header.title}</DrawerTitle>
-          {header.subtitle && (
-            <DrawerDescription>{header.subtitle}</DrawerDescription>
-          )}
-        </DrawerHeader>
-      )}
-      <div className="flex-1 overflow-y-auto px-4 py-2">{children}</div>
-      {footer && <DrawerFooter>{footer}</DrawerFooter>}
-    </DrawerContent>
-  </Drawer>
-)
+}: SmartDrawerProps) => {
+  // A controlled open lands one macrotask later, so a drawer opened from
+  // inside another interaction can't read that same interaction as its own
+  // outside-press and self-close before painting.
+  const deferredOpen = useDeferredOpen(open)
+  return (
+    <Drawer
+      open={deferredOpen}
+      onOpenChange={onOpenChange}
+      direction={direction}
+    >
+      {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
+      <DrawerContent className={className}>
+        {header && (
+          <DrawerHeader>
+            <DrawerTitle>{header.title}</DrawerTitle>
+            {header.subtitle && (
+              <DrawerDescription>{header.subtitle}</DrawerDescription>
+            )}
+          </DrawerHeader>
+        )}
+        <div className="flex-1 overflow-y-auto px-4 py-2">{children}</div>
+        {footer && <DrawerFooter>{footer}</DrawerFooter>}
+      </DrawerContent>
+    </Drawer>
+  )
+}
 
 export { DrawerClose }

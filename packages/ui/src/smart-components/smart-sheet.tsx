@@ -13,6 +13,8 @@ import {
 } from "@iamsaroj/smart-ui/components/sheet"
 import { cn } from "@iamsaroj/smart-ui/lib/utils"
 
+import { useDeferredOpen } from "../internal/use-deferred-open"
+
 export { SheetClose }
 
 export interface SmartSheetHeader {
@@ -102,28 +104,34 @@ export const SmartSheet = ({
   dividers = false,
   className,
   children,
-}: SmartSheetProps) => (
-  <Sheet open={open} onOpenChange={onOpenChange}>
-    {trigger && <SheetTrigger render={trigger} />}
-    <SheetContent
-      side={side}
-      showCloseButton={showCloseButton}
-      className={className}
-    >
-      {header && (
-        <SheetHeader className={cn(dividers && "border-b")}>
-          <SheetTitle>{header.title}</SheetTitle>
-          {header.subtitle && (
-            <SheetDescription>{header.subtitle}</SheetDescription>
-          )}
-        </SheetHeader>
-      )}
-      <div className="flex-1 overflow-y-auto px-6 py-2">{children}</div>
-      {footer && (
-        <SheetFooter className={cn(dividers && "border-t")}>
-          {footer}
-        </SheetFooter>
-      )}
-    </SheetContent>
-  </Sheet>
-)
+}: SmartSheetProps) => {
+  // A controlled open lands one macrotask later, so a sheet opened from
+  // inside another interaction (a grid row's Edit button) can't read that
+  // same interaction as its own outside-press and self-close before painting.
+  const deferredOpen = useDeferredOpen(open)
+  return (
+    <Sheet open={deferredOpen} onOpenChange={onOpenChange}>
+      {trigger && <SheetTrigger render={trigger} />}
+      <SheetContent
+        side={side}
+        showCloseButton={showCloseButton}
+        className={className}
+      >
+        {header && (
+          <SheetHeader className={cn(dividers && "border-b")}>
+            <SheetTitle>{header.title}</SheetTitle>
+            {header.subtitle && (
+              <SheetDescription>{header.subtitle}</SheetDescription>
+            )}
+          </SheetHeader>
+        )}
+        <div className="flex-1 overflow-y-auto px-6 py-2">{children}</div>
+        {footer && (
+          <SheetFooter className={cn(dividers && "border-t")}>
+            {footer}
+          </SheetFooter>
+        )}
+      </SheetContent>
+    </Sheet>
+  )
+}

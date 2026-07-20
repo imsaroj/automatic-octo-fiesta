@@ -28,6 +28,16 @@ const mount = (ui: React.ReactElement) => {
 const content = () => document.querySelector('[data-slot="dialog-content"]')
 const slot = (name: string) => document.querySelector(`[data-slot="${name}"]`)
 
+/**
+ * Controlled opens are deferred by one macrotask (see
+ * internal/use-deferred-open.ts, the outside-press race fix) — flush that tick
+ * so the popup actually mounts.
+ */
+const flushOpen = () =>
+  act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0))
+  })
+
 test("stays closed until the trigger is clicked, then renders all zones", () => {
   mount(
     <SmartDialog
@@ -76,23 +86,25 @@ test("the built-in close button closes an uncontrolled dialog", () => {
   expect(content()).toBeNull()
 })
 
-test("showCloseButton={false} removes the × button", () => {
+test("showCloseButton={false} removes the × button", async () => {
   mount(
     <SmartDialog open onOpenChange={() => {}} showCloseButton={false}>
       <p>Body</p>
     </SmartDialog>
   )
+  await flushOpen()
   expect(content()).not.toBeNull()
   expect(slot("dialog-close")).toBeNull()
 })
 
-test("controlled mode: `open` renders without a trigger, close reports via onOpenChange", () => {
+test("controlled mode: `open` renders without a trigger, close reports via onOpenChange", async () => {
   const onOpenChange = vi.fn()
   mount(
     <SmartDialog open onOpenChange={onOpenChange} header={{ title: "Hi" }}>
       <p>Body</p>
     </SmartDialog>
   )
+  await flushOpen()
   expect(content()).not.toBeNull()
 
   act(() =>
@@ -106,7 +118,7 @@ test("controlled mode: `open` renders without a trigger, close reports via onOpe
   expect(content()).not.toBeNull()
 })
 
-test("a subtitle-less header renders no description slot", () => {
+test("a subtitle-less header renders no description slot", async () => {
   mount(
     <SmartDialog
       open
@@ -114,6 +126,61 @@ test("a subtitle-less header renders no description slot", () => {
       header={{ title: "Only title" }}
     />
   )
+  await flushOpen()
   expect(slot("dialog-title")?.textContent).toBe("Only title")
   expect(slot("dialog-description")).toBeNull()
+})
+
+test("a dialog opened from another element's click survives that click settling", async () => {
+  // Regression for the outside-press race: opening from inside another
+  // interaction (a grid row button, a menu item) used to let the popup read
+  // that same click as an outside press and close itself. The consumer-side
+  // workaround was `setTimeout(0)` at every call site; the wrapper now owns
+  // the deferral, so a plain synchronous setState(true) in a click handler
+  // must yield a dialog that is open and *stays* open.
+  const Host = () => {
+    const [open, setOpen] = React.useState(false)
+    return (
+      <>
+        <button data-testid="row-action" onClick={() => setOpen(true)}>
+          Edit
+        </button>
+        <SmartDialog
+          open={open}
+          onOpenChange={setOpen}
+          header={{ title: "Edit row" }}
+        >
+          <p>Body</p>
+        </SmartDialog>
+      </>
+    )
+  }
+  mount(<Host />)
+
+  const rowAction = container.querySelector(
+    '[data-testid="row-action"]'
+  ) as HTMLElement
+  // Full pointer/mouse/click sequence, like a real interaction.
+  act(() => {
+    rowAction.dispatchEvent(
+      new MouseEvent("pointerdown", { bubbles: true, cancelable: true })
+    )
+    rowAction.dispatchEvent(
+      new MouseEvent("mousedown", { bubbles: true, cancelable: true })
+    )
+    rowAction.dispatchEvent(
+      new MouseEvent("pointerup", { bubbles: true, cancelable: true })
+    )
+    rowAction.dispatchEvent(
+      new MouseEvent("mouseup", { bubbles: true, cancelable: true })
+    )
+    rowAction.click()
+  })
+  // Not open yet (deferred one tick) …
+  expect(content()).toBeNull()
+  await flushOpen()
+  // … then open, and still open after further ticks (nothing dismissed it).
+  expect(content()).not.toBeNull()
+  await flushOpen()
+  expect(content()).not.toBeNull()
 })
