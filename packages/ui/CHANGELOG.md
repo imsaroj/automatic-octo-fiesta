@@ -1,3 +1,13 @@
+# [1.6.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.5.0...v1.6.0) (2026-07-20)
+
+
+### Features
+
+* **data-grid:** converge the two grids on a shared shell + column-visibility ([444bd53](https://github.com/imsaroj/automatic-octo-fiesta/commit/444bd53ac1c5b411ef7a5a387a8c548b6c5f04f9))
+* **data-grid:** custom actions in the action column ([aed448c](https://github.com/imsaroj/automatic-octo-fiesta/commit/aed448c9ffaa662a2dfb8912cf60e6f8c339dc67))
+* **smart-components:** aggregate barrel + naming-drift aliases (I12 c/g) ([54945bc](https://github.com/imsaroj/automatic-octo-fiesta/commit/54945bc3af5d37b7aba56d1695aec388d56a6d67))
+* **smart-components:** resource-aware permission gating shared by buttons + grid ([cd7ce70](https://github.com/imsaroj/automatic-octo-fiesta/commit/cd7ce70ab55a3eafb0ea62d11111b3dfe537a55c))
+
 # [1.5.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v1.4.0...v1.5.0) (2026-07-20)
 
 
