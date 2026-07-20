@@ -21,10 +21,7 @@ import {
   SmartDialog,
   type SmartDialogSize,
 } from "@iamsaroj/smart-ui/smart-components/smart-dialog"
-import {
-  SheetClose,
-  SmartSheet,
-} from "@iamsaroj/smart-ui/smart-components/smart-sheet"
+import { SmartSheet } from "@iamsaroj/smart-ui/smart-components/smart-sheet"
 import {
   DrawerClose,
   SmartDrawer,
@@ -40,7 +37,6 @@ import {
   AddButton,
   DeleteButton,
   EditButton,
-  SaveButton,
 } from "@iamsaroj/smart-ui/smart-components/buttons"
 import { toast } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
 import { type FieldDefinition, SmartForm } from "@iamsaroj/smart-ui/form"
@@ -290,26 +286,18 @@ const SheetCrudDemo = () => {
             ? `Update details for ${editing.name}.`
             : "Fill in the details for the new member.",
         }}
-        footer={
-          <>
-            <SheetClose
-              render={
-                <SmartButton variant="outline" size="sm" disabled={saving}>
-                  Cancel
-                </SmartButton>
-              }
-            />
-            <SaveButton
-              size="sm"
-              type="submit"
-              form={MEMBER_FORM_ID}
-              loading={saving}
-              loadingText={editing ? "Updating…" : "Saving…"}
-            >
-              {editing ? "Update" : "Save"}
-            </SaveButton>
-          </>
-        }
+        // Config-driven footer: the standard Cancel + Save without hand-written
+        // JSX. Save drives the form via `form`; Cancel is auto-wrapped in
+        // SheetClose so it dismisses the sheet.
+        footerActions={{
+          cancel: { disabled: saving },
+          save: {
+            form: MEMBER_FORM_ID,
+            loading: saving,
+            loadingText: editing ? "Updating…" : "Saving…",
+            label: editing ? "Update" : "Save",
+          },
+        }}
       >
         <SmartForm
           key={editing?.id ?? "new"}
@@ -358,20 +346,14 @@ const OverlaysPage = () => {
                 title: "Edit profile",
                 subtitle: "Update your name and role below.",
               }}
-              footer={
-                <>
-                  <SmartButton
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setDialogOpen(false)}
-                  >
-                    Cancel
-                  </SmartButton>
-                  <SmartButton size="sm" onClick={() => setDialogOpen(false)}>
-                    Save changes
-                  </SmartButton>
-                </>
-              }
+              // Config-driven footer — Cancel dismisses via DialogClose, Save
+              // runs its onClick. No hand-written footer JSX.
+              footerActions={{
+                save: {
+                  label: "Save changes",
+                  onClick: () => toast.success("Profile saved"),
+                },
+              }}
             >
               <div className="flex flex-col gap-4 py-2">
                 <SmartInput
@@ -399,11 +381,8 @@ const OverlaysPage = () => {
                 title: "Controlled dialog",
                 subtitle: "This dialog is opened programmatically.",
               }}
-              footer={
-                <SmartButton size="sm" onClick={() => setDialogOpen(false)}>
-                  Close
-                </SmartButton>
-              }
+              // Single-button footer: drop Save, relabel Cancel to "Close".
+              footerActions={{ save: false, cancel: { label: "Close" } }}
             >
               <p className="py-2 text-sm text-muted-foreground">
                 No trigger prop — the parent controls <code>open</code>{" "}
@@ -444,11 +423,7 @@ const OverlaysPage = () => {
                   ? "The full variant spans the viewport minus a 48px margin — great for immersive editors."
                   : "Fixed width and height, centered, with content scrolling inside.",
             }}
-            footer={
-              <SmartButton size="sm" onClick={() => setOpenSize(null)}>
-                Close
-              </SmartButton>
-            }
+            footerActions={{ save: false, cancel: { label: "Close" } }}
           >
             <p className="py-2 text-sm text-muted-foreground">
               This dialog is rendered with{" "}
@@ -477,18 +452,7 @@ const OverlaysPage = () => {
                 title: "User settings",
                 subtitle: "Adjust preferences for this user.",
               }}
-              footer={
-                <>
-                  <SheetClose
-                    render={
-                      <SmartButton variant="outline" size="sm">
-                        Cancel
-                      </SmartButton>
-                    }
-                  />
-                  <SmartButton size="sm">Save</SmartButton>
-                </>
-              }
+              footerActions={{ cancel: {}, save: {} }}
             >
               <div className="flex flex-col gap-5">
                 <SmartInput label="Full name" defaultValue="Saroj Kumar" />

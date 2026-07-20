@@ -135,10 +135,36 @@ test("selecting an item emits onValueChange and shows the label in the trigger",
   })
 
   expect(onValueChange).toHaveBeenCalledWith("editor")
-  // The trigger reflects the selection (Base UI falls back to the raw value
-  // once the popup unmounts, so match case-insensitively) — and no longer
+  // The trigger reflects the selection by showing its label, and no longer
   // shows the placeholder.
   expect(trigger().textContent!.toLowerCase()).toContain("editor")
+})
+
+test("trigger shows the label, not the raw value, when they differ", () => {
+  // Regression: Base UI's Select.Value stringifies the raw value on the trigger
+  // unless the Root is given an `items` map. With value ("true") ≠ label
+  // ("Active"), a missing map showed `true`; SmartSelect must show `Active`.
+  const STATUS = [
+    { value: "true", label: "Active" },
+    { value: "false", label: "Disabled" },
+  ]
+  const Harness = () => {
+    const [value, setValue] = React.useState<string | null>(null)
+    return (
+      <SmartSelect options={STATUS} value={value} onValueChange={setValue} />
+    )
+  }
+  mount(<Harness />)
+  openSelect()
+
+  const active = items().find((i) => i.textContent === "Active") as HTMLElement
+  act(() => {
+    active.dispatchEvent(new MouseEvent("pointerup", { bubbles: true }))
+    active.click()
+  })
+
+  expect(trigger().textContent).toContain("Active")
+  expect(trigger().textContent).not.toContain("true")
 })
 
 test("disabled disables the trigger", () => {

@@ -3,6 +3,7 @@
 import * as React from "react"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -12,9 +13,33 @@ import {
 } from "@iamsaroj/smart-ui/components/dialog"
 import { cn } from "@iamsaroj/smart-ui/lib/utils"
 
+import {
+  renderFooterActions,
+  type SmartFooterAction,
+  type SmartFooterActions,
+  type SmartFooterCancelAction,
+  type SmartFooterSaveAction,
+} from "../internal/footer-actions"
 import { useDeferredOpen } from "../internal/use-deferred-open"
 
-export { DialogContent, DialogTitle, DialogDescription }
+export { DialogContent, DialogTitle, DialogDescription, DialogClose }
+
+/* ------------------------------ footer actions ----------------------------- */
+
+/** Config for one config-driven dialog footer button. @see SmartDialogFooterActions */
+export type SmartDialogFooterAction = SmartFooterAction
+/** The confirm/save action; can drive a `<SmartForm id>` via `form`. */
+export type SmartDialogSaveAction = SmartFooterSaveAction
+/** The dismiss/cancel action (wrapped in `DialogClose`). */
+export type SmartDialogCancelAction = SmartFooterCancelAction
+/**
+ * Config-driven footer for {@link SmartDialog}: renders the standard Cancel +
+ * Save buttons without hand-writing the footer JSX — the dialog counterpart to
+ * the grids' `actions` prop. Both actions show by default; pass `false` (or
+ * `visible: false`) to drop one. The raw {@link SmartDialogProps.footer} escape
+ * hatch still wins when both are supplied.
+ */
+export type SmartDialogFooterActions = SmartFooterActions
 
 /**
  * Dialog size presets (fixed px width × fixed vh height):
@@ -71,8 +96,25 @@ export interface SmartDialogProps {
   trigger?: React.ReactElement
   /** Dialog header: title and optional subtitle. */
   header?: SmartDialogHeader
-  /** Footer content (actions row). Maps to DialogFooter. */
+  /**
+   * Footer content (actions row). Maps to DialogFooter.
+   *
+   * Escape hatch: prefer {@link footerActions} for the standard Cancel + Save
+   * footer. A raw `footer` wins when both are supplied.
+   */
   footer?: React.ReactNode
+  /**
+   * Config-driven footer — renders the standard Cancel + Save buttons without
+   * hand-writing the JSX (the dialog counterpart to the grids' `actions` prop).
+   *
+   * ```tsx
+   * footerActions={{
+   *   save: { label: "Save changes", form: "profile-form", loading: saving },
+   *   cancel: { disabled: saving },
+   * }}
+   * ```
+   */
+  footerActions?: SmartDialogFooterActions
   /** Show the × close button in the top-right corner. @default true */
   showCloseButton?: boolean
   /** Dialog width preset. `full` fills the whole page. @default "sm" */
@@ -125,6 +167,7 @@ export const SmartDialog = ({
   trigger,
   header,
   footer,
+  footerActions,
   showCloseButton = true,
   size = "sm",
   dividers = false,
@@ -135,6 +178,10 @@ export const SmartDialog = ({
   // inside another interaction (row action, menu item) can't read that same
   // interaction as its own outside-press/focus-out and self-close.
   const deferredOpen = useDeferredOpen(open)
+  // A raw `footer` wins as the escape hatch; otherwise build it from config.
+  const footerContent =
+    footer ??
+    (footerActions ? renderFooterActions(footerActions, DialogClose) : null)
   return (
     <Dialog open={deferredOpen} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger render={trigger} />}
@@ -157,11 +204,11 @@ export const SmartDialog = ({
           </DialogHeader>
         )}
         <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
-        {footer && (
+        {footerContent && (
           <DialogFooter
             className={cn("shrink-0", dividers && "-mx-4 border-t px-4 pt-4")}
           >
-            {footer}
+            {footerContent}
           </DialogFooter>
         )}
       </DialogContent>

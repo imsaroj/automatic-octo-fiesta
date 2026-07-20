@@ -109,6 +109,19 @@ export const SmartSelect = ({
   const hintId = hasHint ? `${id}-hint` : undefined
   const isRequired = required ?? fieldRequired
 
+  // Base UI's `Select.Value` resolves the trigger label from the Root's `items`
+  // map — without it, a selected value is stringified to its raw key (e.g. the
+  // trigger shows `true`/`3` instead of `Active`/the role name). Flatten every
+  // option (grouped or not) into the `{ value, label }` list it expects so the
+  // selected label always shows. See Base UI Select `items` prop.
+  const items = React.useMemo(
+    () =>
+      (groups ? groups.flatMap((group) => group.options) : (options ?? [])).map(
+        ({ value, label }) => ({ value, label })
+      ),
+    [options, groups]
+  )
+
   return (
     <div
       data-slot="field"
@@ -131,6 +144,7 @@ export const SmartSelect = ({
         </Label>
       )}
       <Select
+        items={items}
         value={value}
         onValueChange={onValueChange}
         defaultValue={defaultValue}
