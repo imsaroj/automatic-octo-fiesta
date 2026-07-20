@@ -1,3 +1,18 @@
+# [4.0.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v3.0.0...v4.0.0) (2026-07-20)
+
+
+* refactor!: replace Spring Data Page support with PageResponse ([8323636](https://github.com/imsaroj/automatic-octo-fiesta/commit/8323636d2dd73c7edcd439f67047f6f8ad53792f))
+
+
+### BREAKING CHANGES
+
+* `pageSchema`/`SPageResponse`/`buildSpringQuery`/`toSpringSort`/
+`encodeSpringFilter` are removed and replaced by `pageResponseSchema`/
+`PageResponse`/`buildPageQuery`/`toSortParams`/`encodePageFilter`. Responses
+must now match the `PageResponse<T>` envelope, not Spring Data's `Page<T>`.
+
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
 # [3.0.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v2.0.0...v3.0.0) (2026-07-20)
 
 
