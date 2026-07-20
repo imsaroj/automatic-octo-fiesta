@@ -31,6 +31,7 @@ export {
   type GridActionConfirmOptions,
   type GridRowActionConfig,
   type GridRowActionProp,
+  type GridCustomRowAction,
   type GridActionColumnActions,
   type GridActionColumnPin,
   type GridActionColumnOptions,

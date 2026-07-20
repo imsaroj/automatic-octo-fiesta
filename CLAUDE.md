@@ -142,9 +142,14 @@ mapError?, fetchImpl? }) → fetchRows`: the reusable encode → request → unw
 - **Action column** (`action-column.ts` / `action-column-cell.tsx` / `use-action-column.ts`) — both grids take an
   `actionColumn` prop that injects a config-driven Edit/Delete column (pinning, per-row visible/disabled/loading,
   delete confirmation via `SmartConfirmDialog`, auto-hide when all actions are statically hidden, export opt-out via
-  `context.suppressExport`). Pure logic in `action-column.ts` is unit-tested; the ColDef is memoized on a structural
-  signature and per-row callbacks reach the cells via a `useSyncExternalStore` store (AG Grid's `refreshCells` does
-  NOT reliably re-render memoized React cells) — don't "fix" that by recreating the ColDef per render. Buttons reuse
+  `context.suppressExport`). Beyond the `edit`/`delete` sugar keys, `actions.custom` takes an ordered list of any
+  `ActionKind` (`{ action, onClick, visible?, disabled?, loading?, tooltip?, confirm? }`) rendered with the same
+  machinery — icon/label/variant come from `ACTION_BUTTON_CONFIG[action]`, destructive treatment from its `variant`.
+  A resolved action's `kind` is an `ActionKind` (not just edit/delete); tooltip/confirm defaults fall back to the config
+  label for custom kinds. Actions without an explicit `visible` consult the `ActionPermissionProvider` (`can(kind, row)`;
+  opt out with `permissionAware: false`). Pure logic in `action-column.ts` is unit-tested; the ColDef is memoized on a
+  structural signature and per-row callbacks reach the cells via a `useSyncExternalStore` store (AG Grid's `refreshCells`
+  does NOT reliably re-render memoized React cells) — don't "fix" that by recreating the ColDef per render. Buttons reuse
   the `ActionButton` presets. Demo: `/grids/actions`.
 
 `SmartServerGrid` is a generic `forwardRef` component. Because `forwardRef` erases generics, it is cast after definition

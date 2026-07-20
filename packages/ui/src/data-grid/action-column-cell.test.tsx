@@ -214,6 +214,49 @@ test("explicit visible wins over the permission provider", () => {
   expect(buttonByLabel("Delete row")).not.toBeNull()
 })
 
+test("renders custom actions after edit/delete with their config label + confirm", async () => {
+  let duplicated: Row | null = null
+  mountCell({
+    actions: {
+      edit: true,
+      custom: [
+        {
+          action: "duplicate",
+          confirm: true, // default copy derived from the "Duplicate" label
+          onClick: (r) => (duplicated = r),
+        },
+      ],
+    },
+  })
+
+  // Edit still renders; the custom action uses its ACTION_BUTTON_CONFIG label.
+  expect(buttonByLabel("Edit row")).not.toBeNull()
+  const dup = buttonByLabel("Duplicate")
+  expect(dup).not.toBeNull()
+
+  act(() => dup?.click())
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0))
+  })
+  // Confirm gated it; default title derives from the label.
+  expect(duplicated).toBeNull()
+  expect(document.body.textContent).toContain("Duplicate this row?")
+})
+
+test("custom action consults the permission provider by its action kind", () => {
+  mountCellWithPermission((action) => action === "view", {
+    actions: {
+      custom: [
+        { action: "view", onClick: () => {} },
+        { action: "restore", onClick: () => {} },
+      ],
+    },
+  })
+
+  expect(buttonByLabel("View")).not.toBeNull()
+  expect(buttonByLabel("Restore")).toBeNull()
+})
+
 test("permissionAware: false opts a grid out of an ambient provider", () => {
   // Provider would deny both, but the column ignores it entirely.
   const denyAll: ActionPermissionChecker = () => false

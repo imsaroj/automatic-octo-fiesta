@@ -163,6 +163,38 @@ Key contracts:
   `GridActionCell`, `ACTION_COLUMN_ID`) are exported for grids that aren't
   `SmartGrid`/`SmartServerGrid`.
 
+### Custom actions
+
+Beyond `edit`/`delete`, `actions.custom` takes an ordered list of any
+`ActionKind` (`"view"`, `"duplicate"`, `"restore"`, `"approve"`, …). Each reuses
+the **same machinery** — icon/label/variant from `ACTION_BUTTON_CONFIG`, plus the
+same per-row `visible`/`disabled`/`loading`/`tooltip`/`confirm`/`onClick`,
+permission-awareness, and destructive treatment (any action whose config variant
+is `destructive`). No custom `cellRenderer` needed.
+
+<!-- prettier-ignore -->
+{% raw %}
+
+```tsx
+actionColumn={{
+  actions: {
+    edit: { onClick: handleEdit },
+    delete: { onClick: handleDelete, confirm: true },
+    custom: [
+      { action: "view", tooltip: "View log detail", onClick: openDetail },
+      { action: "duplicate", loading: (r) => cloningId === r.id, onClick: clone },
+    ],
+  },
+}}
+```
+
+{% endraw %}
+
+Custom actions render **after** edit/delete in list order; set `edit`/`delete`
+to `false` and list everything in `custom` to control the full order. Their
+confirm/tooltip defaults derive from the action's label (e.g. `confirm: true` on
+`duplicate` → "Duplicate this row?").
+
 ## Adapting to a real backend
 
 `createPageFetcher` (and the `source` prop) defaults to a plain `fetch` against a

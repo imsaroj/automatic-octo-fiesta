@@ -159,6 +159,15 @@ const actionColumn: GridActionColumnOptions<User> = {
       confirm: { title: "Delete this user?" },
       onClick: (row) => void row,
     },
+    custom: [
+      { action: "view", tooltip: "View detail", onClick: (row) => void row },
+      {
+        action: "duplicate",
+        confirm: true,
+        loading: (row) => deletingId === row.id,
+        onClick: (row) => void row,
+      },
+    ],
   },
 }
 void actionColumn
