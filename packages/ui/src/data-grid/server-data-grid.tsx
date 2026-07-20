@@ -25,7 +25,7 @@ import { FileSpreadsheet } from "lucide-react"
 import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import { downloadXlsx, timestampForFilename } from "@iamsaroj/smart-ui/lib/xlsx"
 import { GridToolbar } from "./grid-toolbar"
-import { SmartLoadingOverlay } from "@iamsaroj/smart-ui/smart-components/loading-overlay"
+import { SmartLoadingOverlay } from "@iamsaroj/smart-ui/smart-components/smart-loading-overlay"
 import { SmartPageError } from "@iamsaroj/smart-ui/smart-components/page/smart-page-error"
 import {
   useSmartUIDefaults,

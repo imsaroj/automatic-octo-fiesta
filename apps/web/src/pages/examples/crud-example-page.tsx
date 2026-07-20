@@ -25,7 +25,7 @@ import { SmartButton as Button } from "@iamsaroj/smart-ui/smart-components/smart
 import { SmartConfirmDialog } from "@iamsaroj/smart-ui/smart-components/smart-confirm-dialog"
 import { SmartDialog } from "@iamsaroj/smart-ui/smart-components/smart-dialog"
 import { toast } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
-import { SmartSearchInput } from "@iamsaroj/smart-ui/smart-components/search-input"
+import { SmartSearchInput } from "@iamsaroj/smart-ui/smart-components/smart-search-input"
 import {
   SmartPage,
   SmartToolbar,

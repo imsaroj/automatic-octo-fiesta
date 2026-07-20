@@ -3,7 +3,7 @@ import * as React from "react"
 import { createRoot, type Root } from "react-dom/client"
 import { act } from "react"
 
-import { SmartLoadingOverlay } from "./loading-overlay"
+import { SmartLoadingOverlay } from "./smart-loading-overlay"
 
 /**
  * SmartLoadingOverlay has two modes: wrapping children (dim them behind an

@@ -160,23 +160,6 @@ describe("createPageFetcher", () => {
     expect(result).toEqual({ rows: [{ id: "x", name: "Untyped" }], total: 1 })
   })
 
-  it("honors the deprecated `buildQuery` alias when `encodeQuery` is absent", async () => {
-    const request = vi.fn<(url: string) => Promise<unknown>>(async () =>
-      pageResponse([], 0)
-    )
-    const fetchRows = createPageFetcher({
-      url: "/users",
-      itemSchema: rowSchema,
-      buildQuery: () => "custom=1",
-      request,
-    })
-
-    await fetchRows(PARAMS, new AbortController().signal)
-
-    const [aliasUrl] = request.mock.calls[0]
-    expect(String(aliasUrl)).toBe("/users?custom=1")
-  })
-
   it("encodes with `buildFlatQuery` when requested", async () => {
     const request = vi.fn<(url: string) => Promise<unknown>>(async () =>
       pageResponse([], 0)

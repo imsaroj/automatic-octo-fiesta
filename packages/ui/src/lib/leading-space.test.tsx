@@ -6,7 +6,7 @@ import { act } from "react"
 import { stripLeadingSpaces } from "./leading-space"
 import { SmartInput } from "../smart-components/smart-input"
 import { SmartTextarea } from "../smart-components/smart-textarea"
-import { SmartSearchInput } from "../smart-components/search-input"
+import { SmartSearchInput } from "../smart-components/smart-search-input"
 
 /**
  * The leading-space guard's contract: a value can never *start* with

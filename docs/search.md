@@ -2,7 +2,7 @@
 
 ## What it is
 
-`SmartSearchForm` (aliased `SearchEngine`) — a declarative **search/filter bar**
+`SmartSearchForm` — a declarative **search/filter bar**
 that _composes_ `SmartForm` (not a fork). It reuses the same fields, Zod
 validation, required derivation, layout, and field registry, and adds only search
 concerns: a Search button (manual) or debounced auto-search, query pruning, and an

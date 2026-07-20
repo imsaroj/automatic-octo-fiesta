@@ -7,7 +7,7 @@ import { Calendar } from "@iamsaroj/smart-ui/components/calendar"
 import { Label } from "@iamsaroj/smart-ui/components/label"
 
 /** Props shared by every selection mode. */
-interface SmartCalendarBaseProps {
+interface SmartDatePickerCalendarBaseProps {
   /** Override the default displayed month. */
   defaultMonth?: Date
   /**
@@ -29,14 +29,14 @@ interface SmartCalendarBaseProps {
 }
 
 /** Single-date selection (default). */
-interface SmartCalendarSingleProps extends SmartCalendarBaseProps {
+interface SmartDatePickerCalendarSingleProps extends SmartDatePickerCalendarBaseProps {
   mode?: "single"
   selected?: Date
   onSelect?: (date: Date | undefined) => void
 }
 
 /** Multiple independent dates. */
-interface SmartCalendarMultipleProps extends SmartCalendarBaseProps {
+interface SmartDatePickerCalendarMultipleProps extends SmartDatePickerCalendarBaseProps {
   mode: "multiple"
   selected?: Date[]
   onSelect?: (dates: Date[] | undefined) => void
@@ -47,7 +47,7 @@ interface SmartCalendarMultipleProps extends SmartCalendarBaseProps {
 }
 
 /** Contiguous start–end date range. */
-interface SmartCalendarRangeProps extends SmartCalendarBaseProps {
+interface SmartDatePickerCalendarRangeProps extends SmartDatePickerCalendarBaseProps {
   mode: "range"
   selected?: DateRange
   onSelect?: (range: DateRange | undefined) => void
@@ -57,10 +57,10 @@ interface SmartCalendarRangeProps extends SmartCalendarBaseProps {
   max?: number
 }
 
-export type SmartCalendarProps =
-  | SmartCalendarSingleProps
-  | SmartCalendarMultipleProps
-  | SmartCalendarRangeProps
+export type SmartDatePickerCalendarProps =
+  | SmartDatePickerCalendarSingleProps
+  | SmartDatePickerCalendarMultipleProps
+  | SmartDatePickerCalendarRangeProps
 
 /**
  * Inline calendar with optional label, description, and error.
@@ -70,15 +70,17 @@ export type SmartCalendarProps =
  * `onSelect` value shape).
  *
  * Use `DatePicker` (or `SmartDatePicker`) when you need a popover trigger.
- * Use `SmartCalendar` when the calendar should be permanently visible —
- * date-of-birth pickers, scheduling widgets, availability selectors.
+ * Use `SmartDatePickerCalendar` when the calendar should be permanently
+ * visible — date-of-birth pickers, scheduling widgets, availability selectors.
+ * This is the inline date-picker calendar, distinct from the **event** calendar
+ * exported as `SmartCalendar` from `@iamsaroj/smart-ui/calendar`.
  *
  * ```tsx
  * // Single (default)
- * <SmartCalendar selected={date} onSelect={setDate} />
+ * <SmartDatePickerCalendar selected={date} onSelect={setDate} />
  *
  * // Range
- * <SmartCalendar
+ * <SmartDatePickerCalendar
  *   mode="range"
  *   label="Trip dates"
  *   selected={range}
@@ -89,7 +91,7 @@ export type SmartCalendarProps =
 export { Calendar }
 export type { DateRange }
 
-export const SmartCalendar = ({
+export const SmartDatePickerCalendar = ({
   label,
   description,
   error,
@@ -97,13 +99,13 @@ export const SmartCalendar = ({
   fieldClassName,
   className,
   ...calendarProps
-}: SmartCalendarProps) => {
+}: SmartDatePickerCalendarProps) => {
   const id = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined
 
   // Default to single-date selection. Cast once: the per-mode `selected` /
-  // `onSelect` shapes are validated on `SmartCalendarProps`, but DayPicker's
+  // `onSelect` shapes are validated on `SmartDatePickerCalendarProps`, but DayPicker's
   // discriminated union can't be reconstructed from a spread.
   const dayPickerProps = {
     ...calendarProps,
@@ -144,12 +146,3 @@ export const SmartCalendar = ({
     </div>
   )
 }
-
-/**
- * Canonical, disambiguated name for the inline date-picker calendar above —
- * distinct from the **event** calendar also exported as `SmartCalendar` from
- * `@iamsaroj/smart-ui/calendar`. Prefer this in new code; `SmartCalendar` (this
- * module) stays a deprecated alias.
- */
-export const SmartDatePickerCalendar = SmartCalendar
-export type SmartDatePickerCalendarProps = SmartCalendarProps

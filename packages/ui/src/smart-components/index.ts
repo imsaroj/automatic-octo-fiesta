@@ -17,9 +17,9 @@
 export * from "./provider"
 
 // ─── Overlays, inputs & feedback ─────────────────────────────────────────────
-export * from "./loading-overlay"
-export * from "./search-input"
-export * from "./spinner"
+export * from "./smart-loading-overlay"
+export * from "./smart-search-input"
+export * from "./smart-spinner"
 export * from "./smart-toaster"
 
 // ─── Data display ────────────────────────────────────────────────────────────
@@ -54,7 +54,7 @@ export * from "./smart-multi-select"
 export * from "./smart-combobox"
 
 // ─── Date & time pickers ─────────────────────────────────────────────────────
-export * from "./smart-calendar"
+export * from "./smart-date-picker-calendar"
 export * from "./smart-date-picker"
 export * from "./smart-date-range-picker"
 export * from "./smart-month-picker"

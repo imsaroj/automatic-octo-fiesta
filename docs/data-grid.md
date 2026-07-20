@@ -241,7 +241,7 @@ it per endpoint, so a new grid is just `{ ...adapter, url, itemSchema }`.
 - `createPageFetcher` is transport-agnostic (`request`, `pageIndexBase`,
   `unwrap`, `encodeQuery`; see [Adapting to a real backend](#adapting-to-a-real-backend)).
   The default transport still takes an injectable `fetchImpl` (testability/SSR)
-  and a `mapError` override. `buildQuery` is a deprecated alias for `encodeQuery`.
+  and a `mapError` override.
 - Column defs are plain AG Grid `ColDef`s — anything AG Grid Community supports
   (cell renderers, value formatters) works.
 

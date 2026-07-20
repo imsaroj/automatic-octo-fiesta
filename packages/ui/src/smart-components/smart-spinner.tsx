@@ -1,7 +1,7 @@
 import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import type { HTMLAttributes } from "react"
 
-export interface SSpinnerProps extends HTMLAttributes<HTMLSpanElement> {
+export interface SmartSpinnerProps extends HTMLAttributes<HTMLSpanElement> {
   /** Pixel size of the spinner. Defaults to `16`. */
   size?: number
   /** Accessible label announced to screen readers. */
@@ -15,7 +15,7 @@ export const SmartSpinner = ({
   label = "Loading",
   style,
   ...props
-}: SSpinnerProps) => (
+}: SmartSpinnerProps) => (
   <span
     role="status"
     aria-label={label}
