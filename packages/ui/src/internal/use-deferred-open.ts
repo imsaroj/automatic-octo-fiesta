@@ -37,6 +37,10 @@ export function useDeferredOpen(
       const id = setTimeout(() => setDeferred(true), 0)
       return () => clearTimeout(id)
     }
+    // Reset for the next open cycle. Synchronous by design: the rendered
+    // output for the closed side is derived below (never from this state), so
+    // this causes exactly one settled re-render, not a cascade.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDeferred(open)
     return undefined
   }, [open])
