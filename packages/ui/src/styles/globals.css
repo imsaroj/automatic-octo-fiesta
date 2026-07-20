@@ -5,8 +5,23 @@
 @import "./fonts.css";
 
 @custom-variant dark (&:is(.dark *));
-@source "../../../../apps/**/*.{ts,tsx}";
+/*
+ * Self-scan only — this stylesheet declares the classes used by the library
+ * itself, wherever it is consumed from:
+ *
+ * - `../**` covers the library *source* (the in-monorepo case; inside an
+ *   installed package it matches nothing, since `src/` ships only styles).
+ * - `../../dist/**` covers the *compiled* library inside an installed package
+ *   (`node_modules/@iamsaroj/smart-ui/dist`), where class strings only exist
+ *   in the built JS. In the monorepo it matches the git-ignored proof build,
+ *   which is harmless.
+ *
+ * Consuming apps declare their own files with a single app-side @source glob
+ * (covering their src tree) in the stylesheet that imports this one — see
+ * apps/web/src/styles/app.css for the reference setup.
+ */
 @source "../**/*.{ts,tsx}";
+@source "../../dist/**/*.js";
 
 @theme inline {
   --font-heading: var(--font-serif);

@@ -1,0 +1,10 @@
+/*
+ * App stylesheet entry: pull in the library's theme + its self-scanning
+ * `@source` globs, then declare this app's own files. The library stylesheet
+ * only scans *itself* (its source in-monorepo, its dist when installed), so
+ * every consuming app — this demo included — owns exactly one glob for its
+ * own classes. Paths in `@source` are relative to this file.
+ */
+@import "@iamsaroj/smart-ui/globals.css";
+
+@source "../**/*.{ts,tsx}";
