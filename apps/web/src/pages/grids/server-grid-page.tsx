@@ -212,7 +212,6 @@ const ServerGridPage = () => {
           fetchRows={fetchRows}
           getRowId={(row) => String(row.id)}
           filters={appliedFilters}
-          columnFilters={false}
           pagination
           pageSize={20}
           selection="multiple"

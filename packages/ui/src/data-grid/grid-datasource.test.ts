@@ -14,7 +14,7 @@ import type {
 /**
  * Datasource harness for {@link SmartServerGrid}: `createGridDatasource` is the
  * component's entire fetch pipeline (AG Grid block → normalized params →
- * external-filter merge → abortable fetch → success/fail callbacks), extracted
+ * external filters → abortable fetch → success/fail callbacks), extracted
  * so it can be specified without instantiating AG Grid in jsdom. Full-browser
  * grid behavior belongs to the Playwright suite (roadmap 1.3).
  */
@@ -40,7 +40,6 @@ const fakeGetRowsParams = (
     startRow: number
     endRow: number
     sortModel: Array<{ colId: string; sort: "asc" | "desc" }>
-    filterModel: Record<string, unknown> | null
   }> = {}
 ) => {
   const successCallback = vi.fn()
@@ -50,7 +49,6 @@ const fakeGetRowsParams = (
       startRow: overrides.startRow ?? 0,
       endRow: overrides.endRow ?? 20,
       sortModel: overrides.sortModel ?? [],
-      filterModel: overrides.filterModel ?? {},
       successCallback,
       failCallback,
       context: undefined,
@@ -138,7 +136,7 @@ test("success: rows + exact total reach successCallback; error state clears", as
   expect(onSettled).toHaveBeenCalledTimes(1)
 })
 
-test("merges external (search-form) filters after the grid's column filters", async () => {
+test("applies the external (search-form) filters to the request", async () => {
   const external: ServerFilter[] = [
     { field: "status", filterType: "set", type: "set", value: ["active"] },
   ]
@@ -147,19 +145,12 @@ test("merges external (search-form) filters after the grid's column filters", as
   })
   fetchRows.mockResolvedValue({ rows: [], total: 0 })
 
-  const { params } = fakeGetRowsParams({
-    filterModel: {
-      name: { filterType: "text", type: "contains", filter: "ada" },
-    },
-  })
+  const { params } = fakeGetRowsParams()
   datasource.getRows(params)
   await flush()
 
   const [serverParams] = fetchRows.mock.calls[0]
-  expect(serverParams.filters).toEqual([
-    { field: "name", filterType: "text", type: "contains", value: "ada" },
-    ...external,
-  ])
+  expect(serverParams.filters).toEqual(external)
 })
 
 test("failure: failCallback fires and the coerced message reaches onError", async () => {

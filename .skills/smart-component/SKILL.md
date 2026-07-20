@@ -409,7 +409,6 @@ const fetchUsersPage = createPageFetcher({ url: "/api/users", itemSchema: userSc
   getRowId={(u) => u.id}             // required
   fetchRows={fetchUsersPage}
   filters={serverFilters}            // external filters (e.g. from SmartSearchForm); identity change ⇒ page 1 + refetch
-  columnFilters={false}              // disable header filters when a search form drives filtering
   pagination                          // true = pager, false = infinite scroll
   pageSize={20}
   selection="multiple"               // cross-page selection survives block reloads
@@ -703,8 +702,8 @@ import { formatCurrency } from "@iamsaroj/smart-ui/lib/format"
 ### Search form + server grid
 
 Own the filter array in the page; `SmartSearchForm onSearch` maps the pruned query to
-`ServerFilter[]` and sets it; pass it to `SmartServerGrid filters` with
-`columnFilters={false}`. Typing never hits the server — only the array swap does.
+`ServerFilter[]` and sets it; pass it to `SmartServerGrid filters`. Typing never hits
+the server — only the array swap does.
 
 ### Wizard
 

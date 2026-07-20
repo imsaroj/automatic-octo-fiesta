@@ -19,7 +19,7 @@ import { isExportSuppressed } from "./action-column"
  * Pure, stateless helpers extracted from {@link SmartServerGrid} so the
  * component file stays focused on wiring AG Grid to React, and so the tricky
  * bits (the infinite-model datasource, state persistence, export shaping,
- * error coercion, filter merging) can be unit-tested directly.
+ * error coercion, external-filter resolution) can be unit-tested directly.
  *
  * **Internal** — the data-grid barrel does not re-export this module.
  */
@@ -29,13 +29,12 @@ import { isExportSuppressed } from "./action-column"
 /** The grid state persisted to `localStorage` under `persistStateKey`. */
 export interface PersistedGridState {
   columnState?: ColumnState[]
-  filterModel?: Record<string, unknown>
 }
 
 /**
- * Read the persisted column/filter state for `key`. Returns `null` when nothing
- * is stored or when storage is unavailable / the value is corrupt (so callers
- * just start fresh).
+ * Read the persisted column state for `key`. Returns `null` when nothing is
+ * stored or when storage is unavailable / the value is corrupt (so callers just
+ * start fresh).
  */
 export const readPersistedGridState = (
   key: string
@@ -50,7 +49,7 @@ export const readPersistedGridState = (
   }
 }
 
-/** Persist column/filter state under `key`; silently no-ops if storage fails. */
+/** Persist column state under `key`; silently no-ops if storage fails. */
 export const writePersistedGridState = (
   key: string,
   state: PersistedGridState
@@ -91,26 +90,14 @@ export const errorMessage = (error: unknown): string => {
   return "Failed to load data."
 }
 
-/* ------------------------------- filter merge ------------------------------ */
-
-/**
- * Merge external (search-form) filters on top of the grid's own column filters.
- * Returns `base` untouched when there are no external filters.
- */
-export const mergeServerFilters = (
-  base: ServerFilter[],
-  external: ServerFilter[] | undefined
-): ServerFilter[] => {
-  if (!external || external.length === 0) return base
-  return [...base, ...external]
-}
+/* ----------------------------- external filters ---------------------------- */
 
 /**
  * Combine the grid's two external-filter props — `filters` (already-normalized
  * {@link ServerFilter}s) and `query` (a plain search-form object, normalized via
- * {@link toServerFilters}) — into the single list the datasource merges over
- * column filters. Returns `filters` untouched (same identity) when `query`
- * contributes nothing, so an empty query object never triggers the grid's
+ * {@link toServerFilters}) — into the single list the datasource sends to the
+ * server. Returns `filters` untouched (same identity) when `query` contributes
+ * nothing, so an empty query object never triggers the grid's
  * reset-on-identity-change effect by itself.
  */
 export const resolveExternalFilters = (
@@ -152,10 +139,10 @@ export interface CreateGridDatasourceOptions<TRow> {
 
 /**
  * The infinite-row-model datasource behind {@link SmartServerGrid}: translates
- * AG Grid's `IGetRowsParams` into normalized {@link ServerFetchParams}, merges
- * external filters over column filters, tracks an `AbortController` per block,
- * and routes the outcome into the success/fail callbacks — swallowing
- * rejections of blocks that were aborted (an abort is not an error).
+ * AG Grid's `IGetRowsParams` into normalized {@link ServerFetchParams}, applies
+ * the external (search-form) filters, tracks an `AbortController` per block, and
+ * routes the outcome into the success/fail callbacks — swallowing rejections of
+ * blocks that were aborted (an abort is not an error).
  */
 export const createGridDatasource = <TRow>(
   options: CreateGridDatasourceOptions<TRow>
@@ -166,16 +153,8 @@ export const createGridDatasource = <TRow>(
       startRow: params.startRow,
       endRow: params.endRow,
       sortModel: params.sortModel,
-      filterModel: (params.filterModel ?? null) as Record<
-        string,
-        unknown
-      > | null,
     })
-    // Merge any external (search-form) filters on top of column filters.
-    serverParams.filters = mergeServerFilters(
-      serverParams.filters,
-      options.getExternalFilters()
-    )
+    serverParams.filters = options.getExternalFilters() ?? []
     const controller = new AbortController()
     options.controllers.add(controller)
     options
