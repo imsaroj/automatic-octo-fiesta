@@ -6,10 +6,9 @@
  *
  * `SmartSearchForm` composes `SmartForm`: same declarative fields and Zod
  * validation, plus manual/auto search, empty-value pruning, and an action bar.
- * `SearchEngine` is an alias of the same component.
  */
 
-export { SmartSearchForm, SearchEngine } from "./smart-search-form"
+export { SmartSearchForm } from "./smart-search-form"
 export type { SmartSearchFormProps } from "./smart-search-form"
 export type { SearchFieldDefinition, SearchFieldType } from "./types"
 export {

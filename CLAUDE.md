@@ -89,9 +89,9 @@ Note there is no build step: everything is exported as source. `data-grid`, `for
 are barrel entrypoints (`index.ts`); their internal files are not individually importable. The
 `smart-components` aggregate barrel (`src/smart-components/index.ts`) re-exports every flat facade plus the
 page/buttons/provider sub-barrels — safe to tree-shake thanks to `sideEffects: ["**/*.css"]`; the per-component
-deep paths stay valid. **Naming aliases:** `SmartDatePickerCalendar` is the canonical name for the inline
-date-picker calendar (disambiguated from the event `SmartCalendar` in `@iamsaroj/smart-ui/calendar`); `SmartCalendar`
-(smart-components) and `SearchEngine` (= `SmartSearchForm`) are kept as deprecated aliases.
+deep paths stay valid. **Naming:** `SmartDatePickerCalendar` (`src/smart-components/smart-date-picker-calendar.tsx`) is
+the inline date-picker calendar — distinct from the event `SmartCalendar` in `@iamsaroj/smart-ui/calendar`. The utility
+primitives live in prefixed files matching their exports: `smart-loading-overlay`, `smart-search-input`, `smart-spinner`.
 
 ### Shadcn/ui setup
 
@@ -148,7 +148,7 @@ mapError?, fetchImpl? }) → fetchRows`: the reusable encode → request → unw
   pipeline for `SmartServerGrid`. Four transport knobs adapt it to any backend, all defaulting to today's behavior:
   `request` (any transport — axios/ky/fetch; returns the parsed body), `pageIndexBase` (`0` default | `1` for 1-indexed
   APIs), `unwrap` (peel a response envelope to `Page<T>`), `encodeQuery` (`buildSpringQuery` default | `buildFlatQuery` |
-  custom; `buildQuery` is a deprecated alias). `itemSchema` is optional (omit to skip Zod for a trusted source). The
+  custom). `itemSchema` is optional (omit to skip Zod for a trusted source). The
   default transport still takes an injectable `fetchImpl` (testability/SSR) + `mapError`. Returned fetcher takes an
   optional 3rd `extraParams` arg for per-call query params. `SmartServerGrid` also accepts this config directly via its
   `source` prop (builds `fetchRows` for you). `apps/web/src/api/users.ts` is built on it.
@@ -259,7 +259,7 @@ also exported for standalone use.
 
 ### Search engine (`packages/ui/src/search/`)
 
-`SmartSearchForm` (aliased `SearchEngine`) — a declarative **search/filter bar** exported as
+`SmartSearchForm` — a declarative **search/filter bar** exported as
 `@iamsaroj/smart-ui/search`. It **composes** `SmartForm` (not a fork): it reuses the same fields, Zod validation,
 required derivation, layout, and field registry, and adds only search concerns on top. Key design points:
 

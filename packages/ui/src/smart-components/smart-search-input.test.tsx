@@ -3,7 +3,7 @@ import * as React from "react"
 import { createRoot, type Root } from "react-dom/client"
 import { act } from "react"
 
-import { SmartSearchInput } from "./search-input"
+import { SmartSearchInput } from "./smart-search-input"
 
 /**
  * SmartSearchInput is a controlled value/onValueChange input with a clear

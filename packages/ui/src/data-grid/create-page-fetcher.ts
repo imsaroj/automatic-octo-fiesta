@@ -56,11 +56,6 @@ export interface CreatePageFetcherOptions<TItem> {
    */
   encodeQuery?: (params: ServerFetchParams) => string
   /**
-   * @deprecated Renamed to {@link CreatePageFetcherOptions.encodeQuery}. Still
-   * honored (encodeQuery wins if both are set) so existing callers keep working.
-   */
-  buildQuery?: (params: ServerFetchParams) => string
-  /**
    * Page-number base the backend expects. `0` (default) sends the grid's native
    * zero-based page index; `1` sends `page + 1` for 1-indexed APIs — so the
    * off-by-one lives here once instead of in every consumer.
@@ -147,14 +142,13 @@ export const createPageFetcher = <TItem>({
   url,
   itemSchema,
   encodeQuery,
-  buildQuery,
   pageIndexBase = 0,
   unwrap,
   request,
   mapError = (response) => new Error(`Server error: ${response.status}`),
   fetchImpl,
 }: CreatePageFetcherOptions<TItem>): PageFetcher<TItem> => {
-  const encode = encodeQuery ?? buildQuery ?? buildSpringQuery
+  const encode = encodeQuery ?? buildSpringQuery
   const doRequest = request ?? fetchRequest(mapError, fetchImpl)
   const envelope = itemSchema ? pageSchema(itemSchema) : undefined
 

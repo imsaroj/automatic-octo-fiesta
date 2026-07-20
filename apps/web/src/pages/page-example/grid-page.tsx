@@ -21,7 +21,7 @@ import {
 } from "@iamsaroj/smart-ui/smart-components/page"
 import { SmartButton as Button } from "@iamsaroj/smart-ui/smart-components/smart-button"
 import { SmartBadge as Badge } from "@iamsaroj/smart-ui/smart-components/smart-badge"
-import { SmartSearchInput as SearchInput } from "@iamsaroj/smart-ui/smart-components/search-input"
+import { SmartSearchInput as SearchInput } from "@iamsaroj/smart-ui/smart-components/smart-search-input"
 import { SmartGrid, type DataGridColumn } from "@iamsaroj/smart-ui/data-grid"
 import { formatCurrency } from "@iamsaroj/smart-ui/lib/format"
 

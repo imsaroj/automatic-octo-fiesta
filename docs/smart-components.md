@@ -27,12 +27,9 @@ too, so a screen can pull `SmartPage`, `AddButton` and `SmartCard` from one line
 
 ### Naming notes
 
-- **`SmartDatePickerCalendar`** is the canonical, disambiguated name for the
-  inline date-picker calendar — distinct from the **event** calendar exported as
-  `SmartCalendar` from `@iamsaroj/smart-ui/calendar`. The old `SmartCalendar`
-  (this module) stays as a deprecated alias.
-- **`SearchEngine`** is a deprecated alias of `SmartSearchForm`
-  (`@iamsaroj/smart-ui/search`); prefer `SmartSearchForm`.
+- **`SmartDatePickerCalendar`** is the inline date-picker calendar — distinct
+  from the **event** calendar exported as `SmartCalendar` from
+  `@iamsaroj/smart-ui/calendar`.
 
 ## The flat-props ↔ compound escape-hatch pattern
 

@@ -275,11 +275,3 @@ export const SmartSearchForm = <T extends Record<string, unknown>>({
     </SmartForm>
   )
 }
-
-/**
- * Alias of {@link SmartSearchForm}.
- *
- * @deprecated Prefer {@link SmartSearchForm} — the canonical name. `SearchEngine`
- * is kept for backward compatibility and will be removed in a future major.
- */
-export const SearchEngine = SmartSearchForm

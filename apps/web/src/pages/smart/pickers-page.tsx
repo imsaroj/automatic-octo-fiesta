@@ -5,9 +5,9 @@ import {
   SmartPageSection,
 } from "@iamsaroj/smart-ui/smart-components/page"
 import {
-  SmartCalendar,
+  SmartDatePickerCalendar,
   type DateRange,
-} from "@iamsaroj/smart-ui/smart-components/smart-calendar"
+} from "@iamsaroj/smart-ui/smart-components/smart-date-picker-calendar"
 import { SmartDatePicker } from "@iamsaroj/smart-ui/smart-components/smart-date-picker"
 import {
   SmartTimePicker,
@@ -113,12 +113,12 @@ const PickersPage = () => {
     <SmartPage
       layout="detail"
       title="Pickers"
-      description="SmartCalendar, SmartDatePicker, and SmartCombobox — interactive selection controls."
+      description="SmartDatePickerCalendar, SmartDatePicker, and SmartCombobox — interactive selection controls."
     >
       <SmartPageContent maxWidth="2xl" padding="md">
         {/* ── Calendars ─────────────────────────────────────────── */}
         <SmartPageSection
-          title="SmartCalendar"
+          title="SmartDatePickerCalendar"
           description="Inline calendar — always visible. Best for standalone date selection panels."
           divider
         >
@@ -131,7 +131,10 @@ const PickersPage = () => {
               size="sm"
             >
               <div className="p-1">
-                <SmartCalendar selected={singleDate} onSelect={setSingleDate} />
+                <SmartDatePickerCalendar
+                  selected={singleDate}
+                  onSelect={setSingleDate}
+                />
               </div>
               {singleDate && (
                 <p className="px-3 pb-3 text-xs text-muted-foreground">
@@ -151,7 +154,7 @@ const PickersPage = () => {
               size="sm"
             >
               <div className="p-1">
-                <SmartCalendar
+                <SmartDatePickerCalendar
                   mode="multiple"
                   selected={multiDates}
                   onSelect={setMultiDates}
@@ -176,7 +179,7 @@ const PickersPage = () => {
               size="sm"
             >
               <div className="p-1">
-                <SmartCalendar
+                <SmartDatePickerCalendar
                   mode="range"
                   selected={range}
                   onSelect={setRange}

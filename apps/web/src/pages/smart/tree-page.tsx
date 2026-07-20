@@ -16,7 +16,7 @@ import {
 } from "@iamsaroj/smart-ui/smart-components/page"
 import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
 import { SmartButton } from "@iamsaroj/smart-ui/smart-components/smart-button"
-import { SmartSearchInput } from "@iamsaroj/smart-ui/smart-components/search-input"
+import { SmartSearchInput } from "@iamsaroj/smart-ui/smart-components/smart-search-input"
 import {
   SmartTree,
   type TreeNode,

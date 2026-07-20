@@ -21,8 +21,8 @@ import {
 import { SmartAlert } from "@iamsaroj/smart-ui/smart-components/smart-alert"
 import { SmartAccordion } from "@iamsaroj/smart-ui/smart-components/smart-accordion"
 import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
-import { SmartSpinner } from "@iamsaroj/smart-ui/smart-components/spinner"
-import { SmartLoadingOverlay } from "@iamsaroj/smart-ui/smart-components/loading-overlay"
+import { SmartSpinner } from "@iamsaroj/smart-ui/smart-components/smart-spinner"
+import { SmartLoadingOverlay } from "@iamsaroj/smart-ui/smart-components/smart-loading-overlay"
 import { toast } from "@iamsaroj/smart-ui/smart-components/smart-toaster"
 import { Separator } from "@iamsaroj/smart-ui/smart-components/smart-separator"
 
