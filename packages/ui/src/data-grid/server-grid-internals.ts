@@ -6,6 +6,7 @@ import type {
 } from "ag-grid-community"
 import {
   buildServerFetchParams,
+  toServerFilters,
   type ServerFetchParams,
   type ServerFetchResult,
   type ServerFilter,
@@ -102,6 +103,24 @@ export const mergeServerFilters = (
 ): ServerFilter[] => {
   if (!external || external.length === 0) return base
   return [...base, ...external]
+}
+
+/**
+ * Combine the grid's two external-filter props — `filters` (already-normalized
+ * {@link ServerFilter}s) and `query` (a plain search-form object, normalized via
+ * {@link toServerFilters}) — into the single list the datasource merges over
+ * column filters. Returns `filters` untouched (same identity) when `query`
+ * contributes nothing, so an empty query object never triggers the grid's
+ * reset-on-identity-change effect by itself.
+ */
+export const resolveExternalFilters = (
+  filters: ServerFilter[] | undefined,
+  query: Record<string, unknown> | undefined
+): ServerFilter[] | undefined => {
+  const queryFilters = query ? toServerFilters(query) : undefined
+  if (!queryFilters?.length) return filters
+  if (!filters?.length) return queryFilters
+  return [...filters, ...queryFilters]
 }
 
 /* -------------------------------- datasource ------------------------------- */

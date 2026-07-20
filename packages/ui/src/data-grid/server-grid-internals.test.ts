@@ -6,6 +6,7 @@ import {
   errorMessage,
   mergeServerFilters,
   readPersistedGridState,
+  resolveExternalFilters,
   writePersistedGridState,
 } from "@/data-grid/server-grid-internals"
 import type { ServerFilter } from "@/data-grid/pagination"
@@ -43,6 +44,32 @@ describe("mergeServerFilters", () => {
   it("returns the base array unchanged when there is nothing external", () => {
     expect(mergeServerFilters(base, undefined)).toBe(base)
     expect(mergeServerFilters(base, [])).toBe(base)
+  })
+})
+
+describe("resolveExternalFilters", () => {
+  const filters: ServerFilter[] = [
+    { field: "a", filterType: "text", type: "contains", value: "x" },
+  ]
+
+  it("normalizes a query object into ServerFilters", () => {
+    expect(resolveExternalFilters(undefined, { name: "ada" })).toEqual([
+      { field: "name", filterType: "text", type: "equals", value: "ada" },
+    ])
+  })
+
+  it("appends query filters after the filters prop", () => {
+    expect(resolveExternalFilters(filters, { name: "ada" })).toEqual([
+      ...filters,
+      { field: "name", filterType: "text", type: "equals", value: "ada" },
+    ])
+  })
+
+  it("keeps the filters identity when the query contributes nothing", () => {
+    expect(resolveExternalFilters(filters, undefined)).toBe(filters)
+    expect(resolveExternalFilters(filters, {})).toBe(filters)
+    expect(resolveExternalFilters(filters, { name: "" })).toBe(filters)
+    expect(resolveExternalFilters(undefined, {})).toBeUndefined()
   })
 })
 

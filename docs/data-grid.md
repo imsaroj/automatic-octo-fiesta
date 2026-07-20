@@ -48,15 +48,41 @@ const fetchUsers = createPageFetcher({
 
 ## Key props
 
-| Prop               | Grid            | Notes                                               |
-| ------------------ | --------------- | --------------------------------------------------- |
-| `rows`             | SmartGrid       | All data up front.                                  |
-| `fetchRows`        | SmartServerGrid | `(params, signal) => Promise<{rows,total}>`.        |
-| `columns`          | both            | `DataGridColumn<TRow>` (AG Grid `ColDef` alias).    |
-| `selection`        | both            | `"single" \| "multiple" \| "none"`.                 |
-| `getRowId`         | both            | Stable id — recommended for selection + updates.    |
-| `exportCsv`/export | both            | CSV (client) / XLSX (server); both formula-guarded. |
-| `persistStateKey`  | SmartServerGrid | Persist column/filter state to localStorage.        |
+| Prop               | Grid            | Notes                                                                                                                                     |
+| ------------------ | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `rows`             | SmartGrid       | All data up front.                                                                                                                        |
+| `fetchRows`        | SmartServerGrid | `(params, signal) => Promise<{rows,total}>`.                                                                                              |
+| `columns`          | both            | `DataGridColumn<TRow>` (AG Grid `ColDef` alias).                                                                                          |
+| `selection`        | both            | `"single" \| "multiple" \| "none"`.                                                                                                       |
+| `getRowId`         | both            | Stable id — recommended for selection + updates.                                                                                          |
+| `exportCsv`/export | both            | CSV (client) / XLSX (server); both formula-guarded.                                                                                       |
+| `persistStateKey`  | SmartServerGrid | Persist column/filter state to localStorage.                                                                                              |
+| `filters`          | SmartServerGrid | External `ServerFilter[]`; identity change = reset to page 1 + refetch.                                                                   |
+| `query`            | SmartServerGrid | External filters as a plain object (the `SmartSearchForm` `onSearch` shape); normalized via `toServerFilters` and merged after `filters`. |
+
+## External filters from a search form
+
+`SmartSearchForm` emits a pruned query object; the server grid accepts it
+directly — no per-page conversion:
+
+```tsx
+const [query, setQuery] = useState<Partial<UserSearch>>({})
+
+<SmartSearchForm onSearch={setQuery} onReset={() => setQuery({})} … />
+<SmartServerGrid query={query} columnFilters={false} … />
+```
+
+Each query value becomes an `equals` filter (arrays → `set`, numbers →
+`number`, `{ from, to }` / `{ start, end }` range objects → `inRange`). When a
+field needs a different operator, normalize yourself with `toServerFilters`
+and pass `filters` instead:
+
+```ts
+const filters = toServerFilters(query, {
+  name: { type: "contains" },
+  email: { type: "contains" },
+})
+```
 
 ## Action column
 

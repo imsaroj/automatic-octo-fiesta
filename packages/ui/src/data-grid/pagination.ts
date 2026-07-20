@@ -120,6 +120,105 @@ export interface ServerFetchResult<TRow> {
 }
 
 /* -------------------------------------------------------------------------- */
+/*                    Search-query → ServerFilter translation                 */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Per-field overrides for {@link toServerFilters} — merged over the inferred
+ * filter for that field, e.g. `{ name: { type: "contains" } }`.
+ */
+export type ToServerFiltersOverrides = Record<
+  string,
+  Partial<Omit<ServerFilter, "field">>
+>
+
+/** Presence check: `undefined` / `null` / `""` / `[]` carry no filter intent. */
+const isAbsent = (value: unknown): boolean =>
+  value == null || value === "" || (Array.isArray(value) && value.length === 0)
+
+/**
+ * Read the bounds of a range-shaped object. Covers both range value shapes the
+ * form layer produces: `{ from, to }` (`daterange`) and `{ start, end }`
+ * (`timerange`).
+ */
+const rangeBounds = (
+  value: Record<string, unknown>
+): { from: unknown; to: unknown } | null => {
+  if ("from" in value || "to" in value)
+    return { from: value.from, to: value.to }
+  if ("start" in value || "end" in value)
+    return { from: value.start, to: value.end }
+  return null
+}
+
+const inferRangeFilter = (
+  field: string,
+  bounds: { from: unknown; to: unknown }
+): ServerFilter => {
+  const sample = bounds.from ?? bounds.to
+  const filterType = typeof sample === "number" ? "number" : "date"
+  // A single bound degrades to an open-ended comparison instead of an
+  // `inRange` with an undefined side.
+  if (isAbsent(bounds.to))
+    return { field, filterType, type: "greaterThanOrEqual", value: bounds.from }
+  if (isAbsent(bounds.from))
+    return { field, filterType, type: "lessThanOrEqual", value: bounds.to }
+  return {
+    field,
+    filterType,
+    type: "inRange",
+    value: bounds.from,
+    valueTo: bounds.to,
+  }
+}
+
+/**
+ * Convert a plain search-query object (e.g. the pruned `Partial<T>` emitted by
+ * `SmartSearchForm`'s `onSearch`) into the {@link ServerFilter} list a grid's
+ * `fetchRows` receives — so search forms and server grids compose without
+ * per-page glue.
+ *
+ * Inference per value:
+ * - `undefined` / `null` / `""` / `[]` → dropped (no filter intent)
+ * - array → `filterType: "set", type: "set"`
+ * - number → `filterType: "number", type: "equals"`
+ * - `Date` → `filterType: "date", type: "equals"`
+ * - range object (`{ from, to }` or `{ start, end }`) → `inRange` (or an
+ *   open-ended `greaterThanOrEqual` / `lessThanOrEqual` when one side is empty)
+ * - everything else (strings, booleans) → `filterType: "text", type: "equals"`
+ *
+ * Pass `overrides` to adjust individual fields, e.g.
+ * `toServerFilters(query, { name: { type: "contains" } })`.
+ */
+export const toServerFilters = (
+  query: Record<string, unknown>,
+  overrides?: ToServerFiltersOverrides
+): ServerFilter[] => {
+  const filters: ServerFilter[] = []
+  for (const [field, value] of Object.entries(query)) {
+    if (isAbsent(value)) continue
+
+    let inferred: ServerFilter
+    if (Array.isArray(value)) {
+      inferred = { field, filterType: "set", type: "set", value }
+    } else if (typeof value === "number") {
+      inferred = { field, filterType: "number", type: "equals", value }
+    } else if (value instanceof Date) {
+      inferred = { field, filterType: "date", type: "equals", value }
+    } else if (typeof value === "object") {
+      const bounds = rangeBounds(value as Record<string, unknown>)
+      if (!bounds || (isAbsent(bounds.from) && isAbsent(bounds.to))) continue
+      inferred = inferRangeFilter(field, bounds)
+    } else {
+      inferred = { field, filterType: "text", type: "equals", value }
+    }
+
+    filters.push({ ...inferred, ...overrides?.[field] })
+  }
+  return filters
+}
+
+/* -------------------------------------------------------------------------- */
 /*                       AG Grid → normalized translation                     */
 /* -------------------------------------------------------------------------- */
 

@@ -48,6 +48,7 @@ import {
   createGridDatasource,
   debounce,
   readPersistedGridState,
+  resolveExternalFilters,
   writePersistedGridState,
 } from "./server-grid-internals"
 import {
@@ -103,6 +104,19 @@ export interface SmartServerGridProps<TRow> {
    * typing in the form never hits the server until you swap the array in.
    */
   filters?: ServerFilter[]
+  /**
+   * External filters as a plain query object — the shape `SmartSearchForm`'s
+   * `onSearch` emits. Normalized via {@link toServerFilters} and merged after
+   * {@link filters}, so a search form wires straight in with no conversion:
+   *
+   * ```tsx
+   * <SmartSearchForm onSearch={setQuery} … />
+   * <SmartServerGrid query={query} … />
+   * ```
+   *
+   * Like `filters`, a change of identity resets to page 1 and refetches.
+   */
+  query?: Record<string, unknown>
 
   /** Show the classic pager (`true`) or stream via infinite scroll (`false`). Default `true`. */
   pagination?: boolean
@@ -199,6 +213,7 @@ const SmartServerGridInner = <TRow,>(
     getRowId,
     actionColumn,
     filters,
+    query,
     pagination = true,
     pageSize = 20,
     pageSizeOptions = [5, 10, 20, 50],
@@ -223,19 +238,27 @@ const SmartServerGridInner = <TRow,>(
 
   ensureGridModules()
 
+  // `filters` (already-normalized) and `query` (plain search-form object) are
+  // merged into one external-filter list; both participate in the reset-on-change
+  // contract through this memo's identity.
+  const externalFilters = useMemo<ServerFilter[] | undefined>(
+    () => resolveExternalFilters(filters, query),
+    [filters, query]
+  )
+
   // Latest props read by the (stable) datasource + grid callbacks, without
   // re-creating them — recreating the datasource would reset the grid.
   const gridApiRef = useRef<GridApi<TRow> | null>(null)
   const fetchRowsRef = useRef(fetchRows)
   const getRowIdRef = useRef(getRowId)
   const onRowDoubleClickRef = useRef(onRowDoubleClick)
-  const filtersRef = useRef(filters)
+  const filtersRef = useRef(externalFilters)
   const persistKeyRef = useRef(persistStateKey)
   useLayoutEffect(() => {
     fetchRowsRef.current = fetchRows
     getRowIdRef.current = getRowId
     onRowDoubleClickRef.current = onRowDoubleClick
-    filtersRef.current = filters
+    filtersRef.current = externalFilters
     persistKeyRef.current = persistStateKey
   })
 
@@ -318,7 +341,7 @@ const SmartServerGridInner = <TRow,>(
     setError(null)
     setInitialLoading(true)
     gridApiRef.current?.purgeInfiniteCache()
-  }, [filters])
+  }, [externalFilters])
 
   const defaultColDef = useMemo<ColDef<TRow>>(
     () => ({
