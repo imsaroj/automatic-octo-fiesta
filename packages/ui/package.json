@@ -18,6 +18,9 @@
     "lexical"
   ],
   "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
   "files": [
     "dist",
     "src/styles/globals.css",

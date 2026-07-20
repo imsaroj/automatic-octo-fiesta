@@ -19,6 +19,9 @@ export const SplitLayout = ({
   ctx: PageContextValue
 }) => {
   const mainContent = b.content.length > 0 ? b.content : b.body
+  // Loose (non-slot) children always render — after the content when a
+  // content slot claims the main region (see StandardLayout for the rationale).
+  const looseChildren = mainContent === b.body ? [] : b.body
   const mainClasses = cn(
     "min-w-0 flex-1",
     scroll === "content" && "min-h-0 overflow-y-auto"
@@ -40,6 +43,7 @@ export const SplitLayout = ({
           {b.filters}
           {b.tabs}
           {mainContent}
+          {looseChildren}
         </div>
         {b.sidebar.length > 0 && (
           <div className="shrink-0 overflow-y-auto border-l">{b.sidebar}</div>

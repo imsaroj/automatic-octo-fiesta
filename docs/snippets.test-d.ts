@@ -9,6 +9,7 @@ import { z } from "zod"
 import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 import {
   createPageFetcher,
+  toServerFilters,
   type DataGridColumn,
   type GridActionColumnOptions,
 } from "@iamsaroj/smart-ui/data-grid"
@@ -59,6 +60,13 @@ const fetchUsers = createPageFetcher({
   itemSchema: userSchema,
 })
 void fetchUsers
+
+// External filters from a search form (docs/data-grid.md § External filters)
+const externalFilters = toServerFilters(
+  { name: "ada", status: ["Active"] },
+  { name: { type: "contains" } }
+)
+void externalFilters
 
 // Action column (docs/data-grid.md § Action column)
 declare const deletingId: string | null

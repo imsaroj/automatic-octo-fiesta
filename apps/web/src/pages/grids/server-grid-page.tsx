@@ -17,6 +17,7 @@ import {
 } from "@iamsaroj/smart-ui/search"
 import {
   SmartServerGrid,
+  toServerFilters,
   type DataGridColumn,
   type SmartServerGridHandle,
   type ServerFetchParams,
@@ -83,40 +84,15 @@ const searchFields: SearchFieldDefinition<UserSearch>[] = [
   },
 ]
 
-// The query is already pruned + trimmed by SmartSearchForm, so each present key
-// carries a meaningful value.
-const toFilters = (query: Partial<UserSearch>): ServerFilter[] => {
-  const filters: ServerFilter[] = []
-  if (query.name)
-    filters.push({
-      field: "name",
-      filterType: "text",
-      type: "contains",
-      value: query.name,
-    })
-  if (query.email)
-    filters.push({
-      field: "email",
-      filterType: "text",
-      type: "contains",
-      value: query.email,
-    })
-  if (query.role)
-    filters.push({
-      field: "role",
-      filterType: "text",
-      type: "equals",
-      value: query.role,
-    })
-  if (query.status)
-    filters.push({
-      field: "status",
-      filterType: "text",
-      type: "equals",
-      value: query.status,
-    })
-  return filters
-}
+// The query is already pruned + trimmed by SmartSearchForm; `toServerFilters`
+// infers an equals filter per key, with `contains` overrides for the free-text
+// fields. (When every field is a plain equals match, skip this entirely and
+// pass the query object straight to the grid's `query` prop.)
+const toFilters = (query: Partial<UserSearch>): ServerFilter[] =>
+  toServerFilters(query, {
+    name: { type: "contains" },
+    email: { type: "contains" },
+  })
 
 /* ---------------------------------- page ---------------------------------- */
 

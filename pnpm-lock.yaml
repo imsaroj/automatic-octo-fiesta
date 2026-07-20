@@ -56,12 +56,18 @@ importers:
 
   apps/web:
     dependencies:
+      '@fontsource-variable/inter':
+        specifier: ^5.2.8
+        version: 5.2.8
       '@fontsource-variable/noto-serif':
         specifier: ^5.2.9
         version: 5.2.9
       '@iamsaroj/smart-ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@sun-typeface/suit':
+        specifier: ^2.0.5
+        version: 2.0.5
       '@tanstack/react-query':
         specifier: ^5.101.2
         version: 5.101.2(react@19.2.6)

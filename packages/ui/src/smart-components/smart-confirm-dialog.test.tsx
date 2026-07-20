@@ -32,13 +32,23 @@ const actionButton = () =>
 const cancelButton = () =>
   document.querySelector<HTMLButtonElement>('[data-slot="alert-dialog-cancel"]')
 
-const openViaTrigger = () => {
+/**
+ * Opens are deferred by one macrotask (see internal/use-deferred-open.ts, the
+ * outside-press race fix) — flush that tick so the popup actually mounts.
+ */
+const flushOpen = () =>
+  act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0))
+  })
+
+const openViaTrigger = async () => {
   act(() =>
     (container.querySelector('[data-testid="trigger"]') as HTMLElement).click()
   )
+  await flushOpen()
 }
 
-test("opens from the trigger with default title and button labels", () => {
+test("opens from the trigger with default title and button labels", async () => {
   mount(
     <SmartConfirmDialog
       trigger={<button data-testid="trigger">Delete</button>}
@@ -47,7 +57,7 @@ test("opens from the trigger with default title and button labels", () => {
   )
 
   expect(content()).toBeNull()
-  openViaTrigger()
+  await openViaTrigger()
 
   expect(content()).not.toBeNull()
   expect(
@@ -57,7 +67,7 @@ test("opens from the trigger with default title and button labels", () => {
   expect(cancelButton()?.textContent).toBe("Cancel")
 })
 
-test("confirming calls onConfirm exactly once and closes the dialog", () => {
+test("confirming calls onConfirm exactly once and closes the dialog", async () => {
   const onConfirm = vi.fn()
   mount(
     <SmartConfirmDialog
@@ -68,7 +78,7 @@ test("confirming calls onConfirm exactly once and closes the dialog", () => {
       onConfirm={onConfirm}
     />
   )
-  openViaTrigger()
+  await openViaTrigger()
   expect(
     document.querySelector('[data-slot="alert-dialog-description"]')
       ?.textContent
@@ -80,7 +90,7 @@ test("confirming calls onConfirm exactly once and closes the dialog", () => {
   expect(content()).toBeNull()
 })
 
-test("cancel closes without calling onConfirm", () => {
+test("cancel closes without calling onConfirm", async () => {
   const onConfirm = vi.fn()
   mount(
     <SmartConfirmDialog
@@ -88,7 +98,7 @@ test("cancel closes without calling onConfirm", () => {
       onConfirm={onConfirm}
     />
   )
-  openViaTrigger()
+  await openViaTrigger()
 
   act(() => cancelButton()!.click())
 
@@ -96,7 +106,7 @@ test("cancel closes without calling onConfirm", () => {
   expect(content()).toBeNull()
 })
 
-test("variant=destructive styles the confirm button", () => {
+test("variant=destructive styles the confirm button", async () => {
   mount(
     <SmartConfirmDialog
       open
@@ -105,10 +115,11 @@ test("variant=destructive styles the confirm button", () => {
       variant="destructive"
     />
   )
+  await flushOpen()
   expect(actionButton()!.className).toContain("destructive")
 })
 
-test("controlled mode reports open-state changes through onOpenChange", () => {
+test("controlled mode reports open-state changes through onOpenChange", async () => {
   const onOpenChange = vi.fn()
   const onConfirm = vi.fn()
   mount(
@@ -118,6 +129,7 @@ test("controlled mode reports open-state changes through onOpenChange", () => {
       onConfirm={onConfirm}
     />
   )
+  await flushOpen()
   expect(content()).not.toBeNull()
 
   act(() => actionButton()!.click())

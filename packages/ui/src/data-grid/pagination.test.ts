@@ -6,6 +6,7 @@ import {
   encodeSpringFilter,
   normalizeFilterModel,
   pageSchema,
+  toServerFilters,
   toSpringSort,
 } from "@/data-grid/pagination"
 import type { ServerFetchParams } from "@/data-grid/pagination"
@@ -304,5 +305,120 @@ describe("buildSpringQuery", () => {
     expect(query).toContain("name=contains%3Aa+b%26c")
     // …and round-trips back to the intended Spring value.
     expect(new URLSearchParams(query).get("name")).toBe("contains:a b&c")
+  })
+})
+
+describe("toServerFilters", () => {
+  it("maps strings and booleans to text/equals filters", () => {
+    expect(
+      toServerFilters({ search: "ada", active: true, disabled: false })
+    ).toEqual([
+      { field: "search", filterType: "text", type: "equals", value: "ada" },
+      { field: "active", filterType: "text", type: "equals", value: true },
+      { field: "disabled", filterType: "text", type: "equals", value: false },
+    ])
+  })
+
+  it("drops values with no filter intent (undefined, null, empty string, empty array)", () => {
+    expect(
+      toServerFilters({ a: undefined, b: null, c: "", d: [], e: "keep" })
+    ).toEqual([
+      { field: "e", filterType: "text", type: "equals", value: "keep" },
+    ])
+  })
+
+  it("maps numbers to number/equals and arrays to set filters", () => {
+    expect(toServerFilters({ mrr: 0, status: ["Active", "Pending"] })).toEqual([
+      { field: "mrr", filterType: "number", type: "equals", value: 0 },
+      {
+        field: "status",
+        filterType: "set",
+        type: "set",
+        value: ["Active", "Pending"],
+      },
+    ])
+  })
+
+  it("maps Date values to date/equals", () => {
+    const date = new Date("2026-01-01T00:00:00Z")
+    expect(toServerFilters({ createdAt: date })).toEqual([
+      { field: "createdAt", filterType: "date", type: "equals", value: date },
+    ])
+  })
+
+  it("maps { from, to } and { start, end } range objects to inRange", () => {
+    expect(
+      toServerFilters({
+        created: { from: "2026-01-01", to: "2026-01-31" },
+        shift: { start: "09:00", end: "17:00" },
+      })
+    ).toEqual([
+      {
+        field: "created",
+        filterType: "date",
+        type: "inRange",
+        value: "2026-01-01",
+        valueTo: "2026-01-31",
+      },
+      {
+        field: "shift",
+        filterType: "date",
+        type: "inRange",
+        value: "09:00",
+        valueTo: "17:00",
+      },
+    ])
+  })
+
+  it("degrades half-open ranges to one-sided comparisons", () => {
+    expect(
+      toServerFilters({
+        created: { from: "2026-01-01" },
+        due: { to: "2026-02-01" },
+      })
+    ).toEqual([
+      {
+        field: "created",
+        filterType: "date",
+        type: "greaterThanOrEqual",
+        value: "2026-01-01",
+      },
+      {
+        field: "due",
+        filterType: "date",
+        type: "lessThanOrEqual",
+        value: "2026-02-01",
+      },
+    ])
+  })
+
+  it("infers number ranges from numeric bounds", () => {
+    expect(toServerFilters({ mrr: { from: 100, to: 200 } })).toEqual([
+      {
+        field: "mrr",
+        filterType: "number",
+        type: "inRange",
+        value: 100,
+        valueTo: 200,
+      },
+    ])
+  })
+
+  it("drops range objects with no bounds and unknown object shapes", () => {
+    expect(
+      toServerFilters({ created: { from: "", to: undefined }, odd: { x: 1 } })
+    ).toEqual([])
+  })
+
+  it("applies per-field overrides over the inferred filter", () => {
+    expect(
+      toServerFilters(
+        { name: "ada", roleId: "3" },
+        { name: { type: "contains" } }
+      )
+    ).toEqual([
+      { field: "name", filterType: "text", type: "contains", value: "ada" },
+      { field: "roleId", filterType: "text", type: "equals", value: "3" },
+    ])
   })
 })

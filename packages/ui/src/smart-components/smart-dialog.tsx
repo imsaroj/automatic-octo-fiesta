@@ -12,6 +12,8 @@ import {
 } from "@iamsaroj/smart-ui/components/dialog"
 import { cn } from "@iamsaroj/smart-ui/lib/utils"
 
+import { useDeferredOpen } from "../internal/use-deferred-open"
+
 export { DialogContent, DialogTitle, DialogDescription }
 
 /**
@@ -128,35 +130,41 @@ export const SmartDialog = ({
   dividers = false,
   className,
   children,
-}: SmartDialogProps) => (
-  <Dialog open={open} onOpenChange={onOpenChange}>
-    {trigger && <DialogTrigger render={trigger} />}
-    <DialogContent
-      showCloseButton={showCloseButton}
-      // Flex column so the header/footer stay fixed and only the body
-      // scrolls — keeps the absolute close button pinned to the corner.
-      className={cn("flex flex-col", SIZE_CLASSES[size], className)}
-    >
-      {header && (
-        // `-mx-4 px-4` bleeds the border to the popup edges (cancels the
-        // p-4), `pb-4` sets the gap between title and the divider line.
-        <DialogHeader
-          className={cn("shrink-0", dividers && "-mx-4 border-b px-4 pb-4")}
-        >
-          <DialogTitle>{header.title}</DialogTitle>
-          {header.subtitle && (
-            <DialogDescription>{header.subtitle}</DialogDescription>
-          )}
-        </DialogHeader>
-      )}
-      <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
-      {footer && (
-        <DialogFooter
-          className={cn("shrink-0", dividers && "-mx-4 border-t px-4 pt-4")}
-        >
-          {footer}
-        </DialogFooter>
-      )}
-    </DialogContent>
-  </Dialog>
-)
+}: SmartDialogProps) => {
+  // A controlled open lands one macrotask later, so a dialog opened from
+  // inside another interaction (row action, menu item) can't read that same
+  // interaction as its own outside-press/focus-out and self-close.
+  const deferredOpen = useDeferredOpen(open)
+  return (
+    <Dialog open={deferredOpen} onOpenChange={onOpenChange}>
+      {trigger && <DialogTrigger render={trigger} />}
+      <DialogContent
+        showCloseButton={showCloseButton}
+        // Flex column so the header/footer stay fixed and only the body
+        // scrolls — keeps the absolute close button pinned to the corner.
+        className={cn("flex flex-col", SIZE_CLASSES[size], className)}
+      >
+        {header && (
+          // `-mx-4 px-4` bleeds the border to the popup edges (cancels the
+          // p-4), `pb-4` sets the gap between title and the divider line.
+          <DialogHeader
+            className={cn("shrink-0", dividers && "-mx-4 border-b px-4 pb-4")}
+          >
+            <DialogTitle>{header.title}</DialogTitle>
+            {header.subtitle && (
+              <DialogDescription>{header.subtitle}</DialogDescription>
+            )}
+          </DialogHeader>
+        )}
+        <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+        {footer && (
+          <DialogFooter
+            className={cn("shrink-0", dividers && "-mx-4 border-t px-4 pt-4")}
+          >
+            {footer}
+          </DialogFooter>
+        )}
+      </DialogContent>
+    </Dialog>
+  )
+}

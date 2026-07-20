@@ -14,6 +14,8 @@ import {
   AlertDialogTrigger,
 } from "@iamsaroj/smart-ui/components/alert-dialog"
 
+import { useDeferredOpen } from "../internal/use-deferred-open"
+
 export interface SmartConfirmDialogProps {
   /** Controls open state (controlled mode). Omit for uncontrolled (trigger-driven). */
   open?: boolean
@@ -93,6 +95,11 @@ export const SmartConfirmDialog = ({
   // Support both controlled (openProp provided) and uncontrolled (internal state).
   const open = openProp ?? local
 
+  // Opens land one macrotask later, so a confirm opened from inside another
+  // interaction (e.g. a grid row's Delete button) can't read that same
+  // interaction as its own outside-press and self-close before painting.
+  const deferredOpen = useDeferredOpen(open)
+
   const setOpen = React.useCallback(
     (val: boolean) => {
       setLocal(val)
@@ -102,7 +109,7 @@ export const SmartConfirmDialog = ({
   )
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
+    <AlertDialog open={deferredOpen} onOpenChange={setOpen}>
       {trigger && <AlertDialogTrigger render={trigger} />}
       <AlertDialogContent size={size}>
         <AlertDialogHeader>
