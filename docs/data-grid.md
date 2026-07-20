@@ -78,7 +78,7 @@ directly — no per-page conversion:
 const [query, setQuery] = useState<Partial<UserSearch>>({})
 
 <SmartSearchForm onSearch={setQuery} onReset={() => setQuery({})} … />
-<SmartServerGrid query={query} columnFilters={false} … />
+<SmartServerGrid query={query} … />
 ```
 
 Each query value becomes an `equals` filter (arrays → `set`, numbers →

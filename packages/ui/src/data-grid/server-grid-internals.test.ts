@@ -4,7 +4,6 @@ import {
   collectGridExport,
   debounce,
   errorMessage,
-  mergeServerFilters,
   readPersistedGridState,
   resolveExternalFilters,
   writePersistedGridState,
@@ -26,24 +25,6 @@ describe("errorMessage", () => {
     expect(errorMessage(null)).toBe("Failed to load data.")
     expect(errorMessage(42)).toBe("Failed to load data.")
     expect(errorMessage({ message: 123 })).toBe("Failed to load data.")
-  })
-})
-
-describe("mergeServerFilters", () => {
-  const base: ServerFilter[] = [
-    { field: "a", filterType: "text", type: "contains", value: "x" },
-  ]
-  const external: ServerFilter[] = [
-    { field: "b", filterType: "text", type: "equals", value: "y" },
-  ]
-
-  it("appends external filters after the base filters", () => {
-    expect(mergeServerFilters(base, external)).toEqual([...base, ...external])
-  })
-
-  it("returns the base array unchanged when there is nothing external", () => {
-    expect(mergeServerFilters(base, undefined)).toBe(base)
-    expect(mergeServerFilters(base, [])).toBe(base)
   })
 })
 
@@ -74,16 +55,12 @@ describe("resolveExternalFilters", () => {
 })
 
 describe("persisted grid state", () => {
-  it("round-trips column + filter state through localStorage", () => {
+  it("round-trips column state through localStorage", () => {
     writePersistedGridState("grid-1", {
       columnState: [{ colId: "name", width: 200 }],
-      filterModel: { name: { type: "contains", filter: "ada" } },
     })
     const parsed = readPersistedGridState("grid-1")
     expect(parsed?.columnState).toEqual([{ colId: "name", width: 200 }])
-    expect(parsed?.filterModel).toEqual({
-      name: { type: "contains", filter: "ada" },
-    })
   })
 
   it("returns null for a missing or corrupt entry", () => {

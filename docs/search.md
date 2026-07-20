@@ -52,8 +52,8 @@ the API. `countActiveFilters` backs the count badge.
 
 ## Composing with the grid
 
-Feed the pruned query straight into `SmartServerGrid`'s `fetchRows` (external
-filters merge on top of the grid's own column filters). See
+Feed the pruned query straight into `SmartServerGrid` via its `filters` or
+`query` prop; those external filters drive the server fetch. See
 [data-grid.md](./data-grid.md).
 
 ## Escape hatches

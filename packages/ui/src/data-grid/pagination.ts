@@ -74,9 +74,9 @@ export interface ServerSort {
 }
 
 /**
- * A single normalized filter, distilled from AG Grid's heterogeneous filter
- * model into a flat, transport-agnostic shape an app can serialize however its
- * backend expects.
+ * A single normalized filter — a flat, transport-agnostic shape an app can
+ * serialize however its backend expects. Produced from a search-query object by
+ * {@link toServerFilters}.
  */
 export interface ServerFilter {
   /** Column field the filter applies to. */
@@ -219,63 +219,20 @@ export const toServerFilters = (
 }
 
 /* -------------------------------------------------------------------------- */
-/*                       AG Grid → normalized translation                     */
+/*                    AG Grid block → normalized params                       */
 /* -------------------------------------------------------------------------- */
-
-/** The subset of an AG Grid filter-model entry we read. Structurally matches AG Grid's model. */
-interface AgFilterModelItem {
-  filterType?: string
-  type?: string
-  filter?: unknown
-  filterTo?: unknown
-  dateFrom?: unknown
-  dateTo?: unknown
-  /** Set-filter selected values. */
-  values?: unknown[]
-  /** Combined (AND/OR) conditions. */
-  operator?: "AND" | "OR"
-  condition1?: AgFilterModelItem
-  condition2?: AgFilterModelItem
-}
-
-const normalizeFilterItem = (
-  field: string,
-  raw: AgFilterModelItem
-): ServerFilter => {
-  // For combined conditions we take the first condition (a pragmatic v1 choice —
-  // most server contracts accept a single predicate per field).
-  const item = raw.condition1 ?? raw
-  const isSet = Array.isArray(item.values)
-  return {
-    field,
-    filterType: item.filterType ?? (isSet ? "set" : "text"),
-    type: item.type ?? (isSet ? "set" : "contains"),
-    value: isSet ? item.values : (item.filter ?? item.dateFrom),
-    valueTo: item.filterTo ?? item.dateTo,
-  }
-}
-
-/** Convert an AG Grid filter model into a flat list of {@link ServerFilter}. */
-export const normalizeFilterModel = (
-  filterModel: Record<string, unknown> | null | undefined
-): ServerFilter[] => {
-  if (!filterModel) return []
-  return Object.entries(filterModel).map(([field, raw]) =>
-    normalizeFilterItem(field, (raw ?? {}) as AgFilterModelItem)
-  )
-}
 
 /**
  * Translate one AG Grid Infinite-Row-Model `getRows` request into the
  * normalized {@link ServerFetchParams} passed to a grid's `fetchRows`. Pure and
- * framework-agnostic (AG Grid's `sortModel`/`filterModel` are accepted by
- * structural shape, so this module never imports AG Grid).
+ * framework-agnostic (AG Grid's `sortModel` is accepted by structural shape, so
+ * this module never imports AG Grid). Filters are not derived from the grid —
+ * they come from the `filters`/`query` props and are applied by the datasource.
  */
 export const buildServerFetchParams = (input: {
   startRow: number
   endRow: number
   sortModel: ReadonlyArray<{ colId: string; sort: "asc" | "desc" }>
-  filterModel?: Record<string, unknown> | null
 }): ServerFetchParams => {
   const pageSize = Math.max(input.endRow - input.startRow, 1)
   return {
@@ -284,7 +241,7 @@ export const buildServerFetchParams = (input: {
     pageSize,
     page: Math.floor(input.startRow / pageSize),
     sort: input.sortModel.map((s) => ({ field: s.colId, dir: s.sort })),
-    filters: normalizeFilterModel(input.filterModel),
+    filters: [],
   }
 }
 

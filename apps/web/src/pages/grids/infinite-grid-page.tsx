@@ -191,7 +191,6 @@ const InfiniteGridPage = () => {
           getRowId={(row) => String(row.id)}
           pagination={false}
           pageSize={25}
-          columnFilters={false}
           selection="multiple"
           exportFileName="users"
           emptyState={{

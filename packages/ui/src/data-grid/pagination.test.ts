@@ -5,7 +5,6 @@ import {
   buildServerFetchParams,
   buildSpringQuery,
   encodeSpringFilter,
-  normalizeFilterModel,
   pageSchema,
   toServerFilters,
   toSpringSort,
@@ -72,7 +71,6 @@ describe("buildServerFetchParams", () => {
       startRow: 40,
       endRow: 60,
       sortModel: [],
-      filterModel: null,
     })
 
     expect(params.pageSize).toBe(20)
@@ -89,7 +87,6 @@ describe("buildServerFetchParams", () => {
         { colId: "status", sort: "asc" },
         { colId: "mrr", sort: "desc" },
       ],
-      filterModel: null,
     })
 
     expect(params.sort).toEqual([
@@ -103,78 +100,9 @@ describe("buildServerFetchParams", () => {
       startRow: 0,
       endRow: 0,
       sortModel: [],
-      filterModel: null,
     })
     expect(params.pageSize).toBe(1)
     expect(params.page).toBe(0)
-  })
-})
-
-describe("normalizeFilterModel", () => {
-  it("returns an empty list for a missing model", () => {
-    expect(normalizeFilterModel(null)).toEqual([])
-    expect(normalizeFilterModel(undefined)).toEqual([])
-  })
-
-  it("normalizes a text filter", () => {
-    const filters = normalizeFilterModel({
-      name: { filterType: "text", type: "contains", filter: "John" },
-    })
-    expect(filters).toEqual([
-      {
-        field: "name",
-        filterType: "text",
-        type: "contains",
-        value: "John",
-        valueTo: undefined,
-      },
-    ])
-  })
-
-  it("normalizes a number range filter", () => {
-    const filters = normalizeFilterModel({
-      mrr: {
-        filterType: "number",
-        type: "inRange",
-        filter: 1000,
-        filterTo: 2000,
-      },
-    })
-    expect(filters[0]).toMatchObject({
-      field: "mrr",
-      filterType: "number",
-      type: "inRange",
-      value: 1000,
-      valueTo: 2000,
-    })
-  })
-
-  it("normalizes a set filter to its selected values", () => {
-    const filters = normalizeFilterModel({
-      status: { filterType: "set", values: ["Active", "Pending"] },
-    })
-    expect(filters[0]).toMatchObject({
-      field: "status",
-      filterType: "set",
-      type: "set",
-      value: ["Active", "Pending"],
-    })
-  })
-
-  it("collapses a combined (AND/OR) condition to its first predicate", () => {
-    const filters = normalizeFilterModel({
-      mrr: {
-        filterType: "number",
-        operator: "AND",
-        condition1: { filterType: "number", type: "greaterThan", filter: 500 },
-        condition2: { filterType: "number", type: "lessThan", filter: 3000 },
-      },
-    })
-    expect(filters[0]).toMatchObject({
-      field: "mrr",
-      type: "greaterThan",
-      value: 500,
-    })
   })
 })
 

@@ -160,17 +160,8 @@ export interface SmartServerGridProps<TRow> {
   onRowDoubleClick?: (row: TRow) => void
 
   /**
-   * Per-column header filters (text/number/set inputs + filter menu). Default
-   * `true`. Set `false` to remove all in-header filtering — sorting stays
-   * enabled — when filtering is driven by an external search form instead.
-   */
-  columnFilters?: boolean
-  /** Floating filter row beneath the headers (only applies when `columnFilters`). Default `true`. */
-  floatingFilters?: boolean
-
-  /**
    * `localStorage` key. When set, the grid persists column order / size /
-   * visibility plus the active sort and filters, and restores them on reload.
+   * visibility plus the active sort, and restores them on reload.
    */
   persistStateKey?: string
 
@@ -220,7 +211,6 @@ export interface SmartServerGridProps<TRow> {
  *   getRowId={(u) => u.id}
  *   fetchRows={fetchUsersPage}
  *   filters={searchFilters}   // from a search form
- *   columnFilters={false}
  *   pagination={false}        // infinite scroll
  *   selection="multiple"
  *   fill
@@ -245,8 +235,6 @@ const SmartServerGridInner = <TRow,>(
     selection = "none",
     onSelectionChange,
     onRowDoubleClick,
-    columnFilters = true,
-    floatingFilters = true,
     persistStateKey,
     title,
     toolbarActions,
@@ -358,7 +346,6 @@ const SmartServerGridInner = <TRow,>(
     if (!api || !key) return
     writePersistedGridState(key, {
       columnState: api.getColumnState(),
-      filterModel: api.getFilterModel() as Record<string, unknown>,
     })
   }, [])
 
@@ -375,7 +362,6 @@ const SmartServerGridInner = <TRow,>(
     if (!parsed) return
     if (parsed.columnState)
       api.applyColumnState({ state: parsed.columnState, applyOrder: true })
-    if (parsed.filterModel) api.setFilterModel(parsed.filterModel)
   }, [])
 
   // External filters changed (Search / Reset) → reset to page 1 and refetch.
@@ -394,13 +380,11 @@ const SmartServerGridInner = <TRow,>(
   const defaultColDef = useMemo<ColDef<TRow>>(
     () => ({
       sortable: true,
-      filter: columnFilters,
-      floatingFilter: columnFilters && floatingFilters,
       resizable: true,
       flex: 1,
       minWidth: 120,
     }),
-    [columnFilters, floatingFilters]
+    []
   )
 
   const rowSelection = useMemo<RowSelectionOptions | undefined>(() => {
@@ -599,7 +583,6 @@ const SmartServerGridInner = <TRow,>(
         onRowSelected={gridSelection.handleRowSelected}
         onRowDoubleClicked={handleRowDoubleClicked}
         onSortChanged={schedulePersist}
-        onFilterChanged={schedulePersist}
         onColumnMoved={schedulePersist}
         onColumnResized={schedulePersist}
         onColumnVisible={schedulePersist}
