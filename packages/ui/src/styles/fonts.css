@@ -5,6 +5,19 @@
  * descriptors are kept, so browsers still skip the latin-ext download unless
  * an extended-latin glyph actually appears. If the app ever localizes beyond
  * latin scripts, add that subset's @font-face from the package here.
+ *
+ * ⚠ Resolution caveat for the bare `url("@fontsource…")` specifiers below:
+ * they are resolved from the location of the **CSS entry** Tailwind processes,
+ * not from this file. When the entry is an app-side stylesheet (the documented
+ * setup: an app.css that @imports the library's globals.css), the app must be
+ * able to resolve these packages — a non-issue under npm/yarn hoisting, but
+ * under pnpm's strict layout the app needs `@fontsource-variable/inter`,
+ * `@fontsource-variable/noto-serif` and `@sun-typeface/suit` as direct
+ * dependencies (apps/web carries them for exactly this reason). The @import'ed
+ * package CSS below (pretendard, nanum) is immune — relative url()s inside an
+ * imported file rebase against that file. Shipping the subset woff2 files
+ * inside this package would remove the caveat entirely; tracked as the fonts
+ * item of the packaging improvement plan.
  */
 
 /*
