@@ -44,13 +44,13 @@ import { dataGridTheme } from "./grid-theme"
 import {
   ensureGridModules,
   NoRowsOverlay,
-  resolveColumnId,
-  resolveColumnLabel,
   rowHeightByDensity,
   type DataGridColumn,
   type DataGridDensity,
   type NoRowsParams,
 } from "./grid-internals"
+import { GridShell } from "./grid-shell"
+import { useGridColumnVisibility } from "./grid-column-visibility"
 import {
   collectGridExport,
   createGridDatasource,
@@ -340,15 +340,7 @@ const SmartServerGridInner = <TRow,>(
   const inFlightRef = useRef(0)
   const [loadingMore, setLoadingMore] = useState(false)
 
-  const [columnVisibility, setColumnVisibility] = useState<
-    Record<string, boolean>
-  >(() => {
-    const initial: Record<string, boolean> = {}
-    columns.forEach((column, index) => {
-      initial[resolveColumnId(column, index)] = column.hide !== true
-    })
-    return initial
-  })
+  const { menuColumns, setColumnVisible } = useGridColumnVisibility(columns)
 
   // Cross-page selection lives in a dedicated hook — the selected-id set is the
   // source of truth, so a selection survives block reloads (see the hook).
@@ -421,15 +413,6 @@ const SmartServerGridInner = <TRow,>(
     if (selection === "single") return { mode: "singleRow", checkboxes: true }
     return undefined
   }, [selection])
-
-  const toggleableColumns = useMemo(
-    () =>
-      columns.map((column, index) => {
-        const id = resolveColumnId(column, index)
-        return { id, label: resolveColumnLabel(column, id) }
-      }),
-    [columns]
-  )
 
   const getRowIdCb = useCallback(
     (params: GetRowIdParams<TRow>) => getRowIdRef.current(params.data),
@@ -510,11 +493,11 @@ const SmartServerGridInner = <TRow,>(
 
   const handleToggleColumn = useCallback(
     (id: string, visible: boolean) => {
-      setColumnVisibility((prev) => ({ ...prev, [id]: visible }))
+      setColumnVisible(id, visible)
       gridApiRef.current?.setColumnsVisible([id], visible)
       schedulePersist()
     },
-    [schedulePersist]
+    [setColumnVisible, schedulePersist]
   )
 
   const handleExport = useCallback(() => {
@@ -558,108 +541,98 @@ const SmartServerGridInner = <TRow,>(
     selection !== "none"
 
   return (
-    <div
-      className={cn("flex flex-col gap-3", fill && "h-full min-h-0", className)}
-      style={fill ? { height: "100%" } : undefined}
+    <GridShell
+      fill={fill}
+      height={height}
+      className={className}
+      toolbar={
+        showToolbar ? (
+          <GridToolbar
+            className={cn("shrink-0", fill && "px-4 pt-4")}
+            title={title}
+            leadingContent={
+              selection !== "none" && gridSelection.selectedCount > 0 ? (
+                <span className="text-sm text-muted-foreground">
+                  {uiLabels.grid.selected(gridSelection.selectedCount)}
+                </span>
+              ) : null
+            }
+            toolbarActions={toolbarActions}
+            onRefresh={refreshable ? handleRefresh : undefined}
+            columns={columnSelector ? menuColumns : undefined}
+            onToggleColumn={handleToggleColumn}
+            onExport={exportExcel ? handleExport : undefined}
+            exportIcon={<FileSpreadsheet className="h-4 w-4" />}
+          />
+        ) : null
+      }
     >
-      {showToolbar ? (
-        <GridToolbar
-          className={cn("shrink-0", fill && "px-4 pt-4")}
-          title={title}
-          leadingContent={
-            selection !== "none" && gridSelection.selectedCount > 0 ? (
-              <span className="text-sm text-muted-foreground">
-                {uiLabels.grid.selected(gridSelection.selectedCount)}
-              </span>
-            ) : null
-          }
-          toolbarActions={toolbarActions}
-          onRefresh={refreshable ? handleRefresh : undefined}
-          columns={
-            columnSelector
-              ? toggleableColumns.map((column) => ({
-                  ...column,
-                  visible: columnVisibility[column.id] ?? true,
-                }))
-              : undefined
-          }
-          onToggleColumn={handleToggleColumn}
-          onExport={exportExcel ? handleExport : undefined}
-          exportIcon={<FileSpreadsheet className="h-4 w-4" />}
+      <AgGridReact<TRow>
+        className="h-full w-full"
+        theme={dataGridTheme}
+        rowModelType="infinite"
+        cacheBlockSize={effectivePageSize}
+        columnDefs={effectiveColumns}
+        defaultColDef={defaultColDef}
+        suppressCellFocus={true}
+        rowSelection={rowSelection}
+        pagination={pagination}
+        // Page-size props only apply to the pager; passing them in infinite
+        // scroll mode trips AG Grid warning #94 when `pageSize` isn't one of
+        // the selector options (`cacheBlockSize` already carries the size).
+        paginationPageSize={pagination ? effectivePageSize : undefined}
+        paginationPageSizeSelector={pagination ? pageSizeOptions : undefined}
+        rowHeight={rowHeightByDensity[density]}
+        getRowId={getRowIdCb}
+        animateRows
+        noRowsOverlayComponent={NoRowsOverlay}
+        noRowsOverlayComponentParams={
+          {
+            title: emptyState?.title ?? uiLabels.grid.empty.title,
+            description:
+              emptyState?.description ?? uiLabels.grid.empty.description,
+          } satisfies NoRowsParams
+        }
+        onGridReady={handleGridReady}
+        onPaginationChanged={handlePaginationChanged}
+        onModelUpdated={gridSelection.reapplySelection}
+        onRowSelected={gridSelection.handleRowSelected}
+        onRowDoubleClicked={handleRowDoubleClicked}
+        onSortChanged={schedulePersist}
+        onFilterChanged={schedulePersist}
+        onColumnMoved={schedulePersist}
+        onColumnResized={schedulePersist}
+        onColumnVisible={schedulePersist}
+        onColumnPinned={schedulePersist}
+      />
+      {loadingMore && !initialLoading && !error ? (
+        <div
+          role="status"
+          aria-live="polite"
+          aria-label={uiLabels.grid.loadingMore}
+          className="pointer-events-none absolute inset-x-0 top-0 z-40 h-0.5 overflow-hidden bg-primary/20"
+        >
+          <div
+            className="h-full w-1/4 bg-primary"
+            style={{
+              animation: "grid-indeterminate 1.1s ease-in-out infinite",
+            }}
+          />
+        </div>
+      ) : null}
+      {initialLoading && !error ? (
+        <SmartLoadingOverlay loading label={uiLabels.grid.loading} />
+      ) : null}
+      {error ? (
+        <SmartPageError
+          variant="overlay"
+          title={uiLabels.grid.errorTitle}
+          description={error}
+          onRetry={handleRetry}
+          retryLabel={uiLabels.grid.retry}
         />
       ) : null}
-
-      <div
-        className={cn("relative w-full", fill && "min-h-0 flex-1")}
-        style={fill ? undefined : { height }}
-      >
-        <AgGridReact<TRow>
-          className="h-full w-full"
-          theme={dataGridTheme}
-          rowModelType="infinite"
-          cacheBlockSize={effectivePageSize}
-          columnDefs={effectiveColumns}
-          defaultColDef={defaultColDef}
-          suppressCellFocus={true}
-          rowSelection={rowSelection}
-          pagination={pagination}
-          // Page-size props only apply to the pager; passing them in infinite
-          // scroll mode trips AG Grid warning #94 when `pageSize` isn't one of
-          // the selector options (`cacheBlockSize` already carries the size).
-          paginationPageSize={pagination ? effectivePageSize : undefined}
-          paginationPageSizeSelector={pagination ? pageSizeOptions : undefined}
-          rowHeight={rowHeightByDensity[density]}
-          getRowId={getRowIdCb}
-          animateRows
-          noRowsOverlayComponent={NoRowsOverlay}
-          noRowsOverlayComponentParams={
-            {
-              title: emptyState?.title ?? uiLabels.grid.empty.title,
-              description:
-                emptyState?.description ?? uiLabels.grid.empty.description,
-            } satisfies NoRowsParams
-          }
-          onGridReady={handleGridReady}
-          onPaginationChanged={handlePaginationChanged}
-          onModelUpdated={gridSelection.reapplySelection}
-          onRowSelected={gridSelection.handleRowSelected}
-          onRowDoubleClicked={handleRowDoubleClicked}
-          onSortChanged={schedulePersist}
-          onFilterChanged={schedulePersist}
-          onColumnMoved={schedulePersist}
-          onColumnResized={schedulePersist}
-          onColumnVisible={schedulePersist}
-          onColumnPinned={schedulePersist}
-        />
-        {loadingMore && !initialLoading && !error ? (
-          <div
-            role="status"
-            aria-live="polite"
-            aria-label={uiLabels.grid.loadingMore}
-            className="pointer-events-none absolute inset-x-0 top-0 z-40 h-0.5 overflow-hidden bg-primary/20"
-          >
-            <div
-              className="h-full w-1/4 bg-primary"
-              style={{
-                animation: "grid-indeterminate 1.1s ease-in-out infinite",
-              }}
-            />
-          </div>
-        ) : null}
-        {initialLoading && !error ? (
-          <SmartLoadingOverlay loading label={uiLabels.grid.loading} />
-        ) : null}
-        {error ? (
-          <SmartPageError
-            variant="overlay"
-            title={uiLabels.grid.errorTitle}
-            description={error}
-            onRetry={handleRetry}
-            retryLabel={uiLabels.grid.retry}
-          />
-        ) : null}
-      </div>
-    </div>
+    </GridShell>
   )
 }
 

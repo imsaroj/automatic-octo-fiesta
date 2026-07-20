@@ -63,7 +63,8 @@ fetcher (e.g. inject per-call params). `fetchRows` wins if both are supplied.
 | `columns`          | both            | `DataGridColumn<TRow>` (AG Grid `ColDef` alias).                                                                                          |
 | `selection`        | both            | `"single" \| "multiple" \| "none"`.                                                                                                       |
 | `getRowId`         | both            | Stable id — recommended for selection + updates.                                                                                          |
-| `exportCsv`/export | both            | CSV (client) / XLSX (server); both formula-guarded.                                                                                       |
+| `exportCsv`/export | both            | Client: CSV, or `.xlsx` via `exportExcel`. Server: `.xlsx`. All formula-guarded.                                                          |
+| `fill`             | both            | Fill a `flex-1 min-h-0` parent instead of a fixed `height` (full-viewport layouts).                                                       |
 | `persistStateKey`  | SmartServerGrid | Persist column/filter state to localStorage.                                                                                              |
 | `filters`          | SmartServerGrid | External `ServerFilter[]`; identity change = reset to page 1 + refetch.                                                                   |
 | `query`            | SmartServerGrid | External filters as a plain object (the `SmartSearchForm` `onSearch` shape); normalized via `toServerFilters` and merged after `filters`. |

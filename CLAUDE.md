@@ -119,8 +119,20 @@ Two public components backed by AG Grid Community:
 
 **Key internals:**
 
+- `grid-shell.tsx` — `GridShell`, the shared outer chrome for both grids (flex-column root, toolbar slot, and the
+  **positioned** body container behind both the fixed-`height` and full-viewport `fill` layouts). Each grid drops its
+  own `<AgGridReact>` + overlays into it; because the body is `relative`, a standalone `SmartLoadingOverlay` /
+  `SmartPageError` covers exactly the grid area. Extracting it gave the client grid the `fill` layout for free. Internal.
+- `grid-column-visibility.ts` — `useGridColumnVisibility(columns)`: the shared visibility map init + toolbar-shaped
+  `menuColumns` + `setColumnVisible`, previously duplicated in both grids (each still owns the `api.setColumnsVisible`
+  side effect + persistence). Internal.
+- `grid-toolbar.tsx` — `GridToolbar`, the shared toolbar (title, leading slot, refresh, column menu, export). Internal.
 - `grid-internals.tsx` — shared AG Grid module registration (`ensureGridModules`), column type aliases, density
   constants, `NoRowsOverlay`.
+- The client `SmartGrid` reuses the server grid's `collectGridExport` + `downloadXlsx` for its opt-in `exportExcel`
+  (`.xlsx`) path; `exportExcel` supersedes `exportCsv`. Client pagination defaults (`pageSize` 10, options
+  `[10,25,50,100]`) stay component-local by design — they're in-memory page sizes, distinct from the server grid's
+  block-sized defaults; only the server grid reads pagination defaults from `SmartUIProvider`.
 - `pagination.ts` — `ServerFetchParams` / `ServerFetchResult` types, `buildServerFetchParams` (translates AG Grid's
   `IGetRowsParams` → normalized params), `pageSchema` (Zod schema for Spring Data `Page<T>` responses), `toSpringSort`
   helper, and the Spring **query encoder** (`buildSpringQuery` / `encodeSpringFilter`) — the matching decoder stays
