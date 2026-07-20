@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 import { createPageFetcher } from "@/data-grid/create-page-fetcher"
-import { buildFlatQuery, buildSpringQuery } from "@/data-grid/pagination"
+import { buildFlatQuery, buildPageQuery } from "@/data-grid/pagination"
 import type { ServerFetchParams } from "@/data-grid/pagination"
 
 const rowSchema = z.object({ id: z.number(), name: z.string() })
@@ -19,10 +19,10 @@ const PARAMS: ServerFetchParams = {
 
 const pageResponse = (rows: { id: number; name: string }[], total: number) => ({
   content: rows,
+  page: 1,
+  size: rows.length,
   totalElements: total,
   totalPages: 1,
-  number: 0,
-  size: rows.length,
 })
 
 const okFetch = (body: unknown): typeof fetch =>
@@ -35,7 +35,7 @@ const okFetch = (body: unknown): typeof fetch =>
   ) as unknown as typeof fetch
 
 describe("createPageFetcher", () => {
-  it("builds the Spring query, calls the injected transport, and returns rows + total", async () => {
+  it("builds the query, calls the injected transport, and returns rows + total", async () => {
     const fetchImpl = okFetch(pageResponse([{ id: 1, name: "Ada" }], 42))
     const fetchRows = createPageFetcher({
       url: "/api/users",
@@ -47,7 +47,7 @@ describe("createPageFetcher", () => {
 
     expect(result).toEqual({ rows: [{ id: 1, name: "Ada" }], total: 42 })
     const [calledUrl] = (fetchImpl as ReturnType<typeof vi.fn>).mock.calls[0]
-    expect(calledUrl).toBe(`/api/users?${buildSpringQuery(PARAMS)}`)
+    expect(calledUrl).toBe(`/api/users?${buildPageQuery(PARAMS)}`)
   })
 
   it("merges per-call extra params on top of the built query", async () => {
@@ -109,7 +109,7 @@ describe("createPageFetcher", () => {
 
     expect(result).toEqual({ rows: [{ id: 7, name: "Grace" }], total: 3 })
     const [calledUrl] = request.mock.calls[0]
-    expect(String(calledUrl)).toBe(`/users?${buildSpringQuery(PARAMS)}`)
+    expect(String(calledUrl)).toBe(`/users?${buildPageQuery(PARAMS)}`)
   })
 
   it("offsets the page number for 1-indexed backends", async () => {

@@ -2,11 +2,11 @@ import type { ServerFilter, ServerSort } from "@iamsaroj/smart-ui/data-grid"
 
 /**
  * Decoder half of the query contract shared by the MSW mock (the encoder lives
- * in the library as `buildSpringQuery`). Parses the Spring dialect back into
+ * in the library as `buildPageQuery`). Parses the operator dialect back into
  * normalized paging/sort/filter parts:
  *
  * - paging  → `?page=0&size=20`
- * - sorting → `?sort=name,asc&sort=mrr,desc`  (repeatable, Spring style)
+ * - sorting → `?sort=name,asc&sort=mrr,desc`  (repeatable)
  * - filters → `?<field>=<op>:<value>`, e.g. `name=contains:ada`,
  *             `mrr=inRange:1000:2000`, `status=set:Active,Pending`
  */

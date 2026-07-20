@@ -140,14 +140,14 @@ Two public components backed by AG Grid Community:
   `[10,25,50,100]`) stay component-local by design — they're in-memory page sizes, distinct from the server grid's
   block-sized defaults; only the server grid reads pagination defaults from `SmartUIProvider`.
 - `pagination.ts` — `ServerFetchParams` / `ServerFetchResult` types, `buildServerFetchParams` (translates AG Grid's
-  `IGetRowsParams` → normalized params), `pageSchema` (Zod schema for Spring Data `Page<T>` responses), `toSpringSort`
-  helper, and the Spring **query encoder** (`buildSpringQuery` / `encodeSpringFilter`) — the matching decoder stays
+  `IGetRowsParams` → normalized params), `pageResponseSchema` (Zod schema for `PageResponse<T>` responses), `toSortParams`
+  helper, and the **query encoder** (`buildPageQuery` / `encodePageFilter`) — the matching decoder stays
   app/mock-side.
 - `create-page-fetcher.ts` — `createPageFetcher({ url, itemSchema?, encodeQuery?, pageIndexBase?, unwrap?, request?,
-mapError?, fetchImpl? }) → fetchRows`: the reusable encode → request → unwrap → Zod-`pageSchema`-parse → `{rows,total}`
+mapError?, fetchImpl? }) → fetchRows`: the reusable encode → request → unwrap → Zod-`pageResponseSchema`-parse → `{rows,total}`
   pipeline for `SmartServerGrid`. Four transport knobs adapt it to any backend, all defaulting to today's behavior:
   `request` (any transport — axios/ky/fetch; returns the parsed body), `pageIndexBase` (`0` default | `1` for 1-indexed
-  APIs), `unwrap` (peel a response envelope to `Page<T>`), `encodeQuery` (`buildSpringQuery` default | `buildFlatQuery` |
+  APIs), `unwrap` (peel a response envelope to `PageResponse<T>`), `encodeQuery` (`buildPageQuery` default | `buildFlatQuery` |
   custom). `itemSchema` is optional (omit to skip Zod for a trusted source). The
   default transport still takes an injectable `fetchImpl` (testability/SSR) + `mapError`. Returned fetcher takes an
   optional 3rd `extraParams` arg for per-call query params. `SmartServerGrid` also accepts this config directly via its
@@ -353,7 +353,7 @@ thin leaf components with no shared state.
 
 **MSW mock API:** `src/mocks/` holds an [MSW](https://mswjs.io) worker (`browser.ts`, `handlers.ts`, `users-dataset.ts`)
 started by `enableMocking()` in `main.tsx` **before first render** — dev-only (no-op in prod, `onUnhandledRequest:
-"bypass"`). It backs the server/infinite data-grid pages with a real endpoint (the Spring Data `Page<T>` shape that
+"bypass"`). It backs the server/infinite data-grid pages with a real endpoint (the `PageResponse<T>` shape that
 `pagination.ts` expects). `users-dataset.ts` is a **mutable** in-memory table (seeded deterministically); the
 `GET`/`POST`/`PUT`/`DELETE` `/api/users` handlers read and edit it. `SmartToaster` is mounted once at the app root.
 

@@ -36,7 +36,7 @@ flowchart TD
     Router["react-router-dom v7<br/>route-split lazy pages"]
     Shell["PlaygroundShell (chrome)"]
     Query["TanStack Query client"]
-    MSW["MSW mock API (dev only)<br/>Spring Data Page&lt;T&gt; shape"]
+    MSW["MSW mock API (dev only)<br/>PageResponse&lt;T&gt; shape"]
   end
 
   subgraph ui["packages/ui = @iamsaroj/smart-ui (source-only library)"]
@@ -239,15 +239,15 @@ buildServerFetchParams()  →  normalized ServerFetchParams (page, pageSize, sor
         ↓
 fetchRows = createPageFetcher({ url, itemSchema, encodeQuery })
         ↓
-buildSpringQuery(params)  →  ?page=0&size=20&sort=name,asc&name=contains:ada
+buildPageQuery(params)  →  ?page=0&size=20&sort=name,asc&name=contains:ada
         ↓
 fetch(url?query, { signal })          ← app transport (apps/web/src/api/users.ts)
         ↓
 MSW handler GET /api/users            ← dev-only service worker (apps/web/src/mocks/handlers.ts)
         ↓
-queryUsers() over in-memory dataset → Spring Data Page<T> JSON envelope
+queryUsers() over in-memory dataset → PageResponse<T> JSON envelope
         ↓
-response.ok? → pageSchema(itemSchema).parse(json)   ← Zod validation, fails loud
+response.ok? → pageResponseSchema(itemSchema).parse(json)   ← Zod validation, fails loud
         ↓
 { rows, total } → AG Grid renders block; total drives the scrollbar
 ```
@@ -320,14 +320,14 @@ The only "data store" is an **in-memory, mutable, deterministically-seeded table
 - `apps/web/src/mocks/users-dataset.ts` — a mutable in-memory array seeded with `mulberry32`;
   `queryUsers` / `insertUser` / `patchUser` / `removeUser` provide CRUD over it. State resets on
   page reload.
-- The response contract it emulates is **Spring Data `Page<T>`** (`content`, `totalElements`,
-  `totalPages`, `number`, `size`, `pageable`, …), validated client-side by `pageSchema` (Zod) in
+- The response contract it emulates is **`PageResponse<T>`** (`content`, `page`, `size`,
+  `totalElements`, `totalPages`), validated client-side by `pageResponseSchema` (Zod) in
   `packages/ui/src/data-grid/pagination.ts`.
 
 There is **no ORM, no SQL, no migrations, no transactions, and no indexes** in the codebase. The
-library ships a Zod-based _contract_ (`pageSchema`, `SPageResponse<T>`, `toSpringSort`,
-`buildSpringQuery`) intended for a real Spring Data backend that lives outside this repo — the
-matching query _decoder_ is intentionally left app/server-side.
+library ships a Zod-based _contract_ (`pageResponseSchema`, `PageResponse<T>`, `toSortParams`,
+`buildPageQuery`) that any backend can satisfy by mapping its native page type into
+`PageResponse<T>`; the matching query _decoder_ is intentionally left app/server-side.
 
 > Real database, ORM, migrations: **Not found in the current codebase.**
 
@@ -339,21 +339,21 @@ The library is **transport-agnostic**; the demo defines one REST-style resource 
 
 **Style:** REST over `fetch`. No GraphQL, gRPC, or WebSocket. Message queue: **Not found.**
 
-| Endpoint (MSW handler)  | Purpose                                                                                         |
-| ----------------------- | ----------------------------------------------------------------------------------------------- |
-| `GET /api/users`        | Paged/sorted/filtered list → Spring Data `Page<T>`; supports `?simulateError=1` (HTTP 500 demo) |
-| `POST /api/users`       | Create (201)                                                                                    |
-| `PUT /api/users/:id`    | Update (404 if missing)                                                                         |
-| `DELETE /api/users/:id` | Delete (204 / 404)                                                                              |
+| Endpoint (MSW handler)  | Purpose                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------- |
+| `GET /api/users`        | Paged/sorted/filtered list → `PageResponse<T>`; supports `?simulateError=1` (HTTP 500 demo) |
+| `POST /api/users`       | Create (201)                                                                                |
+| `PUT /api/users/:id`    | Update (404 if missing)                                                                     |
+| `DELETE /api/users/:id` | Delete (204 / 404)                                                                          |
 
 - **Routing:** `react-router-dom` v7 in `App.tsx`; routes `/section/page`; every page lazy-loaded
   via `React.lazy` under one `<Suspense fallback={<SmartPageLoading />}>`.
 - **Versioning:** none (single demo API). **Not found in the current codebase.**
-- **Validation:** Zod v4 everywhere — `pageSchema(itemSchema).parse()` on every paged response;
+- **Validation:** Zod v4 everywhere — `pageResponseSchema(itemSchema).parse()` on every paged response;
   request query parsed by `parseUsersQuery` (`api/users-query.ts`); form input validated by the
   form engine's Zod schema (single source of truth for validation _and_ required-ness).
-- **Serialization:** JSON. Sort encoded Spring-style (`sort=field,dir`); filters encoded
-  `<field>=<op>:<value>` by `encodeSpringFilter`/`buildSpringQuery`.
+- **Serialization:** JSON. Sort encoded as `sort=field,dir`; filters encoded
+  `<field>=<op>:<value>` by `encodePageFilter`/`buildPageQuery`.
 - **Pagination:** zero-based `page`/`size`; total from `totalElements`.
 - **Filtering/sorting:** AG Grid `filterModel`/`sortModel` → normalized `ServerFilter[]`/`ServerSort[]`
   via `buildServerFetchParams` → transport query.
@@ -372,13 +372,13 @@ sequenceDiagram
 
   U->>G: scroll / sort / filter
   G->>F: getRows → buildServerFetchParams()
-  F->>T: fetch(url?buildSpringQuery(params), {signal})
+  F->>T: fetch(url?buildPageQuery(params), {signal})
   T->>M: GET /api/users?page&size&sort&filters
   M->>D: queryUsers({page,size,sorts,filters})
   D-->>M: {content, total}
-  M-->>T: Page<T> JSON
+  M-->>T: PageResponse<T> JSON
   T-->>F: Response
-  F->>F: pageSchema.parse()  (Zod, throws on bad shape)
+  F->>F: pageResponseSchema.parse()  (Zod, throws on bad shape)
   F-->>G: {rows, total}
   G-->>U: render block + scrollbar
 ```
@@ -584,7 +584,7 @@ contract-only:
 | Surface                            | Purpose                                                                                        | Protocol                  | Auth           | Failure handling                                                  |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------- | -------------- | ----------------------------------------------------------------- |
 | MSW mock `/api/users`              | Demo backend for grids/CRUD                                                                    | HTTP/JSON (in-browser SW) | none           | `simulateError=1` → 500; 404 on missing; grid/CRUD surface errors |
-| Spring Data `Page<T>` contract     | Intended real backend (external, not in repo)                                                  | HTTP/JSON                 | app-defined    | Zod `pageSchema` rejects malformed responses                      |
+| `PageResponse<T>` contract         | Intended real backend (external, not in repo)                                                  | HTTP/JSON                 | app-defined    | Zod `pageResponseSchema` rejects malformed responses              |
 | GitHub Actions marketplace actions | CI (`gitleaks`, `pnpm/action-setup`, `setup-node`, `upload-artifact`)                          | —                         | `GITHUB_TOKEN` | job fails                                                         |
 | Google Fonts                       | **Not used at runtime** — fonts are self-hosted via `@fontsource-variable/*` (no external CDN) | —                         | —              | —                                                                 |
 
@@ -631,7 +631,7 @@ Formal ADRs live in `docs/adr/`:
 | **0001** | Base UI over Radix                                            | shadcn v4 primitive foundation; `render`-prop composition.                                                                                                      |
 | **0002** | Source-only package, no build step                            | Zero build cost in-monorepo; consumer compiles source. Con: needs a bundler that reads `exports`.                                                               |
 | **0003** | Hand-rolled `.xlsx` writer                                    | Avoid a heavy spreadsheet dependency; build OOXML ZIP by hand. Con: limited feature surface.                                                                    |
-| **0004** | Spring Data `Page<T>` contract                                | Standardize server-grid pagination on a common envelope; ship encoder, leave decoder server-side.                                                               |
+| **0004** | `PageResponse<T>` contract                                    | Standardize server-grid pagination on a stable, framework-agnostic envelope; ship encoder, leave decoder server-side.                                           |
 | **0005** | Flat-props `Smart*` wrappers over compound                    | Cut JSX boilerplate; re-export native primitives as an escape hatch.                                                                                            |
 | **0006** | Distribution: source-only now, buildable on demand (option C) | `build:lib` (`tsc`) proves standalone buildability (ESM + `.d.ts`) in CI without publishing. Con: proof build can drift from a not-yet-existing publish config. |
 
@@ -668,7 +668,7 @@ outside this repo.
 | Mechanism                                                      | Status                                                                                                                                           |
 | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Request cancellation**                                       | `createPageFetcher` threads an `AbortSignal` into `fetch`.                                                                                       |
-| **Fail-loud validation**                                       | Zod `pageSchema.parse` throws on malformed responses instead of rendering garbage.                                                               |
+| **Fail-loud validation**                                       | Zod `pageResponseSchema.parse` throws on malformed responses instead of rendering garbage.                                                       |
 | **Error surfaces**                                             | Grid renders fetch errors; CRUD uses optimistic update + `onError` rollback + toast; `SmartPage` has empty/loading/error slots; `NoRowsOverlay`. |
 | **Optimistic rollback**                                        | Delete mutation rolls the cache back on failure.                                                                                                 |
 | **CI retries**                                                 | Playwright retries ×2 in CI.                                                                                                                     |
@@ -776,12 +776,12 @@ flowchart TD
 ```mermaid
 flowchart LR
   A[AG Grid getRows] --> B[buildServerFetchParams]
-  B --> C[buildSpringQuery]
+  B --> C[buildPageQuery]
   C --> D[fetch + AbortSignal]
   D --> E[MSW GET /api/users]
   E --> F[queryUsers in-memory]
-  F --> G[Page&lt;T&gt; JSON]
-  G --> H[pageSchema.parse Zod]
+  F --> G[PageResponse&lt;T&gt; JSON]
+  G --> H[pageResponseSchema.parse Zod]
   H --> I[rows,total → grid]
 ```
 
@@ -888,7 +888,7 @@ sequenceDiagram
 | `msw` 2                                                                       | In-browser mock backend, dev-only (app only).                                   |
 | `@base-ui/react`                                                              | Accessible headless primitives under shadcn v4 wrappers.                        |
 | `@tanstack/react-form` + `@tanstack/react-store`                              | Form engine state.                                                              |
-| `zod` 4                                                                       | Validation SSOT (forms + `pageSchema`).                                         |
+| `zod` 4                                                                       | Validation SSOT (forms + `pageResponseSchema`).                                 |
 | `ag-grid-community` / `ag-grid-react`                                         | Data-grid engine (client + server row models).                                  |
 | `lexical` + `@lexical/*`                                                      | Rich-text editor node set/plugins.                                              |
 | `dompurify`                                                                   | HTML sanitization for editor output (XSS boundary).                             |

@@ -422,8 +422,8 @@ const fetchUsersPage = createPageFetcher({ url: "/api/users", itemSchema: userSc
 - `fetchRows(params, signal)` → `Promise<{ rows, total }>`; throwing shows an error overlay
   with Retry. `ServerFetchParams` carries normalized page/sort/filter state.
 - **`createPageFetcher`** is the canonical transport: fetch → status check → Zod
-  `pageSchema(itemSchema)` parse (Spring Data `Page<T>` envelope) → `{ rows, total }`.
-  Customize with `encodeQuery` (defaults to `buildSpringQuery`), `mapError`, `fetchImpl`.
+  `pageResponseSchema(itemSchema)` parse (`PageResponse<T>` envelope) → `{ rows, total }`.
+  Customize with `encodeQuery` (defaults to `buildPageQuery`), `mapError`, `fetchImpl`.
   The returned fetcher accepts an optional 3rd `extraParams` arg for per-call query params.
 - Excel (`.xlsx`) export of loaded rows is built in (dependency-free writer in `lib/xlsx.ts`).
 

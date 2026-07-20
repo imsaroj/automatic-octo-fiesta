@@ -18,7 +18,7 @@ export type UserRow = z.infer<typeof userRowSchema>
 
 /**
  * Validated `fetchRows` adapter for SmartServerGrid, built from the shared
- * `createPageFetcher` helper: it encodes grid params in the Spring dialect,
+ * `createPageFetcher` helper: it encodes grid params in the operator dialect,
  * calls the MSW-mocked endpoint, checks the status, and validates the response
  * shape with Zod. New server-grid pages get all of that for free.
  */

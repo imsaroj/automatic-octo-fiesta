@@ -1,10 +1,10 @@
 import { z } from "zod"
-import { pageSchema } from "@iamsaroj/smart-ui/data-grid"
+import { pageResponseSchema } from "@iamsaroj/smart-ui/data-grid"
 import { userRowSchema, type UserRow } from "@/api/users"
 
 /**
  * CRUD client for the users resource — the fetch layer the TanStack Query hooks
- * in the CRUD example page call. Reads validate against the Spring `Page<T>`
+ * in the CRUD example page call. Reads validate against the `PageResponse<T>`
  * envelope; writes validate the returned row. This is the recipe real consumer
  * apps copy: a thin, typed, validated transport that Query wraps with caching,
  * retries, and invalidation.
@@ -13,7 +13,7 @@ import { userRowSchema, type UserRow } from "@/api/users"
 export const newUserSchema = userRowSchema.omit({ id: true })
 export type NewUser = z.infer<typeof newUserSchema>
 
-const usersPageSchema = pageSchema(userRowSchema)
+const usersPageSchema = pageResponseSchema(userRowSchema)
 
 export interface UserListParams {
   page?: number
