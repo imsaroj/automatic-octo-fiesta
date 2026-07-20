@@ -28,6 +28,10 @@ import { GridToolbar } from "./grid-toolbar"
 import { SmartLoadingOverlay } from "@iamsaroj/smart-ui/smart-components/loading-overlay"
 import { SmartPageError } from "@iamsaroj/smart-ui/smart-components/page/smart-page-error"
 import {
+  useSmartUIDefaults,
+  useSmartUILabels,
+} from "@iamsaroj/smart-ui/smart-components/provider"
+import {
   type ServerFetchParams,
   type ServerFetchResult,
   type ServerFilter,
@@ -236,8 +240,8 @@ const SmartServerGridInner = <TRow,>(
     filters,
     query,
     pagination = true,
-    pageSize = 20,
-    pageSizeOptions = [5, 10, 20, 50],
+    pageSize: pageSizeProp,
+    pageSizeOptions: pageSizeOptionsProp,
     selection = "none",
     onSelectionChange,
     onRowDoubleClick,
@@ -250,12 +254,20 @@ const SmartServerGridInner = <TRow,>(
     columnSelector = true,
     exportExcel = true,
     exportFileName = "export",
-    density = "normal",
+    density: densityProp,
     fill = false,
     height = 480,
     emptyState,
     className,
   } = props
+
+  // Provider fallbacks (English labels + canonical defaults with no provider); an
+  // explicit prop always wins.
+  const uiDefaults = useSmartUIDefaults()
+  const uiLabels = useSmartUILabels()
+  const pageSize = pageSizeProp ?? uiDefaults.grid.pageSize
+  const pageSizeOptions = pageSizeOptionsProp ?? uiDefaults.grid.pageSizeOptions
+  const density = densityProp ?? uiDefaults.grid.density
 
   ensureGridModules()
 
@@ -557,7 +569,7 @@ const SmartServerGridInner = <TRow,>(
           leadingContent={
             selection !== "none" && gridSelection.selectedCount > 0 ? (
               <span className="text-sm text-muted-foreground">
-                {gridSelection.selectedCount} selected
+                {uiLabels.grid.selected(gridSelection.selectedCount)}
               </span>
             ) : null
           }
@@ -602,8 +614,9 @@ const SmartServerGridInner = <TRow,>(
           noRowsOverlayComponent={NoRowsOverlay}
           noRowsOverlayComponentParams={
             {
-              title: emptyState?.title,
-              description: emptyState?.description,
+              title: emptyState?.title ?? uiLabels.grid.empty.title,
+              description:
+                emptyState?.description ?? uiLabels.grid.empty.description,
             } satisfies NoRowsParams
           }
           onGridReady={handleGridReady}
@@ -622,7 +635,7 @@ const SmartServerGridInner = <TRow,>(
           <div
             role="status"
             aria-live="polite"
-            aria-label="Loading more rows"
+            aria-label={uiLabels.grid.loadingMore}
             className="pointer-events-none absolute inset-x-0 top-0 z-40 h-0.5 overflow-hidden bg-primary/20"
           >
             <div
@@ -634,15 +647,15 @@ const SmartServerGridInner = <TRow,>(
           </div>
         ) : null}
         {initialLoading && !error ? (
-          <SmartLoadingOverlay loading label="Loading data…" />
+          <SmartLoadingOverlay loading label={uiLabels.grid.loading} />
         ) : null}
         {error ? (
           <SmartPageError
             variant="overlay"
-            title="Couldn’t load data"
+            title={uiLabels.grid.errorTitle}
             description={error}
             onRetry={handleRetry}
-            retryLabel="Retry"
+            retryLabel={uiLabels.grid.retry}
           />
         ) : null}
       </div>

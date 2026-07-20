@@ -5,6 +5,10 @@ import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
 import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import { Button } from "@iamsaroj/smart-ui/components/button"
+import {
+  useSmartUIDefaults,
+  useSmartUILabels,
+} from "@iamsaroj/smart-ui/smart-components/provider"
 
 import { deepEqual, isFieldRequired } from "./smart-form-internals"
 import type { FieldDefinition, ResolvedFieldDefinition } from "./field-types"
@@ -83,15 +87,24 @@ export const SmartForm = <T extends Record<string, unknown>>({
   data,
   setData,
   fields,
-  columns = 1,
+  columns,
   onSubmit,
   id,
-  submitLabel = "Submit",
+  submitLabel,
   resetLabel,
   children,
   className,
   registry: registryProp,
 }: SmartFormProps<T>) => {
+  // Provider fallbacks: an explicit prop always wins. `submitLabel` uses an
+  // `undefined` check (not `??`) because `null` is meaningful — it suppresses
+  // the default button row in favor of `children`.
+  const uiDefaults = useSmartUIDefaults()
+  const uiLabels = useSmartUILabels()
+  const effectiveColumns = columns ?? uiDefaults.form.columns
+  const effectiveSubmitLabel =
+    submitLabel === undefined ? uiLabels.form.submit : submitLabel
+
   // Resolved once per form: custom entries merged over the built-in registry.
   const registry = React.useMemo<FieldRegistry>(
     () =>
@@ -243,7 +256,7 @@ export const SmartForm = <T extends Record<string, unknown>>({
         e.stopPropagation()
         void form.handleSubmit().then(focusFirstError)
       }}
-      className={cn("grid gap-4", COLS[columns], className)}
+      className={cn("grid gap-4", COLS[effectiveColumns], className)}
     >
       {fields.map((field) => {
         if (field.hidden?.(values)) return null
@@ -289,12 +302,12 @@ export const SmartForm = <T extends Record<string, unknown>>({
       })}
 
       {children !== undefined ? (
-        <div className={SPAN[columns]}>{children}</div>
-      ) : submitLabel !== null ? (
+        <div className={SPAN[effectiveColumns]}>{children}</div>
+      ) : effectiveSubmitLabel !== null ? (
         <div
           className={cn(
             "flex items-center justify-end gap-2 pt-1",
-            SPAN[columns]
+            SPAN[effectiveColumns]
           )}
         >
           {resetLabel && (
@@ -309,7 +322,7 @@ export const SmartForm = <T extends Record<string, unknown>>({
           <form.Subscribe selector={(state) => state.isSubmitting}>
             {(isSubmitting) => (
               <Button type="submit" disabled={isSubmitting}>
-                {submitLabel}
+                {effectiveSubmitLabel}
               </Button>
             )}
           </form.Subscribe>

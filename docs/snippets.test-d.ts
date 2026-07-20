@@ -22,6 +22,10 @@ import type { TreeNode } from "@iamsaroj/smart-ui/tree"
 import type { TransferItem } from "@iamsaroj/smart-ui/transfer-list"
 import type { CalendarEvent } from "@iamsaroj/smart-ui/calendar"
 import { sanitizeEditorHtml } from "@iamsaroj/smart-ui/text-editor"
+import {
+  SmartUIProvider,
+  type SmartUIProviderProps,
+} from "@iamsaroj/smart-ui/smart-components/provider"
 
 // ── form.md ──────────────────────────────────────────────────────────
 const schema = z.object({
@@ -136,3 +140,21 @@ void events
 // ── text-editor.md ──────────────────────────────────────────────────
 const clean: string = sanitizeEditorHtml("<p>hi</p>")
 void clean
+
+// ── smart-components.md § Global config ─────────────────────────────────
+// Type-check the labels/defaults shapes the provider accepts (JSX-free so this
+// stays a .ts snippet file).
+const providerProps: SmartUIProviderProps = {
+  labels: {
+    confirm: { confirm: "삭제", cancel: "취소" },
+    grid: { retry: "다시 시도", selected: (n) => `${n}개 선택됨` },
+    search: { search: "검색", reset: "초기화" },
+  },
+  defaults: {
+    grid: { pageSize: 50, density: "compact" },
+    form: { columns: 2 },
+  },
+  children: null,
+}
+void providerProps
+void SmartUIProvider

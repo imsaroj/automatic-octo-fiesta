@@ -11,6 +11,7 @@ import { Download } from "lucide-react"
 import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import { SmartLoadingOverlay } from "@iamsaroj/smart-ui/smart-components/loading-overlay"
 import { SmartSearchInput } from "@iamsaroj/smart-ui/smart-components/search-input"
+import { useSmartUILabels } from "@iamsaroj/smart-ui/smart-components/provider"
 import { GridToolbar } from "./grid-toolbar"
 import { escapeCsvFormula } from "./formula-guard"
 import { dataGridTheme } from "./grid-theme"
@@ -114,6 +115,11 @@ export const SmartGrid = <TRow,>({
 }: SmartGridProps<TRow>) => {
   ensureGridModules()
 
+  // Labels fall back to the provider (English by default). Pagination defaults
+  // (pageSize/pageSizeOptions) deliberately stay component-local — the client
+  // grid's values diverge from the server grid's and converge under I8, not here.
+  const uiLabels = useSmartUILabels()
+
   const gridRef = useRef<AgGridReact<TRow>>(null)
   const [gridApi, setGridApi] = useState<GridApi<TRow> | null>(null)
   const [quickFilter, setQuickFilter] = useState("")
@@ -206,7 +212,7 @@ export const SmartGrid = <TRow,>({
               <SmartSearchInput
                 value={quickFilter}
                 onValueChange={setQuickFilter}
-                placeholder="Search…"
+                placeholder={uiLabels.grid.searchPlaceholder}
                 className="h-9 w-full sm:w-64"
                 aria-label="Search table"
               />
@@ -227,7 +233,7 @@ export const SmartGrid = <TRow,>({
         />
       ) : null}
 
-      <SmartLoadingOverlay loading={loading} label="Loading data…">
+      <SmartLoadingOverlay loading={loading} label={uiLabels.grid.loading}>
         <div style={{ height, width: "100%" }}>
           <AgGridReact<TRow>
             ref={gridRef}
@@ -247,8 +253,9 @@ export const SmartGrid = <TRow,>({
             noRowsOverlayComponent={NoRowsOverlay}
             noRowsOverlayComponentParams={
               {
-                title: emptyState?.title,
-                description: emptyState?.description,
+                title: emptyState?.title ?? uiLabels.grid.empty.title,
+                description:
+                  emptyState?.description ?? uiLabels.grid.empty.description,
               } satisfies NoRowsParams
             }
             onGridReady={handleGridReady}

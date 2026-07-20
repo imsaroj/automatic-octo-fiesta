@@ -162,6 +162,17 @@ flat API can't express (see the doc comment in `smart-card.tsx` for the pattern)
 There is a `shadcn-smart-wrappers` skill that converts native shadcn compound usage (`SCard`, `SDialog`, …) into these
 wrappers — prefer `Smart*` wrappers when writing or editing TSX in this repo.
 
+**`smart-components/provider.tsx`** — `SmartUIProvider` (`@iamsaroj/smart-ui/smart-components/provider`): one optional
+context for app-wide **labels** (i18n), **defaults** (per-instance prop fallbacks), and **formats** (date/number hooks).
+It is a leaf module (declares its own `SmartUIDensity` union rather than importing from `data-grid`) so every layer —
+`data-grid`, `form`, `search`, `smart-components` — can consume it without a cycle. Components read via
+`useSmartUILabels()` / `useSmartUIDefaults()` / `useSmartUIFormats()`; a passed prop always wins over a provider value,
+and with no provider the built-in English labels (`DEFAULT_LABELS`) + canonical defaults (`DEFAULT_DEFAULTS`) apply, so
+it is purely additive. Wired so far: server/client grid (loading/error/retry/empty/selected/search-placeholder + grid
+`pageSize`/`density`/`pageSizeOptions` on the **server** grid only — the client grid's pagination defaults diverge and
+converge under I8), `SmartConfirmDialog` (title/confirm/cancel), `SmartSearchForm` (search/reset), `SmartForm`
+(submit label + `columns`). Remaining hard-coded strings migrate onto the same label keys incrementally.
+
 **`smart-components/buttons/`** — action-button presets (barrel: `@iamsaroj/smart-ui/smart-components/buttons`). One
 `ACTION_BUTTON_CONFIG` map (`action-config.ts`) is the single source of truth for each action's icon, label, variant,
 loading text, and button type; the generic `ActionButton` resolves it and adds icon-only mode, tooltip, and optional

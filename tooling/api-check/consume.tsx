@@ -13,6 +13,7 @@ import { useIsMobile } from "@iamsaroj/smart-ui/hooks/use-mobile"
 import { SmartPage } from "@iamsaroj/smart-ui/smart-components/page"
 import { AddButton } from "@iamsaroj/smart-ui/smart-components/buttons"
 import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
+import { SmartUIProvider } from "@iamsaroj/smart-ui/smart-components/provider"
 import { SmartForm } from "@iamsaroj/smart-ui/form"
 import { SmartSearchForm } from "@iamsaroj/smart-ui/search"
 import { SmartGrid } from "@iamsaroj/smart-ui/data-grid"
@@ -28,6 +29,7 @@ void useIsMobile
 void SmartPage
 void AddButton
 void SmartCard
+void SmartUIProvider
 void SmartForm
 void SmartSearchForm
 void SmartGrid

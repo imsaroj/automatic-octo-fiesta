@@ -10,6 +10,7 @@ import { z } from "zod"
 import "./app.css"
 
 import { SmartButton } from "@iamsaroj/smart-ui/smart-components/smart-button"
+import { SmartUIProvider } from "@iamsaroj/smart-ui/smart-components/provider"
 import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 import { toServerFilters } from "@iamsaroj/smart-ui/data-grid"
 import { SmartTree } from "@iamsaroj/smart-ui/tree"
@@ -22,12 +23,14 @@ const fields: FieldDefinition<Values>[] = [
 ]
 
 const App = () => (
-  <main className={cn("grid gap-4 p-6")}>
-    <SmartButton>It builds</SmartButton>
-    <SmartForm schema={schema} fields={fields} onSubmit={() => {}} />
-    <SmartTree nodes={[{ id: "a", label: "a" }]} />
-    <pre>{JSON.stringify(toServerFilters({ q: "x" }))}</pre>
-  </main>
+  <SmartUIProvider defaults={{ form: { columns: 1 } }}>
+    <main className={cn("grid gap-4 p-6")}>
+      <SmartButton>It builds</SmartButton>
+      <SmartForm schema={schema} fields={fields} onSubmit={() => {}} />
+      <SmartTree nodes={[{ id: "a", label: "a" }]} />
+      <pre>{JSON.stringify(toServerFilters({ q: "x" }))}</pre>
+    </main>
+  </SmartUIProvider>
 )
 
 createRoot(document.getElementById("root")!).render(<App />)

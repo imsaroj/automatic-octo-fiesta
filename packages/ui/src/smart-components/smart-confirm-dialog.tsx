@@ -15,6 +15,7 @@ import {
 } from "@iamsaroj/smart-ui/components/alert-dialog"
 
 import { useDeferredOpen } from "../internal/use-deferred-open"
+import { useSmartUILabels } from "./provider"
 
 export interface SmartConfirmDialogProps {
   /** Controls open state (controlled mode). Omit for uncontrolled (trigger-driven). */
@@ -81,15 +82,21 @@ export const SmartConfirmDialog = ({
   open: openProp,
   onOpenChange: onChangeProp,
   trigger,
-  title = "Are you sure?",
+  title,
   description,
   media,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel,
+  cancelLabel,
   onConfirm,
   variant = "default",
   size = "sm",
 }: SmartConfirmDialogProps) => {
+  // Labels fall back to the provider (English by default); a passed prop wins.
+  const labels = useSmartUILabels().confirm
+  const resolvedTitle = title ?? labels.title
+  const resolvedConfirmLabel = confirmLabel ?? labels.confirm
+  const resolvedCancelLabel = cancelLabel ?? labels.cancel
+
   const [local, setLocal] = React.useState(false)
 
   // Support both controlled (openProp provided) and uncontrolled (internal state).
@@ -114,13 +121,13 @@ export const SmartConfirmDialog = ({
       <AlertDialogContent size={size}>
         <AlertDialogHeader>
           {media && <AlertDialogMedia>{media}</AlertDialogMedia>}
-          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogTitle>{resolvedTitle}</AlertDialogTitle>
           {description && (
             <AlertDialogDescription>{description}</AlertDialogDescription>
           )}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
+          <AlertDialogCancel>{resolvedCancelLabel}</AlertDialogCancel>
           <AlertDialogAction
             variant={variant === "destructive" ? "destructive" : "default"}
             onClick={() => {
@@ -128,7 +135,7 @@ export const SmartConfirmDialog = ({
               setOpen(false)
             }}
           >
-            {confirmLabel}
+            {resolvedConfirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

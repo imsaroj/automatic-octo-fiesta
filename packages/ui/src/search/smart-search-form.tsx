@@ -12,6 +12,7 @@ import {
   defaultFieldRegistry,
   type FieldRegistry,
 } from "@iamsaroj/smart-ui/form"
+import { useSmartUILabels } from "@iamsaroj/smart-ui/smart-components/provider"
 
 import type { SearchFieldDefinition } from "./types"
 import { buildSearchQuery, countActiveFilters } from "./build-query"
@@ -135,14 +136,19 @@ export const SmartSearchForm = <T extends Record<string, unknown>>({
   onReset,
   loading = false,
   showCount = false,
-  searchLabel = "Search",
-  resetLabel = "Reset",
+  searchLabel,
+  resetLabel,
   actions,
   registry,
   className,
 }: SmartSearchFormProps<T>) => {
   const auto = autoSearch === true || !search
   const emitFn = onSearch ?? onSubmit
+
+  // Button labels fall back to the provider (English by default); props win.
+  const labels = useSmartUILabels().search
+  const resolvedSearchLabel = searchLabel ?? labels.search
+  const resolvedResetLabel = resetLabel ?? labels.reset
 
   // The blank state a Reset returns to: each field type's registry default,
   // overlaid with any explicit `defaultValues`.
@@ -233,13 +239,13 @@ export const SmartSearchForm = <T extends Record<string, unknown>>({
           onClick={handleReset}
         >
           <RotateCcw />
-          {resetLabel}
+          {resolvedResetLabel}
         </Button>
       )}
       {showSearchButton && (
         <Button type="submit" disabled={loading}>
           {loading ? <Loader2 className="animate-spin" /> : <Search />}
-          {searchLabel}
+          {resolvedSearchLabel}
           {showCount && activeCount > 0 && (
             <Badge variant="secondary" className="ml-1">
               {activeCount}
