@@ -11,10 +11,28 @@ primitives (`SmartSearchInput`, `SmartLoadingOverlay`, `SmartSpinner`,
 
 ## Import
 
+Two equivalent styles — use whichever reads better:
+
 ```ts
+// Aggregate barrel — one import for many facades (tree-shaken, so unused
+// components add nothing to the bundle):
+import { SmartDialog, SmartCard } from "@iamsaroj/smart-ui/smart-components"
+
+// Per-component deep path — unchanged, still valid:
 import { SmartDialog } from "@iamsaroj/smart-ui/smart-components/smart-dialog"
-import { SmartCard } from "@iamsaroj/smart-ui/smart-components/smart-card"
 ```
+
+The `page`, `buttons` and `provider` entrypoints are re-exported from the barrel
+too, so a screen can pull `SmartPage`, `AddButton` and `SmartCard` from one line.
+
+### Naming notes
+
+- **`SmartDatePickerCalendar`** is the canonical, disambiguated name for the
+  inline date-picker calendar — distinct from the **event** calendar exported as
+  `SmartCalendar` from `@iamsaroj/smart-ui/calendar`. The old `SmartCalendar`
+  (this module) stays as a deprecated alias.
+- **`SearchEngine`** is a deprecated alias of `SmartSearchForm`
+  (`@iamsaroj/smart-ui/search`); prefer `SmartSearchForm`.
 
 ## The flat-props ↔ compound escape-hatch pattern
 

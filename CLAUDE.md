@@ -72,6 +72,7 @@ into arbitrary files:
 @iamsaroj/smart-ui/components/*           → src/components/*.tsx             (shadcn/ui primitives)
 @iamsaroj/smart-ui/hooks/*                → src/hooks/*.ts
 @iamsaroj/smart-ui/lib/*                  → src/lib/*.ts
+@iamsaroj/smart-ui/smart-components       → src/smart-components/index.ts     (aggregate barrel: flat facades + page/buttons/provider)
 @iamsaroj/smart-ui/smart-components/*     → src/smart-components/*.tsx       (Smart* wrappers)
 @iamsaroj/smart-ui/smart-components/page  → src/smart-components/page/index.ts   (page composition barrel)
 @iamsaroj/smart-ui/smart-components/buttons → src/smart-components/buttons/index.ts (action-button presets barrel)
@@ -85,7 +86,12 @@ into arbitrary files:
 ```
 
 Note there is no build step: everything is exported as source. `data-grid`, `form`, and `text-editor`
-are barrel entrypoints (`index.ts`); their internal files are not individually importable.
+are barrel entrypoints (`index.ts`); their internal files are not individually importable. The
+`smart-components` aggregate barrel (`src/smart-components/index.ts`) re-exports every flat facade plus the
+page/buttons/provider sub-barrels — safe to tree-shake thanks to `sideEffects: ["**/*.css"]`; the per-component
+deep paths stay valid. **Naming aliases:** `SmartDatePickerCalendar` is the canonical name for the inline
+date-picker calendar (disambiguated from the event `SmartCalendar` in `@iamsaroj/smart-ui/calendar`); `SmartCalendar`
+(smart-components) and `SearchEngine` (= `SmartSearchForm`) are kept as deprecated aliases.
 
 ### Shadcn/ui setup
 

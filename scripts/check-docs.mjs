@@ -39,6 +39,7 @@ const DOC_FOR = {
   "./transfer-list": "transfer-list.md",
   "./calendar": "calendar.md",
   "./text-editor": "text-editor.md",
+  "./smart-components": "smart-components.md",
   "./smart-components/page": "smart-components.md",
   "./smart-components/buttons": "smart-components.md",
   "./smart-components/*": "smart-components.md",

@@ -277,7 +277,9 @@ export const SmartSearchForm = <T extends Record<string, unknown>>({
 }
 
 /**
- * Alias of {@link SmartSearchForm}. Provided so `<SearchEngine … />` reads
- * naturally at call sites that think in terms of a "search engine" block.
+ * Alias of {@link SmartSearchForm}.
+ *
+ * @deprecated Prefer {@link SmartSearchForm} — the canonical name. `SearchEngine`
+ * is kept for backward compatibility and will be removed in a future major.
  */
 export const SearchEngine = SmartSearchForm
