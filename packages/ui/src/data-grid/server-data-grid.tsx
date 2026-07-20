@@ -28,10 +28,18 @@ import { GridToolbar } from "./grid-toolbar"
 import { SmartLoadingOverlay } from "@iamsaroj/smart-ui/smart-components/loading-overlay"
 import { SmartPageError } from "@iamsaroj/smart-ui/smart-components/page/smart-page-error"
 import {
+  useSmartUIDefaults,
+  useSmartUILabels,
+} from "@iamsaroj/smart-ui/smart-components/provider"
+import {
   type ServerFetchParams,
   type ServerFetchResult,
   type ServerFilter,
 } from "./pagination"
+import {
+  createPageFetcher,
+  type CreatePageFetcherOptions,
+} from "./create-page-fetcher"
 import { dataGridTheme } from "./grid-theme"
 import {
   ensureGridModules,
@@ -83,11 +91,27 @@ export interface SmartServerGridProps<TRow> {
    * Fetch one block of rows from the server. Receives normalized paging, sort
    * and filter params plus an `AbortSignal`, and resolves to `{ rows, total }`.
    * Rejecting (or throwing) surfaces the error overlay with a **Retry** button.
+   *
+   * Provide **either** `fetchRows` (full control) **or** {@link source} (a
+   * `createPageFetcher` config for the common case) — `fetchRows` wins if both
+   * are set.
    */
-  fetchRows: (
+  fetchRows?: (
     params: ServerFetchParams,
     signal: AbortSignal
   ) => Promise<ServerFetchResult<TRow>>
+  /**
+   * Declarative fetch config — the {@link createPageFetcher} options object. The
+   * grid builds the `fetchRows` adapter for you, so simple server pages never
+   * define a fetch function at all:
+   *
+   * ```tsx
+   * <SmartServerGrid source={{ url: "/api/users", itemSchema: userRowSchema }} … />
+   * ```
+   *
+   * Ignored when {@link fetchRows} is provided.
+   */
+  source?: CreatePageFetcherOptions<TRow>
   /** Stable row id — required for selection and block reconciliation across pages. */
   getRowId: (row: TRow) => string
   /**
@@ -210,13 +234,14 @@ const SmartServerGridInner = <TRow,>(
   const {
     columns,
     fetchRows,
+    source,
     getRowId,
     actionColumn,
     filters,
     query,
     pagination = true,
-    pageSize = 20,
-    pageSizeOptions = [5, 10, 20, 50],
+    pageSize: pageSizeProp,
+    pageSizeOptions: pageSizeOptionsProp,
     selection = "none",
     onSelectionChange,
     onRowDoubleClick,
@@ -229,14 +254,45 @@ const SmartServerGridInner = <TRow,>(
     columnSelector = true,
     exportExcel = true,
     exportFileName = "export",
-    density = "normal",
+    density: densityProp,
     fill = false,
     height = 480,
     emptyState,
     className,
   } = props
 
+  // Provider fallbacks (English labels + canonical defaults with no provider); an
+  // explicit prop always wins.
+  const uiDefaults = useSmartUIDefaults()
+  const uiLabels = useSmartUILabels()
+  const pageSize = pageSizeProp ?? uiDefaults.grid.pageSize
+  const pageSizeOptions = pageSizeOptionsProp ?? uiDefaults.grid.pageSizeOptions
+  const density = densityProp ?? uiDefaults.grid.density
+
   ensureGridModules()
+
+  // Resolve the fetch adapter: an explicit `fetchRows` wins; otherwise build one
+  // from the declarative `source` config. If neither is given, fall back to a
+  // rejecting fetcher so the misconfiguration surfaces in the error overlay
+  // (with a clear message) rather than as a blank grid.
+  const resolvedFetchRows = useMemo<
+    (
+      params: ServerFetchParams,
+      signal: AbortSignal
+    ) => Promise<ServerFetchResult<TRow>>
+  >(
+    () =>
+      fetchRows ??
+      (source
+        ? createPageFetcher<TRow>(source)
+        : () =>
+            Promise.reject(
+              new Error(
+                "SmartServerGrid: provide a `fetchRows` function or a `source` config."
+              )
+            )),
+    [fetchRows, source]
+  )
 
   // `filters` (already-normalized) and `query` (plain search-form object) are
   // merged into one external-filter list; both participate in the reset-on-change
@@ -249,13 +305,13 @@ const SmartServerGridInner = <TRow,>(
   // Latest props read by the (stable) datasource + grid callbacks, without
   // re-creating them — recreating the datasource would reset the grid.
   const gridApiRef = useRef<GridApi<TRow> | null>(null)
-  const fetchRowsRef = useRef(fetchRows)
+  const fetchRowsRef = useRef(resolvedFetchRows)
   const getRowIdRef = useRef(getRowId)
   const onRowDoubleClickRef = useRef(onRowDoubleClick)
   const filtersRef = useRef(externalFilters)
   const persistKeyRef = useRef(persistStateKey)
   useLayoutEffect(() => {
-    fetchRowsRef.current = fetchRows
+    fetchRowsRef.current = resolvedFetchRows
     getRowIdRef.current = getRowId
     onRowDoubleClickRef.current = onRowDoubleClick
     filtersRef.current = externalFilters
@@ -513,7 +569,7 @@ const SmartServerGridInner = <TRow,>(
           leadingContent={
             selection !== "none" && gridSelection.selectedCount > 0 ? (
               <span className="text-sm text-muted-foreground">
-                {gridSelection.selectedCount} selected
+                {uiLabels.grid.selected(gridSelection.selectedCount)}
               </span>
             ) : null
           }
@@ -558,8 +614,9 @@ const SmartServerGridInner = <TRow,>(
           noRowsOverlayComponent={NoRowsOverlay}
           noRowsOverlayComponentParams={
             {
-              title: emptyState?.title,
-              description: emptyState?.description,
+              title: emptyState?.title ?? uiLabels.grid.empty.title,
+              description:
+                emptyState?.description ?? uiLabels.grid.empty.description,
             } satisfies NoRowsParams
           }
           onGridReady={handleGridReady}
@@ -578,7 +635,7 @@ const SmartServerGridInner = <TRow,>(
           <div
             role="status"
             aria-live="polite"
-            aria-label="Loading more rows"
+            aria-label={uiLabels.grid.loadingMore}
             className="pointer-events-none absolute inset-x-0 top-0 z-40 h-0.5 overflow-hidden bg-primary/20"
           >
             <div
@@ -590,15 +647,15 @@ const SmartServerGridInner = <TRow,>(
           </div>
         ) : null}
         {initialLoading && !error ? (
-          <SmartLoadingOverlay loading label="Loading data…" />
+          <SmartLoadingOverlay loading label={uiLabels.grid.loading} />
         ) : null}
         {error ? (
           <SmartPageError
             variant="overlay"
-            title="Couldn’t load data"
+            title={uiLabels.grid.errorTitle}
             description={error}
             onRetry={handleRetry}
-            retryLabel="Retry"
+            retryLabel={uiLabels.grid.retry}
           />
         ) : null}
       </div>

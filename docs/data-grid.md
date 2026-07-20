@@ -37,21 +37,29 @@ const columns: DataGridColumn<User>[] = [
 ## 80% example — server grid
 
 ```tsx
-// createPageFetcher builds a fetch → status-check → Zod-parse → {rows,total} pipeline.
-const fetchUsers = createPageFetcher({
-  url: "/api/users",
-  itemSchema: userSchema, // validates each row
-})
+// Simplest form: hand the grid a `source` config and it builds the fetcher
+// (encode → request → unwrap → Zod-parse → {rows,total} pipeline) for you.
+<SmartServerGrid
+  columns={columns}
+  getRowId={(u) => u.id}
+  source={{ url: "/api/users", itemSchema: userSchema }}
+/>
 
+// Full control: build the fetcher yourself and pass `fetchRows`.
+const fetchUsers = createPageFetcher({ url: "/api/users", itemSchema: userSchema })
 <SmartServerGrid columns={columns} fetchRows={fetchUsers} getRowId={(u) => u.id} />
 ```
+
+Use `source` for the common case; drop to `fetchRows` when you need to wrap the
+fetcher (e.g. inject per-call params). `fetchRows` wins if both are supplied.
 
 ## Key props
 
 | Prop               | Grid            | Notes                                                                                                                                     |
 | ------------------ | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `rows`             | SmartGrid       | All data up front.                                                                                                                        |
-| `fetchRows`        | SmartServerGrid | `(params, signal) => Promise<{rows,total}>`.                                                                                              |
+| `fetchRows`        | SmartServerGrid | `(params, signal) => Promise<{rows,total}>`. Full control.                                                                                |
+| `source`           | SmartServerGrid | `createPageFetcher` config; the grid builds `fetchRows`. Ignored if `fetchRows` is set.                                                   |
 | `columns`          | both            | `DataGridColumn<TRow>` (AG Grid `ColDef` alias).                                                                                          |
 | `selection`        | both            | `"single" \| "multiple" \| "none"`.                                                                                                       |
 | `getRowId`         | both            | Stable id — recommended for selection + updates.                                                                                          |
@@ -151,6 +159,36 @@ Key contracts:
   `GridActionCell`, `ACTION_COLUMN_ID`) are exported for grids that aren't
   `SmartGrid`/`SmartServerGrid`.
 
+## Adapting to a real backend
+
+`createPageFetcher` (and the `source` prop) defaults to a plain `fetch` against a
+0-indexed, un-enveloped Spring endpoint. Four knobs adapt it to any backend —
+each defaults to today's behavior, so you set only what differs:
+
+| Knob            | Default                | Use for                                                                                                   |
+| --------------- | ---------------------- | --------------------------------------------------------------------------------------------------------- |
+| `request`       | `fetch` + status check | Any transport — axios/ky with auth headers, base URL, its own error handling. Return the **parsed body**. |
+| `pageIndexBase` | `0`                    | 1-indexed APIs (`1` sends `page + 1`).                                                                    |
+| `unwrap`        | identity               | Peeling a response envelope down to the `Page<T>` (`body.data`).                                          |
+| `encodeQuery`   | `buildSpringQuery`     | A different query dialect — `buildFlatQuery` (bare `field=value`) or custom.                              |
+
+`itemSchema` is optional: omit it to skip Zod validation for a trusted source.
+
+```ts
+// axios transport, { data: Page<T> } envelope, 1-indexed, flat query params:
+const fetchUsers = createPageFetcher({
+  url: "/users",
+  request: (url, { signal }) => http.get(url, { signal }).then((r) => r.data),
+  unwrap: (body) => body.data,
+  pageIndexBase: 1,
+  encodeQuery: buildFlatQuery,
+  itemSchema: userSchema,
+})
+```
+
+Define the transport/envelope/index-base once as an app-level partial and spread
+it per endpoint, so a new grid is just `{ ...adapter, url, itemSchema }`.
+
 ## Contracts
 
 - **Spring `Page<T>`**: server responses use the Spring Data envelope
@@ -163,8 +201,10 @@ Key contracts:
 
 ## Escape hatches
 
-- `createPageFetcher` takes an injectable `fetchImpl` (testability/SSR) and a
-  `buildQuery`/`mapError` override.
+- `createPageFetcher` is transport-agnostic (`request`, `pageIndexBase`,
+  `unwrap`, `encodeQuery`; see [Adapting to a real backend](#adapting-to-a-real-backend)).
+  The default transport still takes an injectable `fetchImpl` (testability/SSR)
+  and a `mapError` override. `buildQuery` is a deprecated alias for `encodeQuery`.
 - Column defs are plain AG Grid `ColDef`s — anything AG Grid Community supports
   (cell renderers, value formatters) works.
 

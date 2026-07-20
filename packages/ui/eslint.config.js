@@ -31,6 +31,17 @@ export default defineConfig([
     },
   },
   {
+    // SmartUIProvider is a single context-definition module that deliberately
+    // colocates the provider component with its hooks (useSmartUILabels, …) and
+    // default maps — the public config surface belongs in one file. Same
+    // rationale as the Lexical node files above; Fast Refresh's component-only
+    // rule doesn't fit a context definition.
+    files: ["src/smart-components/provider.tsx"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
+  {
     // Vendored shadcn/ui primitives (regenerable via `shadcn add`). Their a11y
     // semantics are owned upstream — the Label associates with a control at each
     // call site, and InputGroupAddon's click-to-focus is a purely additive

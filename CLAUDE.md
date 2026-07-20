@@ -125,10 +125,15 @@ Two public components backed by AG Grid Community:
   `IGetRowsParams` → normalized params), `pageSchema` (Zod schema for Spring Data `Page<T>` responses), `toSpringSort`
   helper, and the Spring **query encoder** (`buildSpringQuery` / `encodeSpringFilter`) — the matching decoder stays
   app/mock-side.
-- `create-page-fetcher.ts` — `createPageFetcher({ url, itemSchema, buildQuery?, mapError?, fetchImpl? }) → fetchRows`:
-  the reusable fetch → status-check → Zod-`pageSchema`-parse → `{rows,total}` pipeline for `SmartServerGrid`. Transport
-  is injectable (`fetchImpl`) for testability/SSR. Returned fetcher takes an optional 3rd `extraParams` arg for per-call
-  query params. `apps/web/src/api/users.ts` is built on it.
+- `create-page-fetcher.ts` — `createPageFetcher({ url, itemSchema?, encodeQuery?, pageIndexBase?, unwrap?, request?,
+mapError?, fetchImpl? }) → fetchRows`: the reusable encode → request → unwrap → Zod-`pageSchema`-parse → `{rows,total}`
+  pipeline for `SmartServerGrid`. Four transport knobs adapt it to any backend, all defaulting to today's behavior:
+  `request` (any transport — axios/ky/fetch; returns the parsed body), `pageIndexBase` (`0` default | `1` for 1-indexed
+  APIs), `unwrap` (peel a response envelope to `Page<T>`), `encodeQuery` (`buildSpringQuery` default | `buildFlatQuery` |
+  custom; `buildQuery` is a deprecated alias). `itemSchema` is optional (omit to skip Zod for a trusted source). The
+  default transport still takes an injectable `fetchImpl` (testability/SSR) + `mapError`. Returned fetcher takes an
+  optional 3rd `extraParams` arg for per-call query params. `SmartServerGrid` also accepts this config directly via its
+  `source` prop (builds `fetchRows` for you). `apps/web/src/api/users.ts` is built on it.
 - `server-grid-internals.ts` — pure helpers for state persistence (`readPersistedGridState`/`writePersistedGridState`),
   Excel export shaping (`collectGridExport`), filter merging, debounce.
 - `use-server-grid-selection.ts` — cross-page selection hook; the selected-id `Set` is the source of truth so selections
@@ -156,6 +161,17 @@ flat API can't express (see the doc comment in `smart-card.tsx` for the pattern)
 
 There is a `shadcn-smart-wrappers` skill that converts native shadcn compound usage (`SCard`, `SDialog`, …) into these
 wrappers — prefer `Smart*` wrappers when writing or editing TSX in this repo.
+
+**`smart-components/provider.tsx`** — `SmartUIProvider` (`@iamsaroj/smart-ui/smart-components/provider`): one optional
+context for app-wide **labels** (i18n), **defaults** (per-instance prop fallbacks), and **formats** (date/number hooks).
+It is a leaf module (declares its own `SmartUIDensity` union rather than importing from `data-grid`) so every layer —
+`data-grid`, `form`, `search`, `smart-components` — can consume it without a cycle. Components read via
+`useSmartUILabels()` / `useSmartUIDefaults()` / `useSmartUIFormats()`; a passed prop always wins over a provider value,
+and with no provider the built-in English labels (`DEFAULT_LABELS`) + canonical defaults (`DEFAULT_DEFAULTS`) apply, so
+it is purely additive. Wired so far: server/client grid (loading/error/retry/empty/selected/search-placeholder + grid
+`pageSize`/`density`/`pageSizeOptions` on the **server** grid only — the client grid's pagination defaults diverge and
+converge under I8), `SmartConfirmDialog` (title/confirm/cancel), `SmartSearchForm` (search/reset), `SmartForm`
+(submit label + `columns`). Remaining hard-coded strings migrate onto the same label keys incrementally.
 
 **`smart-components/buttons/`** — action-button presets (barrel: `@iamsaroj/smart-ui/smart-components/buttons`). One
 `ACTION_BUTTON_CONFIG` map (`action-config.ts`) is the single source of truth for each action's icon, label, variant,
@@ -195,7 +211,21 @@ no per-field wiring. Key design points (see `smart-form.tsx`):
 - `data`/`setData` are optional — the form owns its state internally and mirrors edits out. The two sync effects use a
   `selfUpdateRef` guard to avoid an echo loop between the mirror-out and reconcile-in effects; read those comments
   before touching state logic.
+- **Create/edit modes** (one schema, no `key` remount): `initialData` seeds an uncontrolled form once (distinct from the
+  mirrored `data`); the `ref` handle (`SmartFormHandle`) exposes `reset(values?)` (re-initialize to a record or the
+  seed, clearing state) and `submit()`. Per-field `modes?: string[]` + the `mode` prop drop a field from render **and**
+  validation **and** the submitted value: `modeExcludedKeys` → `scopedSchema` (base `ZodObject.omit(mask)`; a
+  `.refine`/`.superRefine`-wrapped schema can't be scoped and validates as-is) + `stripExcluded` on submit. `SmartForm`
+  is a generic `forwardRef` cast after definition (same idiom as `SmartServerGrid`).
 - Empty optional strings are normalized to `undefined` before validation so blank optional fields don't error.
+- **Typed & async options** (option-based fields — select/combobox/multiselect/radio/segmented/checkbox-group):
+  `FieldOption<V extends string | number | boolean>` keeps the real value in the store (an honest `roleId: z.number()`
+  schema, no `String()`/`Number()`), and `options` may be an async resolver `(ctx: { search?; signal }) =>
+Promise<FieldOption<V>[]>`. Both flow through one adapter, `OptionField` (`option-field.tsx`), wired in as the registry
+  `component` for those types: it resolves options via `useFieldOptions` (`use-field-options.ts` — array passthrough vs
+  aborted async fetch with loading/error state), maps typed store values ↔ string DOM keys via a codec
+  (`option-utils.ts` — `buildOptionCodec`/`serializeOptionValue`), and renders the underlying string-based `Smart*Field`
+  (which stay string-only for standalone use). Loading shows the `form.loadingOptions` provider label as a placeholder.
 
 Individual `Smart*Field` files (`smart-input-field.tsx`, etc.) all take `FieldBaseProps<T>` (from `base.ts`) and are
 also exported for standalone use.

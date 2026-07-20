@@ -47,13 +47,41 @@ export type FieldType =
   | "segmented"
   | "yesno"
 
-/** A single selectable choice for `select` / `combobox` / `multiselect` / `radio` / `segmented` fields. */
-export interface FieldOption {
-  value: string
+/** The value types an option may carry. Serialized to a string key for the DOM;
+ * the form value keeps the real type. */
+export type PrimitiveOptionValue = string | number | boolean
+
+/**
+ * A single selectable choice for `select` / `combobox` / `multiselect` / `radio`
+ * / `segmented` / `checkbox-group` fields. Generic over the value type so a
+ * numeric- or boolean-valued select keeps an honest schema (`roleId: z.number()`)
+ * with no `String()`/`Number()` conversion at the boundary. Defaults to the wide
+ * `PrimitiveOptionValue` so existing string-valued options are unaffected.
+ */
+export interface FieldOption<
+  V extends PrimitiveOptionValue = PrimitiveOptionValue,
+> {
+  value: V
   label: string
   description?: string
   disabled?: boolean
 }
+
+/**
+ * Async options resolver for select/combobox/multiselect/radio/segmented/
+ * checkbox-group fields: called with an `AbortSignal` (and, for search-aware
+ * backends, the current `search` term) and resolves to the option list. The
+ * library never imports a fetch client — the *function* is supplied by the app,
+ * so data-fetching stays app-owned while the control handles loading/empty state.
+ */
+export type AsyncFieldOptions<
+  V extends PrimitiveOptionValue = PrimitiveOptionValue,
+> = (ctx: { search?: string; signal: AbortSignal }) => Promise<FieldOption<V>[]>
+
+/** A field's `options`: a materialized list or an async resolver. */
+export type FieldOptions<
+  V extends PrimitiveOptionValue = PrimitiveOptionValue,
+> = FieldOption<V>[] | AsyncFieldOptions<V>
 
 /** Props every field shares, regardless of type — the discriminated union base. */
 export interface FieldBase<T extends Record<string, unknown>> {
@@ -67,6 +95,13 @@ export interface FieldBase<T extends Record<string, unknown>> {
   colSpan?: 1 | 2 | 3
   /** Return `true` to hide the field (and skip validation for it). */
   hidden?: (data: T) => boolean
+  /**
+   * Modes this field appears in (e.g. `["create"]`). Omit to show in every mode.
+   * With {@link SmartForm}'s `mode` prop set, a field is rendered **and validated**
+   * only when its `modes` include the active mode — so one schema serves create,
+   * edit, and any other mode without a `pick`/`extend` hack.
+   */
+  modes?: string[]
 }
 
 // ── Text ──────────────────────────────────────────────────────────────────
@@ -185,7 +220,7 @@ export interface SelectField<
   T extends Record<string, unknown>,
 > extends FieldBase<T> {
   type: "select"
-  options?: FieldOption[]
+  options?: FieldOptions
 }
 
 /** `combobox` / `autocomplete` — searchable single-choice popover. */
@@ -193,7 +228,7 @@ export interface ComboboxField<
   T extends Record<string, unknown>,
 > extends FieldBase<T> {
   type: "combobox" | "autocomplete"
-  options?: FieldOption[]
+  options?: FieldOptions
   searchPlaceholder?: string
   emptyText?: string
 }
@@ -203,7 +238,7 @@ export interface MultiSelectField<
   T extends Record<string, unknown>,
 > extends FieldBase<T> {
   type: "multiselect"
-  options?: FieldOption[]
+  options?: FieldOptions
   maxSelected?: number
   searchPlaceholder?: string
 }
@@ -213,7 +248,7 @@ export interface RadioField<
   T extends Record<string, unknown>,
 > extends FieldBase<T> {
   type: "radio"
-  options?: FieldOption[]
+  options?: FieldOptions
   orientation?: "horizontal" | "vertical"
 }
 
@@ -222,7 +257,7 @@ export interface SegmentedField<
   T extends Record<string, unknown>,
 > extends FieldBase<T> {
   type: "segmented"
-  options?: FieldOption[]
+  options?: FieldOptions
 }
 
 /** `checkbox-group` — multiple choices from a visible group. */
@@ -230,7 +265,7 @@ export interface CheckboxGroupField<
   T extends Record<string, unknown>,
 > extends FieldBase<T> {
   type: "checkbox-group"
-  options?: FieldOption[]
+  options?: FieldOptions
   orientation?: "horizontal" | "vertical"
 }
 
@@ -291,7 +326,7 @@ export interface ResolvedFieldDefinition<
   T extends Record<string, unknown> = Record<string, unknown>,
 > extends FieldBase<T> {
   type: FieldType
-  options?: FieldOption[]
+  options?: FieldOptions
   decimalScale?: number
   min?: number
   max?: number

@@ -6,8 +6,13 @@
  */
 import { z } from "zod"
 
-import { SmartForm, type FieldDefinition } from "@iamsaroj/smart-ui/form"
 import {
+  SmartForm,
+  type FieldDefinition,
+  type SmartFormHandle,
+} from "@iamsaroj/smart-ui/form"
+import {
+  buildFlatQuery,
   createPageFetcher,
   toServerFilters,
   type DataGridColumn,
@@ -21,6 +26,10 @@ import type { TreeNode } from "@iamsaroj/smart-ui/tree"
 import type { TransferItem } from "@iamsaroj/smart-ui/transfer-list"
 import type { CalendarEvent } from "@iamsaroj/smart-ui/calendar"
 import { sanitizeEditorHtml } from "@iamsaroj/smart-ui/text-editor"
+import {
+  SmartUIProvider,
+  type SmartUIProviderProps,
+} from "@iamsaroj/smart-ui/smart-components/provider"
 
 // ── form.md ──────────────────────────────────────────────────────────
 const schema = z.object({
@@ -37,6 +46,40 @@ const fields: FieldDefinition<Values>[] = [
 ]
 void fields
 void SmartForm
+
+// form.md § Typed & async options
+const roleSchema = z.object({ roleId: z.number({ error: "Choose a role" }) })
+type RoleForm = z.infer<typeof roleSchema>
+declare function fetchRoles(
+  signal: AbortSignal
+): Promise<{ id: number; name: string }[]>
+const roleFields: FieldDefinition<RoleForm>[] = [
+  {
+    name: "roleId",
+    type: "select",
+    label: "Role",
+    options: ({ signal }) =>
+      fetchRoles(signal).then((rs) =>
+        rs.map((r) => ({ value: r.id, label: r.name }))
+      ),
+  },
+]
+void roleFields
+
+// form.md § Create / edit modes
+const accountSchema = z.object({
+  username: z.string().min(1),
+  password: z.string().min(8),
+})
+type Account = z.infer<typeof accountSchema>
+const accountFields: FieldDefinition<Account>[] = [
+  { name: "username", type: "text", label: "Username" },
+  { name: "password", type: "password", label: "Password", modes: ["create"] },
+]
+void accountFields
+declare const accountRef: { current: SmartFormHandle<Account> | null }
+const loadRecord = (row: Account) => accountRef.current?.reset(row)
+void loadRecord
 
 // ── data-grid.md ────────────────────────────────────────────────────────────
 interface User {
@@ -60,6 +103,20 @@ const fetchUsers = createPageFetcher({
   itemSchema: userSchema,
 })
 void fetchUsers
+
+// Adapting to a real backend (docs/data-grid.md § Adapting to a real backend)
+declare const http: {
+  get: (url: string, cfg: { signal: AbortSignal }) => Promise<{ data: unknown }>
+}
+const fetchUsersAdapted = createPageFetcher({
+  url: "/users",
+  request: (url, { signal }) => http.get(url, { signal }).then((r) => r.data),
+  unwrap: (body) => (body as { data: unknown }).data,
+  pageIndexBase: 1,
+  encodeQuery: buildFlatQuery,
+  itemSchema: userSchema,
+})
+void fetchUsersAdapted
 
 // External filters from a search form (docs/data-grid.md § External filters)
 const externalFilters = toServerFilters(
@@ -121,3 +178,21 @@ void events
 // ── text-editor.md ──────────────────────────────────────────────────
 const clean: string = sanitizeEditorHtml("<p>hi</p>")
 void clean
+
+// ── smart-components.md § Global config ─────────────────────────────────
+// Type-check the labels/defaults shapes the provider accepts (JSX-free so this
+// stays a .ts snippet file).
+const providerProps: SmartUIProviderProps = {
+  labels: {
+    confirm: { confirm: "삭제", cancel: "취소" },
+    grid: { retry: "다시 시도", selected: (n) => `${n}개 선택됨` },
+    search: { search: "검색", reset: "초기화" },
+  },
+  defaults: {
+    grid: { pageSize: 50, density: "compact" },
+    form: { columns: 2 },
+  },
+  children: null,
+}
+void providerProps
+void SmartUIProvider

@@ -75,6 +75,38 @@ bar, footer, and empty/loading/error states) through `PageContext`. This is the
 **sanctioned exception** to the flat-props philosophy (see
 [adr/0005](./adr/0005-flat-props-smart-wrappers-over-compound.md)).
 
+## Global config — `@iamsaroj/smart-ui/smart-components/provider`
+
+`SmartUIProvider` is one optional context for app-wide **labels** (i18n),
+**defaults** (per-instance prop fallbacks), and **formats** (date/number hooks).
+Mount it once near the root; with no provider, components behave exactly as
+before (English strings + canonical defaults), so it is purely additive. A
+component prop always wins over a provider default; nested providers compose
+(a child deep-merges over its parent).
+
+```tsx
+import { SmartUIProvider } from "@iamsaroj/smart-ui/smart-components/provider"
+;<SmartUIProvider
+  labels={{
+    confirm: { confirm: "삭제", cancel: "취소" },
+    grid: { retry: "다시 시도", selected: (n) => `${n}개 선택됨` },
+    search: { search: "검색", reset: "초기화" },
+  }}
+  defaults={{
+    grid: { pageSize: 50, density: "compact" },
+    form: { columns: 2 },
+  }}
+>
+  <App />
+</SmartUIProvider>
+```
+
+Labels are grouped and typed (`grid`, `search`, `confirm`, `form`); override any
+subset. Read them anywhere with `useSmartUILabels()`; read defaults/formats with
+`useSmartUIDefaults()` / `useSmartUIFormats()`. The label map is the public i18n
+surface — the highest-traffic strings (grid, search, confirm, form) read from it
+today, with the remaining built-in strings migrating onto the same keys.
+
 ## Placement rule
 
 General-purpose components go in `smart-components/`; feature-scoped ones go in
