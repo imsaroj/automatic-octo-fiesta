@@ -1,3 +1,10 @@
+# [5.2.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v5.1.0...v5.2.0) (2026-07-22)
+
+
+### Features
+
+* **page:** rebuild SmartPageError as a derived failure surface ([2eecb05](https://github.com/imsaroj/automatic-octo-fiesta/commit/2eecb05cf33a0a46203b4d0b128cff0f5ae784be))
+
 # [5.1.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v5.0.0...v5.1.0) (2026-07-22)
 
 
