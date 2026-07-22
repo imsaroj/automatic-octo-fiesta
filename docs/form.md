@@ -3,9 +3,10 @@
 ## What it is
 
 Declarative forms built on **TanStack Form + Zod v4**. You give `SmartForm` a Zod
-`schema` and a `FieldDefinition[]`; it renders the right `Smart*Field` control per
+`schema` and a `FormNode[]`; it renders the right `Smart*Field` control per
 entry, validates against the schema, derives required-ness from the schema, and
-manages state — no per-field wiring.
+manages state — no per-field wiring. Layout is the container-query grid from
+[`@iamsaroj/smart-ui/layout`](./layout.md).
 
 ## Import
 
@@ -43,18 +44,74 @@ const fields: FieldDefinition<Values>[] = [
 
 ## Key props
 
-| Prop             | Type                   | Notes                                                 |
-| ---------------- | ---------------------- | ----------------------------------------------------- |
-| `schema`         | `z.ZodType`            | **Single source of truth** for validation + required. |
-| `fields`         | `FieldDefinition<T>[]` | UI-only; `type` selects the control (discriminated).  |
-| `data`/`setData` | `T` / `(v: T) => void` | Optional — the form owns state and mirrors edits out. |
-| `columns`        | `1 \| 2 \| 3 \| 4`     | Responsive grid.                                      |
-| `submitLabel`    | `string`               | Submit button text.                                   |
-| `onSubmit`       | `(values: T) => void`  | Fires only when the schema passes.                    |
+| Prop             | Type                           | Notes                                                 |
+| ---------------- | ------------------------------ | ----------------------------------------------------- |
+| `schema`         | `z.ZodType`                    | **Single source of truth** for validation + required. |
+| `fields`         | `FieldDefinition<T>[]`         | UI-only; `type` selects the control (discriminated).  |
+| `data`/`setData` | `T` / `(v: T) => void`         | Optional — the form owns state and mirrors edits out. |
+| `columns`        | `Responsive<GridColumnsValue>` | Any count, track list, or `{ auto: "fit", min }`.     |
+| `preset`         | `LayoutPreset`                 | Start from a named layout (`"twelve"`, `"pair"`, …).  |
+| `submitLabel`    | `string`                       | Submit button text.                                   |
+| `onSubmit`       | `(values: T) => void`          | Fires only when the schema passes.                    |
 
 `FieldType` is a large discriminated union (`text`/`email`/`currency`/`select`/
 `multiselect`/`date`/`daterange`/`checkbox`/`switch`/`radio`/`slider`/`rating`/
 `textarea`/`text-editor`/…). Each field keeps only the extras valid for its type.
+
+## Layout
+
+Fields are placed on the container-query grid from
+[`@iamsaroj/smart-ui/layout`](./layout.md). Pick any column count on the form and
+give each field a `span`; spans clamp to the live column count, so a wide field
+collapses to full width on a narrow container by itself.
+
+```tsx
+const fields: FormNode<Values>[] = [
+  { name: "street", type: "text", span: "full" },   // edge to edge
+  { name: "city", type: "text", span: "1/2" },      // half, any column count
+  { name: "zip", type: "text", span: 3 },           // 3 of 12 tracks
+  { name: "notes", type: "textarea", span: 6, rowSpan: 2 },
+]
+
+<SmartForm schema={schema} fields={fields} columns={{ base: 1, md: 12 }} />
+```
+
+Every field also takes `colStart`, `rowSpan`, `order`, and `newRow`. See
+[layout.md](./layout.md) for the full span/column vocabulary.
+
+## Layout nodes
+
+`fields` is a tree, not a flat list — alongside fields it accepts three node
+kinds, each gated by the same `hidden` / `modes` contract:
+
+| `kind`    | Renders                                                           |
+| --------- | ----------------------------------------------------------------- |
+| `section` | A titled group on its **own** grid; nests, and can be collapsible |
+| `divider` | A rule, optionally labelled                                       |
+| `custom`  | Anything you return, given the live `values`                      |
+
+```tsx
+const fields: FormNode<Values>[] = [
+  {
+    kind: "section",
+    title: "Billing address",
+    variant: "card",
+    columns: 12, // its own grid; omit to inherit the form's
+    collapsible: true,
+    fields: [
+      { name: "street", type: "text", span: "full" },
+      { name: "city", type: "text", span: 6 },
+      { name: "zip", type: "text", span: 6 },
+    ],
+  },
+]
+```
+
+A section's `modes` cascades to everything nested inside it, so gating a whole
+step is one declaration rather than one per field. Grouping is purely a layout
+concern: validation, the blank record, and error focusing all run off the
+flattened field list (`flattenFields`), however deep the tree gets. A collapsed
+section that turns out to hide a submit error is reopened automatically.
 
 ## Typed & async options
 

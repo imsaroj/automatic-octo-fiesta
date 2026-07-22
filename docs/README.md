@@ -11,6 +11,7 @@ props → Escape hatches → Gotchas → Demo route.**
 
 | Guide                                        | Entrypoint                                                          |
 | -------------------------------------------- | ------------------------------------------------------------------- |
+| [layout.md](./layout.md)                     | `@iamsaroj/smart-ui/layout`                                         |
 | [form.md](./form.md)                         | `@iamsaroj/smart-ui/form`                                           |
 | [data-grid.md](./data-grid.md)               | `@iamsaroj/smart-ui/data-grid`                                      |
 | [search.md](./search.md)                     | `@iamsaroj/smart-ui/search`                                         |

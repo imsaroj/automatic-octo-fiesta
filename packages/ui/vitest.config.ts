@@ -15,6 +15,7 @@ const NODE_TESTS = [
   "src/data-grid/grid-datasource.test.ts",
   "src/data-grid/pagination.test.ts",
   "src/form/field-types.test.tsx",
+  "src/layout/resolve.test.ts",
   "src/form/smart-form-internals.test.ts",
   "src/lib/format.test.ts",
   "src/lib/xlsx.test.ts",

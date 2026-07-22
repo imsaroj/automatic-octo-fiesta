@@ -3,6 +3,9 @@
 @import "shadcn/tailwind.css";
 /* Latin subsets only — see fonts.css for the policy. */
 @import "./fonts.css";
+/* Container-query grid engine behind `@iamsaroj/smart-ui/layout`, SmartForm,
+ * and SmartSearchForm. Pure CSS — it defines no Tailwind utilities. */
+@import "./layout.css";
 
 @custom-variant dark (&:is(.dark *));
 /*

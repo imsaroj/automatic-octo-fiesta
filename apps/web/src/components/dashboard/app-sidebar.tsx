@@ -97,6 +97,7 @@ const data = {
       icon: <NotepadTextIcon />,
       items: [
         { title: "Basic Form", url: "/form/basic" },
+        { title: "Layout Engine", url: "/form/layout" },
         { title: "All Field Types", url: "/form/all-fields" },
         { title: "Dynamic Form", url: "/form/dynamic" },
         { title: "Multi-Step Wizard", url: "/form/wizard" },

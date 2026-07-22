@@ -1,0 +1,407 @@
+/*
+ * Smart UI layout engine — the static half of the CSS Grid system implemented
+ * in `packages/ui/src/layout/`. Imported by `globals.css`; never import this
+ * file directly from an app.
+ *
+ * ── Why custom properties instead of utility classes ────────────────────────
+ * Tailwind can only emit classes it can *see* in source, so `grid-cols-*` /
+ * `col-span-*` can never express a column count or span chosen at runtime.
+ * Every responsive value here therefore travels as a CSS custom property set
+ * inline by JS, and this stylesheet does the one thing inline styles cannot:
+ * pick which breakpoint's value wins.
+ *
+ * ── Why container queries instead of media queries ─────────────────────────
+ * A layout engine inside a component library must react to the width of the
+ * space the form was *given*, not the browser window: the same `<SmartForm>`
+ * renders in a page body, a 420px drawer, a split pane, and a dialog. Viewport
+ * media queries get all but the first of those wrong. There is deliberately no
+ * viewport mode — for a full-width form the container is the viewport anyway.
+ *
+ * ── The variable protocol ──────────────────────────────────────────────────
+ * JS sets only the breakpoints the author declared:
+ *
+ *   grid  → --sui-tpl-{bp}   grid-template-columns for that breakpoint
+ *           --sui-gx-{bp}    column gap        --sui-gy-{bp}  row gap
+ *   cell  → --sui-col-{bp}   grid-column        --sui-row-{bp} grid-row
+ *           --sui-ord-{bp}   order
+ *
+ * The blocks below resolve each breakpoint to a `var()` chain that falls back
+ * through every smaller breakpoint, so an undeclared breakpoint inherits the
+ * nearest declared one below it — mobile-first, exactly like Tailwind, but with
+ * values the compiler never has to know about.
+ *
+ * Breakpoints are *container* widths: xs 20rem · sm 30rem · md 48rem ·
+ * lg 64rem · xl 80rem · 2xl 96rem. Keep them in sync with `BREAKPOINT_MIN_WIDTH`
+ * in `src/layout/types.ts`.
+ */
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+
+/*
+ * The query container. A grid cannot respond to its own width, so every layout
+ * renders this wrapper around its grid element.
+ */
+.sui-layout {
+  container-type: inline-size;
+  container-name: sui;
+  min-width: 0;
+}
+
+.sui-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: var(--sui-tpl, repeat(1, minmax(0, 1fr)));
+  grid-auto-flow: var(--sui-flow, row);
+  column-gap: var(--sui-gx, 1rem);
+  row-gap: var(--sui-gy, 1rem);
+  align-items: var(--sui-align, stretch);
+  justify-items: var(--sui-justify, stretch);
+
+  /*
+   * Custom properties inherit, so a nested grid would otherwise pick up the
+   * breakpoint declarations of an ancestor grid it has nothing to do with.
+   * Resetting them to the guaranteed-invalid value makes each grid start from
+   * a clean slate; the inline style JS writes still wins over this rule.
+   */
+  --sui-tpl-base: initial;
+  --sui-tpl-xs: initial;
+  --sui-tpl-sm: initial;
+  --sui-tpl-md: initial;
+  --sui-tpl-lg: initial;
+  --sui-tpl-xl: initial;
+  --sui-tpl-2xl: initial;
+  --sui-gx-base: initial;
+  --sui-gx-xs: initial;
+  --sui-gx-sm: initial;
+  --sui-gx-md: initial;
+  --sui-gx-lg: initial;
+  --sui-gx-xl: initial;
+  --sui-gx-2xl: initial;
+  --sui-gy-base: initial;
+  --sui-gy-xs: initial;
+  --sui-gy-sm: initial;
+  --sui-gy-md: initial;
+  --sui-gy-lg: initial;
+  --sui-gy-xl: initial;
+  --sui-gy-2xl: initial;
+  --sui-flow: initial;
+  --sui-align: initial;
+  --sui-justify: initial;
+
+  --sui-tpl: var(--sui-tpl-base, repeat(1, minmax(0, 1fr)));
+  --sui-gx: var(--sui-gx-base, 1rem);
+  --sui-gy: var(--sui-gy-base, 1rem);
+}
+
+.sui-cell {
+  grid-column: var(--sui-col, auto);
+  grid-row: var(--sui-row, auto);
+  order: var(--sui-ord, 0);
+  /* Without this a long word or a wide child blows the track out of the grid. */
+  min-width: 0;
+
+  /* Same nested-inheritance reset as above. */
+  --sui-col-base: initial;
+  --sui-col-xs: initial;
+  --sui-col-sm: initial;
+  --sui-col-md: initial;
+  --sui-col-lg: initial;
+  --sui-col-xl: initial;
+  --sui-col-2xl: initial;
+  --sui-row-base: initial;
+  --sui-row-xs: initial;
+  --sui-row-sm: initial;
+  --sui-row-md: initial;
+  --sui-row-lg: initial;
+  --sui-row-xl: initial;
+  --sui-row-2xl: initial;
+  --sui-ord-base: initial;
+  --sui-ord-xs: initial;
+  --sui-ord-sm: initial;
+  --sui-ord-md: initial;
+  --sui-ord-lg: initial;
+  --sui-ord-xl: initial;
+  --sui-ord-2xl: initial;
+
+  --sui-col: var(--sui-col-base, auto);
+  --sui-row: var(--sui-row-base, auto);
+  --sui-ord: var(--sui-ord-base, 0);
+}
+
+/* ── Breakpoints ─────────────────────────────────────────────────────────── */
+
+@container sui (min-width: 20rem) {
+  .sui-grid {
+    --sui-tpl: var(
+      --sui-tpl-xs,
+      var(--sui-tpl-base, repeat(1, minmax(0, 1fr)))
+    );
+    --sui-gx: var(--sui-gx-xs, var(--sui-gx-base, 1rem));
+    --sui-gy: var(--sui-gy-xs, var(--sui-gy-base, 1rem));
+  }
+  .sui-cell {
+    --sui-col: var(--sui-col-xs, var(--sui-col-base, auto));
+    --sui-row: var(--sui-row-xs, var(--sui-row-base, auto));
+    --sui-ord: var(--sui-ord-xs, var(--sui-ord-base, 0));
+  }
+}
+
+@container sui (min-width: 30rem) {
+  .sui-grid {
+    --sui-tpl: var(
+      --sui-tpl-sm,
+      var(--sui-tpl-xs, var(--sui-tpl-base, repeat(1, minmax(0, 1fr))))
+    );
+    --sui-gx: var(--sui-gx-sm, var(--sui-gx-xs, var(--sui-gx-base, 1rem)));
+    --sui-gy: var(--sui-gy-sm, var(--sui-gy-xs, var(--sui-gy-base, 1rem)));
+  }
+  .sui-cell {
+    --sui-col: var(--sui-col-sm, var(--sui-col-xs, var(--sui-col-base, auto)));
+    --sui-row: var(--sui-row-sm, var(--sui-row-xs, var(--sui-row-base, auto)));
+    --sui-ord: var(--sui-ord-sm, var(--sui-ord-xs, var(--sui-ord-base, 0)));
+  }
+}
+
+@container sui (min-width: 48rem) {
+  .sui-grid {
+    --sui-tpl: var(
+      --sui-tpl-md,
+      var(
+        --sui-tpl-sm,
+        var(--sui-tpl-xs, var(--sui-tpl-base, repeat(1, minmax(0, 1fr))))
+      )
+    );
+    --sui-gx: var(
+      --sui-gx-md,
+      var(--sui-gx-sm, var(--sui-gx-xs, var(--sui-gx-base, 1rem)))
+    );
+    --sui-gy: var(
+      --sui-gy-md,
+      var(--sui-gy-sm, var(--sui-gy-xs, var(--sui-gy-base, 1rem)))
+    );
+  }
+  .sui-cell {
+    --sui-col: var(
+      --sui-col-md,
+      var(--sui-col-sm, var(--sui-col-xs, var(--sui-col-base, auto)))
+    );
+    --sui-row: var(
+      --sui-row-md,
+      var(--sui-row-sm, var(--sui-row-xs, var(--sui-row-base, auto)))
+    );
+    --sui-ord: var(
+      --sui-ord-md,
+      var(--sui-ord-sm, var(--sui-ord-xs, var(--sui-ord-base, 0)))
+    );
+  }
+}
+
+@container sui (min-width: 64rem) {
+  .sui-grid {
+    --sui-tpl: var(
+      --sui-tpl-lg,
+      var(
+        --sui-tpl-md,
+        var(
+          --sui-tpl-sm,
+          var(--sui-tpl-xs, var(--sui-tpl-base, repeat(1, minmax(0, 1fr))))
+        )
+      )
+    );
+    --sui-gx: var(
+      --sui-gx-lg,
+      var(
+        --sui-gx-md,
+        var(--sui-gx-sm, var(--sui-gx-xs, var(--sui-gx-base, 1rem)))
+      )
+    );
+    --sui-gy: var(
+      --sui-gy-lg,
+      var(
+        --sui-gy-md,
+        var(--sui-gy-sm, var(--sui-gy-xs, var(--sui-gy-base, 1rem)))
+      )
+    );
+  }
+  .sui-cell {
+    --sui-col: var(
+      --sui-col-lg,
+      var(
+        --sui-col-md,
+        var(--sui-col-sm, var(--sui-col-xs, var(--sui-col-base, auto)))
+      )
+    );
+    --sui-row: var(
+      --sui-row-lg,
+      var(
+        --sui-row-md,
+        var(--sui-row-sm, var(--sui-row-xs, var(--sui-row-base, auto)))
+      )
+    );
+    --sui-ord: var(
+      --sui-ord-lg,
+      var(
+        --sui-ord-md,
+        var(--sui-ord-sm, var(--sui-ord-xs, var(--sui-ord-base, 0)))
+      )
+    );
+  }
+}
+
+@container sui (min-width: 80rem) {
+  .sui-grid {
+    --sui-tpl: var(
+      --sui-tpl-xl,
+      var(
+        --sui-tpl-lg,
+        var(
+          --sui-tpl-md,
+          var(
+            --sui-tpl-sm,
+            var(--sui-tpl-xs, var(--sui-tpl-base, repeat(1, minmax(0, 1fr))))
+          )
+        )
+      )
+    );
+    --sui-gx: var(
+      --sui-gx-xl,
+      var(
+        --sui-gx-lg,
+        var(
+          --sui-gx-md,
+          var(--sui-gx-sm, var(--sui-gx-xs, var(--sui-gx-base, 1rem)))
+        )
+      )
+    );
+    --sui-gy: var(
+      --sui-gy-xl,
+      var(
+        --sui-gy-lg,
+        var(
+          --sui-gy-md,
+          var(--sui-gy-sm, var(--sui-gy-xs, var(--sui-gy-base, 1rem)))
+        )
+      )
+    );
+  }
+  .sui-cell {
+    --sui-col: var(
+      --sui-col-xl,
+      var(
+        --sui-col-lg,
+        var(
+          --sui-col-md,
+          var(--sui-col-sm, var(--sui-col-xs, var(--sui-col-base, auto)))
+        )
+      )
+    );
+    --sui-row: var(
+      --sui-row-xl,
+      var(
+        --sui-row-lg,
+        var(
+          --sui-row-md,
+          var(--sui-row-sm, var(--sui-row-xs, var(--sui-row-base, auto)))
+        )
+      )
+    );
+    --sui-ord: var(
+      --sui-ord-xl,
+      var(
+        --sui-ord-lg,
+        var(
+          --sui-ord-md,
+          var(--sui-ord-sm, var(--sui-ord-xs, var(--sui-ord-base, 0)))
+        )
+      )
+    );
+  }
+}
+
+@container sui (min-width: 96rem) {
+  .sui-grid {
+    --sui-tpl: var(
+      --sui-tpl-2xl,
+      var(
+        --sui-tpl-xl,
+        var(
+          --sui-tpl-lg,
+          var(
+            --sui-tpl-md,
+            var(
+              --sui-tpl-sm,
+              var(--sui-tpl-xs, var(--sui-tpl-base, repeat(1, minmax(0, 1fr))))
+            )
+          )
+        )
+      )
+    );
+    --sui-gx: var(
+      --sui-gx-2xl,
+      var(
+        --sui-gx-xl,
+        var(
+          --sui-gx-lg,
+          var(
+            --sui-gx-md,
+            var(--sui-gx-sm, var(--sui-gx-xs, var(--sui-gx-base, 1rem)))
+          )
+        )
+      )
+    );
+    --sui-gy: var(
+      --sui-gy-2xl,
+      var(
+        --sui-gy-xl,
+        var(
+          --sui-gy-lg,
+          var(
+            --sui-gy-md,
+            var(--sui-gy-sm, var(--sui-gy-xs, var(--sui-gy-base, 1rem)))
+          )
+        )
+      )
+    );
+  }
+  .sui-cell {
+    --sui-col: var(
+      --sui-col-2xl,
+      var(
+        --sui-col-xl,
+        var(
+          --sui-col-lg,
+          var(
+            --sui-col-md,
+            var(--sui-col-sm, var(--sui-col-xs, var(--sui-col-base, auto)))
+          )
+        )
+      )
+    );
+    --sui-row: var(
+      --sui-row-2xl,
+      var(
+        --sui-row-xl,
+        var(
+          --sui-row-lg,
+          var(
+            --sui-row-md,
+            var(--sui-row-sm, var(--sui-row-xs, var(--sui-row-base, auto)))
+          )
+        )
+      )
+    );
+    --sui-ord: var(
+      --sui-ord-2xl,
+      var(
+        --sui-ord-xl,
+        var(
+          --sui-ord-lg,
+          var(
+            --sui-ord-md,
+            var(--sui-ord-sm, var(--sui-ord-xs, var(--sui-ord-base, 0)))
+          )
+        )
+      )
+    );
+  }
+}

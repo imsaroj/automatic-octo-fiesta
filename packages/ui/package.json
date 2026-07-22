@@ -25,6 +25,7 @@
     "dist",
     "src/styles/globals.css",
     "src/styles/fonts.css",
+    "src/styles/layout.css",
     "CHANGELOG.md"
   ],
   "scripts": {
@@ -113,6 +114,7 @@
     "./smart-components/page": "./src/smart-components/page/index.ts",
     "./smart-components/buttons": "./src/smart-components/buttons/index.ts",
     "./smart-components/*": "./src/smart-components/*.tsx",
+    "./layout": "./src/layout/index.ts",
     "./form": "./src/form/index.ts",
     "./search": "./src/search/index.ts",
     "./data-grid": "./src/data-grid/index.ts",
@@ -152,6 +154,10 @@
       "./smart-components/*": {
         "types": "./dist/smart-components/*.d.ts",
         "default": "./dist/smart-components/*.js"
+      },
+      "./layout": {
+        "types": "./dist/layout/index.d.ts",
+        "default": "./dist/layout/index.js"
       },
       "./form": {
         "types": "./dist/form/index.d.ts",

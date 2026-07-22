@@ -47,7 +47,7 @@ const fields: FieldDefinition<RegistrationForm>[] = [
     type: "segmented",
     label: "Account type",
     options: ACCOUNT_TYPES,
-    colSpan: 2,
+    span: "full",
   },
   { name: "name", type: "text", label: "Full name", required: true },
   { name: "email", type: "email", label: "Email", required: true },
@@ -68,14 +68,14 @@ const fields: FieldDefinition<RegistrationForm>[] = [
     type: "date",
     label: "Date of birth",
     hidden: (v) => v.accountType !== "personal",
-    colSpan: 2,
+    span: "full",
   },
   {
     name: "newsletter",
     type: "switch",
     label: "Subscribe to the newsletter",
     description: "Weekly tips, news, and exclusive offers.",
-    colSpan: 2,
+    span: "full",
   },
   {
     name: "frequency",
@@ -83,7 +83,7 @@ const fields: FieldDefinition<RegistrationForm>[] = [
     label: "Email frequency",
     options: FREQUENCY_OPTIONS,
     hidden: (v) => !v.newsletter,
-    colSpan: 2,
+    span: "full",
   },
 ]
 
@@ -168,8 +168,8 @@ const DynamicFormPage = () => {
                 "After the first submit attempt, errors are re-evaluated on every keystroke so feedback is immediate.",
               ],
               [
-                "Columns grid",
-                "Pass columns={2} and colSpan={2} to build a two-column layout where full-width rows span both columns.",
+                "Layout engine",
+                'Pass columns={2} and span: "full" for rows that run edge to edge. Spans clamp to the live column count, so nothing overflows on a narrow container.',
               ],
             ].map(([title, body]) => (
               <div key={title} className="rounded-lg border p-3">

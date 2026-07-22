@@ -2,6 +2,14 @@
 
 import * as React from "react"
 
+// Type-only, and the layout engine imports nothing but `lib/utils` — the
+// provider stays the leaf module every layer can depend on.
+import type {
+  GapValue,
+  GridColumnsValue,
+  Responsive,
+} from "@iamsaroj/smart-ui/layout"
+
 /**
  * Row-density presets. Declared here (rather than imported from `data-grid`) so
  * the provider stays a leaf module the grid can depend on without a cycle — the
@@ -70,7 +78,15 @@ export interface SmartUIDefaults {
     pageSizeOptions: number[]
   }
   form: {
-    columns: 1 | 2 | 3 | 4
+    /**
+     * Default grid columns for `SmartForm` / `SmartSearchForm` — any value the
+     * layout engine accepts, including a per-breakpoint map
+     * (`{ base: 1, md: 12 }`) or intrinsic tracks
+     * (`{ auto: "fit", min: "16rem" }`).
+     */
+    columns: Responsive<GridColumnsValue>
+    /** Default gap between fields. */
+    gap: Responsive<GapValue>
   }
 }
 
@@ -128,7 +144,7 @@ export const DEFAULT_LABELS: SmartUILabels = {
 /** Built-in canonical defaults — match each component's own literal fallback. */
 export const DEFAULT_DEFAULTS: SmartUIDefaults = {
   grid: { pageSize: 20, density: "normal", pageSizeOptions: [5, 10, 20, 50] },
-  form: { columns: 1 },
+  form: { columns: 1, gap: "md" },
 }
 
 const DEFAULT_CONFIG: SmartUIConfig = {

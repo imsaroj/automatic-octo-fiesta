@@ -10,7 +10,13 @@
 
 export { SmartSearchForm } from "./smart-search-form"
 export type { SmartSearchFormProps } from "./smart-search-form"
-export type { SearchFieldDefinition, SearchFieldType } from "./types"
+export { toSearchColumns } from "./columns"
+export type {
+  SearchFieldDefinition,
+  SearchFieldType,
+  SearchNode,
+  SearchSection,
+} from "./types"
 export {
   buildSearchQuery,
   countActiveFilters,

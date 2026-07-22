@@ -35,7 +35,6 @@ const fields: FieldDefinition<ContactForm>[] = [
     type: "text",
     label: "Your name",
     placeholder: "Ada Lovelace",
-    colSpan: 1,
   },
   {
     name: "email",

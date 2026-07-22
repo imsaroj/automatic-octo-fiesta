@@ -86,6 +86,7 @@ const ContainerLayoutPage = lazy(
 
 // Form engine demos
 const BasicFormPage = lazy(() => import("@/pages/form/basic-form-page"))
+const LayoutEnginePage = lazy(() => import("@/pages/form/layout-engine-page"))
 const AllFieldsPage = lazy(() => import("@/pages/form/all-fields-page"))
 const DynamicFormPage = lazy(() => import("@/pages/form/dynamic-form-page"))
 const MultiStepFormPage = lazy(
@@ -176,6 +177,7 @@ export const App = () => (
 
           {/* Form engine */}
           <Route path="/form/basic" element={<BasicFormPage />} />
+          <Route path="/form/layout" element={<LayoutEnginePage />} />
           <Route path="/form/all-fields" element={<AllFieldsPage />} />
           <Route path="/form/dynamic" element={<DynamicFormPage />} />
           <Route path="/form/wizard" element={<MultiStepFormPage />} />

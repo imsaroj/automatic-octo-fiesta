@@ -4,38 +4,40 @@ import * as React from "react"
 import { z } from "zod"
 import { Loader2, RotateCcw, Search } from "lucide-react"
 
-import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import { Button } from "@iamsaroj/smart-ui/components/button"
 import { Badge } from "@iamsaroj/smart-ui/components/badge"
 import {
   SmartForm,
   defaultFieldRegistry,
+  flattenFields,
   type FieldRegistry,
+  type FormNode,
 } from "@iamsaroj/smart-ui/form"
+import type {
+  GapValue,
+  GridColumnsValue,
+  GridLayoutOptions,
+  LayoutPreset,
+  Responsive,
+} from "@iamsaroj/smart-ui/layout"
 import { useSmartUILabels } from "@iamsaroj/smart-ui/smart-components/provider"
 
-import type { SearchFieldDefinition } from "./types"
+import type { SearchNode } from "./types"
+import { toSearchColumns } from "./columns"
 import { buildSearchQuery, countActiveFilters } from "./build-query"
 
 /** Loose fallback schema when the consumer supplies none — validates nothing. */
 const PASSTHROUGH_SCHEMA = z.looseObject({})
 
-/**
- * Responsive column classes per `columns` setting. Unlike SmartForm's fixed
- * grid, a search bar should collapse on smaller screens: one column on mobile,
- * two on tablet, the requested count on desktop. Passed as SmartForm's
- * `className`, where tailwind-merge lets it override the fixed `grid-cols-*`.
- */
-const RESPONSIVE_COLS = {
-  1: "grid-cols-1",
-  2: "grid-cols-1 sm:grid-cols-2",
-  3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
-  4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
-} as const
-
-export interface SmartSearchFormProps<T extends Record<string, unknown>> {
-  /** Search fields — same shape as form fields, narrowed to search controls. */
-  fields: SearchFieldDefinition<T>[]
+export interface SmartSearchFormProps<
+  T extends Record<string, unknown>,
+> extends Omit<GridLayoutOptions, "columns" | "gap"> {
+  /**
+   * Search fields — same shape as form fields, narrowed to search controls.
+   * Layout nodes (`section` / `divider` / `custom`) are accepted too, so an
+   * "advanced filters" group can collapse inside the bar.
+   */
+  fields: SearchNode<T>[]
   /**
    * Zod schema — validated before a search fires. Optional: with no schema every
    * value is accepted. When present, required-ness / the asterisk derive from it.
@@ -50,8 +52,17 @@ export interface SmartSearchFormProps<T extends Record<string, unknown>> {
    * (from the registry), so you rarely need to pass it.
    */
   defaultValues?: T
-  /** Grid columns on desktop. Collapses responsively (2 on tablet, 1 on mobile). Default `1`. */
-  columns?: 1 | 2 | 3 | 4
+  /**
+   * Grid columns. A plain number is read as a desktop target and collapses on
+   * its own (1 on a narrow container, 2 mid, `n` wide); pass a per-breakpoint
+   * map, a track list, or `{ auto: "fit", min }` to control it exactly.
+   * Default `1`.
+   */
+  columns?: Responsive<GridColumnsValue>
+  /** Gap between filters. Default `"md"`. */
+  gap?: Responsive<GapValue>
+  /** Start from a named layout preset (e.g. `"filters"`). */
+  preset?: LayoutPreset
 
   /**
    * Manual search: show the Search button and only emit on submit / Enter.
@@ -126,6 +137,13 @@ export const SmartSearchForm = <T extends Record<string, unknown>>({
   setData,
   defaultValues,
   columns = 1,
+  gap,
+  preset,
+  columnGap,
+  rowGap,
+  dense,
+  align,
+  justify,
   search = true,
   autoSearch,
   debounce = 400,
@@ -155,7 +173,10 @@ export const SmartSearchForm = <T extends Record<string, unknown>>({
   const defaults = React.useMemo<T>(() => {
     const reg = registry ?? defaultFieldRegistry
     const base: Record<string, unknown> = {}
-    for (const field of fields) base[field.name] = reg[field.type]?.defaultValue
+    // Walk the tree, not just the top level — a filter nested in a section is
+    // still a filter Reset has to clear.
+    for (const field of flattenFields(fields as FormNode<T>[]))
+      base[field.name] = reg[field.type]?.defaultValue
     return { ...base, ...defaultValues } as T
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fields, registry])
@@ -261,10 +282,17 @@ export const SmartSearchForm = <T extends Record<string, unknown>>({
       schema={schema ?? (PASSTHROUGH_SCHEMA as unknown as z.ZodType<T>)}
       data={values}
       setData={handleSetData}
-      fields={fields}
-      columns={columns}
+      fields={fields as FormNode<T>[]}
+      preset={preset}
+      columns={toSearchColumns(columns)}
+      gap={gap}
+      columnGap={columnGap}
+      rowGap={rowGap}
+      dense={dense}
+      align={align}
+      justify={justify}
       registry={registry}
-      className={cn(RESPONSIVE_COLS[columns], className)}
+      className={className}
       // Manual submit path: SmartForm validates, then hands over the valid
       // values — prune and emit (no dedupe: an explicit Search should always run).
       onSubmit={(valid) => emit(valid, { dedupe: false })}

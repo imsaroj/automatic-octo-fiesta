@@ -103,7 +103,7 @@ const fields: FieldDefinition<AllFields>[] = [
     label: "Rich text",
     description: "Stored as HTML.",
     minHeight: "120px",
-    colSpan: 2,
+    span: "full",
   },
   // ── Numeric ─────────────────────────────────────────────────────────────
   { name: "integer", type: "integer", label: "Integer", placeholder: "0" },
@@ -122,8 +122,8 @@ const fields: FieldDefinition<AllFields>[] = [
   { name: "datetime", type: "datetime", label: "Date & time" },
   { name: "month", type: "month", label: "Month" },
   { name: "year", type: "year", label: "Year" },
-  { name: "dateRange", type: "daterange", label: "Date range", colSpan: 2 },
-  { name: "timeRange", type: "timerange", label: "Time range", colSpan: 2 },
+  { name: "dateRange", type: "daterange", label: "Date range", span: "full" },
+  { name: "timeRange", type: "timerange", label: "Time range", span: "full" },
   // ── Selection ───────────────────────────────────────────────────────────
   { name: "select", type: "select", label: "Select", options: PLANS },
   {
@@ -163,7 +163,7 @@ const fields: FieldDefinition<AllFields>[] = [
     label: "Checkbox group",
     options: FRAMEWORKS,
     orientation: "horizontal",
-    colSpan: 2,
+    span: "full",
   },
   { name: "toggle", type: "switch", label: "Toggle / switch" },
   { name: "yesno", type: "yesno", label: "Yes / No" },

@@ -8,7 +8,12 @@
  * {@link SmartForm} and reuses the entire field registry unchanged.
  */
 
-import type { FieldDefinition } from "@iamsaroj/smart-ui/form"
+import type {
+  FieldDefinition,
+  FormCustomNode,
+  FormDividerNode,
+  FormSection,
+} from "@iamsaroj/smart-ui/form"
 
 /**
  * The subset of {@link FieldType} that makes sense as a search/filter control.
@@ -69,3 +74,26 @@ export type SearchFieldType =
 export type SearchFieldDefinition<
   T extends Record<string, unknown> = Record<string, unknown>,
 > = FieldDefinition<T> & { type: SearchFieldType }
+
+/**
+ * A section inside a filter bar — the form engine's {@link FormSection} with its
+ * children re-narrowed to search nodes, so "Advanced filters" can be a
+ * collapsible group with its own column count and still reject a password field
+ * at compile time.
+ */
+export type SearchSection<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = Omit<FormSection<T>, "fields"> & { fields: SearchNode<T>[] }
+
+/**
+ * One entry in a filter bar's layout tree: a search field, a nested section, or
+ * the engine's presentational nodes. Assignable to `FormNode<T>[]`, so it flows
+ * into {@link SmartForm} unchanged.
+ */
+export type SearchNode<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> =
+  | SearchFieldDefinition<T>
+  | SearchSection<T>
+  | FormCustomNode<T>
+  | FormDividerNode<T>

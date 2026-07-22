@@ -32,6 +32,7 @@ const EXEMPT = ["./globals.css", "./lib/*", "./components/*", "./hooks/*"]
 
 // Public domain entrypoint → the guide that documents it.
 const DOC_FOR = {
+  "./layout": "layout.md",
   "./form": "form.md",
   "./search": "search.md",
   "./data-grid": "data-grid.md",

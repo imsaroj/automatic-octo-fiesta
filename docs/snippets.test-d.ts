@@ -7,10 +7,19 @@
 import { z } from "zod"
 
 import {
+  flattenFields,
   SmartForm,
   type FieldDefinition,
+  type FormNode,
   type SmartFormHandle,
 } from "@iamsaroj/smart-ui/form"
+import {
+  LAYOUT_PRESETS,
+  SmartGridItem,
+  SmartGridLayout,
+  type GridColumnsValue,
+  type Responsive,
+} from "@iamsaroj/smart-ui/layout"
 import {
   buildFlatQuery,
   createPageFetcher,
@@ -52,6 +61,38 @@ const fields: FieldDefinition<Values>[] = [
 ]
 void fields
 void SmartForm
+
+// ── layout.md § Columns / Spans, form.md § Layout + Layout nodes ─────────
+const laidOut: FormNode<Values>[] = [
+  { name: "name", type: "text", span: "full" },
+  { name: "email", type: "email", span: "1/2" },
+  {
+    kind: "section",
+    title: "Preferences",
+    variant: "card",
+    columns: 12,
+    collapsible: true,
+    fields: [{ name: "active", type: "checkbox", span: 6, rowSpan: 1 }],
+  },
+  { kind: "divider", label: "More" },
+  { kind: "custom", span: "full", render: ({ values }) => values.name },
+]
+void laidOut
+void flattenFields(laidOut)
+
+// Every column notation the engine accepts.
+const columnNotations: Responsive<GridColumnsValue>[] = [
+  12,
+  [1, 3],
+  ["18rem", "1fr"],
+  { auto: "fit", min: "16rem" },
+  "repeat(3, 1fr) 2fr",
+  { base: 1, sm: 2, md: 12 },
+]
+void columnNotations
+void LAYOUT_PRESETS.twelve
+void SmartGridLayout
+void SmartGridItem
 
 // form.md § Typed & async options
 const roleSchema = z.object({ roleId: z.number({ error: "Choose a role" }) })

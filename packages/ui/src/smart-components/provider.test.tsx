@@ -46,7 +46,10 @@ const Probe = () => {
       <span data-testid="grid-selected">{labels.grid.selected(3)}</span>
       <span data-testid="grid-pageSize">{defaults.grid.pageSize}</span>
       <span data-testid="grid-density">{defaults.grid.density}</span>
-      <span data-testid="form-columns">{defaults.form.columns}</span>
+      {/* `columns` is a layout value now — it can be a breakpoint map. */}
+      <span data-testid="form-columns">
+        {JSON.stringify(defaults.form.columns)}
+      </span>
       <span data-testid="has-formatDate">
         {formats.formatDate ? "yes" : "no"}
       </span>

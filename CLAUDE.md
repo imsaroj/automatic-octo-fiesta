@@ -76,6 +76,7 @@ into arbitrary files:
 @iamsaroj/smart-ui/smart-components/*     → src/smart-components/*.tsx       (Smart* wrappers)
 @iamsaroj/smart-ui/smart-components/page  → src/smart-components/page/index.ts   (page composition barrel)
 @iamsaroj/smart-ui/smart-components/buttons → src/smart-components/buttons/index.ts (action-button presets barrel)
+@iamsaroj/smart-ui/layout          → src/layout/index.ts      (container-query CSS Grid engine)
 @iamsaroj/smart-ui/form            → src/form/index.ts        (declarative form engine)
 @iamsaroj/smart-ui/search          → src/search/index.ts      (search/filter bar on the form engine)
 @iamsaroj/smart-ui/data-grid              → src/data-grid/index.ts          (AG Grid wrappers)
@@ -225,10 +226,36 @@ tabs, content, sidebar, grid area, status bar, footer, and empty/loading/error s
   - Rich-text-editor internals → `packages/ui/src/text-editor/`
 - The rule of thumb: if the component imports from or is only meaningful within a single domain folder, it belongs there. If it could be reused across domains, it belongs in `smart-components/`.
 
+### Layout engine (`packages/ui/src/layout/`)
+
+The grid system behind the form and search engines, exported as `@iamsaroj/smart-ui/layout`
+(`SmartGridLayout` / `SmartGridItem`, plus the `useGridLayout` / `useGridCell` hooks for hosts that own their own
+markup). It replaced the old fixed `columns: 1|2|3|4` + `colSpan: 1|2|3` scheme outright. Three load-bearing decisions:
+
+- **Values are CSS custom properties, not utility classes.** Tailwind can only emit classes it can see in source, so
+  `grid-cols-*` / `col-span-*` can never express a count chosen at runtime. Column templates and spans are written to
+  the `style` attribute as `--sui-tpl-{bp}` / `--sui-col-{bp}` / `--sui-gx-{bp}` …, so **any** column count works
+  (12, 16, `[1,3]` proportional tracks, `{ auto: "fit", min: "16rem" }`, or a raw template string).
+- **Container queries, not media queries** — there is deliberately no viewport mode. `src/styles/layout.css` is the
+  static half: it holds the `@container sui (min-width: …)` blocks that resolve each breakpoint to a `var()` chain
+  falling back through every smaller one (mobile-first inheritance, done in CSS so JS emits only declared
+  breakpoints). Because a grid can't query its own width, every layout renders **two** elements — a `.sui-layout`
+  container and the `.sui-grid` inside it. Breakpoint pixel values are mirrored by hand between `layout.css` and
+  `BREAKPOINT_MIN_WIDTH` in `types.ts` — change both together.
+- **Spans clamp to the column count at their own breakpoint** (`resolve.ts`). `span: 6` on a `{ base: 1, md: 12 }`
+  grid is half a row on desktop and a full row on mobile from one declaration, and no cell can overflow. Same for
+  pins: a `colStart` starting or ending past the last track snaps back onto the grid, because CSS would otherwise
+  invent implicit columns and silently widen the row (this was a real bug caught in browser verification, not a
+  theoretical one).
+
+`resolve.ts` is pure (config in, custom properties out) and carries the unit tests; `context.ts` holds the hooks and
+the context that publishes a grid's column counts to its cells; `grid-layout.tsx` is components only (Fast Refresh).
+Nested layouts each become the query container for their own children. Demo: `/form/layout`.
+
 ### Form engine (`packages/ui/src/form/`)
 
 Declarative forms built on **TanStack Form (`@tanstack/react-form`) + Zod v4**, exported as `@iamsaroj/smart-ui/form`.
-`SmartForm` takes a Zod `schema` plus a `FieldDefinition[]` and renders the right `Smart*Field` control per entry —
+`SmartForm` takes a Zod `schema` plus a `FormNode[]` and renders the right `Smart*Field` control per entry —
 no per-field wiring. Key design points (see `smart-form.tsx`):
 
 - The **Zod schema is the single source of truth** for both validation _and_ required-ness (the required asterisk is
@@ -245,6 +272,17 @@ no per-field wiring. Key design points (see `smart-form.tsx`):
   `.refine`/`.superRefine`-wrapped schema can't be scoped and validates as-is) + `stripExcluded` on submit. `SmartForm`
   is a generic `forwardRef` cast after definition (same idiom as `SmartServerGrid`).
 - Empty optional strings are normalized to `undefined` before validation so blank optional fields don't error.
+- **`fields` is a tree, not a list** (`form-nodes.ts`): besides fields it takes `kind: "section"` (a titled group on
+  its own nested grid — inherits the parent's `columns` unless it declares its own; `variant` plain/card/fieldset;
+  optionally `collapsible`), `kind: "divider"`, and `kind: "custom"` (arbitrary content given the live values).
+  Discriminant: fields carry `type`, everything else carries `kind`. **Grouping is a layout concern only** — every
+  piece of validation bookkeeping runs off `flattenFields(nodes)`, so nesting never reaches the schema, the blank
+  record, or error focusing. A section's `modes` cascades to its whole subtree (`collectModeExcludedKeys`), and a
+  collapsed section holding a submit error is force-opened by `focusFirstError` (via `buildSectionPathMap`) —
+  collapsed panels use `hidden` rather than unmounting, so their fields keep live validation state.
+- **Layout** comes from `@iamsaroj/smart-ui/layout`: `columns` / `gap` / `dense` / `align` sit on `SmartForm` (plus a
+  `preset` naming a `LAYOUT_PRESETS` entry), and `FieldBase` extends `GridPlacement` (`span` / `colStart` / `rowSpan`
+  / `order` / `newRow`). Resolution order is explicit prop → preset → `SmartUIProvider` default.
 - **Typed & async options** (option-based fields — select/combobox/multiselect/radio/segmented/checkbox-group):
   `FieldOption<V extends string | number | boolean>` keeps the real value in the store (an honest `roleId: z.number()`
   schema, no `String()`/`Number()`), and `options` may be an async resolver `(ctx: { search?; signal }) =>
@@ -271,8 +309,13 @@ required derivation, layout, and field registry, and adds only search concerns o
   render doesn't fire).
 - `build-query.ts` — `buildSearchQuery` prunes empty values (blank strings, `null`, empty arrays, `false`, empty
   range objects) and trims strings, so only meaningful filters reach the API. `countActiveFilters` backs the count badge.
-- Layout delegates to `SmartForm`, but `columns` (1–4) is made responsive by passing a `grid-cols-*` override as
-  `SmartForm`'s `className` (tailwind-merge wins over the fixed grid). `SmartForm` gained additive 4-column support.
+- `SearchNode<T>` / `SearchSection<T>` mirror the form engine's layout tree with children re-narrowed to search
+  fields, so an "Advanced filters" section can collapse inside the bar and still reject a password field at compile
+  time.
+- Layout delegates wholesale to `SmartForm` — the old `grid-cols-*`-via-`className` override is gone. The one search
+  specific rule lives in `columns.ts`: `toSearchColumns` reads a **plain number** as a desktop target and expands it
+  into a 1 → 2 → n breakpoint ramp (four filters side by side in a 400px drawer is never what was meant); anything
+  richer (breakpoint map, track list, `{ auto }`) is the author being explicit and passes through untouched.
 
 ### Rich text editor (`packages/ui/src/text-editor/`)
 

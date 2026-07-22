@@ -11,6 +11,8 @@
  * what the field registry reads from.
  */
 
+import type { GridPlacement } from "@iamsaroj/smart-ui/layout"
+
 export type FieldType =
   // Text
   | "text"
@@ -83,16 +85,31 @@ export type FieldOptions<
   V extends PrimitiveOptionValue = PrimitiveOptionValue,
 > = FieldOption<V>[] | AsyncFieldOptions<V>
 
-/** Props every field shares, regardless of type — the discriminated union base. */
-export interface FieldBase<T extends Record<string, unknown>> {
+/**
+ * Props every field shares, regardless of type — the discriminated union base.
+ *
+ * Layout comes from {@link GridPlacement}: `span` / `colStart` / `rowSpan` /
+ * `order` / `newRow`, resolved against the form's column count at each
+ * container breakpoint. A span wider than the current column count clamps to
+ * it, so `span: 6` on a `{ base: 1, md: 12 }` form is half a row on desktop and
+ * a full row on mobile without a second declaration.
+ *
+ * ```ts
+ * { name: "street", type: "text", span: "full" }   // edge to edge
+ * { name: "city",   type: "text", span: "1/2" }    // half, any column count
+ * { name: "zip",    type: "text", span: 3 }        // 3 tracks
+ * { name: "notes",  type: "textarea", span: 6, rowSpan: 2 }
+ * ```
+ */
+export interface FieldBase<
+  T extends Record<string, unknown>,
+> extends GridPlacement {
   name: keyof T & string
   label?: string
   placeholder?: string
   description?: string
   required?: boolean
   disabled?: boolean
-  /** Number of grid columns this field spans. */
-  colSpan?: 1 | 2 | 3
   /** Return `true` to hide the field (and skip validation for it). */
   hidden?: (data: T) => boolean
   /**

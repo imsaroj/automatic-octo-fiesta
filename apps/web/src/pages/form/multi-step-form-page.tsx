@@ -70,9 +70,15 @@ const accountFields: FieldDefinition<Account>[] = [
     type: "text",
     label: "Full name",
     required: true,
-    colSpan: 2,
+    span: "full",
   },
-  { name: "email", type: "email", label: "Email", required: true, colSpan: 2 },
+  {
+    name: "email",
+    type: "email",
+    label: "Email",
+    required: true,
+    span: "full",
+  },
   { name: "password", type: "password", label: "Password", required: true },
   {
     name: "confirmPassword",
@@ -98,7 +104,7 @@ const profileFields: FieldDefinition<Profile>[] = [
     options: SKILL_OPTIONS,
     description: "Select all that apply.",
     required: true,
-    colSpan: 2,
+    span: "full",
   },
 ]
 
@@ -109,21 +115,21 @@ const prefsFields: FieldDefinition<Prefs>[] = [
     label: "Plan",
     options: PLAN_OPTIONS,
     required: true,
-    colSpan: 2,
+    span: "full",
   },
   {
     name: "notifications",
     type: "switch",
     label: "Email notifications",
     description: "Weekly digest and important updates.",
-    colSpan: 2,
+    span: "full",
   },
   {
     name: "terms",
     type: "checkbox",
     label: "I accept the terms and conditions",
     required: true,
-    colSpan: 2,
+    span: "full",
   },
 ]
 

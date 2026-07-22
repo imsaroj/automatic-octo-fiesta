@@ -3,8 +3,19 @@
 import * as React from "react"
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
+import { ChevronDown } from "lucide-react"
 import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import { Button } from "@iamsaroj/smart-ui/components/button"
+import { Separator } from "@iamsaroj/smart-ui/components/separator"
+import {
+  GridLayoutProvider,
+  resolveLayoutPreset,
+  SmartGridItem,
+  SmartGridLayout,
+  useGridLayout,
+  type GridLayoutOptions,
+  type LayoutPreset,
+} from "@iamsaroj/smart-ui/layout"
 import {
   useSmartUIDefaults,
   useSmartUILabels,
@@ -13,24 +24,22 @@ import {
 import { deepEqual, isFieldRequired } from "./smart-form-internals"
 import type { FieldDefinition, ResolvedFieldDefinition } from "./field-types"
 import {
+  buildSectionPathMap,
+  collectModeExcludedKeys,
+  DEFAULT_SECTION_SPAN,
+  flattenFields,
+  isFieldNode,
+  isSectionNode,
+  sectionNodeId,
+  type FormNode,
+  type FormSection,
+} from "./form-nodes"
+import {
   defaultFieldRegistry,
   type FieldRegistry,
   type CommonFieldProps,
 } from "./field-registry"
 import { useSelector } from "@tanstack/react-store"
-
-const COLS = {
-  1: "grid-cols-1",
-  2: "grid-cols-2",
-  3: "grid-cols-3",
-  4: "grid-cols-4",
-} as const
-const SPAN = {
-  1: "col-span-1",
-  2: "col-span-2",
-  3: "col-span-3",
-  4: "col-span-4",
-} as const
 
 /** Imperative handle exposed via `ref` — re-initialize or submit the form. */
 export interface SmartFormHandle<T extends Record<string, unknown>> {
@@ -45,7 +54,9 @@ export interface SmartFormHandle<T extends Record<string, unknown>> {
   submit: () => void
 }
 
-export interface SmartFormProps<T extends Record<string, unknown>> {
+export interface SmartFormProps<
+  T extends Record<string, unknown>,
+> extends GridLayoutOptions {
   /** Zod schema — the single source of truth for validation *and* required-ness. */
   schema: z.ZodType<T>
   /** Controlled form data. Seeds the form on mount and stays mirrored to edits. */
@@ -60,14 +71,22 @@ export interface SmartFormProps<T extends Record<string, unknown>> {
    */
   initialData?: Partial<T>
   /**
-   * Current form mode (e.g. `"create"` | `"edit"`). A field whose `modes` list
-   * excludes the active mode is dropped from render **and** validation, so a
-   * single schema serves every mode. Omit for no mode filtering.
+   * Current form mode (e.g. `"create"` | `"edit"`). A field — or a whole
+   * section — whose `modes` list excludes the active mode is dropped from
+   * render **and** validation, so a single schema serves every mode. Omit for
+   * no mode filtering.
    */
   mode?: string
-  fields: FieldDefinition<T>[]
-  /** Number of grid columns. Default `1`. */
-  columns?: 1 | 2 | 3 | 4
+  /**
+   * The form's layout tree: fields, plus optional `section` / `custom` /
+   * `divider` nodes. Sections nest, each with its own column count.
+   */
+  fields: FormNode<T>[]
+  /**
+   * Start from a named layout ({@link LAYOUT_PRESETS}) — `"twelve"`, `"pair"`,
+   * `"fluid"`, … — and override any part of it with the layout props.
+   */
+  preset?: LayoutPreset
   /** Called with the parsed, validated values on a successful submit. */
   onSubmit?: (data: T) => void | Promise<void>
   /** `id` on the `<form>`, so a submit button placed outside can drive it via `form={id}`. */
@@ -96,7 +115,14 @@ const SmartFormInner = <T extends Record<string, unknown>>(
     initialData,
     mode,
     fields,
+    preset,
     columns,
+    gap,
+    columnGap,
+    rowGap,
+    dense,
+    align,
+    justify,
     onSubmit,
     id,
     submitLabel,
@@ -112,9 +138,44 @@ const SmartFormInner = <T extends Record<string, unknown>>(
   // the default button row in favor of `children`.
   const uiDefaults = useSmartUIDefaults()
   const uiLabels = useSmartUILabels()
-  const effectiveColumns = columns ?? uiDefaults.form.columns
   const effectiveSubmitLabel =
     submitLabel === undefined ? uiLabels.form.submit : submitLabel
+
+  // Layout resolution order: explicit props → preset → provider defaults. The
+  // provider only fills what neither of the first two spoke to.
+  const layoutOptions = React.useMemo<GridLayoutOptions>(() => {
+    const merged = resolveLayoutPreset(preset, {
+      columns,
+      gap,
+      columnGap,
+      rowGap,
+      dense,
+      align,
+      justify,
+    })
+    return {
+      ...merged,
+      columns: merged.columns ?? uiDefaults.form.columns,
+      gap: merged.gap ?? uiDefaults.form.gap,
+    }
+  }, [
+    preset,
+    columns,
+    gap,
+    columnGap,
+    rowGap,
+    dense,
+    align,
+    justify,
+    uiDefaults.form.columns,
+    uiDefaults.form.gap,
+  ])
+
+  const layout = useGridLayout(layoutOptions)
+
+  // Every control in the tree, in document order. All validation bookkeeping
+  // runs off this flat view — grouping is a layout concern, not a data one.
+  const flatFields = React.useMemo(() => flattenFields(fields), [fields])
 
   // Resolved once per form: custom entries merged over the built-in registry.
   const registry = React.useMemo<FieldRegistry>(
@@ -132,19 +193,15 @@ const SmartFormInner = <T extends Record<string, unknown>>(
     [registry]
   )
 
-  // A field is active when it declares no `modes`, or no `mode` is set, or its
-  // `modes` include the active one. Inactive fields are dropped from render,
-  // validation, and the submitted value.
-  const isActiveInMode = React.useCallback(
-    (field: FieldDefinition<T>): boolean =>
-      !field.modes || mode === undefined || field.modes.includes(mode),
-    [mode]
-  )
-
   // Field names excluded by the active mode — omitted from validation + submit.
+  // A section's `modes` cascades to everything nested inside it.
   const modeExcludedKeys = React.useMemo(
-    () => fields.filter((field) => !isActiveInMode(field)).map((f) => f.name),
-    [fields, isActiveInMode]
+    () => collectModeExcludedKeys(fields, mode),
+    [fields, mode]
+  )
+  const modeExcludedSet = React.useMemo(
+    () => new Set(modeExcludedKeys),
+    [modeExcludedKeys]
   )
 
   // A mode-scoped schema: omit the excluded field keys so one schema validates
@@ -179,7 +236,7 @@ const SmartFormInner = <T extends Record<string, unknown>>(
   // only), then by any controlled `data`.
   const defaultValues = React.useMemo<T>(() => {
     const base: Record<string, unknown> = {}
-    for (const field of fields) base[field.name] = defaultForField(field)
+    for (const field of flatFields) base[field.name] = defaultForField(field)
     return {
       ...base,
       ...(initialData as Record<string, unknown>),
@@ -200,12 +257,12 @@ const SmartFormInner = <T extends Record<string, unknown>>(
   // pass rather than fail — e.g. `z.email().optional()` shouldn't flag a blank.
   const optionalKeys = React.useMemo(() => {
     const set = new Set<string>()
-    for (const field of fields) {
+    for (const field of flatFields) {
       if (field.required) continue
       if (!isFieldRequired(schema, field.name)) set.add(field.name)
     }
     return set
-  }, [schema, fields])
+  }, [schema, flatFields])
 
   // Normalize empty optional strings to `undefined` before validation so an
   // optional field only validates once the user actually types something.
@@ -247,25 +304,54 @@ const SmartFormInner = <T extends Record<string, unknown>>(
   const selfUpdateRef = React.useRef(false)
   const formRef = React.useRef<HTMLFormElement>(null)
 
+  // Collapse state for `collapsible` sections, keyed by section id. Held here
+  // rather than inside each section so a failed submit can force open whichever
+  // sections are hiding an error.
+  const [collapsedById, setCollapsedById] = React.useState<
+    Record<string, boolean>
+  >({})
+  const sectionPaths = React.useMemo(
+    () => buildSectionPathMap(fields),
+    [fields]
+  )
+
+  const focusField = React.useCallback((name: string) => {
+    const wrapper = formRef.current?.querySelector<HTMLElement>(
+      `[data-field="${CSS.escape(name)}"]`
+    )
+    // Focus the first focusable control inside the field — works across every
+    // control type (input, trigger button, etc.) without threading ids around.
+    wrapper
+      ?.querySelector<HTMLElement>(
+        'input, select, textarea, button, [tabindex]:not([tabindex="-1"]), [contenteditable="true"]'
+      )
+      ?.focus()
+  }, [])
+
   // On a failed submit, move focus to the first field (in definition order) that
-  // has an error, so the user lands right where they need to fix things.
+  // has an error, so the user lands right where they need to fix things. If that
+  // field sits inside collapsed sections, open them first — an error nobody can
+  // see is worse than no validation at all.
   const focusFirstError = React.useCallback(() => {
-    for (const field of fields) {
+    for (const field of flatFields) {
       const meta = form.getFieldMeta(field.name as never)
       if (!meta || (meta.errors?.length ?? 0) === 0) continue
-      const wrapper = formRef.current?.querySelector<HTMLElement>(
-        `[data-field="${CSS.escape(field.name)}"]`
-      )
-      // Focus the first focusable control inside the field — works across every
-      // control type (input, trigger button, etc.) without threading ids around.
-      wrapper
-        ?.querySelector<HTMLElement>(
-          'input, select, textarea, button, [tabindex]:not([tabindex="-1"]), [contenteditable="true"]'
-        )
-        ?.focus()
+
+      const path = sectionPaths.get(field.name)
+      if (path && path.length > 0) {
+        setCollapsedById((prev) => {
+          const next = { ...prev }
+          for (const sectionId of path) next[sectionId] = false
+          return next
+        })
+        // The field is not in the DOM until that state change commits.
+        setTimeout(() => focusField(field.name), 0)
+      } else {
+        focusField(field.name)
+      }
       break
     }
-  }, [fields, form])
+  }, [flatFields, form, sectionPaths, focusField])
 
   // Imperative handle: re-initialize (no `key` remount) or submit. `reset`
   // rebuilds the seed from field blanks + `initialData` + the passed `values`
@@ -276,7 +362,8 @@ const SmartFormInner = <T extends Record<string, unknown>>(
     (): SmartFormHandle<T> => ({
       reset: (values) => {
         const base: Record<string, unknown> = {}
-        for (const field of fields) base[field.name] = defaultForField(field)
+        for (const field of flatFields)
+          base[field.name] = defaultForField(field)
         const next = {
           ...base,
           ...(initialData as Record<string, unknown>),
@@ -288,7 +375,7 @@ const SmartFormInner = <T extends Record<string, unknown>>(
       },
       submit: () => void form.handleSubmit().then(focusFirstError),
     }),
-    [fields, defaultForField, initialData, form, focusFirstError]
+    [flatFields, defaultForField, initialData, form, focusFirstError]
   )
 
   // Mirror live form values back into the consumer's `setData`.
@@ -320,7 +407,7 @@ const SmartFormInner = <T extends Record<string, unknown>>(
     if (deepEqual(data, lastSyncedRef.current)) return
     lastSyncedRef.current = data
     const base: Record<string, unknown> = {}
-    for (const field of fields) base[field.name] = defaultForField(field)
+    for (const field of flatFields) base[field.name] = defaultForField(field)
     const next = { ...base, ...(data as Record<string, unknown>) } as T
     // Advance the baseline in lockstep so the per-render `form.update(opts)` sees
     // no defaultValues change and leaves the freshly adopted values in place.
@@ -328,6 +415,165 @@ const SmartFormInner = <T extends Record<string, unknown>>(
     form.reset(next as never)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
+
+  // ── Rendering ─────────────────────────────────────────────────────────────
+  // The layout tree is walked recursively: fields become grid cells, sections
+  // become nested grids. `inherited` carries the enclosing grid's options so a
+  // section without its own `columns` keeps the parent's rhythm.
+
+  const renderField = (field: FieldDefinition<T>): React.ReactNode => {
+    if (modeExcludedSet.has(field.name)) return null
+    if (field.hidden?.(values)) return null
+
+    const required = field.required ?? isFieldRequired(schema, field.name)
+
+    return (
+      <form.Field key={field.name} name={field.name as never}>
+        {(fieldApi) => {
+          // Validation runs live (`onChange` schema), but errors only *display*
+          // after the field is blurred — so typing doesn't flash an error, yet
+          // once shown it clears in real time as the value becomes valid. A
+          // submit attempt reveals errors on every field, blurred or not.
+          const meta = fieldApi.state.meta
+          const error =
+            meta.isBlurred || submitAttempted
+              ? getErrorMessage(meta.errors)
+              : undefined
+
+          return (
+            // `onBlur` bubbles from whatever control is inside (React blur is
+            // focusout), so the field flips to blurred/touched when focus leaves
+            // without every field component needing to forward an onBlur prop.
+            <SmartGridItem
+              span={field.span}
+              colStart={field.colStart}
+              rowSpan={field.rowSpan}
+              order={field.order}
+              newRow={field.newRow}
+              data-field={field.name}
+              onBlur={() => fieldApi.handleBlur()}
+            >
+              <FieldRenderer
+                field={field}
+                registry={registry}
+                required={required}
+                value={fieldApi.state.value}
+                onChange={(v) => fieldApi.handleChange(v as never)}
+                error={error}
+              />
+            </SmartGridItem>
+          )
+        }}
+      </form.Field>
+    )
+  }
+
+  const renderSection = (
+    node: FormSection<T>,
+    id: string,
+    inherited: GridLayoutOptions
+  ): React.ReactNode => {
+    const nested: GridLayoutOptions = {
+      columns: node.columns ?? inherited.columns,
+      gap: node.gap ?? inherited.gap,
+      columnGap: node.columnGap,
+      rowGap: node.rowGap,
+      dense: node.dense,
+      align: node.align,
+      justify: node.justify,
+    }
+    const collapsed = node.collapsible
+      ? (collapsedById[id] ?? node.defaultCollapsed ?? false)
+      : false
+
+    return (
+      <SmartGridItem
+        key={id}
+        span={node.span ?? DEFAULT_SECTION_SPAN}
+        colStart={node.colStart}
+        rowSpan={node.rowSpan}
+        order={node.order}
+        newRow={node.newRow}
+      >
+        <FormSectionChrome
+          id={id}
+          title={node.title}
+          description={node.description}
+          variant={node.variant ?? "plain"}
+          collapsible={node.collapsible}
+          collapsed={collapsed}
+          onToggle={() =>
+            setCollapsedById((prev) => ({ ...prev, [id]: !collapsed }))
+          }
+        >
+          <SmartGridLayout {...nested}>
+            {renderNodes(node.fields, nested, `${id}.`)}
+          </SmartGridLayout>
+        </FormSectionChrome>
+      </SmartGridItem>
+    )
+  }
+
+  const renderNodes = (
+    nodes: readonly FormNode<T>[],
+    inherited: GridLayoutOptions,
+    prefix: string
+  ): React.ReactNode[] =>
+    nodes.flatMap((node, index): React.ReactNode[] => {
+      if (isFieldNode(node)) {
+        const rendered = renderField(node)
+        return rendered ? [rendered] : []
+      }
+
+      // Non-field nodes gate on the same `modes` / `hidden` contract as fields.
+      if (node.modes && mode !== undefined && !node.modes.includes(mode))
+        return []
+      if (node.hidden?.(values)) return []
+
+      if (isSectionNode(node)) {
+        return [
+          renderSection(node, sectionNodeId(node, index, prefix), inherited),
+        ]
+      }
+
+      const key = node.id ?? `${prefix}${index}`
+      if (node.kind === "divider") {
+        return [
+          <SmartGridItem
+            key={key}
+            span={node.span ?? DEFAULT_SECTION_SPAN}
+            colStart={node.colStart}
+            order={node.order}
+            newRow={node.newRow}
+          >
+            {node.label ? (
+              <div className="flex items-center gap-3">
+                <Separator className="flex-1" />
+                <span className="text-xs font-medium text-muted-foreground">
+                  {node.label}
+                </span>
+                <Separator className="flex-1" />
+              </div>
+            ) : (
+              <Separator />
+            )}
+          </SmartGridItem>,
+        ]
+      }
+
+      return [
+        <SmartGridItem
+          key={key}
+          span={node.span}
+          colStart={node.colStart}
+          rowSpan={node.rowSpan}
+          order={node.order}
+          newRow={node.newRow}
+        >
+          {node.render({ values, mode })}
+        </SmartGridItem>,
+      ]
+    })
 
   return (
     <form
@@ -339,79 +585,42 @@ const SmartFormInner = <T extends Record<string, unknown>>(
         e.stopPropagation()
         void form.handleSubmit().then(focusFirstError)
       }}
-      className={cn("grid gap-4", COLS[effectiveColumns], className)}
+      className={cn(layout.containerProps.className, className)}
     >
-      {fields.map((field) => {
-        if (!isActiveInMode(field)) return null
-        if (field.hidden?.(values)) return null
+      <div
+        className={layout.gridProps.className}
+        style={layout.gridProps.style}
+      >
+        <GridLayoutProvider value={layout.context}>
+          {renderNodes(fields, layoutOptions, "")}
 
-        const spanClass = field.colSpan ? SPAN[field.colSpan] : undefined
-        const required = field.required ?? isFieldRequired(schema, field.name)
-
-        return (
-          <form.Field key={field.name} name={field.name as never}>
-            {(fieldApi) => {
-              // Validation runs live (`onChange` schema), but errors only *display*
-              // after the field is blurred — so typing doesn't flash an error, yet
-              // once shown it clears in real time as the value becomes valid. A
-              // submit attempt reveals errors on every field, blurred or not.
-              const meta = fieldApi.state.meta
-              const error =
-                meta.isBlurred || submitAttempted
-                  ? getErrorMessage(meta.errors)
-                  : undefined
-
-              return (
-                // `onBlur` bubbles from whatever control is inside (React blur is
-                // focusout), so the field flips to blurred/touched when focus leaves
-                // without every field component needing to forward an onBlur prop.
-                <div
-                  className={spanClass}
-                  data-field={field.name}
-                  onBlur={() => fieldApi.handleBlur()}
-                >
-                  <FieldRenderer
-                    field={field}
-                    registry={registry}
-                    required={required}
-                    value={fieldApi.state.value}
-                    onChange={(v) => fieldApi.handleChange(v as never)}
-                    error={error}
-                  />
-                </div>
-              )
-            }}
-          </form.Field>
-        )
-      })}
-
-      {children !== undefined ? (
-        <div className={SPAN[effectiveColumns]}>{children}</div>
-      ) : effectiveSubmitLabel !== null ? (
-        <div
-          className={cn(
-            "flex items-center justify-end gap-2 pt-1",
-            SPAN[effectiveColumns]
-          )}
-        >
-          {resetLabel && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => form.reset()}
+          {children !== undefined ? (
+            <SmartGridItem span="full">{children}</SmartGridItem>
+          ) : effectiveSubmitLabel !== null ? (
+            <SmartGridItem
+              span="full"
+              className="flex items-center justify-end gap-2 pt-1"
             >
-              {resetLabel}
-            </Button>
-          )}
-          <form.Subscribe selector={(state) => state.isSubmitting}>
-            {(isSubmitting) => (
-              <Button type="submit" disabled={isSubmitting}>
-                {effectiveSubmitLabel}
-              </Button>
-            )}
-          </form.Subscribe>
-        </div>
-      ) : null}
+              {resetLabel && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => form.reset()}
+                >
+                  {resetLabel}
+                </Button>
+              )}
+              <form.Subscribe selector={(state) => state.isSubmitting}>
+                {(isSubmitting) => (
+                  <Button type="submit" disabled={isSubmitting}>
+                    {effectiveSubmitLabel}
+                  </Button>
+                )}
+              </form.Subscribe>
+            </SmartGridItem>
+          ) : null}
+        </GridLayoutProvider>
+      </div>
     </form>
   )
 }
@@ -432,16 +641,23 @@ SmartFormForwarded.displayName = "SmartForm"
  * `key` remount), and gate create/edit-only fields with per-field `modes` + the
  * `mode` prop so one schema serves both.
  *
+ * **Layout** is the container-query grid from `@iamsaroj/smart-ui/layout`: pick
+ * any column count (`columns={12}`, `columns={{ base: 1, md: 12 }}`,
+ * `columns={{ auto: "fit", min: "16rem" }}`) and place each field with `span`.
+ * Spans clamp to the live column count, so a wide field collapses to full width
+ * on a narrow container by itself. Group fields with `kind: "section"` nodes to
+ * nest a differently-shaped grid inside the form.
+ *
  * ```tsx
  * const schema = z.object({ name: z.string().min(1), email: z.email().optional() })
  * type Form = z.infer<typeof schema>
  *
- * const fields: FieldDefinition<Form>[] = [
- *   { name: "name", type: "text",  label: "Name" },
- *   { name: "email", type: "email", label: "Email" },
+ * const fields: FormNode<Form>[] = [
+ *   { name: "name",  type: "text",  label: "Name",  span: "1/2" },
+ *   { name: "email", type: "email", label: "Email", span: "1/2" },
  * ]
  *
- * <SmartForm schema={schema} fields={fields} onSubmit={(value) => save(value)} />
+ * <SmartForm schema={schema} fields={fields} columns={12} onSubmit={save} />
  * ```
  *
  * `forwardRef` erases generics, so the call signature is re-asserted below — the
@@ -452,6 +668,96 @@ export const SmartForm = SmartFormForwarded as <
 >(
   props: SmartFormProps<T> & { ref?: React.ForwardedRef<SmartFormHandle<T>> }
 ) => React.ReactElement
+
+/** Frame around a section's nested grid: heading, description, disclosure. */
+const FormSectionChrome = ({
+  id,
+  title,
+  description,
+  variant,
+  collapsible,
+  collapsed,
+  onToggle,
+  children,
+}: {
+  id: string
+  title?: React.ReactNode
+  description?: React.ReactNode
+  variant: "plain" | "card" | "fieldset"
+  collapsible?: boolean
+  collapsed: boolean
+  onToggle: () => void
+  children: React.ReactNode
+}) => {
+  const titleId = `${id}-title`
+  const hasHeader = title != null || description != null
+
+  const header = hasHeader ? (
+    <div className="mb-3 flex items-start justify-between gap-2">
+      <div className="space-y-0.5">
+        {title != null &&
+          (variant === "fieldset" ? (
+            <legend id={titleId} className="text-sm font-semibold">
+              {title}
+            </legend>
+          ) : (
+            <h3 id={titleId} className="text-sm font-semibold">
+              {title}
+            </h3>
+          ))}
+        {description != null && (
+          <p className="text-xs text-muted-foreground">{description}</p>
+        )}
+      </div>
+      {collapsible && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          aria-expanded={!collapsed}
+          aria-controls={`${id}-panel`}
+          onClick={onToggle}
+        >
+          <ChevronDown
+            className={cn("transition-transform", collapsed && "-rotate-90")}
+          />
+          <span className="sr-only">Toggle section</span>
+        </Button>
+      )}
+    </div>
+  ) : null
+
+  // `hidden` rather than unmounting: TanStack keeps the values either way, but
+  // staying mounted means a collapsed section's fields still hold their live
+  // validation state when it reopens.
+  const panel = (
+    <div id={`${id}-panel`} hidden={collapsed}>
+      {children}
+    </div>
+  )
+
+  if (variant === "fieldset") {
+    return (
+      <fieldset className="min-w-0 rounded-lg border p-4">
+        {header}
+        {panel}
+      </fieldset>
+    )
+  }
+
+  return (
+    <section
+      aria-labelledby={title != null ? titleId : undefined}
+      className={cn(
+        "min-w-0",
+        variant === "card" && "rounded-lg border bg-card p-4"
+      )}
+    >
+      {header}
+      {panel}
+    </section>
+  )
+}
 
 /** The subset of a Standard-Schema validation issue we read for display. */
 interface StandardSchemaIssue {

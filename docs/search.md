@@ -61,8 +61,13 @@ Feed the pruned query straight into `SmartServerGrid` via its `filters` or
 - `SearchFieldDefinition<T>` is `FieldDefinition<T> & { type: SearchFieldType }` —
   still assignable to `FieldDefinition<T>[]`; the intersection keeps each field's
   per-type extras while constraining `type` to the search-relevant subset.
-- `columns` (1–4) is made responsive via a `grid-cols-*` override passed to
-  `SmartForm`'s `className` (tailwind-merge wins).
+- `columns` takes anything the [layout engine](./layout.md) accepts. A plain
+  number is read as a _desktop_ target and expanded into a 1 → 2 → n ramp
+  (`toSearchColumns`), since nobody wants four filters side by side in a 400px
+  drawer; pass a breakpoint map or `{ auto: "fit", min }` to control it exactly.
+- `SearchNode<T>` mirrors the form engine's layout tree with its children
+  re-narrowed to search fields, so an "Advanced filters" `section` can collapse
+  inside the bar and still reject a password field at compile time.
 
 ## Gotchas
 
