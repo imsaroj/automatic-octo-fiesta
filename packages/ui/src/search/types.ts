@@ -1,15 +1,20 @@
 /**
  * Search-engine field typing. Rather than fork the form engine, the search
- * field definition is **derived** from {@link FieldDefinition}: intersecting the
- * full discriminated union with a narrowed `type` distributes over the union, so
- * every member keeps its own per-type extras (options, decimalScale, …) while
- * the set of allowed `type`s is constrained to search-relevant controls. The
- * result is still assignable to `FieldDefinition<T>[]`, so it flows straight into
- * {@link SmartForm} and reuses the entire field registry unchanged.
+ * field definition is **derived** from {@link FieldDefinition}: `Extract` keeps
+ * only the union members whose `type` is search-relevant, so every member keeps
+ * its own per-type extras (options, decimalScale, …) while authoring-only
+ * controls are rejected. The result is still assignable to
+ * `FieldDefinition<T>[]`, so it flows straight into {@link SmartForm} and reuses
+ * the entire field registry unchanged.
+ *
+ * `Extract` rather than an intersection: since each variant carries a single
+ * literal `type`, extraction selects whole variants and errors name the real one
+ * (`FieldVariant<T, "select">`) instead of an intersection nobody wrote.
  */
 
 import type {
   FieldDefinition,
+  FieldType,
   FormCustomNode,
   FormDividerNode,
   FormSection,
@@ -25,36 +30,24 @@ import type {
  * or register a custom async field type via the `registry` prop for true
  * server-side option loading.
  */
-export type SearchFieldType =
-  // Text
-  | "text"
-  | "email"
-  | "url"
-  // Numeric
-  | "number"
-  | "integer"
-  | "decimal"
-  | "currency"
-  | "percentage"
-  // Selection
-  | "select"
-  | "combobox"
-  | "autocomplete"
-  | "multiselect"
-  | "radio"
-  | "segmented"
-  // Boolean
-  | "checkbox"
-  | "checkbox-group"
-  | "switch"
-  | "yesno"
-  // Date & time
-  | "date"
-  | "daterange"
-  | "month"
-  | "year"
-  | "time"
-  | "datetime"
+export type SearchFieldType = Exclude<FieldType, NonSearchFieldType>
+
+/**
+ * The field types a filter bar excludes — authoring-only controls with no
+ * meaning as a filter. Stated as an **exclusion** so the two stay in step: a
+ * field type added to `FieldTypeExtras` (by the library or by an app's
+ * declaration merging) becomes search-eligible automatically, and keeping it out
+ * is a deliberate entry here rather than something silently forgotten.
+ */
+type NonSearchFieldType =
+  | "password"
+  | "tel"
+  | "slug"
+  | "textarea"
+  | "text-editor"
+  // A start/end clock range filters nothing on its own — use two `time` fields
+  // or a `daterange` instead.
+  | "timerange"
 
 /**
  * A single search field's configuration — the same discriminated union as
@@ -73,7 +66,7 @@ export type SearchFieldType =
  */
 export type SearchFieldDefinition<
   T extends Record<string, unknown> = Record<string, unknown>,
-> = FieldDefinition<T> & { type: SearchFieldType }
+> = Extract<FieldDefinition<T>, { type: SearchFieldType }>
 
 /**
  * A section inside a filter bar — the form engine's {@link FormSection} with its

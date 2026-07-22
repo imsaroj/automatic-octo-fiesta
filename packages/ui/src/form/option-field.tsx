@@ -9,8 +9,16 @@ import { useFieldOptions } from "./use-field-options"
 import type { CommonFieldProps } from "./field-registry"
 
 export interface OptionFieldProps {
-  /** The underlying string-based control (SmartSelectField, SmartRadioGroupField, …). */
-  control: React.ComponentType<Record<string, unknown>>
+  /**
+   * The underlying string-based control (SmartSelectField, SmartRadioGroupField, …).
+   *
+   * Deliberately `any`-propped: this adapter renders whichever control the
+   * registry entry names and forwards a prop bag assembled at runtime, so there
+   * is no single prop type to name here. A concrete `ComponentType<P>` would
+   * reject every real control on contravariance.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  control: React.ComponentType<any>
   /** Raw field options: a materialized list or an async resolver. */
   options?: FieldOptions
   /** Multi-value control (multiselect / checkbox-group) vs single. */
