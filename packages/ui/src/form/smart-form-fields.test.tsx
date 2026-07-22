@@ -169,3 +169,53 @@ test("a valid submit hands the values to onSubmit", async () => {
     expect.objectContaining({ name: "Ada" })
   )
 })
+
+/**
+ * The `date` field forwards SmartDatePicker's own controls. Asserted end to end
+ * — definition → registry `mapProps` → field → picker — because the type-level
+ * tests only prove the config is *accepted*, not that it reaches the picker.
+ */
+const dateSchema = z.object({ due: z.string() })
+type D = z.infer<typeof dateSchema>
+
+const buttonLabels = () =>
+  Array.from(container.querySelectorAll("button")).map((b) =>
+    b.getAttribute("aria-label")
+  )
+
+test("a date field renders no picker controls unless asked", () => {
+  const fields: FieldDefinition<D>[] = [{ name: "due", type: "date" }]
+  mount(<SmartForm schema={dateSchema} fields={fields} />)
+
+  expect(buttonLabels()).not.toContain("Next day")
+  expect(buttonLabels()).not.toContain("Reset to today")
+})
+
+test("steppers / todayButton reach the picker and drive the stored value", async () => {
+  const onSubmit = vi.fn()
+  const fields: FieldDefinition<D>[] = [
+    { name: "due", type: "date", steppers: "next", todayButton: true },
+  ]
+  mount(<SmartForm schema={dateSchema} fields={fields} onSubmit={onSubmit} />)
+
+  // `steppers: "next"` is the +1 button only — the "prev" half stays hidden.
+  expect(buttonLabels()).toContain("Next day")
+  expect(buttonLabels()).toContain("Reset to today")
+  expect(buttonLabels()).not.toContain("Previous day")
+
+  const byLabel = (label: string) =>
+    container.querySelector(
+      `button[aria-label="${label}"]`
+    ) as HTMLButtonElement
+
+  await act(async () => byLabel("Reset to today").click())
+  await act(async () =>
+    (
+      container.querySelector('button[type="submit"]') as HTMLButtonElement
+    ).click()
+  )
+
+  const now = new Date()
+  const iso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
+  expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ due: iso }))
+})

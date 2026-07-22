@@ -54,6 +54,17 @@ test("valid per-type configs compile", () => {
     { name: "plan", type: "radio", orientation: "horizontal" },
     { name: "agree", type: "yesno", yesLabel: "Yep", noLabel: "Nope" },
     { name: "plan", type: "date" },
+    // The picker's own controls / calendar config reach a `date` field.
+    {
+      name: "plan",
+      type: "date",
+      steppers: "prev",
+      todayButton: true,
+      timeZone: "utc",
+      captionLayout: "dropdown",
+      startMonth: new Date(1970, 0),
+      dateFormat: "yyyy-MM-dd",
+    },
     { name: "plan", type: "daterange", numberOfMonths: 2 },
     { name: "plan", type: "time", use12Hour: true, minuteStep: 15 },
     { name: "plan", type: "timerange", startPlaceholder: "From" },
@@ -62,7 +73,7 @@ test("valid per-type configs compile", () => {
     { name: "plan", type: "text", span: "1/2", newRow: true },
   ]
 
-  expect(valid).toHaveLength(17)
+  expect(valid).toHaveLength(18)
 })
 
 test("an extra belonging to another field type is rejected", () => {
@@ -101,6 +112,13 @@ test("an extra belonging to another field type is rejected", () => {
     numberOfMonths: 2,
   }
 
+  const todayButtonOnMonth: FieldDefinition<Form> = {
+    name: "plan",
+    type: "month",
+    // @ts-expect-error — the picker's controls belong to `date`, not `month`.
+    todayButton: true,
+  }
+
   const maxSelectedOnSelect: FieldDefinition<Form> = {
     name: "plan",
     type: "select",
@@ -121,9 +139,10 @@ test("an extra belonging to another field type is rejected", () => {
     yesLabelOnSwitch,
     rowsOnInput,
     numberOfMonthsOnDate,
+    todayButtonOnMonth,
     maxSelectedOnSelect,
     integerIsEngineOwned,
-  ]).toHaveLength(7)
+  ]).toHaveLength(8)
 })
 
 test("defineFieldType ties a field type to the control that renders it", () => {

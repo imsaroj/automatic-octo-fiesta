@@ -519,10 +519,17 @@ export const defaultFieldRegistry = {
   date: defineFieldType("date", {
     component: SmartDateField,
     defaultValue: "",
-    mapProps: ({ common, value, setValue }): SmartDateFieldProps => ({
+    mapProps: ({ field, common, value, setValue }): SmartDateFieldProps => ({
       ...common,
       data: asString(value),
       setData: setValue,
+      steppers: field.steppers,
+      todayButton: field.todayButton,
+      timeZone: field.timeZone,
+      captionLayout: field.captionLayout,
+      startMonth: field.startMonth,
+      endMonth: field.endMonth,
+      dateFormat: field.dateFormat,
     }),
   }),
   time: defineFieldType("time", {
