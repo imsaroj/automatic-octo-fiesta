@@ -1,3 +1,19 @@
+# [5.0.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v4.3.0...v5.0.0) (2026-07-22)
+
+
+* refactor(form)!: generate field types from a single FieldTypeExtras map ([e1e21be](https://github.com/imsaroj/automatic-octo-fiesta/commit/e1e21be4af3f4575e0e95222dd7166d4ce6d8725))
+
+
+### BREAKING CHANGES
+
+* the per-variant interfaces (`TextField`, `SelectField`, …) are
+replaced by `FieldTypeExtras` + `FieldVariant<T, K>`; they had no importers
+outside the module. Two props are renamed to match their components, which is
+what makes them derivable: `slugPrefix` -> `prefix` (slug), `editorFormat` ->
+`format` (text-editor).
+
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
 # [4.3.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v4.2.0...v4.3.0) (2026-07-22)
 
 
