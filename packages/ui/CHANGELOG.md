@@ -1,3 +1,11 @@
+# [5.1.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v5.0.0...v5.1.0) (2026-07-22)
+
+
+### Features
+
+* **form/date:** add full SmartDatePicker support and tests ([67c9823](https://github.com/imsaroj/automatic-octo-fiesta/commit/67c98239cf9a098fc76dd94b9603b4e03b5c5383))
+* **form:** enhance field support with new props and native attribute passthrough ([058bc81](https://github.com/imsaroj/automatic-octo-fiesta/commit/058bc813b4a3b9bcc1e2550699b87d2cb30d2f1e))
+
 # [5.0.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v4.3.0...v5.0.0) (2026-07-22)
 
 
