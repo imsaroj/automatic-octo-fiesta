@@ -10,6 +10,10 @@ export interface SmartMultiSelectFieldProps extends FieldBaseProps<string[]> {
   options?: SmartMultiSelectOption[]
   maxSelected?: number
   searchPlaceholder?: string
+  /** Message shown when the search matches nothing. */
+  emptyText?: string
+  /** Class applied to the trigger button (`className` styles the field wrapper). */
+  triggerClassName?: string
 }
 
 /** Searchable multi-choice select bound to a string-array value. */
@@ -27,6 +31,8 @@ export const SmartMultiSelectField = ({
   options = [],
   maxSelected,
   searchPlaceholder,
+  emptyText,
+  triggerClassName,
 }: SmartMultiSelectFieldProps) => (
   <SmartMultiSelect
     value={data}
@@ -39,6 +45,8 @@ export const SmartMultiSelectField = ({
     options={options}
     maxSelected={maxSelected}
     searchPlaceholder={searchPlaceholder}
+    emptyText={emptyText}
+    className={triggerClassName}
     disabled={disabled || readOnly}
     fieldClassName={className}
   />

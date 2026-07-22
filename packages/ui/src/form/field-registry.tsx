@@ -8,6 +8,13 @@ import type {
   FieldVariant,
   ResolvedFieldDefinition,
 } from "./field-types"
+import {
+  NATIVE_INPUT_ATTR_KEYS,
+  NATIVE_TEXTAREA_ATTR_KEYS,
+  pickNativeAttrs,
+  type NativeInputAttrs,
+  type NativeTextareaAttrs,
+} from "./base"
 import { SmartInputField, type SmartInputFieldProps } from "./smart-input-field"
 import {
   SmartTextareaField,
@@ -21,9 +28,18 @@ import {
   SmartNumberField,
   type SmartNumberFieldProps,
 } from "./smart-number-field"
-import { SmartSelectField } from "./smart-select-field"
-import { SmartComboboxField } from "./smart-combobox-field"
-import { SmartMultiSelectField } from "./smart-multi-select-field"
+import {
+  SmartSelectField,
+  type SmartSelectFieldProps,
+} from "./smart-select-field"
+import {
+  SmartComboboxField,
+  type SmartComboboxFieldProps,
+} from "./smart-combobox-field"
+import {
+  SmartMultiSelectField,
+  type SmartMultiSelectFieldProps,
+} from "./smart-multi-select-field"
 import {
   SmartCheckboxField,
   type SmartCheckboxFieldProps,
@@ -32,7 +48,10 @@ import {
   SmartSwitchField,
   type SmartSwitchFieldProps,
 } from "./smart-switch-field"
-import { SmartRadioGroupField } from "./smart-radio-group-field"
+import {
+  SmartRadioGroupField,
+  type SmartRadioGroupFieldProps,
+} from "./smart-radio-group-field"
 import { SmartDateField, type SmartDateFieldProps } from "./smart-date-field"
 import { SmartSegmentedField } from "./smart-segmented-field"
 import {
@@ -58,7 +77,10 @@ import {
   type TimeRange,
   type SmartTimeRangeFieldProps,
 } from "./smart-time-range-field"
-import { SmartCheckboxGroupField } from "./smart-checkbox-group-field"
+import {
+  SmartCheckboxGroupField,
+  type SmartCheckboxGroupFieldProps,
+} from "./smart-checkbox-group-field"
 import { SmartYesNoField, type SmartYesNoFieldProps } from "./smart-yesno-field"
 import { OptionField, type OptionFieldProps } from "./option-field"
 
@@ -128,9 +150,33 @@ export interface FieldEntry<K extends string = string> {
   component: React.ComponentType<Record<string, unknown>>
   /** The empty value a field of this type starts at when `data` omits it. */
   defaultValue: unknown
+  /**
+   * Field-aware empty value, consulted before {@link defaultValue}. Needed when
+   * a single field type spans more than one value shape — a `combobox` holds
+   * `""` normally but `[]` under `multiple`, and seeding it with the wrong one
+   * makes the control uncontrolled on first render.
+   */
+  resolveDefaultValue?: (field: ResolvedFieldDefinition) => unknown
   /** Build the control's props from the definition, common props, and value. */
   mapProps: (ctx: FieldRenderContext) => Record<string, unknown>
 }
+
+/**
+ * The empty value a field starts at: the entry's field-aware resolver when it
+ * has one, else its static default. The single place both `SmartForm` and
+ * `SmartSearchForm` ask, so the two can't disagree about a blank form.
+ */
+export const fieldDefaultValue = <T extends Record<string, unknown>>(
+  entry: FieldEntry | undefined,
+  field: ResolvedFieldDefinition<T>
+): unknown =>
+  entry?.resolveDefaultValue
+    ? // Sound: `ResolvedFieldDefinition<T>` differs from the base only in its
+      // `T`-typed callbacks (`hidden`, `disabled`), which are contravariant and
+      // which a resolver never reads — it decides the empty value from the
+      // definition's own literal extras.
+      entry.resolveDefaultValue(field as ResolvedFieldDefinition)
+    : entry?.defaultValue
 
 export type FieldRegistry = Record<string, FieldEntry>
 
@@ -174,6 +220,9 @@ export const defineFieldType = <K extends FieldType, P>(
   entry: {
     component: React.ComponentType<P>
     defaultValue: unknown
+    resolveDefaultValue?: (
+      field: FieldVariant<Record<string, unknown>, K>
+    ) => unknown
     // `NoInfer` is load-bearing: it pins `P` to the component's props so the
     // returned literal is checked against a *known* target. Without it the
     // return value is also an inference site for `P`, which silently widens it
@@ -185,6 +234,18 @@ export const defineFieldType = <K extends FieldType, P>(
 
 // --- coercion helpers: the store value is untyped, so each entry narrows it ---
 const asString = (value: unknown) => (value as string) ?? ""
+
+// Native DOM attributes an author may set, lifted off the definition in one go.
+// Spread *before* the engine-owned props in every entry, so nothing here can
+// shadow the value channel even if a key is added to the allowlist by mistake.
+const nativeInput = (field: ResolvedFieldDefinition): NativeInputAttrs =>
+  pickNativeAttrs(field, NATIVE_INPUT_ATTR_KEYS)
+const nativeTextarea = (field: ResolvedFieldDefinition): NativeTextareaAttrs =>
+  pickNativeAttrs(field, NATIVE_TEXTAREA_ATTR_KEYS)
+// A numeric field owns `inputMode` and sanitizes keystrokes itself, so it takes
+// only the attributes that stay meaningful — see `SmartNumberFieldProps`.
+const numericNative = (field: ResolvedFieldDefinition) =>
+  pickNativeAttrs(field, ["autoFocus", "tabIndex", "enterKeyHint"] as const)
 const asBool = (value: unknown) => (value as boolean) ?? false
 const asNumber = (value: unknown) => (value as number | null) ?? null
 
@@ -204,11 +265,13 @@ export const defaultFieldRegistry = {
     defaultValue: "",
     mapProps: ({ field, common, value, setValue }): SmartInputFieldProps => ({
       ...common,
+      ...nativeInput(field),
       data: asString(value),
       setData: setValue,
       type: field.type,
       maxLength: field.maxLength,
       autoComplete: field.autoComplete,
+      allowLeadingSpace: field.allowLeadingSpace,
     }),
   }),
   email: defineFieldType("email", {
@@ -216,11 +279,13 @@ export const defaultFieldRegistry = {
     defaultValue: "",
     mapProps: ({ field, common, value, setValue }): SmartInputFieldProps => ({
       ...common,
+      ...nativeInput(field),
       data: asString(value),
       setData: setValue,
       type: field.type,
       maxLength: field.maxLength,
       autoComplete: field.autoComplete,
+      allowLeadingSpace: field.allowLeadingSpace,
     }),
   }),
   url: defineFieldType("url", {
@@ -228,11 +293,13 @@ export const defaultFieldRegistry = {
     defaultValue: "",
     mapProps: ({ field, common, value, setValue }): SmartInputFieldProps => ({
       ...common,
+      ...nativeInput(field),
       data: asString(value),
       setData: setValue,
       type: field.type,
       maxLength: field.maxLength,
       autoComplete: field.autoComplete,
+      allowLeadingSpace: field.allowLeadingSpace,
     }),
   }),
   password: defineFieldType("password", {
@@ -245,9 +312,12 @@ export const defaultFieldRegistry = {
       setValue,
     }): SmartPasswordFieldProps => ({
       ...common,
+      ...nativeInput(field),
       data: asString(value),
       setData: setValue,
       autoComplete: field.autoComplete,
+      maxLength: field.maxLength,
+      allowLeadingSpace: field.allowLeadingSpace,
     }),
   }),
   tel: defineFieldType("tel", {
@@ -255,9 +325,15 @@ export const defaultFieldRegistry = {
     defaultValue: "",
     mapProps: ({ field, common, value, setValue }): SmartTelFieldProps => ({
       ...common,
+      ...nativeInput(field),
       data: asString(value),
       setData: setValue,
       autoComplete: field.autoComplete,
+      maxLength: field.maxLength,
+      leadingIcon: field.leadingIcon,
+      leadingText: field.leadingText,
+      trailingIcon: field.trailingIcon,
+      trailingButton: field.trailingButton,
     }),
   }),
   slug: defineFieldType("slug", {
@@ -265,10 +341,14 @@ export const defaultFieldRegistry = {
     defaultValue: "",
     mapProps: ({ field, common, value, setValue }): SmartSlugFieldProps => ({
       ...common,
+      ...nativeInput(field),
       data: asString(value),
       setData: setValue,
       prefix: field.prefix,
       maxLength: field.maxLength,
+      suffix: field.suffix,
+      trailingIcon: field.trailingIcon,
+      trailingButton: field.trailingButton,
     }),
   }),
   textarea: defineFieldType("textarea", {
@@ -281,10 +361,12 @@ export const defaultFieldRegistry = {
       setValue,
     }): SmartTextareaFieldProps => ({
       ...common,
+      ...nativeTextarea(field),
       data: asString(value),
       setData: setValue,
       rows: field.rows,
       maxLength: field.maxLength,
+      allowLeadingSpace: field.allowLeadingSpace,
     }),
   }),
   "text-editor": defineFieldType("text-editor", {
@@ -303,6 +385,8 @@ export const defaultFieldRegistry = {
       toolbar: field.toolbar,
       minHeight: field.minHeight,
       maxHeight: field.maxHeight,
+      autoFocus: field.autoFocus,
+      editorClassName: field.editorClassName,
     }),
   }),
 
@@ -312,8 +396,10 @@ export const defaultFieldRegistry = {
     defaultValue: null,
     mapProps: ({ field, common, value, setValue }): SmartNumberFieldProps => ({
       ...common,
+      ...numericNative(field),
       data: asNumber(value),
       setData: setValue,
+      autoComplete: field.autoComplete,
       decimalScale: field.decimalScale,
       prefix: field.prefix,
       suffix: field.suffix,
@@ -327,8 +413,10 @@ export const defaultFieldRegistry = {
     defaultValue: null,
     mapProps: ({ field, common, value, setValue }): SmartNumberFieldProps => ({
       ...common,
+      ...numericNative(field),
       data: asNumber(value),
       setData: setValue,
+      autoComplete: field.autoComplete,
       decimalScale: field.decimalScale,
       prefix: field.prefix,
       suffix: field.suffix,
@@ -342,8 +430,10 @@ export const defaultFieldRegistry = {
     defaultValue: null,
     mapProps: ({ field, common, value, setValue }): SmartNumberFieldProps => ({
       ...common,
+      ...numericNative(field),
       data: asNumber(value),
       setData: setValue,
+      autoComplete: field.autoComplete,
       integer: true,
       decimalScale: field.decimalScale ?? 0,
       prefix: field.prefix,
@@ -358,8 +448,10 @@ export const defaultFieldRegistry = {
     defaultValue: null,
     mapProps: ({ field, common, value, setValue }): SmartNumberFieldProps => ({
       ...common,
+      ...numericNative(field),
       data: asNumber(value),
       setData: setValue,
+      autoComplete: field.autoComplete,
       decimalScale: field.decimalScale ?? 2,
       prefix: field.prefix ?? "$",
       suffix: field.suffix,
@@ -373,8 +465,10 @@ export const defaultFieldRegistry = {
     defaultValue: null,
     mapProps: ({ field, common, value, setValue }): SmartNumberFieldProps => ({
       ...common,
+      ...numericNative(field),
       data: asNumber(value),
       setData: setValue,
+      autoComplete: field.autoComplete,
       decimalScale: field.decimalScale,
       prefix: field.prefix,
       suffix: field.suffix ?? "%",
@@ -398,36 +492,50 @@ export const defaultFieldRegistry = {
       value,
       setValue,
       common,
+      extra: {
+        size: field.size,
+        triggerClassName: field.triggerClassName,
+      } satisfies Partial<SmartSelectFieldProps>,
     }),
   }),
   combobox: defineFieldType("combobox", {
     component: OptionField,
     defaultValue: "",
+    // `multiple` flips the stored value to an array, so the blank value has to
+    // follow — see `fieldDefaultValue`.
+    resolveDefaultValue: (field) => (field.multiple ? [] : ""),
     mapProps: ({ field, common, value, setValue }): OptionFieldProps => ({
       control: SmartComboboxField,
       options: field.options,
+      multiple: field.multiple,
       value,
       setValue,
       common,
       extra: {
         searchPlaceholder: field.searchPlaceholder,
         emptyText: field.emptyText,
-      },
+        maxSelected: field.maxSelected,
+        triggerClassName: field.triggerClassName,
+      } satisfies Partial<SmartComboboxFieldProps>,
     }),
   }),
   autocomplete: defineFieldType("autocomplete", {
     component: OptionField,
     defaultValue: "",
+    resolveDefaultValue: (field) => (field.multiple ? [] : ""),
     mapProps: ({ field, common, value, setValue }): OptionFieldProps => ({
       control: SmartComboboxField,
       options: field.options,
+      multiple: field.multiple,
       value,
       setValue,
       common,
       extra: {
         searchPlaceholder: field.searchPlaceholder,
         emptyText: field.emptyText,
-      },
+        maxSelected: field.maxSelected,
+        triggerClassName: field.triggerClassName,
+      } satisfies Partial<SmartComboboxFieldProps>,
     }),
   }),
   multiselect: defineFieldType("multiselect", {
@@ -443,7 +551,9 @@ export const defaultFieldRegistry = {
       extra: {
         maxSelected: field.maxSelected,
         searchPlaceholder: field.searchPlaceholder,
-      },
+        emptyText: field.emptyText,
+        triggerClassName: field.triggerClassName,
+      } satisfies Partial<SmartMultiSelectFieldProps>,
     }),
   }),
   radio: defineFieldType("radio", {
@@ -455,7 +565,9 @@ export const defaultFieldRegistry = {
       value,
       setValue,
       common,
-      extra: { orientation: field.orientation },
+      extra: {
+        orientation: field.orientation,
+      } satisfies Partial<SmartRadioGroupFieldProps>,
     }),
   }),
   segmented: defineFieldType("segmented", {
@@ -479,7 +591,9 @@ export const defaultFieldRegistry = {
       value,
       setValue,
       common,
-      extra: { orientation: field.orientation },
+      extra: {
+        orientation: field.orientation,
+      } satisfies Partial<SmartCheckboxGroupFieldProps>,
     }),
   }),
 
@@ -530,6 +644,7 @@ export const defaultFieldRegistry = {
       startMonth: field.startMonth,
       endMonth: field.endMonth,
       dateFormat: field.dateFormat,
+      pickerClassName: field.pickerClassName,
     }),
   }),
   time: defineFieldType("time", {
@@ -542,6 +657,7 @@ export const defaultFieldRegistry = {
       use12Hour: field.use12Hour,
       withSeconds: field.withSeconds,
       minuteStep: field.minuteStep,
+      triggerClassName: field.triggerClassName,
     }),
   }),
   datetime: defineFieldType("datetime", {
@@ -559,6 +675,7 @@ export const defaultFieldRegistry = {
       use12Hour: field.use12Hour,
       withSeconds: field.withSeconds,
       minuteStep: field.minuteStep,
+      triggerClassName: field.triggerClassName,
     }),
   }),
   month: defineFieldType("month", {
@@ -570,6 +687,7 @@ export const defaultFieldRegistry = {
       setData: setValue,
       fromYear: field.fromYear,
       toYear: field.toYear,
+      triggerClassName: field.triggerClassName,
     }),
   }),
   year: defineFieldType("year", {
@@ -581,6 +699,7 @@ export const defaultFieldRegistry = {
       setData: setValue,
       fromYear: field.fromYear,
       toYear: field.toYear,
+      triggerClassName: field.triggerClassName,
     }),
   }),
   daterange: defineFieldType("daterange", {
@@ -596,6 +715,7 @@ export const defaultFieldRegistry = {
       data: value as DateRangeValue | undefined,
       setData: setValue,
       numberOfMonths: field.numberOfMonths,
+      triggerClassName: field.triggerClassName,
     }),
   }),
   timerange: defineFieldType("timerange", {

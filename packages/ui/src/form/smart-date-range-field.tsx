@@ -15,6 +15,8 @@ export interface SmartDateRangeFieldProps extends Omit<
   "readOnly"
 > {
   numberOfMonths?: number
+  /** Class applied to the trigger button (`className` styles the field wrapper). */
+  triggerClassName?: string
 }
 
 const toISO = (date: Date): string => {
@@ -42,6 +44,7 @@ export const SmartDateRangeField = ({
   disabled,
   className,
   numberOfMonths,
+  triggerClassName,
 }: SmartDateRangeFieldProps) => {
   const value: DateRange | undefined = data?.from
     ? { from: parseDay(data.from), to: parseDay(data.to) }
@@ -67,6 +70,7 @@ export const SmartDateRangeField = ({
       disabled={disabled}
       numberOfMonths={numberOfMonths}
       placeholder={placeholder}
+      className={triggerClassName}
       fieldClassName={className}
     />
   )

@@ -298,6 +298,21 @@ no per-field wiring. Key design points (see `smart-form.tsx`):
   `mapProps`' return type** — TypeScript only excess-property-checks literals against an _explicitly written_ return
   type, so without the annotation stale props survive silently. `NoInfer` on that return is load-bearing for the same
   reason; don't remove either.
+- **The type is only half of a prop — `mapProps` has to forward it too.** The drift guarantee runs one way: an entry
+  can't return a prop the component doesn't have. Nothing forces the reverse, so a prop added to a `Smart*FieldProps`
+  and not copied out of `field` in the registry type-checks and then silently never reaches the DOM.
+  `field-passthrough.test.tsx` is the counterweight — it asserts representative props actually land on the rendered
+  control. Add a case there when you widen a field's surface.
+- **Native DOM attributes** (`autoFocus`, `pattern`, `inputMode`, `spellCheck`, …) reach input-backed fields through the
+  curated `NativeInputAttrs` / `NativeTextareaAttrs` in `base.ts`, deliberately **not** the whole
+  `ComponentProps<"input">` — the engine owns `value`/`onChange`/`ref`/`name`, and advertising those on a config object
+  would promise what it can't honor. Each type has a runtime key list (`NATIVE_*_ATTR_KEYS`) that does the forwarding;
+  `field-types.test.tsx` pins list ↔ type with an `Equals` assertion, so adding to one without the other fails the build.
+  Fields that own an attribute exclude it (`tel` pins `inputMode`, `slug` pins `spellCheck`, numerics pin both).
+- `FieldEntry.resolveDefaultValue` is the field-aware empty value, consulted before the static `defaultValue` by
+  `fieldDefaultValue()` (used by both `SmartForm` and `SmartSearchForm`). It exists because one field type can span two
+  value shapes: a `combobox` holds `""` normally but `[]` under `multiple`, and the wrong seed leaves the control
+  uncontrolled on first render.
 - `FieldType` is **open** (apps add types by declaration-merging `FieldTypeExtras`); `BuiltinFieldType` is the closed
   list the built-in registry must cover. The registry's `satisfies` is keyed on `BuiltinFieldType` precisely so an app's
   augmentation doesn't make the library's own registry fail to compile. `field-types.test.tsx` asserts the two match.

@@ -9,6 +9,8 @@ export interface SmartTimeFieldProps extends Omit<
   use12Hour?: boolean
   withSeconds?: boolean
   minuteStep?: number
+  /** Class applied to the trigger button (`className` styles the field wrapper). */
+  triggerClassName?: string
 }
 
 /** Time field — stores a 24-hour `"HH:mm"` (or `"HH:mm:ss"`) string. */
@@ -25,6 +27,7 @@ export const SmartTimeField = ({
   use12Hour,
   withSeconds,
   minuteStep,
+  triggerClassName,
 }: SmartTimeFieldProps) => (
   <SmartTimePicker
     value={data || undefined}
@@ -38,6 +41,7 @@ export const SmartTimeField = ({
     withSeconds={withSeconds}
     minuteStep={minuteStep}
     placeholder={placeholder}
+    className={triggerClassName}
     fieldClassName={className}
   />
 )

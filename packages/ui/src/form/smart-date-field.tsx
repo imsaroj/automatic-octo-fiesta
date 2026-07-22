@@ -24,6 +24,7 @@ export type SmartDateFieldProps = FieldBaseProps<string> &
     | "startMonth"
     | "endMonth"
     | "dateFormat"
+    | "pickerClassName"
   >
 
 /**
@@ -58,6 +59,7 @@ export const SmartDateField = ({
   startMonth,
   endMonth,
   dateFormat,
+  pickerClassName,
 }: SmartDateFieldProps) => {
   const dateValue = data ? new Date(`${data}T00:00:00`) : undefined
 
@@ -85,6 +87,7 @@ export const SmartDateField = ({
       startMonth={startMonth}
       endMonth={endMonth}
       dateFormat={dateFormat}
+      pickerClassName={pickerClassName}
       fieldClassName={className}
     />
   )

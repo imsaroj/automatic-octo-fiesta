@@ -7,6 +7,8 @@ export interface SmartMonthFieldProps extends Omit<
 > {
   fromYear?: number
   toYear?: number
+  /** Class applied to the trigger button (`className` styles the field wrapper). */
+  triggerClassName?: string
 }
 
 /** Month field — stores a `"YYYY-MM"` string; empty means "unset". */
@@ -22,6 +24,7 @@ export const SmartMonthField = ({
   className,
   fromYear,
   toYear,
+  triggerClassName,
 }: SmartMonthFieldProps) => {
   const [y, m] = data ? data.split("-").map(Number) : []
   const value = y && m ? new Date(y, m - 1, 1) : undefined
@@ -43,6 +46,7 @@ export const SmartMonthField = ({
       fromYear={fromYear}
       toYear={toYear}
       placeholder={placeholder}
+      className={triggerClassName}
       fieldClassName={className}
     />
   )

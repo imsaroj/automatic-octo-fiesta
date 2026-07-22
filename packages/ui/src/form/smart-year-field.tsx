@@ -7,6 +7,8 @@ export interface SmartYearFieldProps extends Omit<
 > {
   fromYear?: number
   toYear?: number
+  /** Class applied to the trigger button (`className` styles the field wrapper). */
+  triggerClassName?: string
 }
 
 /** Year field — stores a numeric year (or `null` when unset). */
@@ -22,6 +24,7 @@ export const SmartYearField = ({
   className,
   fromYear,
   toYear,
+  triggerClassName,
 }: SmartYearFieldProps) => (
   <SmartYearPicker
     value={data ?? undefined}
@@ -34,6 +37,7 @@ export const SmartYearField = ({
     fromYear={fromYear}
     toYear={toYear}
     placeholder={placeholder}
+    className={triggerClassName}
     fieldClassName={className}
   />
 )

@@ -21,7 +21,12 @@ export interface OptionFieldProps {
   control: React.ComponentType<any>
   /** Raw field options: a materialized list or an async resolver. */
   options?: FieldOptions
-  /** Multi-value control (multiselect / checkbox-group) vs single. */
+  /**
+   * Multi-value control (multiselect / checkbox-group, or a `multiple`
+   * combobox) vs single. Selects the value codec **and** is forwarded to the
+   * control, so a control that can do both reads the same flag the codec did
+   * rather than a second copy in `extra` that could disagree with it.
+   */
   multiple?: boolean
   /** Current typed value from the form store (`V` or `V[]`). */
   value: unknown
@@ -79,6 +84,7 @@ export const OptionField = ({
     <Control
       {...common}
       {...extra}
+      multiple={multiple}
       data={data}
       setData={setData}
       options={codec.stringOptions}

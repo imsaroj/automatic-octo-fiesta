@@ -6,6 +6,12 @@ import type {
   FieldTypeExtras,
 } from "./field-types"
 import { defineFieldType, type FieldEntry } from "./field-registry"
+import {
+  NATIVE_INPUT_ATTR_KEYS,
+  NATIVE_TEXTAREA_ATTR_KEYS,
+  type NativeInputAttrs,
+  type NativeTextareaAttrs,
+} from "./base"
 import { SmartInputField, type SmartInputFieldProps } from "./smart-input-field"
 
 /**
@@ -33,6 +39,23 @@ test("BuiltinFieldType matches FieldTypeExtras exactly", () => {
 
   expect(exhaustive).toBe(true)
   expect(openAlias).toBe(true)
+})
+
+test("the native-attribute key lists match their types exactly", () => {
+  // The types decide what an author may *write*; these arrays decide what the
+  // registry actually *forwards*. Drift between them is silent at runtime — a
+  // prop that type-checks and then never reaches the DOM — so pin them together.
+  const inputKeys: Equals<
+    (typeof NATIVE_INPUT_ATTR_KEYS)[number],
+    keyof NativeInputAttrs
+  > = true
+  const textareaKeys: Equals<
+    (typeof NATIVE_TEXTAREA_ATTR_KEYS)[number],
+    keyof NativeTextareaAttrs
+  > = true
+
+  expect(inputKeys).toBe(true)
+  expect(textareaKeys).toBe(true)
 })
 
 test("valid per-type configs compile", () => {

@@ -8,6 +8,8 @@ export interface SmartDateTimeFieldProps extends Omit<
   use12Hour?: boolean
   withSeconds?: boolean
   minuteStep?: number
+  /** Class applied to the trigger button (`className` styles the field wrapper). */
+  triggerClassName?: string
 }
 
 /**
@@ -27,6 +29,7 @@ export const SmartDateTimeField = ({
   use12Hour,
   withSeconds,
   minuteStep,
+  triggerClassName,
 }: SmartDateTimeFieldProps) => {
   const value = data ? new Date(data) : undefined
   const selected = value && !Number.isNaN(value.getTime()) ? value : undefined
@@ -44,6 +47,7 @@ export const SmartDateTimeField = ({
       withSeconds={withSeconds}
       minuteStep={minuteStep}
       placeholder={placeholder}
+      className={triggerClassName}
       fieldClassName={className}
     />
   )

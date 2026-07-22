@@ -36,6 +36,7 @@ import {
 } from "./form-nodes"
 import {
   defaultFieldRegistry,
+  fieldDefaultValue,
   type FieldRegistry,
   type CommonFieldProps,
 } from "./field-registry"
@@ -189,7 +190,8 @@ const SmartFormInner = <T extends Record<string, unknown>>(
   // The empty value a field starts at when `data` omits it — sourced from the
   // registry entry so custom field types bring their own default.
   const defaultForField = React.useCallback(
-    (field: FieldDefinition<T>): unknown => registry[field.type]?.defaultValue,
+    (field: FieldDefinition<T>): unknown =>
+      fieldDefaultValue(registry[field.type], field),
     [registry]
   )
 

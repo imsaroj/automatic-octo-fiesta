@@ -1,10 +1,26 @@
-import { SmartInputGroup } from "@iamsaroj/smart-ui/smart-components/smart-input-group"
-import type { FieldBaseProps } from "./base"
+import type { ReactNode } from "react"
+import {
+  SmartInputGroup,
+  type SmartInputGroupTrailingButton,
+} from "@iamsaroj/smart-ui/smart-components/smart-input-group"
+import type { FieldBaseProps, NativeInputAttrs } from "./base"
 
-export interface SmartSlugFieldProps extends FieldBaseProps<string> {
+export interface SmartSlugFieldProps
+  extends
+    FieldBaseProps<string>,
+    // `autoCapitalize` / `autoCorrect` / `spellCheck` are fixed off: slugify
+    // normalizes every keystroke, so letting an author flip them would promise
+    // behavior the field cannot honor.
+    Omit<NativeInputAttrs, "autoCapitalize" | "autoCorrect" | "spellCheck"> {
   /** Text shown at the leading edge, e.g. a base path. @default "/" */
   prefix?: string
   maxLength?: number
+  /** Text at the trailing edge, e.g. a file extension. */
+  suffix?: string
+  /** Icon at the trailing edge. */
+  trailingIcon?: ReactNode
+  /** Action button at the trailing edge (copy, regenerate, …). */
+  trailingButton?: SmartInputGroupTrailingButton
 }
 
 /** Slugify: lowercase, spaces/underscores → hyphens, strip invalid chars. */
@@ -33,10 +49,19 @@ export const SmartSlugField = ({
   id,
   prefix = "/",
   maxLength,
+  suffix,
+  trailingIcon,
+  trailingButton,
+  ...native
 }: SmartSlugFieldProps) => (
   <SmartInputGroup
+    // Spread first so the engine-owned props below always win.
+    {...native}
     id={id}
     leadingText={prefix}
+    trailingText={suffix}
+    trailingIcon={trailingIcon}
+    trailingButton={trailingButton}
     value={data}
     placeholder={placeholder ?? "my-page-slug"}
     label={label}

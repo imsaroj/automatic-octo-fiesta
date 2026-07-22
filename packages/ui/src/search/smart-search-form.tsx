@@ -9,6 +9,7 @@ import { Badge } from "@iamsaroj/smart-ui/components/badge"
 import {
   SmartForm,
   defaultFieldRegistry,
+  fieldDefaultValue,
   flattenFields,
   type FieldRegistry,
   type FormNode,
@@ -179,7 +180,7 @@ export const SmartSearchForm = <T extends Record<string, unknown>>({
     // Walk the tree, not just the top level — a filter nested in a section is
     // still a filter Reset has to clear.
     for (const field of flattenFields(fields as FormNode<T>[]))
-      base[field.name] = reg[field.type]?.defaultValue
+      base[field.name] = fieldDefaultValue(reg[field.type], field)
     return { ...base, ...defaultValues } as T
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fields, registry])

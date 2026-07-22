@@ -1,9 +1,16 @@
 import * as React from "react"
 import { SmartInput } from "@iamsaroj/smart-ui/smart-components/smart-input"
 import { SmartInputGroup } from "@iamsaroj/smart-ui/smart-components/smart-input-group"
-import type { FieldBaseProps } from "./base"
+import type { FieldBaseProps, NativeInputAttrs } from "./base"
 
-export interface SmartNumberFieldProps extends FieldBaseProps<number | null> {
+export interface SmartNumberFieldProps
+  extends
+    FieldBaseProps<number | null>,
+    // Only the attributes that survive a numeric field: `inputMode` is derived
+    // from `integer`, and the keystroke sanitizer — not `pattern` /
+    // `spellCheck` — is what keeps the value a number.
+    Pick<NativeInputAttrs, "autoFocus" | "tabIndex" | "enterKeyHint"> {
+  autoComplete?: string
   decimalScale?: number
   min?: number
   max?: number
@@ -42,6 +49,8 @@ export const SmartNumberField = ({
   integer,
   prefix,
   suffix,
+  autoComplete,
+  ...native
 }: SmartNumberFieldProps) => {
   const effectiveStep = step ?? 1
 
@@ -137,6 +146,8 @@ export const SmartNumberField = ({
   }
 
   const shared = {
+    ...native,
+    autoComplete,
     id,
     inputMode: (integer ? "numeric" : "decimal") as "numeric" | "decimal",
     value: text,
