@@ -20,6 +20,7 @@ const NODE_TESTS = [
   "src/lib/format.test.ts",
   "src/lib/xlsx.test.ts",
   "src/search/build-query.test.ts",
+  "src/smart-components/page/error-kind.test.ts",
   "src/transfer-list/transfer-utils.test.tsx",
   "src/tree/tree-utils.test.tsx",
 ]

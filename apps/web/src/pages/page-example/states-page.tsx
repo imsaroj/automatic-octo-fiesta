@@ -20,6 +20,20 @@ import { SmartButton as Button } from "@iamsaroj/smart-ui/smart-components/smart
 
 type State = "ready" | "loading" | "error" | "empty"
 
+/** The shape an axios rejection carrying the backend's ApiResponse envelope has. */
+const FAILED_REQUEST = {
+  message: "Request failed with status code 500",
+  response: {
+    status: 500,
+    data: {
+      success: false,
+      message: "The reporting service didn't answer.",
+      path: "/api/v1/reports/42",
+      traceId: "b7f1c2e4-9a10-4c3d-8f21-6d5e0a4b7c88",
+    },
+  },
+}
+
 const STATES: { id: State; label: string }[] = [
   { id: "ready", label: "Ready" },
   { id: "loading", label: "Loading" },
@@ -37,9 +51,11 @@ const StatesPage = () => {
       loadingLabel="Loading report…"
       error={
         state === "error" ? (
+          // Everything shown — headline, tone, icon, status chip, trace chip and
+          // the diagnostics blob — is derived from this one caught value. See
+          // /page-example/errors for the full range.
           <SmartPageError
-            title="Failed to load report"
-            description="The server returned a 500 while fetching this page."
+            error={FAILED_REQUEST}
             onRetry={() => setState("ready")}
           />
         ) : undefined

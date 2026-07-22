@@ -76,7 +76,9 @@ export interface CreatePageFetcherOptions<TItem> {
   /**
    * Turn a non-OK response into the error thrown to the grid. Receives the
    * `Response` so callers can read a status-specific message. Defaults to
-   * `Error("Server error: <status>")`. Only used by the default transport.
+   * `Error("Server error: <status>")` carrying `status` / `statusText` as own
+   * properties, which is what `SmartPageError` classifies from. Only used by the
+   * default transport.
    */
   mapError?: (response: Response) => Error
   /**
@@ -145,7 +147,14 @@ export const createPageFetcher = <TItem>({
   pageIndexBase = 0,
   unwrap,
   request,
-  mapError = (response) => new Error(`Server error: ${response.status}`),
+  // The status rides on the Error, not only in its text: `normalizeError`
+  // (SmartPageError) reads `.status` to tell a 403 from a 503, and a message
+  // that has to be regex'd back apart is not an API.
+  mapError = (response) =>
+    Object.assign(new Error(`Server error: ${response.status}`), {
+      status: response.status,
+      statusText: response.statusText,
+    }),
   fetchImpl,
 }: CreatePageFetcherOptions<TItem>): PageFetcher<TItem> => {
   const encode = encodeQuery ?? buildPageQuery

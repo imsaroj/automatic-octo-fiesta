@@ -9,6 +9,10 @@ import type {
   GridColumnsValue,
   Responsive,
 } from "@iamsaroj/smart-ui/layout"
+// Type-only, and `page/error-kind` imports nothing at all — the kind union stays
+// defined next to its classification logic while the label map still fails to
+// compile if a kind is added and left untranslated.
+import type { SmartPageErrorKind } from "./page/error-kind"
 
 /**
  * Row-density presets. Declared here (rather than imported from `data-grid`) so
@@ -63,6 +67,29 @@ export interface SmartUILabels {
     submit: string
     /** Placeholder shown in a select/combobox while async options load. */
     loadingOptions: string
+  }
+  /** Failure states — {@link SmartPageError} and its error boundary. */
+  error: {
+    /** Retry button. */
+    retry: string
+    /** Retry button while an async retry is in flight. */
+    retrying: string
+    /** Disclosure toggle above the diagnostics blob. */
+    details: string
+    /** Copy-diagnostics button. */
+    copy: string
+    /** Copy-diagnostics button, for ~2s after a successful copy. */
+    copied: string
+    /** Auto-retry countdown, e.g. `(4) => "Retrying in 4s"`. */
+    autoRetryIn: (seconds: number) => string
+    /** Cancels the auto-retry countdown. */
+    cancel: string
+    /** Shown while the browser reports no connection. */
+    offlineHint: string
+    /** Prefix on the trace-id chip. */
+    traceLabel: string
+    /** Headline + supporting sentence per failure kind. */
+    kinds: Record<SmartPageErrorKind, { title: string; description: string }>
   }
 }
 
@@ -139,6 +166,64 @@ export const DEFAULT_LABELS: SmartUILabels = {
   search: { search: "Search", reset: "Reset" },
   confirm: { title: "Are you sure?", confirm: "Confirm", cancel: "Cancel" },
   form: { submit: "Submit", loadingOptions: "Loading…" },
+  error: {
+    retry: "Try again",
+    retrying: "Retrying…",
+    details: "Technical details",
+    copy: "Copy details",
+    copied: "Copied",
+    autoRetryIn: (seconds) => `Retrying in ${seconds}s`,
+    cancel: "Cancel",
+    offlineHint: "We'll retry as soon as you're back online.",
+    traceLabel: "Trace",
+    // Written to be true of the situation and useful to the reader: what
+    // happened, and what (if anything) they can do about it. No apologies, no
+    // "oops", and no blaming the user for a 403.
+    kinds: {
+      error: {
+        title: "Something went wrong",
+        description: "An unexpected error stopped this view from loading.",
+      },
+      network: {
+        title: "Can't reach the server",
+        description:
+          "Check your connection — the request never made it through.",
+      },
+      timeout: {
+        title: "This is taking too long",
+        description: "The server didn't answer in time. It may just be busy.",
+      },
+      rateLimited: {
+        title: "Too many requests",
+        description:
+          "You've hit the rate limit. Give it a moment before trying again.",
+      },
+      unauthorized: {
+        title: "Your session has expired",
+        description: "Sign in again to continue where you left off.",
+      },
+      forbidden: {
+        title: "You don't have access to this",
+        description:
+          "Ask an administrator if you need permission for this area.",
+      },
+      notFound: {
+        title: "Not found",
+        description:
+          "This page or record doesn't exist, or it has been removed.",
+      },
+      server: {
+        title: "The server hit an error",
+        description:
+          "Nothing is wrong on your side. The team can look it up by trace id.",
+      },
+      maintenance: {
+        title: "Down for maintenance",
+        description:
+          "This service is temporarily unavailable. It should be back shortly.",
+      },
+    },
+  },
 }
 
 /** Built-in canonical defaults — match each component's own literal fallback. */

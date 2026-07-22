@@ -87,7 +87,30 @@ export {
   type SmartPageLoadingProps,
 } from "./smart-page-loading"
 
-export { SmartPageError, type SmartPageErrorProps } from "./smart-page-error"
+export {
+  SmartPageError,
+  type SmartPageErrorProps,
+  type SmartPageErrorKind,
+  type SmartPageErrorTone,
+} from "./smart-page-error"
+
+export {
+  SmartPageErrorBoundary,
+  type SmartPageErrorBoundaryProps,
+  type SmartPageErrorBoundaryState,
+} from "./smart-page-error-boundary"
+
+// The pure classification layer, exported so apps can reuse the same
+// normalization for toasts, logging, or their own failure surfaces.
+export {
+  normalizeError,
+  inferErrorKind,
+  buildDiagnostics,
+  ERROR_KIND_TONE,
+  ERROR_KIND_RETRYABLE,
+  type NormalizedError,
+  type DiagnosticsInput,
+} from "./error-kind"
 
 // ─── Container (compound wrapper) ─────────────────────────────────────────────
 export {

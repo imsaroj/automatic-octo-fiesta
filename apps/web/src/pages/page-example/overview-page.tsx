@@ -19,6 +19,7 @@ import {
   Maximize,
   PanelsTopLeft,
   Loader,
+  TriangleAlert,
   Boxes,
 } from "lucide-react"
 import {
@@ -110,6 +111,14 @@ const EXAMPLES: Example[] = [
     icon: <Loader className="size-5" />,
     description:
       "The built-in loading, error and empty full-page states, toggled through SmartPage's state props.",
+  },
+  {
+    to: "/page-example/errors",
+    title: "Errors",
+    layout: "page · overlay · inline",
+    icon: <TriangleAlert className="size-5" />,
+    description:
+      "SmartPageError classifying real caught values — envelopes, timeouts, offline — plus auto-retry and the error boundary.",
   },
   {
     to: "/page-example/container",

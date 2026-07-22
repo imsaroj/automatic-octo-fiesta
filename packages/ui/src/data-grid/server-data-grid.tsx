@@ -616,7 +616,10 @@ const SmartServerGridInner = <TRow,>(
         <SmartPageError
           variant="overlay"
           title={uiLabels.grid.errorTitle}
-          description={error}
+          // Pass the message as the error rather than as `description`: it is the
+          // same text either way, but it also lets the component classify the
+          // failure (offline, timeout, …) and pick the matching icon and tone.
+          error={error}
           onRetry={handleRetry}
           retryLabel={uiLabels.grid.retry}
         />
