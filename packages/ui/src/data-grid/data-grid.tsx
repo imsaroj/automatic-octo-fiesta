@@ -9,11 +9,11 @@ import {
 } from "ag-grid-community"
 import { Download, FileSpreadsheet } from "lucide-react"
 import { downloadXlsx, timestampForFilename } from "@iamsaroj/smart-ui/lib/xlsx"
-import { SmartLoadingOverlay } from "@iamsaroj/smart-ui/smart-components/smart-loading-overlay"
 import { SmartSearchInput } from "@iamsaroj/smart-ui/smart-components/smart-search-input"
 import { useSmartUILabels } from "@iamsaroj/smart-ui/smart-components/provider"
 import { GridToolbar } from "./grid-toolbar"
 import { GridShell } from "./grid-shell"
+import { GridLoadingOverlay } from "./grid-loading"
 import { useGridColumnVisibility } from "./grid-column-visibility"
 import { escapeCsvFormula } from "./formula-guard"
 import { dataGridTheme } from "./grid-theme"
@@ -290,7 +290,11 @@ export const SmartGrid = <TRow,>({
         onSelectionChanged={handleSelectionChanged}
       />
       {loading ? (
-        <SmartLoadingOverlay loading label={uiLabels.grid.loading} />
+        <GridLoadingOverlay
+          label={uiLabels.grid.loading}
+          rowHeight={rowHeightByDensity[density]}
+          columnCount={effectiveColumns.length}
+        />
       ) : null}
     </GridShell>
   )

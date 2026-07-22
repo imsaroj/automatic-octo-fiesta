@@ -25,7 +25,7 @@ import { FileSpreadsheet } from "lucide-react"
 import { cn } from "@iamsaroj/smart-ui/lib/utils"
 import { downloadXlsx, timestampForFilename } from "@iamsaroj/smart-ui/lib/xlsx"
 import { GridToolbar } from "./grid-toolbar"
-import { SmartLoadingOverlay } from "@iamsaroj/smart-ui/smart-components/smart-loading-overlay"
+import { GridLoadingCell, GridLoadingOverlay } from "./grid-loading"
 import { SmartPageError } from "@iamsaroj/smart-ui/smart-components/page/smart-page-error"
 import {
   useSmartUIDefaults,
@@ -383,6 +383,11 @@ const SmartServerGridInner = <TRow,>(
       resizable: true,
       flex: 1,
       minWidth: 120,
+      // Rows in a block that is still being fetched: a placeholder bar instead
+      // of an empty cell (see GridLoadingCell). Returning `undefined` once the
+      // row has data hands the cell back to whatever the column defines.
+      cellRendererSelector: (params) =>
+        params.data == null ? { component: GridLoadingCell } : undefined,
     }),
     []
   )
@@ -593,18 +598,19 @@ const SmartServerGridInner = <TRow,>(
           role="status"
           aria-live="polite"
           aria-label={uiLabels.grid.loadingMore}
-          className="pointer-events-none absolute inset-x-0 top-0 z-40 h-0.5 overflow-hidden bg-primary/20"
+          className="pointer-events-none absolute inset-x-0 top-0 z-40 h-[3px] overflow-hidden bg-foreground/[0.09]"
         >
-          <div
-            className="h-full w-1/4 bg-primary"
-            style={{
-              animation: "grid-indeterminate 1.1s ease-in-out infinite",
-            }}
-          />
+          {/* Same rail as the boot screen — one progress language across the
+              library, so "more rows are coming" reads like "the app is coming". */}
+          <div className="sui-boot__rail h-full rounded-full" />
         </div>
       ) : null}
       {initialLoading && !error ? (
-        <SmartLoadingOverlay loading label={uiLabels.grid.loading} />
+        <GridLoadingOverlay
+          label={uiLabels.grid.loading}
+          rowHeight={rowHeightByDensity[density]}
+          columnCount={effectiveColumns.length}
+        />
       ) : null}
       {error ? (
         <SmartPageError

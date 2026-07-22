@@ -8,7 +8,7 @@ import { cn } from "@iamsaroj/smart-ui/lib/utils"
  * fixed-`height` and full-viewport `fill` layouts flow through. Each grid drops
  * its own `<AgGridReact>` plus any overlays (loading / error / "loading more")
  * into `children`; because the body is `relative`, a standalone
- * `SmartLoadingOverlay` (`absolute inset-0`) or `SmartPageError` overlay covers
+ * `GridLoadingOverlay` (`absolute inset-0`) or `SmartPageError` overlay covers
  * exactly the grid area.
  *
  * Extracting this converged the two grids' previously-divergent wrappers — the

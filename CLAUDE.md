@@ -128,7 +128,7 @@ Two public components backed by AG Grid Community:
 
 - `grid-shell.tsx` — `GridShell`, the shared outer chrome for both grids (flex-column root, toolbar slot, and the
   **positioned** body container behind both the fixed-`height` and full-viewport `fill` layouts). Each grid drops its
-  own `<AgGridReact>` + overlays into it; because the body is `relative`, a standalone `SmartLoadingOverlay` /
+  own `<AgGridReact>` + overlays into it; because the body is `relative`, a standalone `GridLoadingOverlay` /
   `SmartPageError` covers exactly the grid area. Extracting it gave the client grid the `fill` layout for free. Internal.
 - `grid-column-visibility.ts` — `useGridColumnVisibility(columns)`: the shared visibility map init + toolbar-shaped
   `menuColumns` + `setColumnVisible`, previously duplicated in both grids (each still owns the `api.setColumnsVisible`
@@ -157,7 +157,18 @@ mapError?, fetchImpl? }) → fetchRows`: the reusable encode → request → unw
   Excel export shaping (`collectGridExport`), filter merging, debounce.
 - `use-server-grid-selection.ts` — cross-page selection hook; the selected-id `Set` is the source of truth so selections
   survive block reloads.
-- `grid-theme.ts` — AG Grid theme configuration.
+- `grid-theme.ts` — AG Grid theme configuration, plus `GRID_HEADER_HEIGHT` / `GRID_HEADER_BAND`. The header height is
+  pinned (rather than left to the theme's spacing maths) because the loading skeleton starts exactly below the header;
+  `GRID_HEADER_BAND` adds the wrapper's and the header's 1px rules. Change one, re-measure the other.
+- `grid-loading.tsx` — the grid's loading design, and the counterpart to `SmartPageLoading`: **no spinner**. Internal.
+  `GridLoadingOverlay` is the first-load state (`loading` on the client grid, `initialLoading` on the server one): skeleton
+  rows at the grid's real row height, one light sweep across them, a status pill, and the real column header still visible
+  above it. `GridLoadingCell` is the mid-scroll state, wired through the server grid's `defaultColDef.cellRendererSelector` —
+  AG Grid does **not** paint a loading row for an infinite block in flight, it renders the row with empty cells and runs
+  formatters on `undefined` (a currency column renders `$0.00` for data that doesn't exist), so the selector claims the cell
+  while `data == null` and hands it back afterwards. Motion lives in the `.sui-grid-loading__*` / `.sui-skel` rules at the
+  bottom of `styles/globals.css`, including the `.sui-delayed-in` entrance shared with `SmartLoadingOverlay`: a ~140ms
+  `animation-delay`, so a fast fetch never flashes a skeleton and neither component holds state.
 - **Action column** (`action-column.ts` / `action-column-cell.tsx` / `use-action-column.ts`) — both grids take an
   `actionColumn` prop that injects a config-driven Edit/Delete column (pinning, per-row visible/disabled/loading,
   delete confirmation via `SmartConfirmDialog`, auto-hide when all actions are statically hidden, export opt-out via
@@ -219,8 +230,9 @@ tabs, content, sidebar, grid area, status bar, footer, and empty/loading/error s
 
 **`SmartPageLoading` is the boot screen**, used both directly (a `<Suspense>` fallback, an auth/permission gate) and
 behind `SmartPage`'s `loading` prop — `PageLoadingState` just forwards to it, so there is one loading design, not two.
-It is deliberately not a spinner: a brand mark under a breathing halo, the label, and a sweeping rail. Three things to
-know before editing it. It **fills its parent** (`flex-1` + `h-full`) rather than taking layout props, so it is
+It is deliberately not a spinner: a brand mark under a breathing halo, the label, and a sweeping rail. `SmartLoadingOverlay`
+is the same composition scaled down to overlay size; grids tell it in their own vocabulary (`data-grid/grid-loading.tsx`).
+Three things to know before editing it. It **fills its parent** (`flex-1` + `h-full`) rather than taking layout props, so it is
 viewport-centred only where the host's height chain reaches the viewport — apps mount it at the root of `#root`, which
 therefore needs to be a `min-height: 100dvh` flex column (see `apps/web/src/styles/app.css`). Its motion lives in the
 `.sui-boot__*` rules at the bottom of `src/styles/globals.css`, **not** in the component: keyframes, the brand-tinted

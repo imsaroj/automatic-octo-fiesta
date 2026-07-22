@@ -172,16 +172,6 @@
   }
 }
 
-/* Indeterminate "loading more" bar used by SmartServerGrid (infinite scroll). */
-@keyframes grid-indeterminate {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(400%);
-  }
-}
-
 /* ── Boot / page loading (SmartPageLoading) ──────────────────────────────────
  * The visual language for "this view is being prepared": one calm entrance,
  * one breathing halo, one sweeping rail — deliberately no spinner. Written as
@@ -300,5 +290,103 @@
     width: 100%;
     transform: none;
     background: color-mix(in oklab, var(--primary) 30%, transparent);
+  }
+}
+
+/* ── Grid loading (SmartGrid / SmartServerGrid) ──────────────────────────────
+ * Same idea as the boot screen, told in the grid's own vocabulary: instead of
+ * a spinner over a dimmed table, a skeleton of the table itself with one band
+ * of light passing over it. Shares the boot rail (in the status pill) so the
+ * two loading states read as one system.
+ */
+
+@keyframes sui-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sui-skel-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
+@keyframes sui-skel-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* The same ~140ms grace the boot screen takes, shared by every "busy" surface:
+ * work that finishes quickly never flashes a loading state at all. An
+ * animation delay, not a timer — no state, no re-render. */
+.sui-delayed-in {
+  opacity: 0;
+  animation: sui-fade-in 240ms ease-out 140ms both;
+}
+
+.sui-grid-loading__sweep {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--primary) 9%, transparent) 50%,
+    transparent
+  );
+  animation: sui-skel-sweep 2000ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.dark .sui-grid-loading__sweep {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--primary) 16%, transparent) 50%,
+    transparent
+  );
+}
+
+/* A placeholder for a value that hasn't arrived: flat by default (the sweep
+ * supplies the motion), pulsing only where there is no sweep to ride on —
+ * the rows an infinite grid is fetching mid-scroll. */
+.sui-skel {
+  background: color-mix(in oklab, var(--foreground) 9%, transparent);
+}
+
+.sui-skel--pulse {
+  animation: sui-skel-pulse 1600ms ease-in-out infinite;
+}
+
+/* Follow the column's alignment, the way a real value would. */
+.ag-right-aligned-cell .sui-skel {
+  margin-left: auto;
+}
+
+/* A row that is still loading has nothing to select. AG Grid renders the
+ * checkbox regardless of `isRowSelectable`/`checkboxes` for a row with no data,
+ * so it is hidden here rather than left floating over the placeholders. */
+.ag-row:has(.sui-skel) .ag-selection-checkbox {
+  visibility: hidden;
+}
+
+/* The base layer collapses every animation to ~0ms, which would park the sweep
+ * and the pulse mid-flight. Retire the sweep entirely and rest the bars at a
+ * legible opacity so the skeleton still reads as composed. */
+@media (prefers-reduced-motion: reduce) {
+  .sui-grid-loading__sweep {
+    display: none;
+  }
+
+  .sui-skel--pulse {
+    opacity: 0.7;
   }
 }
