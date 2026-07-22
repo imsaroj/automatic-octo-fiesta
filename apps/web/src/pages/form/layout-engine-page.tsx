@@ -254,7 +254,9 @@ const LayoutEnginePage = () => {
               fields={rowFields}
               columns={{ base: 1, md: 12 }}
               submitLabel="Save profile"
-              onSubmit={() => toast.success("Profile valid")}
+              onSubmit={() => {
+                toast.success("Profile valid")
+              }}
             />
           </SmartCard>
         </SmartPageSection>
@@ -319,7 +321,9 @@ const LayoutEnginePage = () => {
             columns={12}
             gap="lg"
             submitLabel="Save account"
-            onSubmit={() => toast.success("Account valid")}
+            onSubmit={() => {
+              toast.success("Account valid")
+            }}
           />
         </SmartPageSection>
 

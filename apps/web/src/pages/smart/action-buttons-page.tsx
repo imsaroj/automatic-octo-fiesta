@@ -39,6 +39,7 @@ import {
   UploadButton,
   ViewButton,
   type ActionKind,
+  type ActionPermissionChecker,
 } from "@iamsaroj/smart-ui/smart-components/buttons"
 
 const GROUPS: { label: string; buttons: React.ReactNode }[] = [
@@ -121,7 +122,9 @@ const ActionButtonsPage = () => {
   }
 
   // Viewers can only look; editors can't delete or approve/reject.
-  const can = (action: ActionKind) => {
+  // Takes the checker's own widened action type: custom action kinds reach it as
+  // plain strings, so narrowing to `ActionKind` here would reject the provider.
+  const can: ActionPermissionChecker = (action) => {
     if (role === "admin") return true
     if (role === "editor")
       return !["delete", "approve", "reject"].includes(action)

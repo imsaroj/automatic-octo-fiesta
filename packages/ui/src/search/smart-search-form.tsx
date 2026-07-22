@@ -171,7 +171,10 @@ export const SmartSearchForm = <T extends Record<string, unknown>>({
   // The blank state a Reset returns to: each field type's registry default,
   // overlaid with any explicit `defaultValues`.
   const defaults = React.useMemo<T>(() => {
-    const reg = registry ?? defaultFieldRegistry
+    // Widened to `FieldRegistry` so a field type an app added by augmenting
+    // `FieldTypeExtras` can still index it — the built-in registry's own type is
+    // closed over the built-ins.
+    const reg: FieldRegistry = registry ?? defaultFieldRegistry
     const base: Record<string, unknown> = {}
     // Walk the tree, not just the top level — a filter nested in a section is
     // still a filter Reset has to clear.

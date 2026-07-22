@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import type {
+  BuiltinFieldType,
   FieldType,
   FieldVariant,
   ResolvedFieldDefinition,
@@ -192,8 +193,9 @@ const asNumber = (value: unknown) => (value as number | null) ?? null
  * Merged under any per-form `registry` prop, so apps override or add types
  * without forking the engine.
  *
- * The `satisfies` clause keeps it exhaustive — adding a key to `FieldTypeExtras`
- * without an entry here is a compile error.
+ * The `satisfies` clause keeps it exhaustive over {@link BuiltinFieldType} —
+ * adding a built-in field type without an entry here is a compile error, while
+ * an app's own augmented types stay its own to register.
  */
 export const defaultFieldRegistry = {
   // --- Text ---
@@ -608,7 +610,7 @@ export const defaultFieldRegistry = {
       endPlaceholder: field.endPlaceholder,
     }),
   }),
-} satisfies { [K in FieldType]: FieldEntry<K> }
+} satisfies { [K in BuiltinFieldType]: FieldEntry<K> }
 
 /**
  * Immutably merge custom field entries over the built-in registry, producing a

@@ -183,8 +183,57 @@ export interface FieldTypeExtras {
   yesno: AuthorProps<SmartYesNoFieldProps>
 }
 
-/** Every field type the engine knows about — the keys of {@link FieldTypeExtras}. */
+/**
+ * Every field type the engine knows about — the keys of {@link FieldTypeExtras}.
+ * **Open**: an app that augments `FieldTypeExtras` widens this too.
+ */
 export type FieldType = keyof FieldTypeExtras
+
+/**
+ * The field types the library itself ships — {@link FieldType} minus anything an
+ * app added by declaration merging.
+ *
+ * Deliberately a written-out list rather than `keyof FieldTypeExtras`. The
+ * built-in registry must be exhaustive over *these*, and no more: were it keyed
+ * on the open `FieldType`, an app that added a `rating` type would make the
+ * library's own registry fail to compile for a `rating` entry it cannot possibly
+ * have — the app supplies that through `SmartForm`'s `registry` prop.
+ *
+ * `field-types.test.tsx` asserts this list and `FieldTypeExtras` match exactly.
+ * That assertion lives in a test because it only holds where no augmentation is
+ * in scope, which is precisely the library's own build.
+ */
+export type BuiltinFieldType =
+  | "text"
+  | "email"
+  | "url"
+  | "password"
+  | "tel"
+  | "slug"
+  | "textarea"
+  | "text-editor"
+  | "number"
+  | "decimal"
+  | "integer"
+  | "currency"
+  | "percentage"
+  | "date"
+  | "time"
+  | "datetime"
+  | "month"
+  | "year"
+  | "daterange"
+  | "timerange"
+  | "select"
+  | "combobox"
+  | "autocomplete"
+  | "multiselect"
+  | "radio"
+  | "segmented"
+  | "checkbox-group"
+  | "checkbox"
+  | "switch"
+  | "yesno"
 
 /**
  * Props every field shares, regardless of type — the discriminated union base.

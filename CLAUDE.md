@@ -18,6 +18,9 @@ pnpm build
 pnpm lint
 
 # Type-check all packages
+# Note: apps/web's tsconfig.json is solution-style ("files": [] + references), so its
+# script must be `tsc -b --noEmit` — a plain `tsc --noEmit` follows no references and
+# silently checks zero files.
 pnpm typecheck
 
 # Format code
@@ -283,8 +286,21 @@ no per-field wiring. Key design points (see `smart-form.tsx`):
 
 - The **Zod schema is the single source of truth** for both validation _and_ required-ness (the required asterisk is
   derived from the schema via `isFieldRequired`); `FieldDefinition` is UI-only.
-- `FieldType` is a large union (`text`/`email`/`currency`/`select`/`multiselect`/`date`/`daterange`/`text-editor`/…);
-  `FieldRenderer` maps each type to a `Smart*Field` wrapper. Adding a field type means extending that union and switch.
+- **`FieldTypeExtras` (`field-types.ts`) is the single source of truth for field types.** It maps each `type`
+  (`text`/`currency`/`select`/`daterange`/…) to the extra props that type accepts; `FieldType`, the `FieldDefinition`
+  discriminated union, and the wide `ResolvedFieldDefinition` are all **generated** from it — none is hand-maintained.
+  Most entries derive their props from the control that renders them (`AuthorProps<SmartInputFieldProps>`), so a field
+  type's config _is_ the component's surface rather than a copy that can drift. The exceptions are option-based fields,
+  which go through the `OptionField` adapter and retype `options` to `FieldOptions` (async + non-string values).
+  Adding a field type = one entry in the map + one `defineFieldType` entry in the registry.
+- `defineFieldType(type, entry)` ties the two halves together: `mapProps` gets the definition **narrowed to that type**
+  (reading another type's extra is a compile error) and must return exactly the component's props. **Annotate
+  `mapProps`' return type** — TypeScript only excess-property-checks literals against an _explicitly written_ return
+  type, so without the annotation stale props survive silently. `NoInfer` on that return is load-bearing for the same
+  reason; don't remove either.
+- `FieldType` is **open** (apps add types by declaration-merging `FieldTypeExtras`); `BuiltinFieldType` is the closed
+  list the built-in registry must cover. The registry's `satisfies` is keyed on `BuiltinFieldType` precisely so an app's
+  augmentation doesn't make the library's own registry fail to compile. `field-types.test.tsx` asserts the two match.
 - `data`/`setData` are optional — the form owns its state internally and mirrors edits out. The two sync effects use a
   `selfUpdateRef` guard to avoid an echo loop between the mirror-out and reconcile-in effects; read those comments
   before touching state logic.
@@ -324,9 +340,11 @@ also exported for standalone use.
 `@iamsaroj/smart-ui/search`. It **composes** `SmartForm` (not a fork): it reuses the same fields, Zod validation,
 required derivation, layout, and field registry, and adds only search concerns on top. Key design points:
 
-- `SearchFieldDefinition<T>` is derived, not duplicated: `FieldDefinition<T> & { type: SearchFieldType }` —
-  intersection distributes over the union, so each field keeps its per-type extras while `type` is constrained to the
-  search-relevant subset (no password / textarea / rich-text). Still assignable to `FieldDefinition<T>[]`.
+- `SearchFieldDefinition<T>` is derived, not duplicated: `Extract<FieldDefinition<T>, { type: SearchFieldType }>` keeps
+  whole union members, so each field keeps its per-type extras while `type` is constrained to the search-relevant
+  subset. Still assignable to `FieldDefinition<T>[]`. `SearchFieldType` is stated as an **exclusion**
+  (`Exclude<FieldType, "password" | "tel" | "slug" | "textarea" | "text-editor" | "timerange">`) so a newly added field
+  type is search-eligible by default and keeping one out is a deliberate edit, not something silently forgotten.
 - `search` (manual — Search button, emit on submit/Enter) vs `autoSearch`/`search={false}` (debounced auto-search).
   Auto-search is gated by `schema.safeParse` and deduped via a serialized last-query ref (seeded on mount so the first
   render doesn't fire).
