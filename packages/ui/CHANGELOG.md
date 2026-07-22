@@ -1,3 +1,10 @@
+# [4.3.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v4.2.0...v4.3.0) (2026-07-22)
+
+
+### Features
+
+* **data-grid:** replace SmartLoadingOverlay with GridLoadingOverlay ([6f45b12](https://github.com/imsaroj/automatic-octo-fiesta/commit/6f45b12e9d5677da175659e5e79eb3aad9f833dd))
+
 # [4.2.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v4.1.0...v4.2.0) (2026-07-22)
 
 
