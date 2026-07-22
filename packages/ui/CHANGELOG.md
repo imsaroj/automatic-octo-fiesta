@@ -1,3 +1,11 @@
+# [4.2.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v4.1.0...v4.2.0) (2026-07-22)
+
+
+### Features
+
+* introduce layout engine for container-query grids ([068fea9](https://github.com/imsaroj/automatic-octo-fiesta/commit/068fea9631b9d37a9654e72771d910b3d29e524e))
+* redesign SmartPageLoading with custom motion and unified design ([b112b68](https://github.com/imsaroj/automatic-octo-fiesta/commit/b112b68ffb9ede447cd8440e254aa34f4f4b3f34))
+
 # [4.1.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v4.0.0...v4.1.0) (2026-07-20)
 
 
