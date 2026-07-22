@@ -1,30 +1,22 @@
 "use client"
 
 import * as React from "react"
+import { SmartPageLoading } from "../smart-page-loading"
 
 /**
  * Inline full-page state renderers for {@link SmartPage}'s `loading` / `error` /
  * `empty` props. Kept as thin wrappers (separate from the richer
- * `SmartPageLoading` / `SmartPageError` / `SmartPageEmpty` components users can
- * drop in directly) so `smart-page.tsx` doesn't import those and risk a cycle.
+ * `SmartPageError` / `SmartPageEmpty` components users can drop in directly)
+ * so `smart-page.tsx` doesn't import those and risk a cycle.
+ *
+ * Loading is the exception: `SmartPageLoading` imports nothing from this
+ * folder, so there is no cycle to risk, and a page that loads via the
+ * `loading` prop should look identical to one that renders the component
+ * directly — a second, cheaper spinner here was just a fork of the design.
  */
 
-export const PageLoadingState = ({
-  label = "Loading…",
-}: {
-  label?: string
-}) => (
-  <div
-    role="status"
-    aria-live="polite"
-    className="flex flex-1 flex-col items-center justify-center gap-3 py-16"
-  >
-    <span
-      className="inline-block size-8 animate-spin rounded-full border-2 border-current border-t-transparent text-primary"
-      aria-hidden="true"
-    />
-    <p className="text-sm text-muted-foreground">{label}</p>
-  </div>
+export const PageLoadingState = ({ label }: { label?: string }) => (
+  <SmartPageLoading label={label} />
 )
 
 export const PageErrorState = ({ children }: { children: React.ReactNode }) => (

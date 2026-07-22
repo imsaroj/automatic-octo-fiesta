@@ -217,6 +217,17 @@ tabs, content, sidebar, grid area, status bar, footer, and empty/loading/error s
 `PageContext` (layout, scroll mode, padding). `SmartPageContainer` is a simpler compound wrapper. This is distinct from
 `apps/web`'s `PlaygroundShell`, which is the demo app's chrome.
 
+**`SmartPageLoading` is the boot screen**, used both directly (a `<Suspense>` fallback, an auth/permission gate) and
+behind `SmartPage`'s `loading` prop — `PageLoadingState` just forwards to it, so there is one loading design, not two.
+It is deliberately not a spinner: a brand mark under a breathing halo, the label, and a sweeping rail. Three things to
+know before editing it. It **fills its parent** (`flex-1` + `h-full`) rather than taking layout props, so it is
+viewport-centred only where the host's height chain reaches the viewport — apps mount it at the root of `#root`, which
+therefore needs to be a `min-height: 100dvh` flex column (see `apps/web/src/styles/app.css`). Its motion lives in the
+`.sui-boot__*` rules at the bottom of `src/styles/globals.css`, **not** in the component: keyframes, the brand-tinted
+elevation, the radial bloom, and the `prefers-reduced-motion` resting states. And the ~140ms entrance delay is an
+`animation-delay`, not a timer — a route that resolves quickly never flashes a loading screen, and the component holds
+no state and never re-renders.
+
 **Placement rule for new components:**
 
 - Any new component or shadcn/ui wrapper that is **general-purpose** (usable across features) goes in `packages/ui/src/smart-components/`.

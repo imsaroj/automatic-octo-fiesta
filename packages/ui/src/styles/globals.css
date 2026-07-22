@@ -181,3 +181,124 @@
     transform: translateX(400%);
   }
 }
+
+/* ── Boot / page loading (SmartPageLoading) ──────────────────────────────────
+ * The visual language for "this view is being prepared": one calm entrance,
+ * one breathing halo, one sweeping rail — deliberately no spinner. Written as
+ * CSS rather than Tailwind arbitrary values so the easing curves, the
+ * brand-tinted elevation and the reduced-motion fallbacks stay readable and
+ * live next to each other. Structure, spacing and color still come from
+ * utilities in the component.
+ */
+
+@keyframes sui-boot-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sui-boot-halo {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+}
+
+@keyframes sui-boot-rail {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(320%);
+  }
+}
+
+/* The composition appears only after a beat: a route that resolves in under
+ * ~140ms should never flash a loading screen at all. Done with an animation
+ * delay rather than a timer so the component holds no state and never
+ * re-renders. */
+.sui-boot__stage {
+  opacity: 0;
+  animation: sui-boot-enter 560ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+}
+
+.sui-boot__halo {
+  opacity: 0;
+  animation: sui-boot-halo 2600ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* A single soft bloom behind the mark. A radial gradient rather than a blurred
+ * solid: a large low-alpha circle under `filter: blur()` bands visibly in
+ * Chromium, and the banding rings read as a rendering artefact. */
+.sui-boot__bloom {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--primary) 16%, transparent),
+    color-mix(in oklab, var(--primary) 5%, transparent) 55%,
+    transparent 78%
+  );
+}
+
+.dark .sui-boot__bloom {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--primary) 30%, transparent),
+    color-mix(in oklab, var(--primary) 9%, transparent) 55%,
+    transparent 78%
+  );
+}
+
+/* Elevation tinted with the brand hue instead of a flat black drop shadow,
+ * plus a 1px top highlight so the tile reads as a lit physical surface. */
+.sui-boot__mark {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    0 1px 2px color-mix(in oklab, var(--foreground) 8%, transparent),
+    0 20px 44px -26px color-mix(in oklab, var(--primary) 75%, transparent);
+}
+
+.dark .sui-boot__mark {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 20px 44px -22px color-mix(in oklab, var(--primary) 55%, transparent);
+}
+
+/* A third of the track, swept end to end — a progress hint, not a spinner. */
+.sui-boot__rail {
+  width: 32%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--primary) 45%,
+    var(--primary) 55%,
+    transparent
+  );
+  animation: sui-boot-rail 1700ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+/* The base layer already collapses every animation to ~0ms, which would park
+ * the halo and the rail mid-flight. Give both a deliberate resting state so
+ * the screen still reads as composed rather than broken. */
+@media (prefers-reduced-motion: reduce) {
+  .sui-boot__halo {
+    opacity: 0.3;
+    transform: scale(1.12);
+  }
+
+  .sui-boot__rail {
+    width: 100%;
+    transform: none;
+    background: color-mix(in oklab, var(--primary) 30%, transparent);
+  }
+}

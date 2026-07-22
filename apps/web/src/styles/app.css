@@ -8,3 +8,15 @@
 @import "@iamsaroj/smart-ui/globals.css";
 
 @source "../**/*.{ts,tsx}";
+
+/*
+ * The route-level `<Suspense>` fallback (SmartPageLoading) fills its parent,
+ * so the boot screen is only viewport-centred if the height chain reaches the
+ * viewport. Pages that manage their own height (the sidebar shell, `h-dvh`
+ * screens) are unaffected — they just become the single flex child.
+ */
+#root {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+}
