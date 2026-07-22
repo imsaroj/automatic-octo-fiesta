@@ -273,6 +273,16 @@ is the simpler compound wrapper; `usePageContext` exposes layout/scroll/padding.
 Use `SmartPage` for full screens (it has a `"grid"` layout mode where `SmartGridArea` fills
 the viewport — pair with `SmartServerGrid fill`).
 
+**`SmartPageError` takes the raw caught value, not hand-written copy.** Pass `error={err}` and
+it derives the message, status/trace chips, icon, tone, default copy and whether a retry is even
+offered (a 403 gets none) — from an `Error`, a string, an axios rejection, or an `ApiResponse`
+envelope. `variant`: `"page"` | `"overlay"` | `"inline"`. Extras: `autoRetryAfter` (cancellable
+countdown, capped by `maxAutoRetries`), automatic retry on reconnect, an async-aware `onRetry`,
+and a one-click diagnostics blob. Wrap subtrees in `SmartPageErrorBoundary` (`resetKeys`,
+`onError`, `fallback`) for render-time throws — a try/catch never sees those. Copy lives in
+`SmartUIProvider`'s `error` labels; classification helpers (`normalizeError`, `inferErrorKind`,
+`buildDiagnostics`) are exported for reuse in toasts and logging. Demo: `/page-example/errors`.
+
 ---
 
 ## Forms (`@iamsaroj/smart-ui/form`)

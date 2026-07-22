@@ -80,6 +80,7 @@ const FullscreenLayoutPage = lazy(
 )
 const TabsLayoutPage = lazy(() => import("@/pages/page-example/tabs-page"))
 const PageStatesPage = lazy(() => import("@/pages/page-example/states-page"))
+const PageErrorsPage = lazy(() => import("@/pages/page-example/errors-page"))
 const ContainerLayoutPage = lazy(
   () => import("@/pages/page-example/container-page")
 )
@@ -170,6 +171,7 @@ export const App = () => (
           />
           <Route path="/page-example/tabs" element={<TabsLayoutPage />} />
           <Route path="/page-example/states" element={<PageStatesPage />} />
+          <Route path="/page-example/errors" element={<PageErrorsPage />} />
           <Route
             path="/page-example/container"
             element={<ContainerLayoutPage />}

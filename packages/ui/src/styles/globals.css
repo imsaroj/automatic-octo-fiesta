@@ -293,6 +293,144 @@
   }
 }
 
+/* ── Page error (SmartPageError) ─────────────────────────────────────────────
+ * The failure side of the boot screen, told in the same language: one entrance,
+ * one tinted bloom, one lit tile. The difference is that nothing here breathes
+ * or sweeps — a screen that is not waiting for anything should be still, and
+ * animated urgency on an error reads as panic.
+ *
+ * Everything hangs off a single accent token switched by `data-tone`, so a kind
+ * changes colour in one place instead of across a dozen utilities. Tailwind
+ * can't emit a class for a runtime-chosen token, which is why the tinted
+ * surfaces live here rather than in the component.
+ */
+
+.sui-err {
+  --sui-err-accent: var(--destructive);
+}
+
+/* A refusal is not a crash: permission and not-found states drop to the neutral
+ * foreground so the page reads as "working correctly, and the answer is no". */
+.sui-err[data-tone="neutral"] {
+  --sui-err-accent: var(--muted-foreground);
+}
+
+/* Amber for "in the way, probably temporary" — offline, timeout, maintenance.
+ * A literal oklch because the token set has no warning colour; keep the two
+ * values in sync with the destructive pair's lightness so tones read as peers. */
+.sui-err[data-tone="warning"] {
+  --sui-err-accent: oklch(0.705 0.163 65);
+}
+
+.dark .sui-err[data-tone="warning"] {
+  --sui-err-accent: oklch(0.78 0.15 74);
+}
+
+@keyframes sui-err-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The same ~140ms grace every busy surface takes: a retry that succeeds
+ * immediately must never flash an error on the way out. Animation delay, not a
+ * timer — the component holds no state for it. */
+.sui-err__enter {
+  opacity: 0;
+  animation: sui-err-enter 400ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+}
+
+/* Same radial-gradient trick as the boot bloom (a blurred solid bands visibly in
+ * Chromium), sat above centre so the tile has a light source. */
+.sui-err__bloom {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: -10;
+  width: 22rem;
+  max-width: 150%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -62%);
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--sui-err-accent) 13%, transparent),
+    color-mix(in oklab, var(--sui-err-accent) 4%, transparent) 55%,
+    transparent 78%
+  );
+}
+
+.dark .sui-err__bloom {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--sui-err-accent) 24%, transparent),
+    color-mix(in oklab, var(--sui-err-accent) 7%, transparent) 55%,
+    transparent 78%
+  );
+}
+
+/* A static ring, not the boot screen's pulsing halo — see the note above. */
+.sui-err__ring {
+  box-shadow: 0 0 0 1px
+    color-mix(in oklab, var(--sui-err-accent) 30%, transparent);
+}
+
+.sui-err__icon {
+  color: var(--sui-err-accent);
+}
+
+/* The tile: accent-tinted fill and elevation instead of a flat drop shadow, with
+ * a 1px top highlight so it reads as a lit surface — the boot mark's treatment
+ * in the failure hue. */
+.sui-err__mark {
+  background: color-mix(in oklab, var(--sui-err-accent) 7%, var(--card));
+  border-color: color-mix(in oklab, var(--sui-err-accent) 22%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.6),
+    0 1px 2px color-mix(in oklab, var(--foreground) 8%, transparent),
+    0 20px 44px -26px
+      color-mix(in oklab, var(--sui-err-accent) 70%, transparent);
+}
+
+.dark .sui-err__mark {
+  background: color-mix(in oklab, var(--sui-err-accent) 14%, var(--card));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 20px 44px -22px
+      color-mix(in oklab, var(--sui-err-accent) 50%, transparent);
+}
+
+/* The inline banner is the same accent at panel scale: a tinted wash rather than
+ * a tile floating on the card's own background. */
+.sui-err--inline {
+  background: color-mix(in oklab, var(--sui-err-accent) 4%, var(--background));
+  border-color: color-mix(in oklab, var(--sui-err-accent) 20%, transparent);
+}
+
+.dark .sui-err--inline {
+  background: color-mix(in oklab, var(--sui-err-accent) 9%, var(--background));
+}
+
+/* Drains rather than fills: the bar is the time left, so it shrinking to nothing
+ * is the retry firing. Width is animated from the component (one second per
+ * tick, linear) — a keyframe here would have to know the total duration. */
+.sui-err__countdown {
+  background: color-mix(in oklab, var(--sui-err-accent) 60%, transparent);
+}
+
+/* No reduced-motion block here on purpose. Unlike the boot halo and rail, every
+ * animation above is a one-shot with `both` fill, so the base layer's collapse
+ * to ~0.01ms lands it on its final frame rather than parking it mid-flight — and
+ * because the delay is not collapsed, the 140ms grace survives. Reduced motion
+ * gets the same behaviour with no motion, which is the whole point.
+ */
+
 /* ── Grid loading (SmartGrid / SmartServerGrid) ──────────────────────────────
  * Same idea as the boot screen, told in the grid's own vocabulary: instead of
  * a spinner over a dimmed table, a skeleton of the table itself with one band

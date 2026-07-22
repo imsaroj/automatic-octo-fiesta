@@ -231,6 +231,27 @@ tabs, content, sidebar, grid area, status bar, footer, and empty/loading/error s
 `PageContext` (layout, scroll mode, padding). `SmartPageContainer` is a simpler compound wrapper. This is distinct from
 `apps/web`'s `PlaygroundShell`, which is the demo app's chrome.
 
+**`SmartPageError` is derived, not configured.** It takes the raw caught value (`error={err}`) and
+does the rest itself: `page/error-kind.ts` — a pure, React-free module — normalizes an `Error`, a
+string, an axios rejection or an `ApiResponse` envelope into `{ message, status, code, traceId,
+path, stack }` (the envelope's message beats the transport's, because "Request failed with status
+code 500" is never what the user should read), then classifies it into a `SmartPageErrorKind`. The
+kind picks the icon, the tone (`danger` / `warning` / **`neutral`** — a 403 is the system working
+correctly, so it must not be painted like a crash), the default copy, and whether a retry is offered
+at all (`ERROR_KIND_RETRYABLE`: re-issuing a request that 403'd just fails again). On top of that it
+handles async retries, a cancellable `autoRetryAfter` countdown capped by `maxAutoRetries`, an
+automatic retry when the browser comes back online (connectivity read via `useSyncExternalStore`),
+and a copyable diagnostics blob. Three variants: `page` (full-bleed, the counterpart to
+`SmartPageLoading`), `overlay` (what the server grid uses), `inline` (a card/section banner). Copy
+routes through `SmartUIProvider`'s `error` labels — including per-kind title/description, so the
+label map fails to compile if a kind is added and left untranslated. Its motion and every
+accent-tinted surface live in the `.sui-err__*` rules in `styles/globals.css`, switched by one
+`--sui-err-accent` token per `data-tone`; **no reduced-motion block there is deliberate** (every
+animation is a one-shot with `both` fill, so the base layer's collapse lands it on its final frame
+while preserving the 140ms grace). `SmartPageErrorBoundary` is the render-time half — a class
+component (no hook equivalent for `componentDidCatch`) with `resetKeys` / `onError` / `fallback`,
+defaulting to `SmartPageError` wired to its own reset. Demo: `/page-example/errors`.
+
 **`SmartPageLoading` is the boot screen**, used both directly (a `<Suspense>` fallback, an auth/permission gate) and
 behind `SmartPage`'s `loading` prop — `PageLoadingState` just forwards to it, so there is one loading design, not two.
 It is deliberately not a spinner: a brand mark under a breathing halo, the label, and a sweeping rail. `SmartLoadingOverlay`

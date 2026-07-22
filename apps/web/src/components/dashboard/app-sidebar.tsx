@@ -71,6 +71,7 @@ const data = {
         { title: "Fullscreen", url: "/page-example/fullscreen" },
         { title: "Tabbed", url: "/page-example/tabs" },
         { title: "States", url: "/page-example/states" },
+        { title: "Errors", url: "/page-example/errors" },
         { title: "Composition", url: "/page-example/container" },
       ],
     },
