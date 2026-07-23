@@ -19,8 +19,8 @@ import {
   type SmartFooterActions,
   type SmartFooterCancelAction,
   type SmartFooterSaveAction,
-} from "../internal/footer-actions"
-import { useDeferredOpen } from "../internal/use-deferred-open"
+} from "@/internal/footer-actions"
+import { useDeferredOpen } from "@/internal/use-deferred-open"
 
 export { DialogContent, DialogTitle, DialogDescription, DialogClose }
 
