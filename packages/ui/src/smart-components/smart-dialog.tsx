@@ -42,7 +42,8 @@ export type SmartDialogCancelAction = SmartFooterCancelAction
 export type SmartDialogFooterActions = SmartFooterActions
 
 /**
- * Dialog size presets (fixed px width × fixed vh height):
+ * Dialog width presets (fixed px width; height is controlled by {@link
+ * SmartDialogProps.height}, defaulting to content-sized capped at a per-size vh):
  * xs 400px/60vh · sm 600px/70vh · md 800px/80vh · lg 1000px/85vh ·
  * xl 1200px/90vh · 2xl 1400px/90vh · 3xl 1600px/92vh ·
  * full calc(100vw-48px) × calc(100vh-48px).
@@ -58,25 +59,84 @@ export type SmartDialogSize =
   | "full"
 
 /**
- * Fixed width + fixed height per size. These override the default
+ * How the dialog is sized vertically:
+ * - `"auto"` (default) — height follows the content, capped at the preset's vh
+ *   budget; only then does the body scroll. A single-input dialog stays short.
+ * - `"fill"` — always the full preset vh (the old fixed-height behavior); use
+ *   for a dialog whose body should stay a consistent tall box (e.g. a grid).
+ * - a number (px) or CSS length string (e.g. `480`, `"32rem"`, `"75vh"`) — a
+ *   locked explicit height, applied via inline style and capped to the viewport.
+ */
+export type SmartDialogHeight = "auto" | "fill" | number | string
+
+/**
+ * Fixed width per size, shared by every height mode. These override the default
  * `sm:max-w-sm` on `DialogContent` via tailwind-merge. `SIZE_CAP` keeps the
- * fixed dimensions from overflowing small viewports (and re-overrides the
- * default `sm:` width cap so the pixel width can grow past it). Scrolling
- * happens on the inner body (see the component), not the popup — so the
- * absolute close button stays pinned to the corner. The dialog stays centered.
+ * dimensions from overflowing small viewports (and re-overrides the default
+ * `sm:` width cap so the pixel width can grow past it). Scrolling happens on the
+ * inner body (see the component), not the popup — so the absolute close button
+ * stays pinned to the corner. The dialog stays centered.
+ *
+ * NOTE: every arbitrary value here is a LITERAL string so Tailwind's scanner can
+ * see and emit it — never build these via runtime interpolation (see the layout
+ * engine notes in CLAUDE.md).
  */
 const SIZE_CAP =
   "max-w-[calc(100vw-2rem)] sm:max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)]"
 
-const SIZE_CLASSES: Record<SmartDialogSize, string> = {
-  xs: `w-[400px] h-[60vh] ${SIZE_CAP}`,
-  sm: `w-[600px] h-[70vh] ${SIZE_CAP}`,
-  md: `w-[800px] h-[80vh] ${SIZE_CAP}`,
-  lg: `w-[1000px] h-[85vh] ${SIZE_CAP}`,
-  xl: `w-[1200px] h-[90vh] ${SIZE_CAP}`,
-  "2xl": `w-[1400px] h-[90vh] ${SIZE_CAP}`,
-  "3xl": `w-[1600px] h-[92vh] ${SIZE_CAP}`,
-  full: "h-[calc(100vh-48px)] w-[calc(100vw-48px)] max-w-[calc(100vw-48px)] sm:max-w-[calc(100vw-48px)]",
+const SIZE_WIDTH: Record<SmartDialogSize, string> = {
+  xs: `w-[400px] ${SIZE_CAP}`,
+  sm: `w-[600px] ${SIZE_CAP}`,
+  md: `w-[800px] ${SIZE_CAP}`,
+  lg: `w-[1000px] ${SIZE_CAP}`,
+  xl: `w-[1200px] ${SIZE_CAP}`,
+  "2xl": `w-[1400px] ${SIZE_CAP}`,
+  "3xl": `w-[1600px] ${SIZE_CAP}`,
+  full: "w-[calc(100vw-48px)] max-w-[calc(100vw-48px)] sm:max-w-[calc(100vw-48px)]",
+}
+
+/** `height="auto"` — grow to fit, capped at the per-size vh, then body scrolls. */
+const SIZE_MAX_HEIGHT: Record<SmartDialogSize, string> = {
+  xs: "max-h-[60vh]",
+  sm: "max-h-[70vh]",
+  md: "max-h-[80vh]",
+  lg: "max-h-[85vh]",
+  xl: "max-h-[90vh]",
+  "2xl": "max-h-[90vh]",
+  "3xl": "max-h-[92vh]",
+  full: "h-[calc(100vh-48px)]",
+}
+
+/** `height="fill"` — locked to the full per-size vh (the pre-`height` behavior). */
+const SIZE_FIXED_HEIGHT: Record<SmartDialogSize, string> = {
+  xs: "h-[60vh]",
+  sm: "h-[70vh]",
+  md: "h-[80vh]",
+  lg: "h-[85vh]",
+  xl: "h-[90vh]",
+  "2xl": "h-[90vh]",
+  "3xl": "h-[92vh]",
+  full: "h-[calc(100vh-48px)]",
+}
+
+/**
+ * Resolve the vertical sizing into a class (for the presets, whose values are
+ * literal so Tailwind emits them) and/or an inline style (for an explicit
+ * numeric/CSS height, which Tailwind can't generate at runtime). `full` always
+ * fills, regardless of `height`.
+ */
+function resolveHeight(
+  size: SmartDialogSize,
+  height: SmartDialogHeight
+): { className: string; style?: React.CSSProperties } {
+  if (size === "full" || height === "auto")
+    return { className: SIZE_MAX_HEIGHT[size] }
+  if (height === "fill") return { className: SIZE_FIXED_HEIGHT[size] }
+  // Explicit height: inline style, still capped to the viewport by SIZE_CAP.
+  return {
+    className: "",
+    style: { height: typeof height === "number" ? `${height}px` : height },
+  }
 }
 
 export interface SmartDialogHeader {
@@ -119,6 +179,13 @@ export interface SmartDialogProps {
   showCloseButton?: boolean
   /** Dialog width preset. `full` fills the whole page. @default "sm" */
   size?: SmartDialogSize
+  /**
+   * Vertical sizing. `"auto"` (default) sizes to content, capped at the size's
+   * vh budget — so a small form no longer stretches into a tall empty box.
+   * `"fill"` keeps the old fixed-height behavior; a number/CSS length locks an
+   * explicit height. @default "auto"
+   */
+  height?: SmartDialogHeight
   /**
    * Draw full-width separator lines under the header and above the footer,
    * visually grouping them apart from the scrollable body (shadcn style).
@@ -170,10 +237,12 @@ export const SmartDialog = ({
   footerActions,
   showCloseButton = true,
   size = "sm",
+  height = "auto",
   dividers = false,
   className,
   children,
 }: SmartDialogProps) => {
+  const heightSizing = resolveHeight(size, height)
   // A controlled open lands one macrotask later, so a dialog opened from
   // inside another interaction (row action, menu item) can't read that same
   // interaction as its own outside-press/focus-out and self-close.
@@ -189,7 +258,13 @@ export const SmartDialog = ({
         showCloseButton={showCloseButton}
         // Flex column so the header/footer stay fixed and only the body
         // scrolls — keeps the absolute close button pinned to the corner.
-        className={cn("flex flex-col", SIZE_CLASSES[size], className)}
+        className={cn(
+          "flex flex-col",
+          SIZE_WIDTH[size],
+          heightSizing.className,
+          className
+        )}
+        style={heightSizing.style}
       >
         {header && (
           // `-mx-4 px-4` bleeds the border to the popup edges (cancels the
