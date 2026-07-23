@@ -1,3 +1,15 @@
+# [5.3.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v5.2.0...v5.3.0) (2026-07-23)
+
+
+### Bug Fixes
+
+* **dialog:** switch internal imports to relative paths ([18a11dc](https://github.com/imsaroj/automatic-octo-fiesta/commit/18a11dce8ecefbaa5599c9c8d45c398969d71b67))
+
+
+### Features
+
+* **dialog:** add flexible height configuration for SmartDialog ([2d379af](https://github.com/imsaroj/automatic-octo-fiesta/commit/2d379af10fb9a07f8c3e43deee1f3e262329d05d))
+
 # [5.2.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v5.1.0...v5.2.0) (2026-07-22)
 
 
