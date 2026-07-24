@@ -1,6 +1,6 @@
 {
   "name": "@iamsaroj/smart-ui",
-  "version": "5.5.0",
+  "version": "5.6.0",
   "description": "Config-driven React 19 component library: Smart* shadcn/ui wrappers, declarative form/search engines, AG Grid data grids, tree, transfer list, calendar, and a Lexical rich-text editor.",
   "license": "MIT",
   "repository": {

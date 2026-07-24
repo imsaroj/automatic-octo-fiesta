@@ -1,3 +1,10 @@
+# [5.6.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v5.5.0...v5.6.0) (2026-07-24)
+
+
+### Features
+
+* **form:** add `emptyValue` prop for configurable blank field serialization ([9019f20](https://github.com/imsaroj/automatic-octo-fiesta/commit/9019f20b8f086bdd2e825c03cd3eab992c55674a))
+
 # [5.5.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v5.4.0...v5.5.0) (2026-07-24)
 
 
