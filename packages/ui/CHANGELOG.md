@@ -1,3 +1,10 @@
+# [5.5.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v5.4.0...v5.5.0) (2026-07-24)
+
+
+### Features
+
+* **form:** make submit button opt-in and enhance blank select handling ([d05b2c0](https://github.com/imsaroj/automatic-octo-fiesta/commit/d05b2c022bcf6b1c37390942f6b6d887d57220d6))
+
 # [5.4.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v5.3.0...v5.4.0) (2026-07-24)
 
 
