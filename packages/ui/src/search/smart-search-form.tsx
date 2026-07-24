@@ -41,7 +41,8 @@ export interface SmartSearchFormProps<
   fields: SearchNode<T>[]
   /**
    * Zod schema — validated before a search fires. Optional: with no schema every
-   * value is accepted. When present, required-ness / the asterisk derive from it.
+   * value is accepted. Validation only; the asterisk (rarely wanted on a filter
+   * bar) comes from a field's own `required` flag.
    */
   schema?: z.ZodType<T>
   /** Controlled search state. Own it in the parent to wire URL-sync or presets. */
@@ -126,8 +127,8 @@ export interface SmartSearchFormProps<
  * ```
  *
  * @remarks
- * Composes `SmartForm` rather than reimplementing it, so validation, required
- * derivation, layout, and error display are shared. Keep `data`/`setData` in the
+ * Composes `SmartForm` rather than reimplementing it, so validation, field
+ * rendering, layout, and error display are shared. Keep `data`/`setData` in the
  * parent to layer URL synchronization, saved searches, or filter presets on top
  * without changes here.
  */

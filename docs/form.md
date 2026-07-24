@@ -4,8 +4,8 @@
 
 Declarative forms built on **TanStack Form + Zod v4**. You give `SmartForm` a Zod
 `schema` and a `FormNode[]`; it renders the right `Smart*Field` control per
-entry, validates against the schema, derives required-ness from the schema, and
-manages state — no per-field wiring. Layout is the container-query grid from
+entry, validates against the schema, and manages state — no per-field wiring.
+Layout is the container-query grid from
 [`@iamsaroj/smart-ui/layout`](./layout.md).
 
 ## Import
@@ -27,8 +27,14 @@ const schema = z.object({
 type Values = z.infer<typeof schema>
 
 const fields: FieldDefinition<Values>[] = [
-  { name: "name", type: "text", label: "Name", placeholder: "Ada Lovelace" },
-  { name: "email", type: "email", label: "Email" },
+  {
+    name: "name",
+    type: "text",
+    label: "Name",
+    placeholder: "Ada Lovelace",
+    required: true,
+  },
+  { name: "email", type: "email", label: "Email", required: true },
   { name: "role", type: "select", label: "Role", options: ROLE_OPTIONS },
   { name: "active", type: "checkbox", label: "Active" },
 ]
@@ -46,7 +52,7 @@ const fields: FieldDefinition<Values>[] = [
 
 | Prop             | Type                           | Notes                                                 |
 | ---------------- | ------------------------------ | ----------------------------------------------------- |
-| `schema`         | `z.ZodType`                    | **Single source of truth** for validation + required. |
+| `schema`         | `z.ZodType`                    | **Single source of truth** for validation (only).     |
 | `fields`         | `FieldDefinition<T>[]`         | UI-only; `type` selects the control (discriminated).  |
 | `data`/`setData` | `T` / `(v: T) => void`         | Optional — the form owns state and mirrors edits out. |
 | `columns`        | `Responsive<GridColumnsValue>` | Any count, track list, or `{ auto: "fit", min }`.     |
@@ -189,8 +195,10 @@ ref.current?.reset(nextRow)
 
 ## Escape hatches
 
-- **Required asterisk** is derived from the schema (`isFieldRequired`) — don't set
-  it manually; make the field optional in Zod (`.optional()`) to drop it.
+- **Required asterisk** is explicit and presentation-only: set `required: true` on
+  the field definition. The Zod schema decides what's _valid_, never what's
+  _marked_ — a `.min(1)` field shows no asterisk unless you ask for one, and
+  marking an `.optional()` field doesn't make a blank fail.
 - **Hidden fields**: a field's `hidden(values)` predicate excludes it from both
   render and validation.
 - **Custom field types**: extend the `FieldType` union + the field registry

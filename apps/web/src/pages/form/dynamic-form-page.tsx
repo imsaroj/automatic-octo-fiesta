@@ -48,6 +48,7 @@ const fields: FieldDefinition<RegistrationForm>[] = [
     label: "Account type",
     options: ACCOUNT_TYPES,
     span: "full",
+    required: true,
   },
   { name: "name", type: "text", label: "Full name", required: true },
   { name: "email", type: "email", label: "Email", required: true },
@@ -76,6 +77,7 @@ const fields: FieldDefinition<RegistrationForm>[] = [
     label: "Subscribe to the newsletter",
     description: "Weekly tips, news, and exclusive offers.",
     span: "full",
+    required: true,
   },
   {
     name: "frequency",

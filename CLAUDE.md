@@ -305,8 +305,12 @@ Declarative forms built on **TanStack Form (`@tanstack/react-form`) + Zod v4**, 
 `SmartForm` takes a Zod `schema` plus a `FormNode[]` and renders the right `Smart*Field` control per entry —
 no per-field wiring. Key design points (see `smart-form.tsx`):
 
-- The **Zod schema is the single source of truth** for both validation _and_ required-ness (the required asterisk is
-  derived from the schema via `isFieldRequired`); `FieldDefinition` is UI-only.
+- **Validation and presentation are separate.** The Zod schema is the single source of truth for _validation_ only;
+  the required asterisk comes from an explicit `required?: boolean` on the field definition and is purely visual
+  (`required === true` → asterisk, nothing else). Neither side reads the other, so a schema-required field can render
+  unmarked and a `.optional()` field can be marked without a blank failing. `schemaAcceptsUndefined`
+  (`smart-form-internals.ts`) is what's left of the old inference — it decides only which blank strings normalize to
+  `undefined` before validation, and must never be wired back into the asterisk.
 - **`FieldTypeExtras` (`field-types.ts`) is the single source of truth for field types.** It maps each `type`
   (`text`/`currency`/`select`/`daterange`/…) to the extra props that type accepts; `FieldType`, the `FieldDefinition`
   discriminated union, and the wide `ResolvedFieldDefinition` are all **generated** from it — none is hand-maintained.

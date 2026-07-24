@@ -35,8 +35,8 @@ export const deepEqual = (a: unknown, b: unknown): boolean => {
 
 /**
  * Best-effort access to a Zod object's `.shape`, unwrapping optional / nullable /
- * default wrappers. Used only to read which fields are required (for the
- * asterisk) — never affects validation.
+ * default wrappers. Used only to read per-field schemas for the empty-string
+ * normalization below — never changes what the schema itself validates.
  */
 const getZodShape = (
   schema: unknown
@@ -60,17 +60,27 @@ const getZodShape = (
 }
 
 /**
- * Whether a field is required, derived from the schema (the single source of
- * truth): a field is required when its schema rejects `undefined` — i.e. it is
- * not `.optional()` / `.default()`. Keeps field definitions UI-only.
+ * Whether a field's schema accepts `undefined` — i.e. it is `.optional()` /
+ * `.default()`. A **validation** detail, not a presentation one: {@link SmartForm}
+ * uses it to decide which blank strings to normalize to `undefined` before
+ * validating, so `z.email().optional()` doesn't flag an untouched field. The
+ * required asterisk is *not* derived from this — it comes solely from the field
+ * definition's `required` flag, so validation and presentation stay independent.
+ *
+ * A field the schema says nothing about (unknown key, or a non-object schema)
+ * counts as accepting `undefined`: there is no rule to violate, so a blank is
+ * normalized away rather than sent through as `""`.
  */
-export const isFieldRequired = (schema: z.ZodType, name: string): boolean => {
+export const schemaAcceptsUndefined = (
+  schema: z.ZodType,
+  name: string
+): boolean => {
   const shape = getZodShape(schema)
   const fieldSchema = shape?.[name]
-  if (!fieldSchema) return false
+  if (!fieldSchema) return true
   try {
-    return !fieldSchema.safeParse(undefined).success
+    return fieldSchema.safeParse(undefined).success
   } catch {
-    return false
+    return true
   }
 }

@@ -21,7 +21,7 @@ import {
   useSmartUILabels,
 } from "@iamsaroj/smart-ui/smart-components/provider"
 
-import { deepEqual, isFieldRequired } from "./smart-form-internals"
+import { deepEqual, schemaAcceptsUndefined } from "./smart-form-internals"
 import type { FieldDefinition, ResolvedFieldDefinition } from "./field-types"
 import {
   buildSectionPathMap,
@@ -58,7 +58,11 @@ export interface SmartFormHandle<T extends Record<string, unknown>> {
 export interface SmartFormProps<
   T extends Record<string, unknown>,
 > extends GridLayoutOptions {
-  /** Zod schema — the single source of truth for validation *and* required-ness. */
+  /**
+   * Zod schema — the single source of truth for **validation**. It does not
+   * drive presentation: the required asterisk comes from each field's own
+   * `required` flag.
+   */
   schema: z.ZodType<T>
   /** Controlled form data. Seeds the form on mount and stays mirrored to edits. */
   data?: T
@@ -254,14 +258,14 @@ const SmartFormInner = <T extends Record<string, unknown>>(
   // mount baseline.
   const [baseline, setBaseline] = React.useState<T>(defaultValues)
 
-  // Fields the schema treats as optional (and that aren't forced required in the
-  // definition). For these, an empty string means "not provided", so it should
-  // pass rather than fail — e.g. `z.email().optional()` shouldn't flag a blank.
+  // Fields the schema treats as optional. For these, an empty string means "not
+  // provided", so it should pass rather than fail — e.g. `z.email().optional()`
+  // shouldn't flag a blank. Read from the schema alone: a field's `required`
+  // flag is presentation (the asterisk) and must not move validation.
   const optionalKeys = React.useMemo(() => {
     const set = new Set<string>()
     for (const field of flatFields) {
-      if (field.required) continue
-      if (!isFieldRequired(schema, field.name)) set.add(field.name)
+      if (schemaAcceptsUndefined(schema, field.name)) set.add(field.name)
     }
     return set
   }, [schema, flatFields])
@@ -427,7 +431,9 @@ const SmartFormInner = <T extends Record<string, unknown>>(
     if (modeExcludedSet.has(field.name)) return null
     if (field.hidden?.(values)) return null
 
-    const required = field.required ?? isFieldRequired(schema, field.name)
+    // Presentation only, and explicit: the asterisk shows iff the definition
+    // asks for it. The schema never puts one there (nor takes one away).
+    const required = field.required === true
 
     return (
       <form.Field key={field.name} name={field.name as never}>
@@ -635,8 +641,10 @@ SmartFormForwarded.displayName = "SmartForm"
  * field definition array — the engine renders the right control for each field,
  * validates against the schema (live, per-field), and surfaces errors inline.
  *
- * The schema is the single source of truth: validation *and* the required
- * asterisk are both derived from it, so field definitions stay UI-only. Pass
+ * Validation and presentation are separate concerns: the schema is the single
+ * source of truth for validation, while the required asterisk comes from the
+ * field definition's `required` flag — a field can be required by the schema
+ * without being marked in the UI, and the reverse. Pass
  * `data`/`setData` to mirror the live values into your own state; both are
  * optional — the form owns its state either way. For create/edit, seed with
  * `initialData` and re-load a record via the `ref` handle's `reset(row)` (no

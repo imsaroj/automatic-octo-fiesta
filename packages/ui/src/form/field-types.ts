@@ -258,6 +258,13 @@ export interface FieldBase<
   label?: string
   placeholder?: string
   description?: string
+  /**
+   * Shows the required asterisk on the label. **Presentation only** — it is
+   * never read by validation, and validation never sets it: a `z.string().min(1)`
+   * field stays unmarked unless you ask for the asterisk here, and marking an
+   * `.optional()` field doesn't make a blank fail. Keep the Zod schema the
+   * single source of truth for what a valid value is.
+   */
   required?: boolean
   disabled?: boolean
   /** Return `true` to hide the field (and skip validation for it). */

@@ -86,8 +86,8 @@ import { OptionField, type OptionFieldProps } from "./option-field"
 
 /**
  * Props shared by every rendered field, derived once by {@link SmartForm} from
- * the definition (label / placeholder / description) plus live validation state
- * (error / required). Spread into each field's own props by `mapProps`.
+ * the definition (label / placeholder / description / required) plus live
+ * validation state (error). Spread into each field's own props by `mapProps`.
  */
 export interface CommonFieldProps {
   label?: React.ReactNode

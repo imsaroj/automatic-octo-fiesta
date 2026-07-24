@@ -302,9 +302,21 @@ const schema = z.object({
 type Form = z.infer<typeof schema>
 
 const fields: FieldDefinition<Form>[] = [
-  { name: "name", type: "text", label: "Name", placeholder: "Ada Lovelace" },
-  { name: "email", type: "email", label: "Email", colSpan: 2 },
-  { name: "role", type: "select", label: "Role", options: ROLE_OPTIONS },
+  {
+    name: "name",
+    type: "text",
+    label: "Name",
+    placeholder: "Ada Lovelace",
+    required: true,
+  },
+  { name: "email", type: "email", label: "Email", colSpan: 2, required: true },
+  {
+    name: "role",
+    type: "select",
+    label: "Role",
+    options: ROLE_OPTIONS,
+    required: true,
+  },
   { name: "mrr", type: "currency", label: "MRR", min: 0 },
 ]
 
@@ -313,9 +325,11 @@ const fields: FieldDefinition<Form>[] = [
 
 Key rules:
 
-- **The Zod schema is the single source of truth** for validation _and_ the required
-  asterisk (`isFieldRequired` derives it). `FieldDefinition` is UI-only — don't duplicate
-  validation there.
+- **The Zod schema is the single source of truth** for validation — and for validation only.
+  `FieldDefinition` is UI-only; don't duplicate validation there.
+- **The required asterisk is explicit**: set `required: true` on the field definition. It is
+  purely visual and never read by validation, so a schema-required field stays unmarked unless
+  you say so, and marking an `.optional()` field doesn't make a blank fail.
 - `FieldDefinition<T>` is a **discriminated union on `type`** — each type only permits its
   own extras (`options` on selects, `decimalScale`/`min`/`max` on numerics, `rows` on
   textarea, …). Invalid combos fail to compile.

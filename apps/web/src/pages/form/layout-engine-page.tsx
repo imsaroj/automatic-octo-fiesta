@@ -57,12 +57,30 @@ const EMPTY_PROFILE: ProfileForm = {
  * auto-placement doing the row breaking, there are no row wrappers to maintain.
  */
 const rowFields: FormNode<ProfileForm>[] = [
-  { name: "fullName", type: "text", label: "Full name", span: "full" },
-  { name: "email", type: "email", label: "Email", span: "full" },
-  { name: "street", type: "text", label: "Street", span: "full" },
+  {
+    name: "fullName",
+    type: "text",
+    label: "Full name",
+    span: "full",
+    required: true,
+  },
+  {
+    name: "email",
+    type: "email",
+    label: "Email",
+    span: "full",
+    required: true,
+  },
+  {
+    name: "street",
+    type: "text",
+    label: "Street",
+    span: "full",
+    required: true,
+  },
   { name: "street2", type: "text", label: "Street 2", span: "full" },
-  { name: "city", type: "text", label: "City", span: "1/2" },
-  { name: "state", type: "text", label: "State", span: "1/2" },
+  { name: "city", type: "text", label: "City", span: "1/2", required: true },
+  { name: "state", type: "text", label: "State", span: "1/2", required: true },
   { name: "phone", type: "tel", label: "Phone", span: "full" },
   { name: "website", type: "url", label: "Website", span: "full" },
   { name: "bio", type: "textarea", label: "Bio", span: "full", rows: 3 },
@@ -143,8 +161,20 @@ const accountFields: FormNode<AccountForm>[] = [
     variant: "card",
     columns: 12,
     fields: [
-      { name: "name", type: "text", label: "Name", span: "1/2" },
-      { name: "email", type: "email", label: "Email", span: "1/2" },
+      {
+        name: "name",
+        type: "text",
+        label: "Name",
+        span: "1/2",
+        required: true,
+      },
+      {
+        name: "email",
+        type: "email",
+        label: "Email",
+        span: "1/2",
+        required: true,
+      },
       { name: "company", type: "text", label: "Company", span: "2/3" },
       { name: "vat", type: "text", label: "VAT ID", span: "1/3" },
     ],

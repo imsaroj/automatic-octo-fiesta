@@ -75,11 +75,35 @@ const STATUS_OPTIONS = (["Active", "Inactive", "Pending"] as const).map(
 )
 
 const userFields: FieldDefinition<UserForm>[] = [
-  { name: "name", label: "Name", type: "text", placeholder: "Ada Lovelace" },
-  { name: "email", label: "Email", type: "email", span: "full" },
-  { name: "role", label: "Role", type: "select", options: ROLE_OPTIONS },
-  { name: "status", label: "Status", type: "select", options: STATUS_OPTIONS },
-  { name: "mrr", label: "MRR", type: "currency", min: 0 },
+  {
+    name: "name",
+    label: "Name",
+    type: "text",
+    placeholder: "Ada Lovelace",
+    required: true,
+  },
+  {
+    name: "email",
+    label: "Email",
+    type: "email",
+    span: "full",
+    required: true,
+  },
+  {
+    name: "role",
+    label: "Role",
+    type: "select",
+    options: ROLE_OPTIONS,
+    required: true,
+  },
+  {
+    name: "status",
+    label: "Status",
+    type: "select",
+    options: STATUS_OPTIONS,
+    required: true,
+  },
+  { name: "mrr", label: "MRR", type: "currency", min: 0, required: true },
 ]
 
 const EMPTY_USER: UserForm = {

@@ -35,6 +35,7 @@ const fields: FieldDefinition<ContactForm>[] = [
     type: "text",
     label: "Your name",
     placeholder: "Ada Lovelace",
+    required: true,
   },
   {
     name: "email",
@@ -47,6 +48,7 @@ const fields: FieldDefinition<ContactForm>[] = [
     type: "select",
     label: "Subject",
     options: SUBJECT_OPTIONS,
+    required: true,
   },
   {
     name: "message",
@@ -55,6 +57,7 @@ const fields: FieldDefinition<ContactForm>[] = [
     placeholder: "How can we help?",
     description: "Minimum 10 characters.",
     rows: 4,
+    required: true,
   },
   {
     name: "details",
@@ -63,6 +66,7 @@ const fields: FieldDefinition<ContactForm>[] = [
     placeholder: "Add formatted context, links, or lists…",
     description: "Rich text — stored as HTML.",
     minHeight: "140px",
+    required: true,
   },
 ]
 

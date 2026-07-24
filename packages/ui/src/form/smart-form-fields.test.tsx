@@ -9,8 +9,8 @@ import type { FieldDefinition, FieldType } from "./field-types"
 
 /**
  * Per-field-type render coverage: SmartForm must produce an interactive
- * control for every advertised `FieldType`, derive the required asterisk from
- * the schema, and surface validation errors (with focus) on submit. This is
+ * control for every advertised `FieldType`, take the required asterisk from the
+ * field definition, and surface validation errors (with focus) on submit. This is
  * the safety net under the field-registry — a broken registry entry shows up
  * here as a field wrapper with no control in it.
  */
@@ -114,13 +114,53 @@ const fields: FieldDefinition<F>[] = [
   { name: "note", type: "text", label: "Note" },
 ]
 
-test("required asterisk derives from the schema, not the field definition", () => {
-  mount(<SmartForm schema={schema} fields={fields} />)
+test("required asterisk comes from the field definition, not the schema", () => {
+  // Deliberately crossed over: `name` is required by the schema but unmarked,
+  // `note` is optional but marked. Presentation follows the definition alone.
+  mount(
+    <SmartForm
+      schema={schema}
+      fields={[
+        { name: "name", type: "text", label: "Name" },
+        { name: "note", type: "text", label: "Note", required: true },
+      ]}
+    />
+  )
 
   const labelFor = (name: string) =>
     container.querySelector(`[data-field="${name}"] label`)!.textContent
-  expect(labelFor("name")).toContain("*")
-  expect(labelFor("note")).not.toContain("*")
+  expect(labelFor("name")).not.toContain("*")
+  expect(labelFor("note")).toContain("*")
+})
+
+test("required: true is presentation only — it never tightens validation", async () => {
+  // `email` is `.optional()`, so a blank must still normalize to undefined and
+  // pass, even though the definition marks it required for the user's benefit.
+  const emailSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    email: z.email().optional(),
+  })
+  const onSubmit = vi.fn()
+  mount(
+    <SmartForm
+      schema={emailSchema}
+      initialData={{ name: "Ada", email: "" }}
+      fields={[
+        { name: "name", type: "text", label: "Name" },
+        { name: "email", type: "text", label: "Email", required: true },
+      ]}
+      onSubmit={onSubmit}
+    />
+  )
+
+  await act(async () =>
+    (
+      container.querySelector('button[type="submit"]') as HTMLButtonElement
+    ).click()
+  )
+
+  expect(onSubmit).toHaveBeenCalledTimes(1)
+  expect(onSubmit.mock.calls[0][0]).toMatchObject({ name: "Ada" })
 })
 
 test("submitting invalid values shows the error, focuses the field, and blocks onSubmit", async () => {

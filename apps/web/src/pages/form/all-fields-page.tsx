@@ -69,7 +69,13 @@ const PLANS = [
 
 const fields: FieldDefinition<AllFields>[] = [
   // ── Text ────────────────────────────────────────────────────────────────
-  { name: "text", type: "text", label: "Text", placeholder: "Plain text" },
+  {
+    name: "text",
+    type: "text",
+    label: "Text",
+    placeholder: "Plain text",
+    required: true,
+  },
   {
     name: "textarea",
     type: "textarea",
@@ -77,12 +83,13 @@ const fields: FieldDefinition<AllFields>[] = [
     placeholder: "Multiple lines…",
     rows: 3,
   },
-  { name: "password", type: "password", label: "Password" },
+  { name: "password", type: "password", label: "Password", required: true },
   {
     name: "email",
     type: "email",
     label: "Email",
     placeholder: "you@example.com",
+    required: true,
   },
   { name: "tel", type: "tel", label: "Phone number" },
   {
@@ -90,6 +97,7 @@ const fields: FieldDefinition<AllFields>[] = [
     type: "url",
     label: "URL",
     placeholder: "https://example.com",
+    required: true,
   },
   {
     name: "slug",
@@ -106,22 +114,34 @@ const fields: FieldDefinition<AllFields>[] = [
     span: "full",
   },
   // ── Numeric ─────────────────────────────────────────────────────────────
-  { name: "integer", type: "integer", label: "Integer", placeholder: "0" },
+  {
+    name: "integer",
+    type: "integer",
+    label: "Integer",
+    placeholder: "0",
+    required: true,
+  },
   {
     name: "decimal",
     type: "decimal",
     label: "Decimal",
     decimalScale: 2,
     placeholder: "0.00",
+    required: true,
   },
-  { name: "currency", type: "currency", label: "Currency" },
-  { name: "percentage", type: "percentage", label: "Percentage" },
+  { name: "currency", type: "currency", label: "Currency", required: true },
+  {
+    name: "percentage",
+    type: "percentage",
+    label: "Percentage",
+    required: true,
+  },
   // ── Date & time ─────────────────────────────────────────────────────────
   { name: "date", type: "date", label: "Date" },
   { name: "time", type: "time", label: "Time", use12Hour: true },
   { name: "datetime", type: "datetime", label: "Date & time" },
   { name: "month", type: "month", label: "Month" },
-  { name: "year", type: "year", label: "Year" },
+  { name: "year", type: "year", label: "Year", required: true },
   { name: "dateRange", type: "daterange", label: "Date range", span: "full" },
   { name: "timeRange", type: "timerange", label: "Time range", span: "full" },
   // ── Selection ───────────────────────────────────────────────────────────
@@ -131,6 +151,7 @@ const fields: FieldDefinition<AllFields>[] = [
     type: "multiselect",
     label: "Multi select",
     options: FRAMEWORKS,
+    required: true,
   },
   {
     name: "autocomplete",
@@ -156,6 +177,7 @@ const fields: FieldDefinition<AllFields>[] = [
     name: "checkbox",
     type: "checkbox",
     label: "Checkbox — I agree to the terms",
+    required: true,
   },
   {
     name: "checkboxGroup",
@@ -164,9 +186,10 @@ const fields: FieldDefinition<AllFields>[] = [
     options: FRAMEWORKS,
     orientation: "horizontal",
     span: "full",
+    required: true,
   },
-  { name: "toggle", type: "switch", label: "Toggle / switch" },
-  { name: "yesno", type: "yesno", label: "Yes / No" },
+  { name: "toggle", type: "switch", label: "Toggle / switch", required: true },
+  { name: "yesno", type: "yesno", label: "Yes / No", required: true },
 ]
 
 const EMPTY: AllFields = {

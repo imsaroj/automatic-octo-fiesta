@@ -1,14 +1,14 @@
 import { expect, test } from "vitest"
 import { z } from "zod"
 
-import { deepEqual, isFieldRequired } from "./smart-form-internals"
+import { deepEqual, schemaAcceptsUndefined } from "./smart-form-internals"
 
 /**
  * Pure helpers behind SmartForm's state wiring. `deepEqual` decides whether an
  * external `data` change is real (a wrong answer either drops updates or
  * re-triggers the sync loop the smart-form-sync tests guard against), and
- * `isFieldRequired` derives the required asterisk from the Zod schema. Lock
- * both contracts in directly.
+ * `schemaAcceptsUndefined` decides which blank strings are normalized to
+ * `undefined` before validation. Lock both contracts in directly.
  */
 
 // --- deepEqual ---------------------------------------------------------------
@@ -69,7 +69,7 @@ test("deepEqual: objects compare structurally at any depth", () => {
   expect(deepEqual({ r: { from: "a" } }, { r: { from: "b" } })).toBe(false)
 })
 
-// --- isFieldRequired ----------------------------------------------------------
+// --- schemaAcceptsUndefined ---------------------------------------------------
 
 const schema = z.object({
   name: z.string().min(1),
@@ -78,27 +78,28 @@ const schema = z.object({
   nickname: z.string().nullable(),
 })
 
-test("isFieldRequired: required iff the field schema rejects undefined", () => {
-  expect(isFieldRequired(schema, "name")).toBe(true)
-  // optional() and default() both accept undefined → not required.
-  expect(isFieldRequired(schema, "email")).toBe(false)
-  expect(isFieldRequired(schema, "role")).toBe(false)
-  // nullable() still rejects undefined → required.
-  expect(isFieldRequired(schema, "nickname")).toBe(true)
+test("schemaAcceptsUndefined: true iff the field schema accepts undefined", () => {
+  expect(schemaAcceptsUndefined(schema, "name")).toBe(false)
+  // optional() and default() both accept undefined.
+  expect(schemaAcceptsUndefined(schema, "email")).toBe(true)
+  expect(schemaAcceptsUndefined(schema, "role")).toBe(true)
+  // nullable() still rejects undefined.
+  expect(schemaAcceptsUndefined(schema, "nickname")).toBe(false)
 })
 
-test("isFieldRequired: unknown fields and shapeless schemas are not required", () => {
-  expect(isFieldRequired(schema, "missing")).toBe(false)
-  expect(isFieldRequired(z.string(), "name")).toBe(false)
+test("schemaAcceptsUndefined: unknown fields and shapeless schemas count as optional", () => {
+  // No rule to violate → a blank is normalized away rather than sent as "".
+  expect(schemaAcceptsUndefined(schema, "missing")).toBe(true)
+  expect(schemaAcceptsUndefined(z.string(), "name")).toBe(true)
 })
 
-test("isFieldRequired: unwraps optional/default wrappers around the object", () => {
-  expect(isFieldRequired(schema.optional(), "name")).toBe(true)
-  expect(isFieldRequired(schema.optional(), "email")).toBe(false)
+test("schemaAcceptsUndefined: unwraps optional/default wrappers around the object", () => {
+  expect(schemaAcceptsUndefined(schema.optional(), "name")).toBe(false)
+  expect(schemaAcceptsUndefined(schema.optional(), "email")).toBe(true)
   const withDefault = schema.default({
     name: "x",
     role: "user",
     nickname: null,
   })
-  expect(isFieldRequired(withDefault, "name")).toBe(true)
+  expect(schemaAcceptsUndefined(withDefault, "name")).toBe(false)
 })

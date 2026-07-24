@@ -124,18 +124,21 @@ const MEMBER_FIELDS: FieldDefinition<MemberForm>[] = [
     type: "text",
     label: "Full name",
     placeholder: "Ada Lovelace",
+    required: true,
   },
   {
     name: "email",
     type: "email",
     label: "Email",
     placeholder: "ada@example.com",
+    required: true,
   },
   {
     name: "role",
     type: "select",
     label: "Role",
     options: ROLE_OPTIONS,
+    required: true,
   },
   {
     name: "notes",
