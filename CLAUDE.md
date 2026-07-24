@@ -209,7 +209,8 @@ and with no provider the built-in English labels (`DEFAULT_LABELS`) + canonical 
 it is purely additive. Wired so far: server/client grid (loading/error/retry/empty/selected/search-placeholder + grid
 `pageSize`/`density`/`pageSizeOptions` on the **server** grid only — the client grid's pagination defaults diverge and
 converge under I8), `SmartConfirmDialog` (title/confirm/cancel), `SmartSearchForm` (search/reset), `SmartForm`
-(submit label + `columns`). Remaining hard-coded strings migrate onto the same label keys incrementally.
+(submit label — reachable only via `submitLabel={true}`, see below — plus `columns`), and the select/combobox blank
+row (`form.emptyOption`). Remaining hard-coded strings migrate onto the same label keys incrementally.
 
 **`smart-components/buttons/`** — action-button presets (barrel: `@iamsaroj/smart-ui/smart-components/buttons`). One
 `ACTION_BUTTON_CONFIG` map (`action-config.ts`) is the single source of truth for each action's icon, label, variant,
@@ -370,6 +371,23 @@ Promise<FieldOption<V>[]>`. Both flow through one adapter, `OptionField` (`optio
   aborted async fetch with loading/error state), maps typed store values ↔ string DOM keys via a codec
   (`option-utils.ts` — `buildOptionCodec`/`serializeOptionValue`), and renders the underlying string-based `Smart*Field`
   (which stay string-only for standalone use). Loading shows the `form.loadingOptions` provider label as a placeholder.
+- **The submit button is opt-in.** `submitLabel` defaults to **no button row** — where a form's submit lives (a dialog
+  footer, a wizard step bar, a toolbar outside the `<form>` driving it by `form={id}`) is the host's call more often
+  than it is the engine's, and a stray default button is worse than an absent one. Name the label to get it, or pass
+  `submitLabel={true}` for the `form.submit` provider label — `true` is the _only_ route to that label now, so don't
+  "simplify" it away. `undefined` and the `false` a JSX conditional produces both mean no button. `resetLabel` renders
+  its own button independently: the row appears for **either**, so reset didn't die when submit went opt-in.
+- **The blank "Select" row** (`emptyOption` / `emptyOptionLabel` on `select`, `combobox`, `autocomplete`, and on the
+  standalone `SmartSelect` / `SmartCombobox`) defaults to **`!required`**, not to a fixed on/off: an optional field can
+  legally be emptied again after a choice, a required one can't, so offering the row there would contradict the asterisk
+  it renders. `emptyOption` overrides in both directions. The label defaults to the `form.emptyOption` provider label
+  (`"Select"`) so it is translated once, not per field. Two placement details are load-bearing: on `SmartSelect` the row
+  is a Base UI item with **`value={null}`** and is deliberately **left out of the Root's `items` map** — listing it there
+  would make a cleared trigger render "Select" as though it were a chosen value instead of falling back to the
+  placeholder; on `SmartCombobox` it is just an option with `value: ""`, which the primitive's single-mode `toggle`
+  already emits and the trigger already reads as "nothing selected". It is suppressed under `multiple` (clearing the
+  badges is already the way to empty a multi-value control) and never reaches the `OptionField` codec, which only ever
+  sees real options.
 
 Individual `Smart*Field` files (`smart-input-field.tsx`, etc.) all take `FieldBaseProps<T>` (from `base.ts`) and are
 also exported for standalone use.

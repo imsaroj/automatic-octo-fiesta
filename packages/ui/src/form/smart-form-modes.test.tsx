@@ -74,6 +74,7 @@ test("edit mode drops the create-only field from validation and the submitted va
       mode="edit"
       initialData={{ name: "Ada" }}
       onSubmit={onSubmit}
+      submitLabel="Submit"
     />
   )
 
@@ -94,6 +95,7 @@ test("create mode still requires the create-only field", async () => {
       mode="create"
       initialData={{ name: "Ada" }}
       onSubmit={onSubmit}
+      submitLabel="Submit"
     />
   )
 

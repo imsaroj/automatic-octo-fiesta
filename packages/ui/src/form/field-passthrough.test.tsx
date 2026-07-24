@@ -92,6 +92,44 @@ test("select forwards trigger-level presentation props", () => {
   expect(el('[data-field="plan"] .custom-trigger')).not.toBeNull()
 })
 
+test("select's emptyOption follows `required`, and both knobs reach the control", () => {
+  const openSelect = (field: string) => {
+    const trigger = el(`[data-field="${field}"] [data-slot="select-trigger"]`)!
+    act(() => {
+      trigger.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }))
+      trigger.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }))
+      ;(trigger as HTMLElement).click()
+    })
+    // The popup is portaled out of the form, so read it off the document.
+    const labels = Array.from(
+      document.querySelectorAll('[data-slot="select-item"]')
+    ).map((i) => i.textContent)
+    act(() => {
+      ;(trigger as HTMLElement).dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
+      )
+    })
+    return labels
+  }
+
+  const options = [{ value: "a", label: "A" }]
+  const fields: FieldDefinition<Record<string, unknown>>[] = [
+    { name: "optional", type: "select", options },
+    { name: "mandatory", type: "select", options, required: true },
+    { name: "muted", type: "select", options, emptyOption: false },
+    { name: "renamed", type: "select", options, emptyOptionLabel: "Any" },
+  ]
+  mount(<SmartForm schema={loose} fields={fields} />)
+
+  // The engine derives `required` from the definition, so an optional select
+  // offers a way back to empty and a required one doesn't — with no prop.
+  expect(openSelect("optional")).toEqual(["Select", "A"])
+  expect(openSelect("mandatory")).toEqual(["A"])
+  // …and both explicit knobs survive the trip through `mapProps`.
+  expect(openSelect("muted")).toEqual(["A"])
+  expect(openSelect("renamed")).toEqual(["Any", "A"])
+})
+
 test("pickers expose their trigger's class, distinct from the field wrapper", () => {
   const fields: FieldDefinition<Record<string, unknown>>[] = [
     { name: "at", type: "time", triggerClassName: "time-trigger" },
@@ -137,7 +175,14 @@ test("a multiple combobox starts at [] and submits an array", async () => {
       ],
     },
   ]
-  mount(<SmartForm schema={tagsSchema} fields={fields} onSubmit={onSubmit} />)
+  mount(
+    <SmartForm
+      schema={tagsSchema}
+      fields={fields}
+      onSubmit={onSubmit}
+      submitLabel="Submit"
+    />
+  )
 
   await act(async () =>
     (
@@ -155,7 +200,14 @@ test("a single combobox still starts at the empty string", async () => {
   const fields: FieldDefinition<z.infer<typeof schema>>[] = [
     { name: "tag", type: "combobox", options: [{ value: "a", label: "A" }] },
   ]
-  mount(<SmartForm schema={schema} fields={fields} onSubmit={onSubmit} />)
+  mount(
+    <SmartForm
+      schema={schema}
+      fields={fields}
+      onSubmit={onSubmit}
+      submitLabel="Submit"
+    />
+  )
 
   await act(async () =>
     (

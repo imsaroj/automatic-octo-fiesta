@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@iamsaroj/smart-ui/components/select"
 import { Label } from "@iamsaroj/smart-ui/components/label"
+import { useSmartUILabels } from "@iamsaroj/smart-ui/smart-components/provider"
 
 export interface SmartSelectOption {
   value: string
@@ -55,6 +56,22 @@ export interface SmartSelectProps {
   fieldRequired?: boolean
   optional?: boolean
   fieldClassName?: string
+  /**
+   * Render a blank choice at the top of the list that clears the selection
+   * (`onValueChange(null)`), the dropdown equivalent of `<option value="">`.
+   *
+   * Defaults to **`!required`**: an optional select can be emptied again after
+   * a choice is made, a required one can't, so there is nothing to offer. Pass
+   * `false` to suppress it on an optional select, or `true` to force it — but
+   * note that forcing it on a required select hands the user a way to violate
+   * the very constraint the asterisk advertises.
+   */
+  emptyOption?: boolean
+  /**
+   * Label for that blank choice. Defaults to the `form.emptyOption` provider
+   * label (`"Select"`), so an app translates it once instead of per field.
+   */
+  emptyOptionLabel?: React.ReactNode
 }
 
 /**
@@ -103,11 +120,15 @@ export const SmartSelect = ({
   fieldRequired,
   optional,
   fieldClassName,
+  emptyOption,
+  emptyOptionLabel,
 }: SmartSelectProps) => {
+  const labels = useSmartUILabels()
   const id = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined
   const isRequired = required ?? fieldRequired
+  const showEmptyOption = emptyOption ?? !isRequired
 
   // Base UI's `Select.Value` resolves the trigger label from the Root's `items`
   // map — without it, a selected value is stringified to its raw key (e.g. the
@@ -162,6 +183,24 @@ export const SmartSelect = ({
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
+          {/* `value={null}` is Base UI's no-selection sentinel: picking it
+              fires `onValueChange(null)` and the trigger falls back to its
+              placeholder. Deliberately kept out of `items` above — listing it
+              there would make the trigger render this label instead of the
+              placeholder once chosen. Wrapped in a group only when the rest of
+              the list is grouped, so its padding matches its neighbours. */}
+          {showEmptyOption &&
+            (groups ? (
+              <SelectGroup>
+                <SelectItem value={null} className="text-muted-foreground">
+                  {emptyOptionLabel ?? labels.form.emptyOption}
+                </SelectItem>
+              </SelectGroup>
+            ) : (
+              <SelectItem value={null} className="text-muted-foreground">
+                {emptyOptionLabel ?? labels.form.emptyOption}
+              </SelectItem>
+            ))}
           {groups
             ? groups.map((group) => (
                 <SelectGroup key={group.label}>

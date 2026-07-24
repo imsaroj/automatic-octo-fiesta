@@ -150,6 +150,7 @@ test("required: true is presentation only — it never tightens validation", asy
         { name: "email", type: "text", label: "Email", required: true },
       ]}
       onSubmit={onSubmit}
+      submitLabel="Submit"
     />
   )
 
@@ -165,7 +166,14 @@ test("required: true is presentation only — it never tightens validation", asy
 
 test("submitting invalid values shows the error, focuses the field, and blocks onSubmit", async () => {
   const onSubmit = vi.fn()
-  mount(<SmartForm schema={schema} fields={fields} onSubmit={onSubmit} />)
+  mount(
+    <SmartForm
+      schema={schema}
+      fields={fields}
+      onSubmit={onSubmit}
+      submitLabel="Submit"
+    />
+  )
 
   const submit = container.querySelector(
     'button[type="submit"]'
@@ -184,7 +192,14 @@ test("submitting invalid values shows the error, focuses the field, and blocks o
 
 test("a valid submit hands the values to onSubmit", async () => {
   const onSubmit = vi.fn()
-  mount(<SmartForm schema={schema} fields={fields} onSubmit={onSubmit} />)
+  mount(
+    <SmartForm
+      schema={schema}
+      fields={fields}
+      onSubmit={onSubmit}
+      submitLabel="Submit"
+    />
+  )
 
   const input = container.querySelector(
     '[data-field="name"] input'
@@ -236,7 +251,14 @@ test("steppers / todayButton reach the picker and drive the stored value", async
   const fields: FieldDefinition<D>[] = [
     { name: "due", type: "date", steppers: "next", todayButton: true },
   ]
-  mount(<SmartForm schema={dateSchema} fields={fields} onSubmit={onSubmit} />)
+  mount(
+    <SmartForm
+      schema={dateSchema}
+      fields={fields}
+      onSubmit={onSubmit}
+      submitLabel="Submit"
+    />
+  )
 
   // `steppers: "next"` is the +1 button only — the "prev" half stays hidden.
   expect(buttonLabels()).toContain("Next day")
@@ -258,4 +280,61 @@ test("steppers / todayButton reach the picker and drive the stored value", async
   const now = new Date()
   const iso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
   expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ due: iso }))
+})
+
+// ── The button row is opt-in ────────────────────────────────────────────────
+
+const submitButton = () =>
+  container.querySelector<HTMLButtonElement>('button[type="submit"]')
+// By text, not by `type="button"` — a field's own trigger (the date picker's,
+// for one) is a type="button" too and would match first.
+const buttonByText = (text: string) =>
+  Array.from(container.querySelectorAll("button")).find(
+    (b) => b.textContent === text
+  )
+
+test("no submitLabel renders no button row at all", () => {
+  mount(
+    <SmartForm schema={dateSchema} fields={[{ name: "due", type: "date" }]} />
+  )
+  expect(submitButton()).toBeNull()
+})
+
+test("submitLabel names the button; `true` takes the provider label", () => {
+  mount(
+    <SmartForm
+      schema={dateSchema}
+      fields={[{ name: "due", type: "date" }]}
+      submitLabel="Send it"
+    />
+  )
+  expect(submitButton()!.textContent).toBe("Send it")
+
+  act(() => root.unmount())
+  container.remove()
+
+  // `true` is the only way to reach `labels.form.submit` now that omitting the
+  // prop means "no button" — without it that label would be unreachable.
+  mount(
+    <SmartForm
+      schema={dateSchema}
+      fields={[{ name: "due", type: "date" }]}
+      submitLabel
+    />
+  )
+  expect(submitButton()!.textContent).toBe("Submit")
+})
+
+test("resetLabel alone still renders its button, with no submit beside it", () => {
+  // Regression guard: the reset button used to live inside the submit row, so
+  // defaulting submit off would have taken reset down with it.
+  mount(
+    <SmartForm
+      schema={dateSchema}
+      fields={[{ name: "due", type: "date" }]}
+      resetLabel="Clear"
+    />
+  )
+  expect(buttonByText("Clear")).toBeDefined()
+  expect(submitButton()).toBeNull()
 })

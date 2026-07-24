@@ -8,6 +8,7 @@ import {
   type ComboboxProps,
 } from "@iamsaroj/smart-ui/components/combobox"
 import { Label } from "@iamsaroj/smart-ui/components/label"
+import { useSmartUILabels } from "@iamsaroj/smart-ui/smart-components/provider"
 
 export type { ComboboxOption }
 
@@ -22,6 +23,19 @@ interface SmartComboboxFieldProps {
   required?: boolean
   optional?: boolean
   fieldClassName?: string
+  /**
+   * Prepend a blank choice to the list that clears the selection back to `""`.
+   *
+   * Defaults to **`!required`**, and is ignored under `multiple` — deselecting
+   * every badge already empties a multi-value combobox, so a "none" row there
+   * would be a second way to do the same thing.
+   */
+  emptyOption?: boolean
+  /**
+   * Label for that blank choice. Defaults to the `form.emptyOption` provider
+   * label (`"Select"`).
+   */
+  emptyOptionLabel?: string
 }
 
 export type SmartComboboxProps = ComboboxProps & SmartComboboxFieldProps
@@ -52,11 +66,26 @@ export const SmartCombobox = ({
   optional,
   fieldClassName,
   className,
+  emptyOption,
+  emptyOptionLabel,
   ...comboboxProps
 }: SmartComboboxProps) => {
+  const labels = useSmartUILabels()
   const id = React.useId()
   const hasHint = error != null || description != null
   const hintId = hasHint ? `${id}-hint` : undefined
+
+  // The blank row is just an option with an empty value: `Combobox`'s single-
+  // mode `toggle` emits `""` for it, and `""` is already the falsy "nothing
+  // selected" value the trigger reads, so the placeholder comes back on its
+  // own — no special case inside the primitive.
+  const showEmptyOption = !comboboxProps.multiple && (emptyOption ?? !required)
+  const options = showEmptyOption
+    ? [
+        { value: "", label: emptyOptionLabel ?? labels.form.emptyOption },
+        ...comboboxProps.options,
+      ]
+    : comboboxProps.options
 
   return (
     <div
@@ -83,6 +112,7 @@ export const SmartCombobox = ({
           erases the `multiple`↔`value` correlation TS needs to keep it. */}
       <Combobox
         {...(comboboxProps as ComboboxProps)}
+        options={options}
         // A role="combobox" trigger needs an explicit name; default it from a
         // string label unless the caller passed one.
         aria-label={

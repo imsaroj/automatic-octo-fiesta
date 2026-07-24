@@ -63,10 +63,19 @@ export interface SmartUILabels {
     cancel: string
   }
   form: {
-    /** Default submit button. */
+    /**
+     * Submit button text for a form that asks for one with `submitLabel`
+     * (`true` takes this; a `SmartForm` with no `submitLabel` renders no
+     * button).
+     */
     submit: string
     /** Placeholder shown in a select/combobox while async options load. */
     loadingOptions: string
+    /**
+     * The blank choice at the top of an **optional** select/combobox — picking
+     * it clears the field. Never shown on a required one.
+     */
+    emptyOption: string
   }
   /** Failure states — {@link SmartPageError} and its error boundary. */
   error: {
@@ -165,7 +174,7 @@ export const DEFAULT_LABELS: SmartUILabels = {
   },
   search: { search: "Search", reset: "Reset" },
   confirm: { title: "Are you sure?", confirm: "Confirm", cancel: "Cancel" },
-  form: { submit: "Submit", loadingOptions: "Loading…" },
+  form: { submit: "Submit", loadingOptions: "Loading…", emptyOption: "Select" },
   error: {
     retry: "Try again",
     retrying: "Retrying…",

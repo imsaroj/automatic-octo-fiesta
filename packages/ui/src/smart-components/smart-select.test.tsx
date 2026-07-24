@@ -79,7 +79,9 @@ test("required renders the asterisk; fieldRequired is an alias", () => {
 })
 
 test("opens with all flat options; disabled options are marked", () => {
-  mount(<SmartSelect label="Role" options={OPTIONS} />)
+  // Not required → the blank "Select" row leads the list (see the emptyOption
+  // tests below); the real options follow it in order.
+  mount(<SmartSelect label="Role" options={OPTIONS} required />)
   openSelect()
 
   expect(items().map((i) => i.textContent)).toEqual([
@@ -93,6 +95,7 @@ test("opens with all flat options; disabled options are marked", () => {
 test("grouped options render group labels", () => {
   mount(
     <SmartSelect
+      required
       groups={[
         { label: "Staff", options: [{ value: "admin", label: "Admin" }] },
         { label: "Guests", options: [{ value: "viewer", label: "Viewer" }] },
@@ -170,4 +173,91 @@ test("trigger shows the label, not the raw value, when they differ", () => {
 test("disabled disables the trigger", () => {
   mount(<SmartSelect options={OPTIONS} disabled />)
   expect(trigger().getAttribute("disabled")).not.toBeNull()
+})
+
+// ── emptyOption: the blank row that clears the selection ────────────────────
+
+test("an optional select leads with the blank row; a required one omits it", () => {
+  mount(<SmartSelect options={OPTIONS} />)
+  openSelect()
+  expect(items().map((i) => i.textContent)).toEqual([
+    "Select",
+    "Admin",
+    "Editor",
+    "Viewer",
+  ])
+
+  act(() => root.unmount())
+  container.remove()
+
+  // Required is the whole reason the row is conditional: there is no legal
+  // empty state to offer, so offering one would contradict the asterisk.
+  mount(<SmartSelect options={OPTIONS} required />)
+  openSelect()
+  expect(items().map((i) => i.textContent)).not.toContain("Select")
+})
+
+test("emptyOption overrides the required-derived default in both directions", () => {
+  mount(<SmartSelect options={OPTIONS} emptyOption={false} />)
+  openSelect()
+  expect(items().map((i) => i.textContent)).not.toContain("Select")
+
+  act(() => root.unmount())
+  container.remove()
+
+  mount(<SmartSelect options={OPTIONS} required emptyOption />)
+  openSelect()
+  expect(items()[0].textContent).toBe("Select")
+})
+
+test("emptyOptionLabel renames the blank row", () => {
+  mount(<SmartSelect options={OPTIONS} emptyOptionLabel="— none —" />)
+  openSelect()
+  expect(items()[0].textContent).toBe("— none —")
+})
+
+test("picking the blank row emits null and restores the placeholder", () => {
+  const onValueChange = vi.fn()
+  const Harness = () => {
+    const [value, setValue] = React.useState<string | null>("editor")
+    return (
+      <SmartSelect
+        options={OPTIONS}
+        placeholder="Choose role"
+        value={value}
+        onValueChange={(v) => {
+          onValueChange(v)
+          setValue(v)
+        }}
+      />
+    )
+  }
+  mount(<Harness />)
+  expect(trigger().textContent!.toLowerCase()).toContain("editor")
+
+  openSelect()
+  const blank = items()[0] as HTMLElement
+  act(() => {
+    blank.dispatchEvent(new MouseEvent("pointerup", { bubbles: true }))
+    blank.click()
+  })
+
+  expect(onValueChange).toHaveBeenCalledWith(null)
+  // The blank row is deliberately absent from the Root's `items` map, so a
+  // cleared select falls back to the placeholder rather than rendering
+  // "Select" as if it were a chosen value.
+  expect(trigger().textContent).toContain("Choose role")
+  expect(trigger().textContent).not.toContain("Select")
+})
+
+test("the blank row leads a grouped list too", () => {
+  mount(
+    <SmartSelect
+      groups={[
+        { label: "Staff", options: [{ value: "admin", label: "Admin" }] },
+      ]}
+    />
+  )
+  openSelect()
+  expect(items().map((i) => i.textContent)).toEqual(["Select", "Admin"])
 })

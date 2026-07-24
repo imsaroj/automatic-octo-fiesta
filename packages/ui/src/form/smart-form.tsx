@@ -96,9 +96,18 @@ export interface SmartFormProps<
   onSubmit?: (data: T) => void | Promise<void>
   /** `id` on the `<form>`, so a submit button placed outside can drive it via `form={id}`. */
   id?: string
-  /** Label for the submit button. Pass `null` to suppress and use `children` instead. */
+  /**
+   * Label for the submit button. **Defaults to no button at all** — a form is
+   * a field grid first, and where its submit lives (a dialog footer, a wizard's
+   * step bar, a toolbar outside the `<form>` driving it via `form={id}`) is the
+   * host's call more often than not. Opt in by naming the label, or pass `true`
+   * for the `form.submit` provider label.
+   */
   submitLabel?: React.ReactNode | null
-  /** Label for an optional reset button (resets to the initial `data`). */
+  /**
+   * Label for an optional reset button (resets to the initial `data`). Renders
+   * the button row on its own, without a submit button.
+   */
   resetLabel?: string
   /** Rendered inside the form after the field grid (replaces default button row when provided). */
   children?: React.ReactNode
@@ -138,13 +147,19 @@ const SmartFormInner = <T extends Record<string, unknown>>(
   }: SmartFormProps<T>,
   ref: React.ForwardedRef<SmartFormHandle<T>>
 ) => {
-  // Provider fallbacks: an explicit prop always wins. `submitLabel` uses an
-  // `undefined` check (not `??`) because `null` is meaningful — it suppresses
-  // the default button row in favor of `children`.
   const uiDefaults = useSmartUIDefaults()
   const uiLabels = useSmartUILabels()
+  // Submit is opt-in: `undefined` (and the `false` that JSX conditionals
+  // produce) means no button, so a form embedded in a dialog or a wizard step
+  // doesn't grow a stray one its host has to hide. `true` is the way to ask for
+  // the button without naming it, taking the provider's label — otherwise an
+  // app that translates `form.submit` once would have no way to reach it.
   const effectiveSubmitLabel =
-    submitLabel === undefined ? uiLabels.form.submit : submitLabel
+    submitLabel === true
+      ? uiLabels.form.submit
+      : submitLabel === undefined || submitLabel === false
+        ? null
+        : submitLabel
 
   // Layout resolution order: explicit props → preset → provider defaults. The
   // provider only fills what neither of the first two spoke to.
@@ -602,9 +617,11 @@ const SmartFormInner = <T extends Record<string, unknown>>(
         <GridLayoutProvider value={layout.context}>
           {renderNodes(fields, layoutOptions, "")}
 
+          {/* The row appears for *either* button, so `resetLabel` on its own
+              still renders now that submit is opt-in. */}
           {children !== undefined ? (
             <SmartGridItem span="full">{children}</SmartGridItem>
-          ) : effectiveSubmitLabel !== null ? (
+          ) : effectiveSubmitLabel !== null || resetLabel ? (
             <SmartGridItem
               span="full"
               className="flex items-center justify-end gap-2 pt-1"
@@ -618,13 +635,15 @@ const SmartFormInner = <T extends Record<string, unknown>>(
                   {resetLabel}
                 </Button>
               )}
-              <form.Subscribe selector={(state) => state.isSubmitting}>
-                {(isSubmitting) => (
-                  <Button type="submit" disabled={isSubmitting}>
-                    {effectiveSubmitLabel}
-                  </Button>
-                )}
-              </form.Subscribe>
+              {effectiveSubmitLabel !== null && (
+                <form.Subscribe selector={(state) => state.isSubmitting}>
+                  {(isSubmitting) => (
+                    <Button type="submit" disabled={isSubmitting}>
+                      {effectiveSubmitLabel}
+                    </Button>
+                  )}
+                </form.Subscribe>
+              )}
             </SmartGridItem>
           ) : null}
         </GridLayoutProvider>

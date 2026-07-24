@@ -13,6 +13,7 @@ const contactSchema = z.object({
   name: z.string().min(1, "Name is required").trim(),
   email: z.email().optional().or(z.literal("")),
   subject: z.string().min(1, "Choose a subject"),
+  priority: z.string().optional().or(z.literal("")),
   message: z.string().min(10, "Minimum 10 characters"),
   details: z.string(),
 })
@@ -27,6 +28,12 @@ const SUBJECT_OPTIONS = [
   { value: "sales", label: "Sales" },
   { value: "bug", label: "Bug report" },
   { value: "feature", label: "Feature request" },
+]
+
+const PRIORITY_OPTIONS = [
+  { value: "low", label: "Low" },
+  { value: "normal", label: "Normal" },
+  { value: "high", label: "High" },
 ]
 
 const fields: FieldDefinition<ContactForm>[] = [
@@ -44,11 +51,23 @@ const fields: FieldDefinition<ContactForm>[] = [
     placeholder: "ada@example.com",
   },
   {
+    // Required → no blank row: there is no legal empty state to offer.
     name: "subject",
     type: "select",
     label: "Subject",
     options: SUBJECT_OPTIONS,
     required: true,
+  },
+  {
+    // Optional → the list leads with a blank "Select" row that clears the
+    // field again. Automatic; `emptyOption: false` opts out, and
+    // `emptyOptionLabel` renames it (app-wide via SmartUIProvider's
+    // `form.emptyOption` label).
+    name: "priority",
+    type: "select",
+    label: "Priority",
+    options: PRIORITY_OPTIONS,
+    description: "Optional — pick “Select” again to clear it.",
   },
   {
     name: "message",

@@ -83,7 +83,9 @@ test("shows the placeholder until a value is selected", () => {
 })
 
 test("opens the popup with a search input and all options", () => {
-  mount(<SmartCombobox options={OPTIONS} />)
+  // `required` keeps the blank "Select" row out of the way — it has its own
+  // tests below.
+  mount(<SmartCombobox options={OPTIONS} required />)
 
   expect(trigger().getAttribute("aria-expanded")).toBe("false")
   openCombobox()
@@ -129,4 +131,80 @@ test("multiple: selected values render as badges on the trigger", () => {
 test("disabled disables the trigger", () => {
   mount(<SmartCombobox options={OPTIONS} disabled />)
   expect(trigger().disabled).toBe(true)
+})
+
+// ── emptyOption: the blank row that clears the selection ────────────────────
+
+test("an optional combobox leads with the blank row; a required one omits it", () => {
+  mount(<SmartCombobox options={OPTIONS} />)
+  openCombobox()
+  expect(commandItems().map((i) => i.textContent)).toEqual([
+    "Select",
+    "Next.js",
+    "Remix",
+    "Vite",
+  ])
+})
+
+test("emptyOption and emptyOptionLabel override the default", () => {
+  mount(<SmartCombobox options={OPTIONS} emptyOption={false} />)
+  openCombobox()
+  expect(commandItems().map((i) => i.textContent)).not.toContain("Select")
+
+  act(() => root.unmount())
+  container.remove()
+
+  mount(<SmartCombobox options={OPTIONS} required emptyOptionLabel="Any" />)
+  openCombobox()
+  expect(commandItems().map((i) => i.textContent)).not.toContain("Any")
+
+  act(() => root.unmount())
+  container.remove()
+
+  mount(<SmartCombobox options={OPTIONS} emptyOptionLabel="Any" />)
+  openCombobox()
+  expect(commandItems()[0].textContent).toBe("Any")
+})
+
+test("picking the blank row clears the value back to the placeholder", () => {
+  const onValueChange = vi.fn()
+  const Harness = () => {
+    const [value, setValue] = React.useState("remix")
+    return (
+      <SmartCombobox
+        options={OPTIONS}
+        placeholder="Select framework…"
+        value={value}
+        onValueChange={(v) => {
+          onValueChange(v)
+          setValue(v)
+        }}
+      />
+    )
+  }
+  mount(<Harness />)
+  expect(trigger().textContent).toContain("Remix")
+
+  openCombobox()
+  act(() => commandItems()[0].click())
+
+  expect(onValueChange).toHaveBeenCalledWith("")
+  expect(trigger().textContent).toContain("Select framework…")
+})
+
+test("multiple never gets a blank row — clearing the badges already empties it", () => {
+  mount(
+    <SmartCombobox
+      multiple
+      options={OPTIONS}
+      value={[]}
+      onValueChange={() => {}}
+    />
+  )
+  openCombobox()
+  expect(commandItems().map((i) => i.textContent)).toEqual([
+    "Next.js",
+    "Remix",
+    "Vite",
+  ])
 })

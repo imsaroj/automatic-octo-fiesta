@@ -30,6 +30,17 @@ export interface SmartComboboxFieldProps extends FieldBaseProps<
   maxSelected?: number
   /** Class applied to the trigger button (`className` styles the field wrapper). */
   triggerClassName?: string
+  /**
+   * Prepend a blank choice that clears the field back to `""`. Defaults to
+   * **`!required`**; ignored under `multiple` (clearing the badges already
+   * empties it).
+   */
+  emptyOption?: boolean
+  /**
+   * Label for that blank choice. Defaults to the `form.emptyOption` provider
+   * label (`"Select"`).
+   */
+  emptyOptionLabel?: string
 }
 
 /** Searchable choice combobox — one value, or several with `multiple`. */
@@ -50,6 +61,8 @@ export const SmartComboboxField = ({
   multiple,
   maxSelected,
   triggerClassName,
+  emptyOption,
+  emptyOptionLabel,
 }: SmartComboboxFieldProps) => {
   const shared = {
     placeholder,
@@ -60,6 +73,8 @@ export const SmartComboboxField = ({
     error,
     required,
     options,
+    emptyOption,
+    emptyOptionLabel,
     disabled: disabled || readOnly,
     className: triggerClassName,
     fieldClassName: className,

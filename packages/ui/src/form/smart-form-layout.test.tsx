@@ -149,6 +149,7 @@ test("a mode-excluded section's fields are stripped from the submitted value", a
       mode="edit"
       initialData={{ street: "1 Main St" }}
       onSubmit={onSubmit}
+      submitLabel="Submit"
     />
   )
 
@@ -196,7 +197,9 @@ test("a collapsible section hides its panel until toggled", () => {
       fields: [{ name: "city", type: "text" }],
     },
   ]
-  mount(<SmartForm<Form> schema={schema} fields={fields} />)
+  mount(
+    <SmartForm<Form> schema={schema} fields={fields} submitLabel="Submit" />
+  )
 
   const panel = container.querySelector<HTMLElement>("#address-panel")!
   expect(panel.hidden).toBe(true)
@@ -222,7 +225,9 @@ test("a failed submit reopens a collapsed section hiding the error", async () =>
       fields: [{ name: "street", type: "text" }],
     },
   ]
-  mount(<SmartForm<Form> schema={schema} fields={fields} />)
+  mount(
+    <SmartForm<Form> schema={schema} fields={fields} submitLabel="Submit" />
+  )
 
   expect(container.querySelector<HTMLElement>("#address-panel")!.hidden).toBe(
     true
