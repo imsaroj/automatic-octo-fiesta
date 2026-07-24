@@ -1,3 +1,10 @@
+# [5.4.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v5.3.0...v5.4.0) (2026-07-24)
+
+
+### Features
+
+* **form:** separate validation from presentation; introduce `required` prop for fields ([ddb9c30](https://github.com/imsaroj/automatic-octo-fiesta/commit/ddb9c30da6639f22c98b2bb8a831e48a3e4394d8))
+
 # [5.3.0](https://github.com/imsaroj/automatic-octo-fiesta/compare/v5.2.0...v5.3.0) (2026-07-23)
 
 
