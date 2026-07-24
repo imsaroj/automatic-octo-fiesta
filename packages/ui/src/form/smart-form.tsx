@@ -92,6 +92,20 @@ export interface SmartFormProps<
    * `"fluid"`, … — and override any part of it with the layout props.
    */
   preset?: LayoutPreset
+  /**
+   * What an **empty** field serializes to on the way *out* — in the mirrored
+   * `setData` value and the `onSubmit` payload. Defaults to `""` (unchanged).
+   * Set to `null` to emit `null` for blank fields instead of an empty string.
+   *
+   * This is an **output** transform only: the internal store and validation keep
+   * using `""`, so native inputs stay controlled and a `z.string().min(1)` still
+   * reports *"required"* rather than *"expected string, received null"*. Any
+   * `null` arriving back through `data` is coerced to the field's own blank, so
+   * the round-trip (e.g. `setData(EMPTY)` after submit) never breaks the inputs.
+   * Only literal empty strings convert — `[]`, `false`, `0`, and already-`null`
+   * numeric fields pass through untouched.
+   */
+  emptyValue?: "" | null
   /** Called with the parsed, validated values on a successful submit. */
   onSubmit?: (data: T) => void | Promise<void>
   /** `id` on the `<form>`, so a submit button placed outside can drive it via `form={id}`. */
@@ -137,6 +151,7 @@ const SmartFormInner = <T extends Record<string, unknown>>(
     dense,
     align,
     justify,
+    emptyValue = "",
     onSubmit,
     id,
     submitLabel,
@@ -214,6 +229,40 @@ const SmartFormInner = <T extends Record<string, unknown>>(
     [registry]
   )
 
+  // `emptyValue` (opt-in) rewrites blank fields on the way out only. The store
+  // and validation always run on `""`; these two helpers translate at the seam.
+  const nullifyEmpty = emptyValue !== ""
+
+  // Outbound: blank strings → the configured empty sentinel (e.g. `null`), for
+  // the mirrored `setData` value and the `onSubmit` payload. Restricted to known
+  // field keys and to the literal `""`, so arrays / booleans / numbers are left
+  // exactly as the store holds them.
+  const applyEmptyValue = React.useCallback(
+    (value: T): T => {
+      if (!nullifyEmpty) return value
+      const out = { ...(value as Record<string, unknown>) }
+      for (const field of flatFields)
+        if (out[field.name] === "") out[field.name] = emptyValue
+      return out as T
+    },
+    [nullifyEmpty, emptyValue, flatFields]
+  )
+
+  // Inbound: a field arriving as the empty sentinel (`null`) can't drive a native
+  // input, so restore it to that field's own blank before it reaches the store.
+  // Keeps the internal representation uniform ("") no matter what `data` carries.
+  const coerceInbound = React.useCallback(
+    (value: Record<string, unknown>): Record<string, unknown> => {
+      if (!nullifyEmpty) return value
+      const out = { ...value }
+      for (const field of flatFields)
+        if (out[field.name] === emptyValue)
+          out[field.name] = defaultForField(field)
+      return out
+    },
+    [nullifyEmpty, emptyValue, flatFields, defaultForField]
+  )
+
   // Field names excluded by the active mode — omitted from validation + submit.
   // A section's `modes` cascades to everything nested inside it.
   const modeExcludedKeys = React.useMemo(
@@ -258,11 +307,11 @@ const SmartFormInner = <T extends Record<string, unknown>>(
   const defaultValues = React.useMemo<T>(() => {
     const base: Record<string, unknown> = {}
     for (const field of flatFields) base[field.name] = defaultForField(field)
-    return {
+    return coerceInbound({
       ...base,
       ...(initialData as Record<string, unknown>),
       ...(data as Record<string, unknown>),
-    } as T
+    }) as T
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -309,7 +358,8 @@ const SmartFormInner = <T extends Record<string, unknown>>(
       onChange: validationSchema as never,
       onSubmit: validationSchema as never,
     },
-    onSubmit: ({ value }) => onSubmit?.(stripExcluded(value as T)),
+    onSubmit: ({ value }) =>
+      onSubmit?.(applyEmptyValue(stripExcluded(value as T))),
   })
 
   const values = useSelector(form.store, (state) => state.values) as T
@@ -385,18 +435,25 @@ const SmartFormInner = <T extends Record<string, unknown>>(
         const base: Record<string, unknown> = {}
         for (const field of flatFields)
           base[field.name] = defaultForField(field)
-        const next = {
+        const next = coerceInbound({
           ...base,
           ...(initialData as Record<string, unknown>),
           ...(values as Record<string, unknown>),
-        } as T
+        }) as T
         lastSyncedRef.current = next
         setBaseline(next)
         form.reset(next as never)
       },
       submit: () => void form.handleSubmit().then(focusFirstError),
     }),
-    [flatFields, defaultForField, initialData, form, focusFirstError]
+    [
+      flatFields,
+      defaultForField,
+      initialData,
+      form,
+      focusFirstError,
+      coerceInbound,
+    ]
   )
 
   // Mirror live form values back into the consumer's `setData`.
@@ -409,8 +466,8 @@ const SmartFormInner = <T extends Record<string, unknown>>(
     // the mirrored `data`, the reconcile effect sees them differ and resets the
     // form back to the stale `data`, which loops (max update depth).
     selfUpdateRef.current = true
-    setData(values)
-  }, [values, setData])
+    setData(applyEmptyValue(values))
+  }, [values, setData, applyEmptyValue])
 
   // Reconcile external `data` changes (async load / programmatic reset) into the
   // form — e.g. `setData(EMPTY)` after a successful submit. `form.reset(values)`
@@ -425,11 +482,14 @@ const SmartFormInner = <T extends Record<string, unknown>>(
       selfUpdateRef.current = false
       return
     }
-    if (deepEqual(data, lastSyncedRef.current)) return
-    lastSyncedRef.current = data
+    // Bring any empty-sentinel (`null`) values back to `""` before comparing or
+    // adopting, so the store stays uniform and the guard matches what we mirror.
+    const incoming = coerceInbound(data as Record<string, unknown>)
+    if (deepEqual(incoming, lastSyncedRef.current)) return
+    lastSyncedRef.current = incoming as T
     const base: Record<string, unknown> = {}
     for (const field of flatFields) base[field.name] = defaultForField(field)
-    const next = { ...base, ...(data as Record<string, unknown>) } as T
+    const next = { ...base, ...incoming } as T
     // Advance the baseline in lockstep so the per-render `form.update(opts)` sees
     // no defaultValues change and leaves the freshly adopted values in place.
     setBaseline(next)

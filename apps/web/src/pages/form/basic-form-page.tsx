@@ -19,9 +19,11 @@ const contactSchema = z.object({
 })
 
 type ContactForm = z.infer<typeof contactSchema>
+// `emptyValue={null}` makes the form serialize blank fields as `null`; seed the
+// state to match so the "Live state" panel reads `null` before any edit too.
 const EMPTY = Object.fromEntries(
-  Object.keys(contactSchema.shape).map((k) => [k, ""])
-) as ContactForm
+  Object.keys(contactSchema.shape).map((k) => [k, null])
+) as unknown as ContactForm
 
 const SUBJECT_OPTIONS = [
   { value: "general", label: "General question" },
@@ -111,6 +113,7 @@ const BasicFormPage = () => {
               data={data}
               setData={setData}
               fields={fields}
+              emptyValue={null}
               submitLabel="Send message"
               resetLabel="Clear"
               onSubmit={(value) => {
